@@ -138,7 +138,6 @@ body {
 .outer {
   max-width: 1220px;
   margin: 0 auto;
-  padding: 0 20px;
 }
 .outer:before,
 .outer:after {
