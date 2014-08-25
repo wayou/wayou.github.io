@@ -205,7 +205,6 @@ body {
   margin-bottom: 1em;
   margin-left: 5px;
   line-height: 1em;
-  text-shadow: 0 1px #fff;
   font-weight: bold;
 }
 .article-inner,
@@ -411,6 +410,9 @@ body {
 .nav-icon:hover,
 .main-nav-link:hover {
   opacity: 1;
+}
+#github-btn:before {
+  content: "\f113";
 }
 .nav-icon {
   font-family: FontAwesome;
@@ -693,7 +695,6 @@ a.article-title:hover {
   border-radius: 15px;
   background: #eee;
   color: #999;
-  text-shadow: 0 1px #fff;
   text-decoration: none;
 }
 .article-more-link a:hover {
@@ -1092,7 +1093,6 @@ a.article-title:hover {
 #footer {
   background: #262a30;
   padding: 50px 0;
-  border-top: 1px solid #ddd;
   color: #999;
 }
 #footer a {
@@ -1312,11 +1312,7 @@ pre .javascript .function {
 }
 .widget {
   color: #777;
-  text-shadow: 0 1px #fff;
   background: #ddd;
-  -webkit-box-shadow: 0 -1px 4px #ccc inset;
-  box-shadow: 0 -1px 4px #ccc inset;
-  border: 1px solid #ccc;
   padding: 15px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
