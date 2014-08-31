@@ -319,8 +319,7 @@ body {
   position: relative;
   border-bottom: 1px solid #ddd;
 }
-#header:before,
-#header:after {
+#header:before {
   content: "";
   position: absolute;
   left: 0;
@@ -333,13 +332,6 @@ body {
   background: -moz-linear-gradient(rgba(0,0,0,0.2), transparent);
   background: -ms-linear-gradient(rgba(0,0,0,0.2), transparent);
   background: linear-gradient(rgba(0,0,0,0.2), transparent);
-}
-#header:after {
-  bottom: 0;
-  background: -webkit-linear-gradient(transparent, rgba(0,0,0,0.2));
-  background: -moz-linear-gradient(transparent, rgba(0,0,0,0.2));
-  background: -ms-linear-gradient(transparent, rgba(0,0,0,0.2));
-  background: linear-gradient(transparent, rgba(0,0,0,0.2));
 }
 #header-outer {
   height: 100%;
@@ -1089,6 +1081,10 @@ a.article-title:hover {
 }
 #page-nav .space {
   color: #ddd;
+}
+.archive-wrapper {
+  padding: 30px 20px;
+  min-height: 500px;
 }
 #footer {
   background: #262a30;
