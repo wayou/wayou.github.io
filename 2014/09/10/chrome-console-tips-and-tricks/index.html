@@ -148,7 +148,7 @@ Bug无处遁形「Console大法好」">
 
 <p><img src="1.jpg" alt=""></p>
 <p>如果再配合<code>console.group</code> 与<code>console.groupEnd</code>，可以将这种分类管理的思想发挥到极致。这适合于在开发一个规模很大模块很多很复杂的Web APP时，将各自的log信息分组到以各自命名空间为名称的组里面。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.group(<span class="string">"app.foo"</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">"来自foo模块的信息 blah blah blah..."</span>);</div><div class="line"><span class="built_in">console</span>.groupEnd();</div><div class="line"><span class="built_in">console</span>.group(<span class="string">"app.bar"</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">"来自foo模块的信息 blah blah blah..."</span>);</div><div class="line"><span class="built_in">console</span>.groupEnd();</div></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.group(<span class="string">"app.foo"</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">"来自foo模块的信息 blah blah blah..."</span>);</div><div class="line"><span class="built_in">console</span>.groupEnd();</div><div class="line"><span class="built_in">console</span>.group(<span class="string">"app.bar"</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">"来自bar模块的信息 blah blah blah..."</span>);</div><div class="line"><span class="built_in">console</span>.groupEnd();</div></pre></td></tr></table></figure>
 
 <p><img src="2.jpg" alt=""></p>
 <p>而关于<code>console.log</code>，早已被玩儿坏了。一切都源于Chrome提供了这么一个API：第一个参数可以包含一些格式化的指令比如<code>%c</code>。</p>
@@ -256,7 +256,7 @@ Bug无处遁形「Console大法好」">
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/" data-id="co7fffrkikwu8y5x" class="article-share-link">Share</a>
+      <a data-url="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/" data-id="bnny5rb3rt7vcat1" class="article-share-link">Share</a>
       
         <a href="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/#disqus_thread" class="article-comment-link">Comments</a>
       
