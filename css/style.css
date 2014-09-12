@@ -420,6 +420,10 @@ body {
   font-weight: 300;
   letter-spacing: 1px;
 }
+.main-nav-link:hover,
+.main-nav-link:focus {
+  border-top: 2px solid #b2050f;
+}
 @media screen and (max-width: 479px) {
   .main-nav-link {
     display: none;
