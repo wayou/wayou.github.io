@@ -3,17 +3,23 @@
 <head>
   <meta charset="utf-8">
   
-  <title>&lt;/&gt;</title>
+  <title>利用HTML5 的Datalist 元素实现输入提示 | &lt;/&gt;</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="</>">
-<meta property="og:url" content="http://wayou.github.io/">
+  <meta name="description" content="HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。
+今天看到datalist 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的autocomplete「自动补全，但似乎自动提示更贴切一些」功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用HTML5 的Datalist 元素实现输入提示">
+<meta property="og:url" content="http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/">
 <meta property="og:site_name" content="</>">
-<meta property="og:description">
+<meta property="og:description" content="HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。
+今天看到datalist 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的autocomplete「自动补全，但似乎自动提示更贴切一些」功能。">
+<meta property="og:image" content="datalist1.gif">
+<meta property="og:image" content="datalist2.gif">
+<meta property="og:image" content="caniuse_datalist.jpg">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="</>">
-<meta name="twitter:description">
+<meta name="twitter:title" content="利用HTML5 的Datalist 元素实现输入提示">
+<meta name="twitter:description" content="HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。
+今天看到datalist 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的autocomplete「自动补全，但似乎自动提示更贴切一些」功能。">
 
   
     <link rel="alternative" href="/atom.xml" title="&lt;/&gt;" type="application/atom+xml">
@@ -75,9 +81,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-autocomplete-with-html5-datalist" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-autocomplete-with-html5-datalist" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/09/14/autocomplete-with-html5-datalist/" class="article-date">
   <time datetime="2014-09-14T06:23:54.000Z" itemprop="datePublished">2014 Sep 14 14:23:54</time>
@@ -93,8 +97,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/14/autocomplete-with-html5-datalist/">利用HTML5 的Datalist 元素实现输入提示</a>
+    <h1 class="article-title" itemprop="name">
+      利用HTML5 的Datalist 元素实现输入提示
     </h1>
   
 
@@ -104,12 +108,26 @@
       
         <p>HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。</p>
 <p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
+<a id="more"></a>
 
-        
-          <p class="article-more-link">
-            <a href="/2014/09/14/autocomplete-with-html5-datalist/#more">More...</a>
-          </p>
-        
+<p>具体来说，页面上的<code>input</code>还是原来的<code>input</code>，只是在它的下面定义一下新的<code>datalist</code>,并在其中填充触发提示的文本。一个大概的例子大概是像下面这样：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">你最喜欢的浏览器是： <span class="tag">&lt;<span class="title">input</span> <span class="attribute">list</span>=<span class="value">"browsers"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">datalist</span> <span class="attribute">id</span>=<span class="value">"browsers"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Internet Explorer"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Firefox"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Chrome"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Opera"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Safari"</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">datalist</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>最后出来的效果又差不多是这样的：<br><img src="datalist1.gif" alt="HTML5 datalist demo"></p>
+<p>在线查看效果请点击<a href="http://sandbox.runjs.cn/show/lvgpes2k" target="_blank" rel="external">这里</a></p>
+<p>没什么特别之处，简单得发指~</p>
+<p>但相信大家在看了效果后跟我一样，发现了一个不足之处，在<code>input</code>右边会有向下的箭头，这让它看起来就像一个<code>dropdown</code> 或者<code>select</code> 「下拉框」，解决办法是多加两句CSS代码来将它隐藏，但此方法只是针对<code>webkit</code>内核的浏览器进行的优化：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">input</span><span class="pseudo">::-webkit-calendar-picker-indicator</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">display</span>:<span class="value"> none</span></span>;</div><div class="line">    <span class="rule"><span class="attribute">-webkit-appearance</span>:<span class="value"> none</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure>
+
+<p>这样之后出来的效果差不多成了这样：<br><img src="datalist2.gif" alt="HTML5 datalist 去掉箭头的版本"></p>
+<h2 id="浏览器兼容性">浏览器兼容性</h2>
+<p>下面的数据来自<a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">caniuse</a>。<br><img src="caniuse_datalist.jpg" alt="Datalist 元素兼容性"><br>可以看出，遥遥领先的依然是风采依旧的Chrome，对该元素的支持全线飘绿；<br>同时Firefox也是毫不示弱，紧随版本帝之后;<br>而其他浏览器情况则各不相同，正所谓幸福的人都相似，不幸的人各有不幸。<br>Opera在边缘浏览器中表现强劲，绿得很耀眼；<br>值得注意的是，在这场不算较量的较量中，苹果太子Safari则是黑马般拿到了垫底的位置，全线飘红。这直接一举打破IE在主流浏览器的各种评测中常年垫底的记录。<br>而IE虽然摆脱了末位的阴影，但即使是最新的IE11也只是对<code>Datalist</code>元素进行了部分支持，所以要与各强劲对手比肩而受到前端开发者的青睐还有些工作要做。但留给IE翻盘的时间已经不多了，正如留给中国队的时间一样~</p>
+<h1 id="REFERENCE">REFERENCE</h1>
+<ul>
+<li><a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">Can I Use Datalist element</a></li>
+<li><a href="http://www.codelator.com/blog/2014/sep/how-to-create-autocomplete-textbox-using-datalist-in-html5.html" target="_blank" rel="external">How to create Autocomplete Textbox using Datalist in HTML5</a></li>
+</ul>
+
       
     </div>
     <footer class="article-footer">
@@ -123,164 +141,26 @@
     </footer>
   </div>
   
-</article>
-
-
-  
-    <article id="post-chrome-console-tips-and-tricks" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/09/10/chrome-console-tips-and-tricks/" class="article-date">
-  <time datetime="2014-09-10T13:20:04.000Z" itemprop="datePublished">2014 Sep 10 21:20:04</time>
-</a>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/tech/">tech</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/10/chrome-console-tips-and-tricks/">Chrome 控制台不完全指南</a>
-    </h1>
   
+    <a href="/2014/09/10/chrome-console-tips-and-tricks/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Chrome 控制台不完全指南</div>
+    </a>
+  
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Chrome的开发者工具已经强大到没朋友的地步了，特别是其功能丰富界面友好的console，使用得当可以有如下功效：</p>
-<ul>
-<li>更高「逼格」更快「开发调试」更强「进阶级的Frontender」</li>
-<li>Bug无处遁形「Console大法好」</li>
-</ul>
-
-        
-          <p class="article-more-link">
-            <a href="/2014/09/10/chrome-console-tips-and-tricks/#more">More...</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/" data-id="zvuat4edcbhld9x3" class="article-share-link">Share</a>
-      
-        <a href="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/chrome/">chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/console/">console</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dev-tools/">dev-tools</a></li></ul>
-
-    </footer>
-  </div>
   
 </article>
 
 
-  
-    <article id="post-how-to-customize-sublime-icon" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/08/31/how-to-customize-sublime-icon/" class="article-date">
-  <time datetime="2014-08-31T03:56:00.000Z" itemprop="datePublished">2014 Aug 31 11:56:00</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/瞎折腾/">瞎折腾</a>
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
-
-  </div>
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/31/how-to-customize-sublime-icon/">自定义Sublime Text的图标</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><a href="http://www.sublimetext.com/3" target="_blank" rel="external">sublime text</a>很赞，windows上最接近mac逼格的轻量编辑器，对于我这样比较喜欢格调的人来说，简直不二之选啊。</p>
-<p>美中不足的是，看久了觉得它的图标似乎不是很上心。现在都流行扁平化了而它还停留在拟物的阶段，拟物也就算了还带一点立体感把整个平面内顷，于是乎想自己换个图标，换个好心情。</p>
-<p>如果你有同样的审美那我们继续。</p>
-
-        
-          <p class="article-more-link">
-            <a href="/2014/08/31/how-to-customize-sublime-icon/#more">More...</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/" data-id="s4kkiiruzwcezh50" class="article-share-link">Share</a>
-      
-        <a href="http://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/icon/">icon</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sublimetext/">sublimetext</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技巧/">技巧</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/自定义/">自定义</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-if-programming-languages-were-weapons" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/08/30/if-programming-languages-were-weapons/" class="article-date">
-  <time datetime="2014-08-30T13:41:49.000Z" itemprop="datePublished">2014 Aug 30 21:41:49</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/translation/">translation</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/if-programming-languages-were-weapons/">如果把编程语言比作武器</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>来自bjorn的一篇吐槽文.</p>
-
-        
-          <p class="article-more-link">
-            <a href="/2014/08/30/if-programming-languages-were-weapons/#more">More...</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://wayou.github.io/2014/08/30/if-programming-languages-were-weapons/" data-id="g76aylhqkq1uj5qa" class="article-share-link">Share</a>
-      
-        <a href="http://wayou.github.io/2014/08/30/if-programming-languages-were-weapons/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/吐槽/">吐槽</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编程语言/">编程语言</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-  
+</section>
 </section>
         
           <aside id="sidebar">
@@ -365,11 +245,13 @@
 <script>
   var disqus_shortname = 'wayou';
   
+  var disqus_url = 'http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/';
+  
   (function(){
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//go.disqus.com/count.js';
+    dsq.src = '//go.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
   })();
 </script>
