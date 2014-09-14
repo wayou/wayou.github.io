@@ -110,7 +110,7 @@
 <p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
 <a id="more"></a>
 
-<p>具体来说，页面上的<code>input</code>还是原来的<code>input</code>，只是在它的下面定义一下新的<code>datalist</code>,并在其中填充触发提示的文本。一个大概的例子大概是像下面这样：</p>
+<p>具体来说，页面上的<code>input</code>还是原来的<code>input</code>，只是在它的下面定义一下新的<code>datalist</code>在其中填充触发提示的文本,同时在该<code>input</code>元素上指定<code>list</code>属性指向这个<code>list</code>。一个大概的例子大概是像下面这样：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">你最喜欢的浏览器是： <span class="tag">&lt;<span class="title">input</span> <span class="attribute">list</span>=<span class="value">"browsers"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">datalist</span> <span class="attribute">id</span>=<span class="value">"browsers"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Internet Explorer"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Firefox"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Chrome"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Opera"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Safari"</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">datalist</span>&gt;</span></div></pre></td></tr></table></figure>
 
 <p>最后出来的效果又差不多是这样的：<br><img src="datalist1.gif" alt="HTML5 datalist demo"></p>
@@ -131,7 +131,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/" data-id="ac5nks455uubwpoc" class="article-share-link">Share</a>
+      <a data-url="http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/" data-id="iz72773elbgayy13" class="article-share-link">Share</a>
       
         <a href="http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/#disqus_thread" class="article-comment-link">Comments</a>
       
