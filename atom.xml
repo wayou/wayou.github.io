@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[刘哇勇的部落格]]></title>
+  
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://wayou.github.io/"/>
+  <updated>2014-10-20T13:25:45.375Z</updated>
+  <id>http://wayou.github.io/</id>
+  
+  <author>
+    <name><![CDATA[wayou]]></name>
+    <email><![CDATA[liuwayong@gmail.com]]></email>
+  </author>
+  
+  <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[如果把编程语言当成座驾]]></title>
+    <link href="http://wayou.github.io/2014/09/23/if-programming-languages-were-vehicles/"/>
+    <id>http://wayou.github.io/2014/09/23/if-programming-languages-were-vehicles/</id>
+    <published>2014-09-23T10:20:04.000Z</published>
+    <updated>2014-09-25T13:41:07.000Z</updated>
+    <content type="html"><![CDATA[<p>另外一篇关于编程语言的吐槽文章<br><a id="more"></a></p>
+<p><img src="c.jpg" alt="C"><br>C绝对是万精油般的大吉普，紧凑，强健，没有去不了的地方，几乎可以覆盖你所有无理的需求。</p>
+<p><img src="cplus.jpg" alt="C++"><br>C++就是C的一个翻版，但无论是尺寸还是性能都成了2倍，火力超强的装甲车，自由地驰骋于战场。但如果你是个毫无经验的半吊子的话，估计是开不动的，并且还有可能把自己给弄残！</p>
+<p><img src="cplus.jpg" alt="C#"><br>C#将C++的狂野不羁收敛，让它更安全易用，将军用车辆改造成了民用的吉普。它外观似乎并不那么霸气但依然是很强大的，前提是你保持在加油站附近并且附近都是一样友好的居民。需要知道的是，一直有股黑暗势力萦绕在它周围试图颠覆它。</p>
+<p><img src="java.jpg" alt="java"><br>JAVA也算C的一个翻版，但他完成任务的方式更笨拙且效率低下，还会排放一些恼人的尾气，开起来感觉像个乡下人。</p>
+<p><img src="python.jpg" alt="Python"><br>Python能够很好地满足你每日出行的需求，驾驶方便，功能齐全，虽然不是很豪华大气，但总比走路强。</p>
+<p><img src="perl.jpg" alt="Perl"><br>曾经Perl也和Python差不多的，但现今只有大胡子怪叔叔会用它了。</p>
+<p><img src="lisp.jpg" alt="LISP"><br>LISP可谓得天地之灵气，集日月之精华，必将永世长存。它会让强者更强，但只有专业运动员和偏执狂才能驾驭它。</p>
+<p><img src="haskell.jpg" alt="Haskell"><br>如果说LISP已经够潮了，那Haskell还要更潮一点！</p>
+<p><img src="php.jpg" alt="PHP"><br>PHP说来很复杂，你可能只有在半路抛锚了才意识到：啊~原来我开的是PHP。当你试图再次打火启动时，看起来又重新上路了，但如果节奏或油门踩得不对，你和车上的乘客有引火上身的危险。</p>
+<p><img src="go.jpg" alt="Go"><br>Go是款华丽丽的玩具车，呆瓜们总觉得它就是未来。但其实只有在符合它的码率的情况下，这车才有点实际用途。毕竟不能把玩具车开得跟赛车一样。</p>
+<p><img src="cobol.png" alt="COBOL"><br>COBOL在那个时代似乎是个不错的想法。</p>
+<p><img src="matlab.jpg" alt="MATLAB"><br>MATLAB是科学家用来搜索外太空用的卫星！</p>
+<p><img src="r.jpg" alt="R"><br>比较屌丝的科学家买不起MATLAB的时候就会乘着R牌气球去搜索外太空。</p>
+<p><img src="ocaml.jpg" alt="OCaml"><br>OCaml是上图那种不规则物体，欧洲人一般很钟爱。</p>
+<p><img src="js.jpg" alt="JavaScript"><br>那，这就是JavaScript。即使你给高尔夫球代步车装上赛车轮胎，它还是高尔夫代步车。</p>
+<p>source:<a href="http://s3.crashworks.org.s3-website-us-east-1.amazonaws.com/if-programming-languages-were-vehicles/" target="_blank" rel="external">If programming languages were vehicles</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>另外一篇关于编程语言的吐槽文章<br>]]>
+    
+    </summary>
+    
+      <category term="编程语言" scheme="http://wayou.github.io/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"/>
+    
+      <category term="吐槽" scheme="http://wayou.github.io/tags/%E5%90%90%E6%A7%BD/"/>
+    
+      <category term="translation" scheme="http://wayou.github.io/categories/translation/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[利用HTML5 的Datalist 元素实现输入提示]]></title>
+    <link href="http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/"/>
+    <id>http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/</id>
+    <published>2014-09-14T06:23:54.000Z</published>
+    <updated>2014-09-23T10:19:14.000Z</updated>
+    <content type="html"><![CDATA[<p>HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。</p>
+<p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
+<a id="more"></a>
+
+<p>具体来说，页面上的<code>input</code>还是原来的<code>input</code>，只是在它的下面定义一下新的<code>datalist</code>在其中填充触发提示的文本,同时在该<code>input</code>元素上指定<code>list</code>属性指向这个<code>list</code>。一个大概的例子大概是像下面这样：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">你最喜欢的浏览器是： <span class="tag">&lt;<span class="title">input</span> <span class="attribute">list</span>=<span class="value">"browsers"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">datalist</span> <span class="attribute">id</span>=<span class="value">"browsers"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Internet Explorer"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Firefox"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Chrome"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Opera"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Safari"</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">datalist</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>最后出来的效果又差不多是这样的：<br><img src="datalist1.gif" alt="HTML5 datalist demo"></p>
+<p>在线查看效果请点击<a href="http://sandbox.runjs.cn/show/lvgpes2k" target="_blank" rel="external">这里</a></p>
+<p>没什么特别之处，简单得发指~</p>
+<p>但相信大家在看了效果后跟我一样，发现了一个不足之处，在<code>input</code>右边会有向下的箭头，这让它看起来就像一个<code>dropdown</code> 或者<code>select</code> 「下拉框」，解决办法是多加两句CSS代码来将它隐藏，但此方法只是针对<code>webkit</code>内核的浏览器进行的优化：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">input</span><span class="pseudo">::-webkit-calendar-picker-indicator</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">display</span>:<span class="value"> none</span></span>;</div><div class="line">    <span class="rule"><span class="attribute">-webkit-appearance</span>:<span class="value"> none</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure>
+
+<p>这样之后出来的效果差不多成了这样：<br><img src="datalist2.gif" alt="HTML5 datalist 去掉箭头的版本"></p>
+<h2 id="浏览器兼容性">浏览器兼容性</h2>
+<p>下面的数据来自<a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">caniuse</a>。<br><img src="caniuse_datalist.jpg" alt="Datalist 元素兼容性"><br>可以看出，遥遥领先的依然是风采依旧的Chrome，对该元素的支持全线飘绿；<br>同时Firefox也是毫不示弱，紧随版本帝之后;<br>而其他浏览器情况则各不相同，正所谓<strong>性</strong>福的人都相似，不幸的人各有不幸。<br>Opera在边缘浏览器中表现强劲，绿得很耀眼；<br>值得注意的是，在这场不算较量的较量中，苹果太子Safari则是黑马般拿到了垫底的位置，全线飘红。这直接一举打破IE在主流浏览器的各种评测中常年垫底的记录。<br>而IE虽然摆脱了末位的阴影，但即使是最新的IE11也只是对<code>Datalist</code>元素进行了部分支持，所以要与各强劲对手比肩而受到前端开发者的青睐还有些工作要做。但留给IE翻盘的时间已经不多了，正如留给中国队的时间一样~</p>
+<h1 id="REFERENCE">REFERENCE</h1>
+<ul>
+<li><a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">Can I Use Datalist element</a></li>
+<li><a href="http://www.codelator.com/blog/2014/sep/how-to-create-autocomplete-textbox-using-datalist-in-html5.html" target="_blank" rel="external">How to create Autocomplete Textbox using Datalist in HTML5</a></li>
+</ul>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。</p>
+<p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
+]]>
+    
+    </summary>
+    
+      <category term="HTML5" scheme="http://wayou.github.io/tags/HTML5/"/>
+    
+      <category term="Datalist" scheme="http://wayou.github.io/tags/Datalist/"/>
+    
+      <category term="Autocomplete" scheme="http://wayou.github.io/tags/Autocomplete/"/>
+    
+      <category term="tech" scheme="http://wayou.github.io/categories/tech/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Chrome 控制台不完全指南]]></title>
+    <link href="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/"/>
+    <id>http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/</id>
+    <published>2014-09-10T13:20:04.000Z</published>
+    <updated>2014-09-23T10:19:14.000Z</updated>
+    <content type="html"><![CDATA[<p>Chrome的开发者工具已经强大到没朋友的地步了，特别是其功能丰富界面友好的console，使用得当可以有如下功效：</p>
+<ul>
+<li>更高「逼格」更快「开发调试」更强「进阶级的Frontender」</li>
+<li>Bug无处遁形「Console大法好」</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="console-log">console.log</h2>
+<p>大家都会用log，但鲜有人很好地利用<code>console.error</code> , <code>console.warn</code> 等将输出到控制台的信息进行分类整理。<br>他们功能区别不大，意义在于将输出到控制台的信息进行归类，或者说让它们更语义化。<br>各个所代表的语义如下：</p>
+<ul>
+<li><code>console.log</code>：普通信息</li>
+<li><code>console.info</code>：提示类信息</li>
+<li><code>console.error</code>：错误信息</li>
+<li><code>console.warn</code>：警示信息</li>
+</ul>
+<p>当合理使用上述log方法后，可以很方便地在控制台选择查看特定类型的信息。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.log(<span class="string">'一颗红心向太阳'</span>,<span class="string">'吼吼~'</span>);</div><div class="line"><span class="built_in">console</span>.info(<span class="string">'楼上药不能停！'</span>);</div><div class="line"><span class="built_in">console</span>.warn(<span class="string">'楼上嘴太贱！'</span>);</div><div class="line"><span class="built_in">console</span>.error(<span class="string">'楼上关你毛事？'</span>);</div></pre></td></tr></table></figure>
+
+<p><img src="1.jpg" alt=""></p>
+<p>如果再配合<code>console.group</code> 与<code>console.groupEnd</code>，可以将这种分类管理的思想发挥到极致。这适合于在开发一个规模很大模块很多很复杂的Web APP时，将各自的log信息分组到以各自命名空间为名称的组里面。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.group(<span class="string">"app.foo"</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">"来自foo模块的信息 blah blah blah..."</span>);</div><div class="line"><span class="built_in">console</span>.groupEnd();</div><div class="line"><span class="built_in">console</span>.group(<span class="string">"app.bar"</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">"来自bar模块的信息 blah blah blah..."</span>);</div><div class="line"><span class="built_in">console</span>.groupEnd();</div></pre></td></tr></table></figure>
+
+<p><img src="2.jpg" alt=""></p>
+<p>而关于<code>console.log</code>，早已被玩儿坏了。一切都源于Chrome提供了这么一个API：第一个参数可以包含一些格式化的指令比如<code>%c</code>。</p>
+<p>比如给<code>hello world</code> 做件漂亮的嫁衣再拉出来见人：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.log(<span class="string">'%chello world'</span>,<span class="string">'font-size:25px;color:red;'</span>);</div></pre></td></tr></table></figure>
+
+<p><img src="3.jpg" alt=""></p>
+<p>如果你觉得不够过瘾，那就把你能写出来的最华丽的CSS样式都应用上吧，比如渐变。于是你可以得到如下华丽丽的效果：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.log(<span class="string">'%chello world'</span>, <span class="string">'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:5em;'</span>);</div></pre></td></tr></table></figure>
+
+<p><img src="4.jpg" alt=""></p>
+<p>各种招大招的节奏啊~</p>
+<p>看着上面密集的代码不用惊慌，上面<code>console.log()</code>第二个参数全是纯CSS用来控制样式的，你不会陌生。而第一个参数里可以带用百分号开头的转义指令，如上面输出带样式的文字时使用的<code>%c</code>指令。更详细的指令参见官方API文档的<a href="https://developer.chrome.com/devtools/docs/console-api#consolelogobject-object" target="_blank" rel="external">这个表格</a>。</p>
+<p>如果还不够过瘾，那咱们来log一些图片吧，甚至。。。动图？<br>对，你得先有图，我们拿<a href="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/rabbit.gif" target="_blank" rel="external">这张图</a>为例。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.log(<span class="string">"%c"</span>, <span class="string">"padding:50px 300px;line-height:120px;background:url('http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/rabbit.gif') no-repeat;"</span>);</div></pre></td></tr></table></figure>
+
+<p><img src="5.gif" alt=""></p>
+<p>看着上面摇摆的豆比兔是不是有种抽它一脸的冲动。</p>
+<p>除此，<code>console.table</code> 更是直接以表格的形式将数据输出，不能赞得太多！<br>借用之前写过的<a href="http://www.cnblogs.com/Wayou/p/things_you_dont_know_about_frontend.html" target="_blank" rel="external">一篇博文</a>里的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> data = [{<span class="string">'品名'</span>: <span class="string">'杜雷斯'</span>, <span class="string">'数量'</span>: <span class="number">4</span>}, {<span class="string">'品名'</span>: <span class="string">'冈本'</span>, <span class="string">'数量'</span>: <span class="number">3</span>}];</div><div class="line"><span class="built_in">console</span>.table(data);</div></pre></td></tr></table></figure>
+
+<p><img src="6.jpg" alt=""></p>
+<p>另外，<code>console.log()</code> 接收不定参数，参数间用逗号分隔，最终会输出会将它们以空白字符连接。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.log(<span class="string">'%c你好'</span>,<span class="string">'color:red;'</span>,<span class="string">'小明'</span>,<span class="string">'你知道小红被妈妈打了么'</span>);</div></pre></td></tr></table></figure>
+
+<p><img src="7.jpg" alt=""></p>
+<h2 id="console-assert">console.assert</h2>
+<p>当你想代码满足某些条件时才输出信息到控制台，那么你大可不必写<code>if</code>或者三元表达式来达到目的，<code>cosole.assert</code>便是这样场景下一种很好的工具，它会先对传入的表达式进行断言，只有表达式为假时才输出相应信息到控制台。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> isDebug=<span class="literal">false</span>;</div><div class="line"><span class="built_in">console</span>.assert(isDebug,<span class="string">'开发中的log信息。。。'</span>);</div></pre></td></tr></table></figure>
+
+<p><img src="8.jpg" alt=""></p>
+<h2 id="console-count">console.count</h2>
+<p>除了条件输出的场景，还有常见的场景是计数。<br>当你想统计某段代码执行了多少次时也大可不必自己去写相关逻辑，内置的<code>console.count</code>可以很地胜任这样的任务。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span><span class="params">()</span></span>{</div><div class="line">	<span class="comment">//其他函数逻辑blah blah。。。</span></div><div class="line">	<span class="built_in">console</span>.count(<span class="string">'foo 被执行的次数：'</span>);</div><div class="line">}</div><div class="line">foo();</div><div class="line">foo();</div><div class="line">foo();</div></pre></td></tr></table></figure>
+
+<p><img src="9.jpg" alt=""></p>
+<h2 id="console-dir">console.dir</h2>
+<p>将DOM结点以JavaScript对象的形式输出到控制台<br>而<code>console.log</code>是直接将该DOM结点以DOM树的结构进行输出，与在元素审查时看到的结构是一致的。不同的展现形式，同样的优雅，各种体位任君选择反正就是方便与体贴。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.dir(<span class="built_in">document</span>.body);</div><div class="line"><span class="built_in">console</span>.log(<span class="built_in">document</span>.body);</div></pre></td></tr></table></figure>
+
+<p><img src="10.jpg" alt=""></p>
+<h2 id="console-time_&amp;_console-timeEnd">console.time &amp; console.timeEnd</h2>
+<p>输出一些调试信息是控制台最常用的功能，当然，它的功能远不止于此。当做一些性能测试时，同样可以在这里很方便地进行。<br>比如需要考量一段代码执行的耗时情况时，可以用<code>console.time</code>与 <code>console.timeEnd</code>来做此事。</p>
+<p>这里借用官方文档的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.time(<span class="string">"Array initialize"</span>);</div><div class="line"><span class="keyword">var</span> array= <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1000000</span>);</div><div class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = array.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) {</div><div class="line">    array[i] = <span class="keyword">new</span> <span class="built_in">Object</span>();</div><div class="line">};</div><div class="line"><span class="built_in">console</span>.timeEnd(<span class="string">"Array initialize"</span>);</div></pre></td></tr></table></figure>
+
+<p><img src="11.jpg" alt=""></p>
+<p>当然，我们也可以选择自己写代码来计时：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> start=<span class="keyword">new</span> <span class="built_in">Date</span>().getTime();</div><div class="line"><span class="keyword">var</span> array= <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1000000</span>);</div><div class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = array.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) {</div><div class="line">    array[i] = <span class="keyword">new</span> <span class="built_in">Object</span>();</div><div class="line">};</div><div class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().getTime()-start);</div></pre></td></tr></table></figure>
+
+<p><img src="12.jpg" alt=""></p>
+<p>相信你也看到了，用内置的<code>console.time</code>是多么地方便，省去了自己写代码来计算的工作量。另外值得一提的是，通过调用内置的<code>console.time</code>得到的结果要比自己手动计算的时间差更精确可靠。</p>
+<h2 id="console-profile_&amp;_console-timeLime">console.profile &amp; console.timeLime</h2>
+<p>当想要查看CPU使用相关的信息时，可以使用<code>console.profile</code>配合 <code>console.profileEnd</code>来完成这个需求。<br>这一功能可以通过UI界面来完成，Chrome 开发者工具里面有个tab便是<code>Profile</code>。</p>
+<p>与此类似的功能还有<code>console.timeLine</code>配合 <code>console.timeLineEnd</code>,它的作用是开始记录一段时间轴，同样可以通过Chrome开发者工具里的<code>Timeline</code> 标签来进行相应操作。</p>
+<p>所以在我看来这两个方法有点鸡肋，因为都可以通过操作界面来完成。但至少他提供了一种命令行方式的交互，还是多了种姿势供选择吧。</p>
+<h2 id="console-trace">console.trace</h2>
+<p>堆栈跟踪相关的调试可以使用<code>console.trace</code>。这个同样可以通过UI界面完成。当代码被打断点后，可以在<code>Call Stack</code>面板中查看相关堆栈信息。</p>
+<p>上面介绍的都是挂在<code>window.console</code>这个对象下面的方法，统称为<a href="https://developer.chrome.com/devtools/docs/console-api" target="_blank" rel="external">Console API</a>，接下来的这些方法确切地说应该叫命令，是Chrome内置提供，在控制台中使用的，他们统称为<a href="https://developer.chrome.com/devtools/docs/commandline-api" target="_blank" rel="external">Command Line API</a>。</p>
+<h2 id="$">$</h2>
+<p>似乎美刀总是被程序员及各种编程语言所青睐「你看看PHP代码就知道PHPer有多爱钱了」，在Chrome的控制台里，$用处还真是蛮多且方便的。<br><code>$_</code>命令返回最近一次表达式执行的结果，功能跟按向上的方向键再回车是一样的，但它可以做为一个变量使用在你接下来的表达式中：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="number">2</span>+<span class="number">2</span><span class="comment">//回车，再</span></div><div class="line">$_+<span class="number">1</span><span class="comment">//回车得5</span></div></pre></td></tr></table></figure>
+
+<p><img src="13.jpg" alt=""></p>
+<p>上面的<code>$_</code>需要领悟其奥义才能使用得当，而$0~$4则代表了最近5个你选择过的DOM节点。<br>什么意思？在页面右击选择<code>审查元素</code>，然后在弹出来的DOM结点树上面随便点选，这些被点过的节点会被记录下来，而<code>$0</code>会返回最近一次点选的DOM结点，以此类推，$1返回的是上上次点选的DOM节点，最多保存了5个，如果不够5个，则返回<code>undefined</code>。<br><img src="$0.gif" alt=""></p>
+<p>另外值得一赞的是，Chrome 控制台中原生支持类jQuery的选择器，也就是说你可以用<code>$</code>加上熟悉的css选择器来选择DOM节点，多么滴熟悉。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$(<span class="string">'body'</span>)</div></pre></td></tr></table></figure>
+
+<p><img src="14.jpg" alt=""></p>
+<p>$(selector)返回的是满足选择条件的首个DOM元素。<br>剥去她伪善的外衣，其实<code>$(selector)</code>是原生JavaScript <code>document.querySelector()</code> 的封装。<br>同时另一个命令<code>$$(selector)</code>返回的是所有满足选择条件的元素的一个集合，是对<code>document.querySelectorAll()</code> 的封装。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$$(<span class="string">'div'</span>)</div></pre></td></tr></table></figure>
+
+<p><img src="15.jpg" alt=""></p>
+<h2 id="copy">copy</h2>
+<p>通过此命令可以将在控制台获取到的内容复制到剪贴板。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">copy(<span class="built_in">document</span>.body)</div></pre></td></tr></table></figure>
+
+<p>然后你就可以到处粘了：</p>
+<p><img src="16.jpg" alt=""></p>
+<p>看完此条命令行，机智的你是不是跟脑洞全开的我一样，冒出了这样一个想法：那就是通过这个命令可以在JavaScript里进行复制操作从而不用依赖Flash插件了。<br>But现实是残酷的，如之前所述的，这里的控制台命令只能在控制台中环境中执行，因为他不依附于任何全局变量比如<code>window</code>，所以其实在JS代码里是访问不了这个<code>copy</code>方法的，所以从代码层面来调用复制功能也就无从谈起。但愿有天浏览器会提供相应的JS实现吧~</p>
+<h2 id="keys_&amp;_values">keys &amp; values</h2>
+<p>这是一对基友。前者返回传入对象所有属性名组成的数据，后者返回所有属性值组成的数组。具体请看下面的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> tboy={name:<span class="string">'wayou'</span>,gender:<span class="string">'unknown'</span>,hobby:<span class="string">'opposite to the gender'</span>};</div><div class="line">keys(tboy);</div><div class="line">values(tboy);</div></pre></td></tr></table></figure>
+
+<p><img src="17.jpg" alt=""></p>
+<h2 id="monitor_&amp;_unmonitor">monitor &amp; unmonitor</h2>
+<p>monitor(function)，它接收一个函数名作为参数，比如<code>function a</code>,每次<code>a</code>被执行了，都会在控制台输出一条信息，里面包含了函数的名称<code>a</code>及执行时所传入的参数。</p>
+<p>而unmonitor(function)便是用来停止这一监听。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">sayHello</span><span class="params">(name)</span></span>{</div><div class="line">	alert(<span class="string">'hello,'</span>+name);</div><div class="line">}</div><div class="line">monitor(sayHello);</div><div class="line">sayHello(<span class="string">'wayou'</span>);</div><div class="line">unmonitor(sayHello);</div><div class="line">sayHello(<span class="string">'wayou'</span>);</div></pre></td></tr></table></figure>
+
+<p><img src="18.jpg" alt=""></p>
+<h2 id="debug_&amp;_undebug">debug &amp; undebug</h2>
+<p>debug同样也是接收一个函数名作为参数。当该函数执行时自动断下来以供调试，类似于在该函数的入口处打了个断点，可以通过debugger来做到，同时也可以通过在Chrome开发者工具里找到相应源码然后手动打断点。<br>而<code>undebug</code> 则是解除该断点。</p>
+<p>而其他还有好些命令则让人没有说的欲望，因为好些都可以通过Chrome开发者工具的UI界面来操作并且比用在控制台输入要方便。</p>
+<h2 id="REFERENCE">REFERENCE</h2>
+<ul>
+<li><a href="https://plus.google.com/+AddyOsmani/posts/TanDFKEN9Kn" target="_blank" rel="external">Styled console logging in the Chrome DevTools (Canary)</a></li>
+<li><a href="https://developer.chrome.com/devtools/docs/console-api" target="_blank" rel="external">Chrome Console API</a></li>
+<li><a href="https://developer.chrome.com/devtools/docs/commandline-api" target="_blank" rel="external">Chrome Console Command Line API</a></li>
+</ul>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Chrome的开发者工具已经强大到没朋友的地步了，特别是其功能丰富界面友好的console，使用得当可以有如下功效：</p>
+<ul>
+<li>更高「逼格」更快「开发调试」更强「进阶级的Frontender」</li>
+<li>Bug无处遁形「Console大法好」</li>
+</ul>
+]]>
+    
+    </summary>
+    
+      <category term="chrome" scheme="http://wayou.github.io/tags/chrome/"/>
+    
+      <category term="console" scheme="http://wayou.github.io/tags/console/"/>
+    
+      <category term="dev-tools" scheme="http://wayou.github.io/tags/dev-tools/"/>
+    
+      <category term="tech" scheme="http://wayou.github.io/categories/tech/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[自定义Sublime Text的图标]]></title>
+    <link href="http://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/"/>
+    <id>http://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/</id>
+    <published>2014-08-31T03:56:00.000Z</published>
+    <updated>2014-08-31T06:29:29.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="http://www.sublimetext.com/3" target="_blank" rel="external">sublime text</a>很赞，windows上最接近mac逼格的轻量编辑器，对于我这样比较喜欢格调的人来说，简直不二之选啊。</p>
+<p>美中不足的是，看久了觉得它的图标似乎不是很上心。现在都流行扁平化了而它还停留在拟物的阶段，拟物也就算了还带一点立体感把整个平面内顷，于是乎想自己换个图标，换个好心情。</p>
+<p>如果你有同样的审美那我们继续。</p>
+<a id="more"></a>
+
+<h2 id="step1-_选择喜欢的图片">step1. 选择喜欢的图片</h2>
+<p>首先你需要选择一个中意的图片做为新的图标，这里拿我喜欢的章鱼猫为例。<br><img src="octocat.png" alt="octocat"></p>
+<p>当然你不喜欢章鱼猫，随便<a href="https://www.google.com/search?q=octocat+icon&amp;newwindow=1&amp;safe=off&amp;tbm=isch&amp;imgil=wqxX4jp591NZZM%253A%253Beb8wapPIz1AUTM%253Bhttps%25253A%25252F%25252Fsupport.wombat.co%25252Fhc%25252Fen-us%25252Farticles%25252F202245250-Shipstation-Integration-&amp;source=iu&amp;fir=wqxX4jp591NZZM%253A%252Ceb8wapPIz1AUTM%252C_&amp;usg=__2FX1-Ux3h7wdDssc2u6t_4Ba7Nc%3D&amp;sa=X&amp;ei=EJ8CVI32HNjd8AXYp4KIAw&amp;ved=0CCsQ9QEwBQ&amp;biw=1366&amp;bih=683#newwindow=1&amp;q=sublime+text+icon&amp;safe=off&amp;tbm=isch&amp;facrc=_&amp;imgdii=_&amp;imgrc=NPM_JHMY3bmkdM%253A%3BavC4jPKJkwSy8M%3Bhttp%253A%252F%252Fwww.jonathanfontes.pt%252Fassets%252Fimg%252Flogo-sublime-3.png%3Bhttp%253A%252F%252Fwww.jonathanfontes.pt%252F%3B512%3B512" target="_blank" rel="external">谷歌一下</a>还是有很多正常的ST图标的，比如下面这些<br><img src="sublime.png" alt="sublime"></p>
+<h2 id="step2-_转为ico格式">step2. 转为ico格式</h2>
+<p>网上找的图片大多为<code>png</code>或<code>jpg</code>格式的，这里我们需要<code>ico</code>, so 需要转换一下下。<br>同样，转<code>ico</code>格式的网站也是蛮多的，比如<a href="http://www.convertico.com/" target="_blank" rel="external">这个</a>,进去后把图片上传，完了下下来后你得到的就是一个<code>.ico</code> 格式的图片啦~</p>
+<p><img src="convert_icon.png" alt="转ico格式"></p>
+<h2 id="step3-_ResEdit">step3. ResEdit</h2>
+<p><a href="http://www.resedit.net/" target="_blank" rel="external">ResEdit</a>是一个Windows下的资源编辑器，可以直接编辑<code>exe</code>文件，更改替换其中的资源，这里我们就用它来更改<code>exe</code> 程序的图标。<br>如果你手头没有，可以点击上面的链接进入官方页面选择下载。</p>
+<h2 id="step4-_用ResEdit打开SublimeText">step4. 用ResEdit打开SublimeText</h2>
+<p>将SublimeText安装目录下的<code>sublime_text.exe</code>复制一分放到比如桌面什么的。<br>运行ResEdit, <code>File-&gt;Open Project...</code>, 打开刚才复制的<code>sublime_text.exe</code>。</p>
+<p><img src="openned.png" alt="用ResEdit打开sublime_text.exe后"></p>
+<h2 id="step5-_替换图标">step5. 替换图标</h2>
+<p>打开后差不多就像上面截图一样，你会看到左边<code>Resources</code>里第一个便是<code>Icon</code>, 在这个文件夹上面右击选择<code>Add resource...-&gt;Icon</code>,如下图</p>
+<p><img src="add_resource.png" alt="添加icon资源"></p>
+<p>之后在弹出的对话框里选择<code>Create from an existing file</code></p>
+<p><img src="choose_type.png" alt="选择从现有文件创建"></p>
+<p>之后去选中我们先前准备好的<code>ico</code>文件，将其加载进来。</p>
+<p>完了<code>Icon</code>文件夹下多了我们自己的icon文件，现在把原来的图标删除，右击<code>103[English (Australia)]</code> 选择<code>Remove from project</code>。</p>
+<p><img src="remove.png" alt="删除原来的图标"></p>
+<p>最后点击<code>File-&gt;Save</code>。</p>
+<h2 id="step_final-_替换exe">step final. 替换exe</h2>
+<p>最后，将更改后的<code>sublime_text.exe</code>考回SublimeText安装目录下将原来的文件覆盖，当然，如果你以后可能想要恢复原来的图标的话，建议你覆盖前将原来的<code>sublime_text.exe</code>文件备份一下。</p>
+<p>All done!</p>
+<p><img src="final.png" alt="octocat sublimetext"></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="http://www.sublimetext.com/3" target="_blank" rel="external">sublime text</a>很赞，windows上最接近mac逼格的轻量编辑器，对于我这样比较喜欢格调的人来说，简直不二之选啊。</p>
+<p>美中不足的是，看久了觉得它的图标似乎不是很上心。现在都流行扁平化了而它还停留在拟物的阶段，拟物也就算了还带一点立体感把整个平面内顷，于是乎想自己换个图标，换个好心情。</p>
+<p>如果你有同样的审美那我们继续。</p>
+]]>
+    
+    </summary>
+    
+      <category term="技巧" scheme="http://wayou.github.io/tags/%E6%8A%80%E5%B7%A7/"/>
+    
+      <category term="sublimetext" scheme="http://wayou.github.io/tags/sublimetext/"/>
+    
+      <category term="自定义" scheme="http://wayou.github.io/tags/%E8%87%AA%E5%AE%9A%E4%B9%89/"/>
+    
+      <category term="icon" scheme="http://wayou.github.io/tags/icon/"/>
+    
+      <category term="瞎折腾" scheme="http://wayou.github.io/categories/%E7%9E%8E%E6%8A%98%E8%85%BE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[如果把编程语言比作武器]]></title>
+    <link href="http://wayou.github.io/2014/08/30/if-programming-languages-were-weapons/"/>
+    <id>http://wayou.github.io/2014/08/30/if-programming-languages-were-weapons/</id>
+    <published>2014-08-30T13:41:49.000Z</published>
+    <updated>2014-10-20T12:54:20.000Z</updated>
+    <content type="html"><![CDATA[<p>来自bjorn的一篇吐槽文.</p>
+<a id="more"></a>
+
+<p><img src="1zrekyewqiaxq_small.png" alt="M1 Garand standard issue rifle"></p>
+<p>C 是经久不衰的M1半自动来复，虽然有些时日了但稳定压倒一切。</p>
+<p><img src="nbipbvfwmqb7va_small.png" alt="c++双截棍"></p>
+<p>c++ 是威力强大的双截棍，看看李小龙使它的时候那鼓威风劲你就领悟了。但问题是掌握它需要很长段时间，而在这段时间内经常是把自己打得鼻青脸肿而不是敌人。</p>
+<p><img src="4bukyhephoe7g_small.png" alt="Perl牌鸡尾酒"></p>
+<p>Perl是莫洛托夫鸡尾酒，偶尔会很有用，但现今用的人已少。</p>
+<p><img src="qmhanlakiyccw_small.png" alt="Java冲锋枪"></p>
+<p>Java是架240发全自动冲锋枪，扫起来爽翻天，前提是弹夹没空。一旦弹夹空了会发生<code>NullPointerException</code>异常，表明这枪就报废了然后你就挂了。</p>
+<p><img src="odb1et34erhiq_small.png" alt="变异版Java冲锋枪"></p>
+<p>Scala跟Java的冲锋枪没差，唯一的不同是他的使用说明是用你看不懂的方言写成的天书，而且里面大部分都还是在瞎B。</p>
+<p><img src="tdsjt1pa55fafg_small.png" alt="奇葩双刃剑JS"></p>
+<p>JavaScript是把没有手柄的双刃剑，不多说。</p>
+<p><img src="2apco7plivhetq_small.png" alt="短枪手Go"></p>
+<p>Go 就自制的拥有<code>if err != nil</code> 检查特性的短枪，每次射完你都要执行一次以确定是不是射成功了，并且它只射Tab不射空格。</p>
+<p><img src="ngydoijonok5sg_small.png" alt="3D打印机打出来的Rust"></p>
+<p>Rust 纯属3D打印的产物，兴许哪天能派上用场。</p>
+<p><img src="zjgvgtmrhgmpw_small.png" alt="bash锤子"></p>
+<p>bash是被下了诅咒的锤子，挥起来的时候全世界都是钉子，包括你自己的手指。</p>
+<p><img src="dvtsddj7yqfna_small.png" alt="v5的Python双管枪"></p>
+<p>Python是牛逼哄哄的双管枪，但一次只射一管，另一管不知何时射。或许曾经我用过工具来把它启用。</p>
+<p><img src="ysu6nkp3etd8yw_small.png" alt="亮瞎"></p>
+<p>Ruby「红宝石」是把镶嵌了红宝石的宝剑，你使用它的原因正是那闪闪的宝石可以亮瞎众人。</p>
+<p><img src="hxqywt4ymqxqza_small.png" alt="软管"></p>
+<p>PHP像一根管子，你把一头插入汽车的排气管，然后另一头通过车窗插到车内，再接着你坐进了车里发动了引擎。</p>
+<p><img src="f38gi2tpijc7q_small.png" alt="Mathematica "></p>
+<p>Mathematica 是一个可以发射低轨地球卫星的发射器，非常的华丽与强劲，前提是你也土豪到用得起它。</p>
+<p><img src="ddmvewfmbobm0g_small.png" alt="激光步枪C#"></p>
+<p>C#是搭配在一头驴上的激光步枪，效果可想而知。但将它从这头驴上拿下来后，似乎也不能工作。</p>
+<p><img src="i7vzcuof4i61a_small.png" alt="Prolog"></p>
+<p>Prolog 是高级的AI智能武器，你告诉他怎么做做哪些，但最后他还会多生成一些终结者把制造他的人干掉。</p>
+<p><img src="w15natoim2lezq_small.png" alt="异类Lisp"></p>
+<p>Lisp 精巧如剃刀，使用者往往非常疯狂且危险。</p>
+<p>原文：<a href="http://bjorn.tipling.com/if-programming-languages-were-weapons" target="_blank" rel="external">If programming languages were weapons</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>来自bjorn的一篇吐槽文.</p>
+]]>
+    
+    </summary>
+    
+      <category term="吐槽" scheme="http://wayou.github.io/tags/%E5%90%90%E6%A7%BD/"/>
+    
+      <category term="编程语言" scheme="http://wayou.github.io/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"/>
+    
+      <category term="translation" scheme="http://wayou.github.io/categories/translation/"/>
+    
+  </entry>
+  
+</feed>
