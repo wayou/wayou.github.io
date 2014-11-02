@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://wayou.github.io/"/>
-  <updated>2014-11-02T07:48:44.418Z</updated>
+  <updated>2014-11-02T07:51:47.492Z</updated>
   <id>http://wayou.github.io/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://wayou.github.io/2014/11/02/how-to-make-a-simple-html5-canvas-game-zh/"/>
     <id>http://wayou.github.io/2014/11/02/how-to-make-a-simple-html5-canvas-game-zh/</id>
     <published>2014-11-02T05:14:34.000Z</published>
-    <updated>2014-11-02T07:14:31.000Z</updated>
+    <updated>2014-11-02T07:51:10.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>原文：<a href="http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/" target="_blank" rel="external">How to make a simple HTML5 Canvas game</a></p>
 </blockquote>
@@ -28,7 +28,7 @@
 
 <p>我们直接来看源码里的<a href="https://github.com/lostdecade/simple_canvas_game/blob/master/js/game.js" target="_blank" rel="external">game.js</a>,当然你也可以<a href="http://www.lostdecadegames.com/demos/simple_canvas_game/" target="_blank" rel="external">在线体验</a>一下游戏先。</p>
 <h1 id="游戏截图">游戏截图</h1>
-<p><img src="/asset/posts/2014-11-02-how-to-make-a-simple-html5-canvas-game-zh/screenshot.jpg" alt="游戏截图"></p>
+<p><img src="/asset/posts/how-to-make-a-simple-html5-canvas-game-zh/screenshot.jpg" alt="游戏截图"></p>
 <h1 id="创建画布">创建画布</h1>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Create the canvas</span></div><div class="line"><span class="keyword">var</span> canvas = <span class="built_in">document</span>.createElement(<span class="string">"canvas"</span>);</div><div class="line"><span class="keyword">var</span> ctx = canvas.getContext(<span class="string">"2d"</span>);</div><div class="line">canvas.width = <span class="number">512</span>;</div><div class="line">canvas.height = <span class="number">480</span>;</div><div class="line"><span class="built_in">document</span>.body.appendChild(canvas);</div></pre></td></tr></table></figure>
 
