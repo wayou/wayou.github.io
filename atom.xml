@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://wayou.github.io/"/>
-  <updated>2014-11-08T10:36:11.408Z</updated>
+  <updated>2014-11-08T10:38:04.817Z</updated>
   <id>http://wayou.github.io/</id>
   
   <author>
@@ -169,7 +169,7 @@
     <link href="http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/"/>
     <id>http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/</id>
     <published>2014-09-14T06:23:54.000Z</published>
-    <updated>2014-11-08T10:35:49.000Z</updated>
+    <updated>2014-11-08T10:37:34.000Z</updated>
     <content type="html"><![CDATA[<p>HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。</p>
 <p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
 <a id="more"></a>
