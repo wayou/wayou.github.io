@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://wayou.github.io/"/>
-  <updated>2014-11-08T09:00:37.541Z</updated>
+  <updated>2014-11-08T09:05:07.409Z</updated>
   <id>http://wayou.github.io/</id>
   
   <author>
@@ -79,7 +79,7 @@
     <link href="http://wayou.github.io/2014/11/02/how-to-make-a-simple-html5-canvas-game-zh/"/>
     <id>http://wayou.github.io/2014/11/02/how-to-make-a-simple-html5-canvas-game-zh/</id>
     <published>2014-11-02T05:14:34.000Z</published>
-    <updated>2014-11-02T07:51:10.000Z</updated>
+    <updated>2014-11-08T09:04:20.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>原文：<a href="http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/" target="_blank" rel="external">How to make a simple HTML5 Canvas game</a></p>
 </blockquote>
@@ -153,7 +153,9 @@
     
       <category term="游戏" scheme="http://wayou.github.io/tags/%E6%B8%B8%E6%88%8F/"/>
     
-      <category term="前端开发" scheme="http://wayou.github.io/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/"/>
+      <category term="前端" scheme="http://wayou.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="技术" scheme="http://wayou.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
     
   </entry>
   
@@ -162,7 +164,7 @@
     <link href="http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/"/>
     <id>http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/</id>
     <published>2014-09-14T06:23:54.000Z</published>
-    <updated>2014-11-08T07:13:51.000Z</updated>
+    <updated>2014-11-08T09:04:31.000Z</updated>
     <content type="html"><![CDATA[<p>HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。</p>
 <p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
 <a id="more"></a>
@@ -198,7 +200,9 @@
     
       <category term="Autocomplete" scheme="http://wayou.github.io/tags/Autocomplete/"/>
     
-      <category term="tech" scheme="http://wayou.github.io/categories/tech/"/>
+      <category term="前端" scheme="http://wayou.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="技术" scheme="http://wayou.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
     
   </entry>
   
@@ -207,7 +211,7 @@
     <link href="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/"/>
     <id>http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/</id>
     <published>2014-09-10T13:20:04.000Z</published>
-    <updated>2014-11-08T07:14:56.000Z</updated>
+    <updated>2014-11-08T09:04:48.000Z</updated>
     <content type="html"><![CDATA[<p>Chrome的开发者工具已经强大到没朋友的地步了，特别是其功能丰富界面友好的console，使用得当可以有如下功效：</p>
 <ul>
 <li>更高「逼格」更快「开发调试」更强「进阶级的Frontender」</li>
@@ -346,7 +350,9 @@
     
       <category term="dev-tools" scheme="http://wayou.github.io/tags/dev-tools/"/>
     
-      <category term="tech" scheme="http://wayou.github.io/categories/tech/"/>
+      <category term="浏览器" scheme="http://wayou.github.io/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+      <category term="技术" scheme="http://wayou.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
     
   </entry>
   
@@ -355,7 +361,7 @@
     <link href="http://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/"/>
     <id>http://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/</id>
     <published>2014-08-31T03:56:00.000Z</published>
-    <updated>2014-11-08T07:12:50.000Z</updated>
+    <updated>2014-11-08T09:04:54.000Z</updated>
     <content type="html"><![CDATA[<p><a href="http://www.sublimetext.com/3" target="_blank" rel="external">sublime text</a>很赞，windows上最接近mac逼格的轻量编辑器，对于我这样比较喜欢格调的人来说，简直不二之选啊。</p>
 <p>美中不足的是，看久了觉得它的图标似乎不是很上心。现在都流行扁平化了而它还停留在拟物的阶段，拟物也就算了还带一点立体感把整个平面内顷，于是乎想自己换个图标，换个好心情。</p>
 <p>如果你有同样的审美那我们继续。</p>
