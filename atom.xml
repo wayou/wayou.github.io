@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://wayou.github.io/"/>
-  <updated>2014-11-14T01:56:05.381Z</updated>
+  <updated>2014-11-14T02:05:35.287Z</updated>
   <id>http://wayou.github.io/</id>
   
   <author>
@@ -19,8 +19,11 @@
     <link href="http://wayou.github.io/2014/11/08/lazy-evaluation/"/>
     <id>http://wayou.github.io/2014/11/08/lazy-evaluation/</id>
     <published>2014-11-08T07:29:27.000Z</published>
-    <updated>2014-11-14T01:55:29.000Z</updated>
-    <content type="html"><![CDATA[<blockquote>
+    <updated>2014-11-14T02:01:59.000Z</updated>
+    <content type="html"><![CDATA[<div class="alert alert-info"><i class="fa fa-info"></i>  <p>「注释」作者在本文里没有说明这么一个事实：<br>目前的版本<code>Lo-Dash v2.4.1</code>并没有引入延迟求值的特性，<code>Lo-Dash 3.0.0-pre</code>中部分方法进行了引入，比如<code>filter()</code>,<code>map()</code>,<code>reverse()</code>。</p>
+</div>
+
+<blockquote>
 <p>原文：<a href="http://filimanjaro.com/blog/2014/introducing-lazy-evaluation" target="_blank" rel="external">How to Speed Up Lo-Dash ×100? Introducing Lazy Evaluation</a></p>
 </blockquote>
 <p>我时常觉得像Lo-Dash这样优秀的库已经无法再优化了。它整合了各种<a href="https://www.youtube.com/watch?v=NthmeLEhDDM" target="_blank" rel="external">奇技淫巧</a>已经将JavaScript的性能开发到了极限。它使用了最快速的语句，优化的算法，甚至还会在发版前做性能测试以保证回归没问题。</p>
@@ -63,7 +66,10 @@
 <p>延迟求值并且不算什么新技术。在一些库中已经在使用了，比如<a href="http://en.wikipedia.org/wiki/Language_Integrated_Query" target="_blank" rel="external">LINQ</a>,<a href="http://danieltao.com/lazy.js/" target="_blank" rel="external">Lazy.js</a>还有其他等等。那么问题来了，Lo-Dash存在的意义是啥？我想就是你仍然可以使用你熟悉的<code>Underscore</code> 接口但享受一个更高效的底层实现，不需要额外的学习成本，代码上面也不会有大的变动，只需稍加修改。</p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<blockquote>
+    <![CDATA[<div class="alert alert-info"><i class="fa fa-info"></i>  <p>「注释」作者在本文里没有说明这么一个事实：<br>目前的版本<code>Lo-Dash v2.4.1</code>并没有引入延迟求值的特性，<code>Lo-Dash 3.0.0-pre</code>中部分方法进行了引入，比如<code>filter()</code>,<code>map()</code>,<code>reverse()</code>。</p>
+</div>
+
+<blockquote>
 <p>原文：<a href="http://filimanjaro.com/blog/2014/introducing-lazy-evaluation" target="_blank" rel="external">How to Speed Up Lo-Dash ×100? Introducing Lazy Evaluation</a></p>
 </blockquote>
 <p>我时常觉得像Lo-Dash这样优秀的库已经无法再优化了。它整合了各种<a href="https://www.youtube.com/watch?v=NthmeLEhDDM" target="_blank" rel="external">奇技淫巧</a>已经将JavaScript的性能开发到了极限。它使用了最快速的语句，优化的算法，甚至还会在发版前做性能测试以保证回归没问题。</p>
