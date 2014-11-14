@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://wayou.github.io/"/>
-  <updated>2014-11-08T10:38:04.817Z</updated>
+  <updated>2014-11-14T01:56:05.381Z</updated>
   <id>http://wayou.github.io/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://wayou.github.io/2014/11/08/lazy-evaluation/"/>
     <id>http://wayou.github.io/2014/11/08/lazy-evaluation/</id>
     <published>2014-11-08T07:29:27.000Z</published>
-    <updated>2014-11-08T09:07:23.000Z</updated>
+    <updated>2014-11-14T01:55:29.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>原文：<a href="http://filimanjaro.com/blog/2014/introducing-lazy-evaluation" target="_blank" rel="external">How to Speed Up Lo-Dash ×100? Introducing Lazy Evaluation</a></p>
 </blockquote>
@@ -44,10 +44,10 @@
 <p>这个例子中<code>map</code>和<code>filter</code> 将遍历99,999 个元素，但很有可能我们只需处理到1，000个元素的时候就已经拿到想要的结果了。这回性能的提升就太明显了（<a href="http://jsperf.com/lazy-demo" target="_blank" rel="external">benchmark</a>）：</p>
 <p><img src="/asset/posts/2014-11-08-lazy-evaluation/benchmark.jpg" alt="benchmark"></p>
 <h1 id="流水线">流水线</h1>
-<p>延迟求值同时带来了另一个好处，我称之为“流水线”。要旨就是不要每次运算后都创建数组，而是所有运算去用后再生成结果数组。下面用代码说话：</p>
+<p>延迟求值同时带来了另一个好处，我称之为“流水线”。要旨就是不避免产生中间数组，而是对一个元素一次性进行完所有操作。下面用代码说话：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> result = _(source).map(func1).map(func2).map(func3).value();</div></pre></td></tr></table></figure>
 
-<p>上面看似优雅的写法最终执行其实会被转换成以下原始的样子：</p>
+<p>上面看似优雅的写法在原始的<code>Lo-Dash</code>里会转换成下面的样子（直接求值）：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> result = [], temp1 = [], temp2 = [], temp3 = [];</div><div class="line"></div><div class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; source.length; i++) {</div><div class="line">   temp1[i] = func1(source[i]);</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; source.length; i++) {</div><div class="line">   temp2[i] = func2(temp1[i]);</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; source.length; i++) {</div><div class="line">   temp3[i] = func3(temp2[i]);</div><div class="line">}</div><div class="line">result = temp3;</div></pre></td></tr></table></figure>
 
 <p>当引入了延迟求值后，代码大致就成这样的了：</p>
