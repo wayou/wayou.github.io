@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://wayou.github.io/"/>
-  <updated>2015-03-08T08:02:55.154Z</updated>
+  <updated>2015-03-10T14:06:49.505Z</updated>
   <id>http://wayou.github.io/</id>
   
   <author>
@@ -13,21 +13,6 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
-  
-  <entry>
-    <title><![CDATA[node modules not recognized]]></title>
-    <link href="http://wayou.github.io/2015/03/08/node-modules-not-recognized/"/>
-    <id>http://wayou.github.io/2015/03/08/node-modules-not-recognized/</id>
-    <published>2015-03-08T07:58:58.000Z</published>
-    <updated>2015-03-08T07:58:58.752Z</updated>
-    <content type="html"><![CDATA[]]></content>
-    <summary type="html">
-    <![CDATA[]]>
-    </summary>
-    
-      <category term="未分类" scheme="http://wayou.github.io/categories/%E6%9C%AA%E5%88%86%E7%B1%BB/"/>
-    
-  </entry>
   
   <entry>
     <title><![CDATA[Angular条件路由]]></title>
@@ -316,7 +301,7 @@
     <link href="http://wayou.github.io/2014/12/31/chrome-request-stalled-problem/"/>
     <id>http://wayou.github.io/2014/12/31/chrome-request-stalled-problem/</id>
     <published>2014-12-31T12:38:22.000Z</published>
-    <updated>2015-01-13T04:12:10.586Z</updated>
+    <updated>2015-03-10T13:45:14.203Z</updated>
     <content type="html"><![CDATA[<p>本文前戏较多，务实的同学可以直接跳到结论。</p>
 <a id="more"></a>
 
@@ -643,9 +628,9 @@
 <li>请求成功构造，排除前端代码层面导致问题的原因，是不是浏览器Bug有待确定</li>
 <li>可以肯定的是在与服务器建立连接时被Shut down了，参考上面关于连接重置的部分会更有意义一些</li>
 </ul>
-<p class="text-primary">01/13日更新：参见上面进一步解读日志文件部分。</p>
-
-
+<blockquote>
+<p>01/13日更新：参见上面进一步解读日志文件部分。</p>
+</blockquote>
 <h1 id="参考及引用">参考及引用</h1>
 <p>#1 <a href="http://stackoverflow.com/questions/27513994/chrome-stalls-when-making-multiple-requests-to-same-resource" target="_blank" rel="external">Chrome stalls when making multiple requests to same resource?</a><br>#2 <a href="http://stackoverflow.com/questions/5585918/what-does-pending-mean-for-request-in-chrome-developer-window" target="_blank" rel="external">What does “pending” mean for request in Chrome Developer Window?</a><br>#3 <a href="https://developer.chrome.com/devtools/docs/network#resource-network-timing" target="_blank" rel="external">Evaluating network performance / Resource network timing</a><br>#4 <a href="https://www.google.com/search?q=Provisional+headers+are+shown&amp;gws_rd=ssl" target="_blank" rel="external">Provisional headers are shown</a><br>#5 <a href="http://stackoverflow.com/questions/21177387/caution-provisional-headers-are-shown-in-chrome-debugger" target="_blank" rel="external">“CAUTION: provisional headers are shown” in Chrome debugger</a><br>#6 <a href="http://segmentfault.com/q/1010000000364871" target="_blank" rel="external">Chrome 里的请求报错 “CAUTION: Provisional headers are shown” 是什么意思?</a><br>#7 <a href="https://codereview.chromium.org/345643003" target="_blank" rel="external">Issue 345643003: Http cache: Implement a timeout for the cache lock</a><br>#8 <a href="https://code.google.com/p/chromium/issues/detail?id=46104" target="_blank" rel="external">Issue 46104:   Pages can get blocked in “Waiting for Cache” for a very long time</a><br>#9 <a href="http://dev.chromium.org/for-testers/providing-network-details" target="_blank" rel="external">Providing Network Details for bug reports</a><br>#10 <a href="http://div.io/topic/609?page=1#2050" target="_blank" rel="external">从FE的角度上再看输入url后都发生了什么</a><br>#11 <a href="https://code.google.com/p/chromium/codesearch#chromium/src/net/http/http_stream_parser.cc&amp;q=ERR_CONNECTION_RESET&amp;sq=package:chromium&amp;dr=C&amp;l=77" target="_blank" rel="external">ERR_CONNECTION_RESET 的Chromium 源码</a><br>#12 <a href="http://www.chromium.org/developers/design-documents/network-stack#TOC-HttpStreamFactory" target="_blank" rel="external">Chromium Network Stack</a><br>#13 <a href="http://blogs.technet.com/b/networking/archive/2009/08/12/where-do-resets-come-from-no-the-stork-does-not-bring-them.aspx" target="_blank" rel="external">Where do resets come from? (No, the stork does not bring them.)</a><br>#14 <a href="https://code.google.com/p/chromium/issues/detail?id=447463#c1" target="_blank" rel="external">Issue 447463: Chrome-network: Long delay before RST message on stale sockets results in slow page loads)</a></p>
 ]]></content>
@@ -668,10 +653,10 @@
     <link href="http://wayou.github.io/2014/12/21/nexus-root/"/>
     <id>http://wayou.github.io/2014/12/21/nexus-root/</id>
     <published>2014-12-21T03:17:10.000Z</published>
-    <updated>2015-01-23T07:12:11.459Z</updated>
-    <content type="html"><![CDATA[<div class="alert alert-danger"><i class="fa fa-bug"></i>  <p>刷机有风险，root需谨慎！<br>following steps below on your own risk</p>
-</div>
-
+    <updated>2015-03-10T13:46:51.030Z</updated>
+    <content type="html"><![CDATA[<blockquote>
+<p>刷机有风险，root需谨慎！<br>following steps below on your own risk</p>
+</blockquote>
 <a id="more"></a>
 
 <p>Google死忠入手一台Nexus是必需的事情。Nexus6 刚出，特别赞，但被尺寸吓到了，机身跟6 plus差不离。觉得这样的尺寸无法接受，遂入手Nexus5。我不算太能折腾，所以不想去刷机什么的。但问题来了，Android 5 棒棒糖太吸引人，Material Design 简直美Cry。</p>
@@ -844,9 +829,9 @@
 </ul>
 ]]></content>
     <summary type="html">
-    <![CDATA[<div class="alert alert-danger"><i class="fa fa-bug"></i>  <p>刷机有风险，root需谨慎！<br>following steps below on your own risk</p>
-</div>
-
+    <![CDATA[<blockquote>
+<p>刷机有风险，root需谨慎！<br>following steps below on your own risk</p>
+</blockquote>
 ]]>
     
     </summary>

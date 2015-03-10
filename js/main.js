@@ -1,1 +1,40 @@
-$(function(){var o=$("#toc");if(o.length&&screen.width>999&&0!=$(".mypage").find("h1").length){$("#toc").tocify({context:".mypage",theme:"bootstrap3",selectors:"h1,h2,h3"});var t=$(window),s=$("#toc"),e=s.offset().top;s.toggleClass("sticky-scroll",e>155),t.scroll(function(){e=s.offset().top,s.toggleClass("sticky-scroll",e>155)})}screen.width>500&&$(window).scroll(function(){$(this).scrollTop()?$("#gotop:hidden").stop(!0,!0).fadeIn():$("#gotop").stop(!0,!0).fadeOut()}),$(".row.post").fitVids({customSelector:"iframe[src^='http://player.youku.com']"})});
+$(function() {
+    var $toc = $("#toc");
+    if ( !! $toc.length && screen.width > 999 && $('.mypage').find('h1').length != 0) {
+        $("#toc").tocify({
+            context: '.mypage',
+            // scrollHistory: true,
+            theme: 'bootstrap3',
+            selectors: 'h1,h2,h3'
+        });
+
+        //sticky the toc
+        var $window = $(window),
+            $stickyEl = $('#toc'),
+            elTop = $stickyEl.offset().top;
+        //for page refresh, we can right position the toc
+        $stickyEl.toggleClass('sticky-scroll', elTop > 155);
+
+        //listen the window scroll
+        $window.scroll(function() {
+            elTop = $stickyEl.offset().top;
+            $stickyEl.toggleClass('sticky-scroll', elTop > 155);
+        });
+
+    }
+
+    //show back to top btn on none mobile screen
+    if (screen.width > 500) {
+        $(window).scroll(function() {
+            if ($(this).scrollTop()) {
+                $('#gotop:hidden').stop(true, true).fadeIn();
+            } else {
+                $('#gotop').stop(true, true).fadeOut();
+            }
+        });
+    }
+
+    // make embeded video responsive
+    $(".row.post").fitVids({ customSelector: "iframe[src^='http://player.youku.com']"});
+
+});

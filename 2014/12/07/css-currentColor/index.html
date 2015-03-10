@@ -1,4 +1,7 @@
-<!DOCTYPE HTML><!--[if false]>少年，不得不说，这是缘分。简历快到碗里来，贴吧欢迎你 liuwayong@gmail.com :)  
+<!DOCTYPE HTML>
+
+<!--[if false]>
+少年，不得不说，这是缘分。简历快到碗里来，贴吧欢迎你 liuwayong@gmail.com :)  
 
                                             `--.       `                                             
                                           :hddhs.  .+yhs/`                                          
@@ -15,4 +18,422 @@
  /hhs-...../yhy/.oyysssssyhy/`shy/  :hdh: :dds .o``yds .ydddy.  .hh-hs:h+sho``yh+ :yy--hh+hhssssss: 
  /hhs-....-/yhho/hhs-```.shy/`shy/  -hdds-`-:- .s.`.:- .ydddy.  `/+ohho+-sho  yh+ :yy::hh+hy``````  
  /hhhyyyyyyhyyo..syyyssssyyy/`syy/   :yddhyssssshhsssssyhddy:    /oy+oyo:shyooyh+ -yyssyo/yhoooooo: 
- .----------.`    .---------` .--`    `-/////:-....-/+ooo+:`     --- `--..------`         .-------.<![endif]--><html><head><meta charset="utf-8"><title>CSS currentColor 变量的使用 | 刘哇勇的部落格</title><meta name="author" content="wayou"><meta name="description" content="CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是crrentColor变量（或者说是CSS关键字，但我觉得称为变量好理解些）。"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta property="og:title" content="CSS currentColor 变量的使用"><meta property="og:site_name" content="刘哇勇的部落格"><meta property="og:image" content="undefined"><link href="/favicon.png" rel="icon"><link rel="stylesheet" href="/css/jquery.tocify.css" media="screen" type="text/css"><link rel="stylesheet" href="/css/bootstrap.min.css" media="screen" type="text/css"><link rel="stylesheet" href="/material/css/ripples.css" media="screen" type="text/css"><link rel="stylesheet" href="/material/css/material.css" media="screen" type="text/css"><link rel="stylesheet" href="/css/font-awesome.css" media="screen" type="text/css"><link rel="stylesheet" href="/css/style.css" media="screen" type="text/css"><link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css"><link rel="stylesheet" href="/css/google-fonts.css" media="screen" type="text/css"><!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><script src="/js/jquery-2.0.3.min.js"></script></head><body><nav id="main-nav" class="navbar navbar-default" role="navigation"><div class="container"><button type="button" class="navbar-header navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button> <a class="navbar-brand" href="/">刘哇勇的部落格</a><div class="collapse navbar-collapse nav-menu"><ul class="nav navbar-nav navbar-right"><li><a href="/"><i class="fa fa-home"></i>首页</a></li><li><a href="/archives"><i class="fa fa-list"></i>存档</a></li><li><a href="/about"><i class="fa fa-info-circle"></i>关于</a></li><li><a href="/atom.xml"><i class="fa fa-rss"></i>RSS</a></li></ul></div></div></nav><div class="clearfix"></div><div class="container"><div class="content"><div class="page-header"><h1>CSS currentColor 变量的使用</h1></div><div class="row post"><div class="col-md-9"><div class="mypage"><div class="row widget-wrapper"><div class="post-meta-item"><i class="fa fa-clock-o"></i> <span class="post-time">2014-12-7 12:56:22</span></div><div class="post-meta-item"><i class="fa fa-user" title="author"></i> <span>wayou</span></div><div class="post-meta-item"><i class="fa fa-folder"></i> <a class="label label-success" href="/categories/技术/">技术</a></div><div class="post-meta-item"><i class="fa fa-tags"></i> <a class="label label-warning" href="/tags/CSS/">CSS</a></div></div><p>CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是<code>crrentColor</code>变量（或者说是CSS关键字，但我觉得称为变量好理解些）。</p><a id="more"></a><h1 id="初识">初识</h1><p>它是何物？具有怎样的功效？它从哪里来？带着这些疑问我们继续。</p><p>下面是来自<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentColor_keyword" target="_blank" rel="external">MDN的解释</a>：</p><blockquote><p><code>currentColor</code>代表了当前元素被应用上的<code>color</code>颜色值。 使用它可以将当前这个颜色值应用到其他属性上，或者嵌套元素的其他属性上。</p></blockquote><p>你这可以这么理解，CSS里你可以在任何需要写颜色的地方使用<code>currentColor</code>这个变量，这个变量的值是当前元素的<code>color</code>值。如果当前元素没有在CSS里显示地指定一个<code>color</code>值，那它的颜色值就遵从CSS规则，从父级元素继承而来。</p><p>到此似乎解决了上面三个哲学式的提问，但依然有些模糊。程序员之间的交流，还是上码才好。</p><ul><li>场景1</li></ul><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">p</span>&gt;</span>约么？<span class="tag">&lt;/<span class="title">p</span>&gt;</span></div></pre></td></tr></table></figure><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">p</span><span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> red</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure><p>此时，<code>&lt;p&gt;</code>标签<code>currentColor</code>的值为<code>red</code>。</p><p><br></p><ul><li>场景2</li></ul><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"container"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">p</span>&gt;</span>约么？<span class="tag">&lt;/<span class="title">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></div></pre></td></tr></table></figure><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="class">.container</span><span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#00ff00</span></span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure><p>现在，我们没有给<code>&lt;p&gt;</code>标签指定颜色，它的<code>color</code>从父级容器也就是<code>class</code>为<code>container</code>的<code>div</code>继承而来，换句话说此时<code>p</code>标签的<code>color</code>为<code>#00ff00</code>，<code>currentColor</code>又是直接去取元素的<code>color</code>值，所以此时<code>p</code>标签的<code>currentColor</code>值也为<code>#00ff00</code>。</p><p><img src="/asset/posts/2014-12-07-css-currentColor/situation2.jpg" alt="situation2"></p><ul><li>场景3</li></ul><p>如果父级元素也没有写<code>color</code>呢？其实这里都还是CSS规则的范畴，跟本文的主角关系不太大。但本着不啰嗦会死的原则，就展开了讲。</p><p>如果父级元素也没有指定颜色，那它的父级元素就会从父级的父级去继承，直到文档的根结点<code>html</code>标签都还没显示指定一个颜色呢，就应用上浏览器默认的颜色呗~</p><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="doctype">&lt;!doctype html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">html</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">head</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="title">title</span>&gt;</span>我来组成头部<span class="tag">&lt;/<span class="title">title</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="title">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">body</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="title">p</span>&gt;</span>约么？<span class="tag">&lt;/<span class="title">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="title">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">footer</span>&gt;</span>战神金钢，宇宙的保护神！<span class="tag">&lt;/<span class="title">footer</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">html</span>&gt;</span></div></pre></td></tr></table></figure><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 无CSS</div><div class="line"> */</div></pre></td></tr></table></figure><p><img src="/asset/posts/2014-12-07-css-currentColor/situation3.jpg" alt="situation3"></p><p>那，这个时候的黑色其实是浏览器默认给的。此时<code>p</code>标签的<code>currentColor</code>自然也跟<code>color</code>值一样，为黑色，纯黑的<code>#000</code>。</p><h1 id="如何用？">如何用？</h1><p>了解它是怎样的物品后，下面问题来了，如何用？有额外的<code>buff</code>效果么，耗蓝多么，CD时间长么。。。</p><p>前面说道，它就是一个CSS变量，存储了颜色值，这个值来自当前元素的<code>color</code>CSS属性。当你需要为该元素其他属性指定颜色的时候，它就可以登上舞台了。</p><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"container"</span>&gt;</span></div><div class="line">    好好说话，有话好好说</div><div class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></div></pre></td></tr></table></figure><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="class">.container</span><span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#3CAADB</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">border</span>:<span class="value"> <span class="number">4px</span> solid currentColor</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure><p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="wkwhomt3" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p><p>这里我们第一次领略了<code>currentColor</code>的奇效。在指定边框颜色的时候，我们直接使用<code>currentColor</code>变量，而没有写一个传统的颜色值。</p><p>你似乎也知道了该如何用了。不只是<code>border</code>，其他能够使用颜色的地方，比如<code>background</code>，<code>box-shadow</code>等等。</p><h1 id="带你装逼带你飞">带你装逼带你飞</h1><p>新技能就是如此炫酷。大开脑洞任性地去使用吧！</p><h2 id="与渐变混搭">与渐变混搭</h2><p>你可能无法想象到的是，除了可以将<code>currentColor</code>用到普通需要颜色的场景，它同样可以被用在渐变中。</p><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"container"</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></div></pre></td></tr></table></figure><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class">.container</span><span class="rules">{</span></div><div class="line">  <span class="rule"><span class="attribute">height</span>:<span class="value"><span class="number">200px</span></span></span>;</div><div class="line">  <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#3CAADB</span></span></span>;</div><div class="line">  <span class="rule"><span class="attribute">background-image</span>:<span class="value"> <span class="function">linear-gradient</span>(to right, <span class="hexcolor">#fff</span>, currentColor <span class="number">100%</span>)</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure><p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="igvks1h5" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p><p>甚至也可用于填充svg，下面会有相应示例。</p><h2 id="与CSS动画结合">与CSS动画结合</h2><p>当与CSS <code>animation</code>结合，可以得到更加有创意的效果，比如<a href="http://codepen.io/scottkellum/pen/Fhxql" target="_blank" rel="external">这个来自codepen的示例</a></p><p></p><p data-height="268" data-theme-id="2997" data-slug-hash="Fhxql" data-default-tab="result" data-user="scottkellum" class="codepen">See the Pen <a href="http://codepen.io/scottkellum/pen/Fhxql/" target="_blank" rel="external">currentColor</a> by Scott Kellum (<a href="http://codepen.io/scottkellum" target="_blank" rel="external">@scottkellum</a>) on <a href="http://codepen.io" target="_blank" rel="external">CodePen</a>.</p><p></p><script async src="//assets.codepen.io/assets/embed/ei.js"></script><h2 id="更加简洁的CSS">更加简洁的CSS</h2><p>其实，新技能不只是装逼那么单纯，合理的使用<code>currentColor</code> 变量会让你的CSS代码变得简洁。这才是我们想要达到的目的。以炫技为目的技能是没有生产意义的。</p><p>看下面这个例子（这个示例灵感来自<a href="http://osvaldas.info/keeping-css-short-with-currentcolor" target="_blank" rel="external">这里</a>）</p><p><img src="/asset/posts/2014-12-07-css-currentColor/btn_with_svg_st.jpg" alt="btn_with_svg_st"></p><p>我们在按钮中使用了一个svg图标。你是一个负责任的FE，所以，对这个按钮的各种状态<code>:focus</code>，<code>:hover</code>，<code>:active</code>都作了样式上的处理。同时，为了让图标也跟着保持一致的姿态变更，需要把对<code>&lt;a&gt;</code>标签的样式处理同样就到到<code>&lt;svg&gt;</code>标签上。于是你的CSS代码看起来就是下面这样的了。</p><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*a 标签*/</span></div><div class="line"><span class="class">.button</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#117B6F</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">font-size</span>:<span class="value"> <span class="number">1.2em</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:hover</span>, <span class="class">.button</span><span class="pseudo">:focus</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#01B19A</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:active</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#02D7BB</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"></div><div class="line"><span class="comment">/*svg 标签*/</span></div><div class="line"><span class="class">.button</span> <span class="tag">svg</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">17px</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">17px</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">fill</span>:<span class="value"> <span class="hexcolor">#117B6F</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:hover</span> <span class="tag">svg</span>, <span class="class">.button</span><span class="pseudo">:focus</span> <span class="tag">svg</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">fill</span>:<span class="value"> <span class="hexcolor">#01B19A</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:active</span> <span class="tag">svg</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">fill</span>:<span class="value"> <span class="hexcolor">#02D7BB</span></span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure><p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="smxdd6mn" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p><p>你也发现了，代码有点冗余。接下来，我们用<code>currentColor</code>来将它简化一下。于是成了下面这样：</p><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*a 标签*/</span></div><div class="line"><span class="class">.button</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#117B6F</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">font-size</span>:<span class="value"> <span class="number">1.2em</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:hover</span>, <span class="class">.button</span><span class="pseudo">:focus</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#01B19A</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:active</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#02D7BB</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"></div><div class="line"><span class="comment">/*svg 标签*/</span></div><div class="line"><span class="class">.button</span> <span class="tag">svg</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">17px</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">17px</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">fill</span>:<span class="value"> currentColor</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure><p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="oxuuu1ex" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p><h2 id="更好维护的CSS">更好维护的CSS</h2><p>仔细想想不难发现，当使用<code>currentColor</code>后，我们的CSS也变得更加好维护了。</p><p>还拿上面的按钮示例来说，优化之前不但代码冗余，而且哪天PM来劲了说这颜色饱看，给换个其他色。于是你得把<code>&lt;a&gt;</code>标签和<code>&lt;svg&gt;</code>一起换了。</p><p>但优化后就不一样了，因为<code>&lt;svg&gt;</code>使用的填充是<code>currentColor</code>，你只需要改变<code>&lt;a&gt;</code>标签的颜色，它也就跟着变了。真正做到了牵一发而不动全身。这不正是众码友们毕生所追求的理想编程境界么。</p><h1 id="浏览器兼容性">浏览器兼容性</h1><p>一提到浏览器兼容性，FE同学们或许就不敢那么任性了。之前你可能是这样的：</p><p><img src="/asset/posts/2014-12-07-css-currentColor/before.gif" alt="before"></p><p>当听到IE传来的噩耗，你可能是这样的：</p><p><img src="/asset/posts/2014-12-07-css-currentColor/after.gif" alt="after"></p><p>经查，<a href="http://caniuse.com/#search=currentcolor" target="_blank" rel="external">can i use</a> 没有关于它的数据。</p><p>经测，</p><ul><li>本机Win7搭载的IE8不支持</li><li>本机安装的火狐31发来战报表示支持</li><li>Chrome，你猜？</li><li>本机Safari 5.1.7也表示支持</li><li>本机Opera 26 同样表示支持</li></ul><p>根据<a href="http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor" target="_blank" rel="external">这篇文章</a>的描述，它是可以很好地工作在在所有现代浏览器和IE9+上的，甚至是各浏览器对应的移动版本。所以，在IE不是主要客户对象的情况下，还是可以放心使用的。</p><h1 id="参考">参考</h1><ul><li><a href="http://css-tricks.com/currentcolor/" target="_blank" rel="external">css-tricks currentColor</a></li><li><a href="http://osvaldas.info/keeping-css-short-with-currentcolor" target="_blank" rel="external">Keeping CSS short with currentColor</a></li><li><a href="http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor" target="_blank" rel="external">The First CSS Variable: currentColor</a></li></ul></div><div><center><div class="pagination-wrapper"><a class="btn btn-default" href="/2014/12/21/nexus-root/" class="alignleft prev"><i class="fa fa-chevron-left"></i>上一篇</a> <a class="btn btn-default" href="/"><i class="fa fa-home"></i>首页</a> <a class="btn btn-default" href="/2014/11/30/html5-details-tag/" class="alignright next">下一篇<i class="fa fa-chevron-right"></i></a></div></center></div><section id="comment"><div class="ds-thread" data-thread-key="_posts/2014-12-07-css-currentColor.md" data-title="CSS currentColor 变量的使用" data-url="http://wayou.github.io/2014/12/07/css-currentColor/"></div><script type="text/javascript">var duoshuoQuery={short_name:"wayouliu"};!function(){var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src=("https:"==document.location.protocol?"https:":"http:")+"//static.duoshuo.com/embed.js",t.charset="UTF-8",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(t)}();</script></section></div><div class="col-md-3"><div id="toc"></div></div></div></div></div><div class="container-narrow"><footer><p>&copy; 2015 <i class="mdi-hardware-keyboard-arrow-left" style="font-size: 10pt"></i>/<i class="mdi-hardware-keyboard-arrow-right" style="font-size: 10pt"></i> with <i class="mdi-action-favorite icon-material-red" style="font-size: 10pt"></i> by <a href="http://wayou.github.io">wayou</a> | 由<a href="http://zespia.tw/hexo/" target="_blank">Hexo</a>强力驱动</p></footer></div><a id="gotop" href="#"><i class="fa fa-chevron-circle-up"></i></a><script src="/js/jquery.imagesloaded.min.js"></script><script src="/js/gallery.js"></script><script src="/js/bootstrap.min.js"></script><script src="/material/js/ripples.js"></script><script src="/material/js/material.js"></script><script src="/js/jqueryui.js"></script><script src="/js/jquery.tocify.js"></script><script src="/js/jquery.fitvids.js"></script><script src="/js/main.js"></script><script type="text/javascript">var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-46794744-6"]),_gaq.push(["_trackPageview"]),function(){var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src=("https:"==document.location.protocol?"https://":"http://")+"stats.g.doubleclick.net/dc.js";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}();</script></body></html>
+ .----------.`    .---------` .--`    `-/////:-....-/+ooo+:`     --- `--..------`         .-------. <![endif]-->
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CSS currentColor 变量的使用 | 刘哇勇的部落格</title>
+  <meta name="author" content="wayou">
+  
+  <meta name="description" content="CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是crrentColor变量（或者说是CSS关键字，但我觉得称为变量好理解些）。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="CSS currentColor 变量的使用"/>
+  <meta property="og:site_name" content="刘哇勇的部落格"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  
+  
+    <link href="/favicon.png" rel="icon">
+  
+  <!-- toc -->
+  <link rel="stylesheet" href="/css/jquery.tocify.css" media="screen" type="text/css">
+  
+  <link rel="stylesheet" href="/css/bootstrap.min.css" media="screen" type="text/css">
+  <!-- material design -->
+  <link rel="stylesheet" href="/material/css/ripples.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/material/css/material.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/font-awesome.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/google-fonts.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <script src="/js/jquery-2.0.3.min.js"></script>
+
+</head>
+
+
+
+ <body >  
+  <nav id="main-nav" class="navbar navbar-default" role="navigation">
+    <div class="container">
+      <button type="button" class="navbar-header navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+		<span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+	  <a class="navbar-brand" href="/">刘哇勇的部落格</a>
+      <div class="collapse navbar-collapse nav-menu">
+		<ul class="nav navbar-nav navbar-right">
+		  
+		  <li>
+			<a  href="/" >
+			  <i class="fa fa-home"></i>首页
+			</a>
+		  </li>
+		  
+		  <li>
+			<a  href="/archives" >
+			  <i class="fa fa-list"></i>存档
+			</a>
+		  </li>
+		  
+		  <li>
+			<a  href="/about" >
+			  <i class="fa fa-info-circle"></i>关于
+			</a>
+		  </li>
+		  
+		  <li>
+			<a  href="/atom.xml" >
+			  <i class="fa fa-rss"></i>RSS
+			</a>
+		  </li>
+		  
+		</ul>
+      </div>
+    </div> <!-- container -->
+</nav>
+<div class="clearfix"></div>
+
+  <div class="container" >
+  	<div class="content">
+    	 
+
+
+	
+		<div class="page-header">		
+			<h1>
+			
+			
+			  CSS currentColor 变量的使用
+			
+			</h1>
+		</div>		
+	
+
+
+
+<div class="row post">
+	<!-- cols -->
+	
+	<div class="col-md-9">
+	
+
+			
+
+	<!-- content -->
+	<div class="mypage">
+		<div class="row widget-wrapper">
+			<!-- date -->
+			
+			<div class="post-meta-item">
+				<i class="fa fa-clock-o"></i>
+				<span class="post-time">2014-12-7 12:56:22</span>
+			</div>
+			
+
+			<!-- author -->
+			
+			<div class="post-meta-item">
+				<i class="fa fa-user" title="author"></i>
+				<span >wayou</span>
+			</div>
+			
+
+			<!-- categories -->
+		    
+			<div class="post-meta-item">
+				<i class="fa fa-folder"></i>
+				
+				<a class="label label-success" href="/categories/技术/">技术</a>
+			</div>
+			
+
+			<!-- tags -->
+			
+			<div class="post-meta-item">
+				<i class="fa fa-tags"></i>
+				
+				<a class="label label-warning" href="/tags/CSS/">CSS</a>
+			</div>
+			
+		</div>
+
+
+	    <p>CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是<code>crrentColor</code>变量（或者说是CSS关键字，但我觉得称为变量好理解些）。</p>
+<a id="more"></a>
+
+<h1 id="初识">初识</h1>
+<p>它是何物？具有怎样的功效？它从哪里来？带着这些疑问我们继续。</p>
+<p>下面是来自<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentColor_keyword" target="_blank" rel="external">MDN的解释</a>：</p>
+<blockquote>
+<p><code>currentColor</code>代表了当前元素被应用上的<code>color</code>颜色值。 使用它可以将当前这个颜色值应用到其他属性上，或者嵌套元素的其他属性上。</p>
+</blockquote>
+<p>你这可以这么理解，CSS里你可以在任何需要写颜色的地方使用<code>currentColor</code>这个变量，这个变量的值是当前元素的<code>color</code>值。如果当前元素没有在CSS里显示地指定一个<code>color</code>值，那它的颜色值就遵从CSS规则，从父级元素继承而来。</p>
+<p>到此似乎解决了上面三个哲学式的提问，但依然有些模糊。程序员之间的交流，还是上码才好。</p>
+<ul>
+<li>场景1</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">p</span>&gt;</span>约么？<span class="tag">&lt;/<span class="title">p</span>&gt;</span></div></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">p</span><span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> red</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure>
+
+<p>此时，<code>&lt;p&gt;</code>标签<code>currentColor</code>的值为<code>red</code>。</p>
+<p><br></p>
+<ul>
+<li>场景2</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"container"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">p</span>&gt;</span>约么？<span class="tag">&lt;/<span class="title">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></div></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="class">.container</span><span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#00ff00</span></span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure>
+
+<p>现在，我们没有给<code>&lt;p&gt;</code>标签指定颜色，它的<code>color</code>从父级容器也就是<code>class</code>为<code>container</code>的<code>div</code>继承而来，换句话说此时<code>p</code>标签的<code>color</code>为<code>#00ff00</code>，<code>currentColor</code>又是直接去取元素的<code>color</code>值，所以此时<code>p</code>标签的<code>currentColor</code>值也为<code>#00ff00</code>。</p>
+<p><img src="/asset/posts/2014-12-07-css-currentColor/situation2.jpg" alt="situation2"></p>
+<ul>
+<li>场景3</li>
+</ul>
+<p>如果父级元素也没有写<code>color</code>呢？其实这里都还是CSS规则的范畴，跟本文的主角关系不太大。但本着不啰嗦会死的原则，就展开了讲。</p>
+<p>如果父级元素也没有指定颜色，那它的父级元素就会从父级的父级去继承，直到文档的根结点<code>html</code>标签都还没显示指定一个颜色呢，就应用上浏览器默认的颜色呗~</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="doctype">&lt;!doctype html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">html</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">head</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="title">title</span>&gt;</span>我来组成头部<span class="tag">&lt;/<span class="title">title</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="title">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">body</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="title">p</span>&gt;</span>约么？<span class="tag">&lt;/<span class="title">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="title">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">footer</span>&gt;</span>战神金钢，宇宙的保护神！<span class="tag">&lt;/<span class="title">footer</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">html</span>&gt;</span></div></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 无CSS</div><div class="line"> */</div></pre></td></tr></table></figure>
+
+<p><img src="/asset/posts/2014-12-07-css-currentColor/situation3.jpg" alt="situation3"></p>
+<p>那，这个时候的黑色其实是浏览器默认给的。此时<code>p</code>标签的<code>currentColor</code>自然也跟<code>color</code>值一样，为黑色，纯黑的<code>#000</code>。</p>
+<h1 id="如何用？">如何用？</h1>
+<p>了解它是怎样的物品后，下面问题来了，如何用？有额外的<code>buff</code>效果么，耗蓝多么，CD时间长么。。。</p>
+<p>前面说道，它就是一个CSS变量，存储了颜色值，这个值来自当前元素的<code>color</code>CSS属性。当你需要为该元素其他属性指定颜色的时候，它就可以登上舞台了。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"container"</span>&gt;</span></div><div class="line">    好好说话，有话好好说</div><div class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></div></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="class">.container</span><span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#3CAADB</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">border</span>:<span class="value"> <span class="number">4px</span> solid currentColor</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure>
+
+<p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="wkwhomt3" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p>
+<p>这里我们第一次领略了<code>currentColor</code>的奇效。在指定边框颜色的时候，我们直接使用<code>currentColor</code>变量，而没有写一个传统的颜色值。</p>
+<p>你似乎也知道了该如何用了。不只是<code>border</code>，其他能够使用颜色的地方，比如<code>background</code>，<code>box-shadow</code>等等。</p>
+<h1 id="带你装逼带你飞">带你装逼带你飞</h1>
+<p>新技能就是如此炫酷。大开脑洞任性地去使用吧！</p>
+<h2 id="与渐变混搭">与渐变混搭</h2>
+<p>你可能无法想象到的是，除了可以将<code>currentColor</code>用到普通需要颜色的场景，它同样可以被用在渐变中。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"container"</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></div></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class">.container</span><span class="rules">{</span></div><div class="line">  <span class="rule"><span class="attribute">height</span>:<span class="value"><span class="number">200px</span></span></span>;</div><div class="line">  <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#3CAADB</span></span></span>;</div><div class="line">  <span class="rule"><span class="attribute">background-image</span>:<span class="value"> <span class="function">linear-gradient</span>(to right, <span class="hexcolor">#fff</span>, currentColor <span class="number">100%</span>)</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure>
+
+<p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="igvks1h5" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p>
+<p>甚至也可用于填充svg，下面会有相应示例。</p>
+<h2 id="与CSS动画结合">与CSS动画结合</h2>
+<p>当与CSS <code>animation</code>结合，可以得到更加有创意的效果，比如<a href="http://codepen.io/scottkellum/pen/Fhxql" target="_blank" rel="external">这个来自codepen的示例</a></p>
+<p></p><p data-height="268" data-theme-id="2997" data-slug-hash="Fhxql" data-default-tab="result" data-user="scottkellum" class="codepen">See the Pen <a href="http://codepen.io/scottkellum/pen/Fhxql/" target="_blank" rel="external">currentColor</a> by Scott Kellum (<a href="http://codepen.io/scottkellum" target="_blank" rel="external">@scottkellum</a>) on <a href="http://codepen.io" target="_blank" rel="external">CodePen</a>.</p><p></p>
+<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+
+<h2 id="更加简洁的CSS">更加简洁的CSS</h2>
+<p>其实，新技能不只是装逼那么单纯，合理的使用<code>currentColor</code> 变量会让你的CSS代码变得简洁。这才是我们想要达到的目的。以炫技为目的技能是没有生产意义的。</p>
+<p>看下面这个例子（这个示例灵感来自<a href="http://osvaldas.info/keeping-css-short-with-currentcolor" target="_blank" rel="external">这里</a>）</p>
+<p><img src="/asset/posts/2014-12-07-css-currentColor/btn_with_svg_st.jpg" alt="btn_with_svg_st"></p>
+<p>我们在按钮中使用了一个svg图标。你是一个负责任的FE，所以，对这个按钮的各种状态<code>:focus</code>，<code>:hover</code>，<code>:active</code>都作了样式上的处理。同时，为了让图标也跟着保持一致的姿态变更，需要把对<code>&lt;a&gt;</code>标签的样式处理同样就到到<code>&lt;svg&gt;</code>标签上。于是你的CSS代码看起来就是下面这样的了。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*a 标签*/</span></div><div class="line"><span class="class">.button</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#117B6F</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">font-size</span>:<span class="value"> <span class="number">1.2em</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:hover</span>, <span class="class">.button</span><span class="pseudo">:focus</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#01B19A</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:active</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#02D7BB</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"></div><div class="line"><span class="comment">/*svg 标签*/</span></div><div class="line"><span class="class">.button</span> <span class="tag">svg</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">17px</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">17px</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">fill</span>:<span class="value"> <span class="hexcolor">#117B6F</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:hover</span> <span class="tag">svg</span>, <span class="class">.button</span><span class="pseudo">:focus</span> <span class="tag">svg</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">fill</span>:<span class="value"> <span class="hexcolor">#01B19A</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:active</span> <span class="tag">svg</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">fill</span>:<span class="value"> <span class="hexcolor">#02D7BB</span></span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure>
+
+<p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="smxdd6mn" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p>
+<p>你也发现了，代码有点冗余。接下来，我们用<code>currentColor</code>来将它简化一下。于是成了下面这样：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*a 标签*/</span></div><div class="line"><span class="class">.button</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#117B6F</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">font-size</span>:<span class="value"> <span class="number">1.2em</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:hover</span>, <span class="class">.button</span><span class="pseudo">:focus</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#01B19A</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"><span class="class">.button</span><span class="pseudo">:active</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#02D7BB</span></span></span>;</div><div class="line"><span class="rule">}</span></div><div class="line"></div><div class="line"><span class="comment">/*svg 标签*/</span></div><div class="line"><span class="class">.button</span> <span class="tag">svg</span> <span class="rules">{</span></div><div class="line">    <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">17px</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">17px</span></span></span>;</div><div class="line">    <span class="rule"><span class="attribute">fill</span>:<span class="value"> currentColor</span></span>;</div><div class="line"><span class="rule">}</span></div></pre></td></tr></table></figure>
+
+<p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="oxuuu1ex" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p>
+<h2 id="更好维护的CSS">更好维护的CSS</h2>
+<p>仔细想想不难发现，当使用<code>currentColor</code>后，我们的CSS也变得更加好维护了。</p>
+<p>还拿上面的按钮示例来说，优化之前不但代码冗余，而且哪天PM来劲了说这颜色饱看，给换个其他色。于是你得把<code>&lt;a&gt;</code>标签和<code>&lt;svg&gt;</code>一起换了。</p>
+<p>但优化后就不一样了，因为<code>&lt;svg&gt;</code>使用的填充是<code>currentColor</code>，你只需要改变<code>&lt;a&gt;</code>标签的颜色，它也就跟着变了。真正做到了牵一发而不动全身。这不正是众码友们毕生所追求的理想编程境界么。</p>
+<h1 id="浏览器兼容性">浏览器兼容性</h1>
+<p>一提到浏览器兼容性，FE同学们或许就不敢那么任性了。之前你可能是这样的：</p>
+<p><img src="/asset/posts/2014-12-07-css-currentColor/before.gif" alt="before"></p>
+<p>当听到IE传来的噩耗，你可能是这样的：</p>
+<p><img src="/asset/posts/2014-12-07-css-currentColor/after.gif" alt="after"></p>
+<p>经查，<a href="http://caniuse.com/#search=currentcolor" target="_blank" rel="external">can i use</a> 没有关于它的数据。</p>
+<p>经测，</p>
+<ul>
+<li>本机Win7搭载的IE8不支持</li>
+<li>本机安装的火狐31发来战报表示支持</li>
+<li>Chrome，你猜？</li>
+<li>本机Safari 5.1.7也表示支持</li>
+<li>本机Opera 26 同样表示支持</li>
+</ul>
+<p>根据<a href="http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor" target="_blank" rel="external">这篇文章</a>的描述，它是可以很好地工作在在所有现代浏览器和IE9+上的，甚至是各浏览器对应的移动版本。所以，在IE不是主要客户对象的情况下，还是可以放心使用的。</p>
+<h1 id="参考">参考</h1>
+<ul>
+<li><a href="http://css-tricks.com/currentcolor/" target="_blank" rel="external">css-tricks currentColor</a></li>
+<li><a href="http://osvaldas.info/keeping-css-short-with-currentcolor" target="_blank" rel="external">Keeping CSS short with currentColor</a></li>
+<li><a href="http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor" target="_blank" rel="external">The First CSS Variable: currentColor</a></li>
+</ul>
+	 
+	</div>
+
+	<div>
+  	<center>
+	<div class="pagination-wrapper">
+ 
+       
+      <a class="btn btn-default" href="/2014/12/21/nexus-root/" class="alignleft prev"><i class="fa fa-chevron-left"></i>上一篇</a>
+      
+
+        <a class="btn btn-default" href="/"><i class="fa fa-home"></i>首页</a>
+
+    
+       <a class="btn btn-default" href="/2014/11/30/html5-details-tag/" class="alignright next">下一篇<i class="fa fa-chevron-right"></i></a>   
+        
+  
+</div>
+
+    </center>
+	</div>
+	
+	<!-- comment -->
+	
+<section id="comment">
+  <!--<h2 class="title">留言</h2>-->
+
+  
+   <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="_posts/2014-12-07-css-currentColor.md" data-title="CSS currentColor 变量的使用" data-url="http://wayou.github.io/2014/12/07/css-currentColor/"></div>
+    <!-- 多说评论框 end -->
+   <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'wayouliu'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+  
+</section>
+
+
+	
+	</div> <!-- col-md-9/col-md-12 -->
+	
+	
+		<div class="col-md-3"> 
+
+	<!-- date -->
+	<!--
+	<div class="meta-widget">
+	<i class="fa fa-clock-o"></i>
+	2014-12-7 
+	</div>
+	-->
+
+	<!-- categories -->
+   <!-- 
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#categorys"><i class="fa fa-folder"></i></a>	
+    <ul id="categorys" class="tag_box list-unstyled collapse in">
+          
+  <li>
+    <li><a href="/categories/技术/">技术</a></li>
+  </li>
+
+    </ul>
+	</div>
+	-->
+
+	<!-- tags -->
+	<!--
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#tags"><i class="fa fa-tags"></i></a>		  
+    <ul id="tags" class="tag_box list-unstyled collapse in">	  
+	    
+  <li><a href="/tags/CSS/">CSS</a></li>
+    </ul>
+	</div>
+		-->
+
+	<!-- toc -->
+	
+		<div id="toc" ></div>
+		
+</div><!-- col-md-3 -->
+
+
+
+
+	
+
+</div><!-- row -->
+
+	</div>
+  </div>
+  <div class="container-narrow">
+  <footer> <p>&copy; 2015 
+<i class="mdi-hardware-keyboard-arrow-left" style="font-size: 10pt;"></i>/<i class="mdi-hardware-keyboard-arrow-right" style="font-size: 10pt;"></i> with <i class="mdi-action-favorite icon-material-red" style="font-size: 10pt;"></i>
+
+by <a href="http://wayou.github.io">wayou</a>
+  
+ | 由<a href="http://zespia.tw/hexo/" target="_blank">Hexo</a>强力驱动
+</p>
+ </footer>
+</div> <!-- container-narrow -->
+  
+<a id="gotop" href="#">   
+  <i class="fa fa-chevron-circle-up"></i>
+</a>
+
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- material design -->
+<script src="/material/js/ripples.js"></script>
+<script src="/material/js/material.js"></script>
+<!-- toc -->
+<script src="/js/jqueryui.js"></script>
+<script src="/js/jquery.tocify.js"></script>
+
+<!-- make the embeded video responsive -->
+<script src="/js/jquery.fitvids.js"></script>
+
+<script src="/js/main.js"></script>
+
+<!-- analytics -->
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-46794744-6']);
+_gaq.push(['_trackPageview']);
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+
+ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+ 
+
+
+
+
+
+
+</body>
+</html>
