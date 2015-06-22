@@ -22,5 +22,3 @@ after_success:
 - git commit -m 'Auto Update from TRAVIS-CI'
 - git branch -m gh-pages
 - git push -q $GH_TOKEN HEAD:gh-pages
-
-
