@@ -4,7 +4,7 @@ branches:
   only:
   - master
 before_install:
-- npm i -g hexo
+- npm install hexo-cli -g
 install:
 - npm i
 before_script:
