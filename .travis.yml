@@ -1,15 +1,24 @@
+# reference http://abhiesa.github.io/2014/10/20/travis/
 language: node_js
 branches:
   only:
   - master
 before_install:
-- npm install -g hexo
-- npm install
+- npm i -g hexo
+install:
+- npm i
 before_script:
 - git config --global user.name 'wayou'
-- git config --global user.email 'wayou@gmail.com'
-- sed -i'' "s~git@github.com:wayou/wayou.github.io.git~https://${GH_TOKEN}:x-oauth-basic@github.com/wayou/wayou.github.io.git~" _config.yml
-install:
-- hexo generate
+- git config --global user.email 'liuwayong@gmail.com'
 script:
-- hexo deploy --silent
+- hexo g
+after_success:
+- mkdir .deploy
+- cd .deploy
+- git clone --depth 1 --branch master --single-branch $GH_TOKEN . || (git init && git remote add -t master origin $GH_TOKEN)
+- rm -rf ./*
+- cp -r ../public/* .
+- git add -A .
+- git commit -m 'Auto Update from TRAVIS-CI'
+- git branch -m master
+- git push -q $GH_TOKEN HEAD:master
