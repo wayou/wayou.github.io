@@ -80,24 +80,19 @@
   <% } %>
 
   <!-- pagination -->
+
   <% if (page.total > 1 && pageType=='index'){ %>
     <paper-material class="pagination-wrapper">
      <% if (page.prev || page.next) { %>
-      <% if (page.prev){ %>  
-        <paper-icon-button  class="pagination-item" icon="chevron-left" onclick="javascript:window.location.href='<%- url_for(page.prev_link) %>';"></paper-icon-button>
-      <% } else { %>
-        <paper-icon-button class="pagination-item" icon="chevron-left" disabled="true" onclick="javascript:window.location.href='<%- url_for(page.prev_link) %>';"></paper-icon-button>
-      <% } %>
+
+        <paper-icon-button class="pagination-item" icon="chevron-left" <% if (!page.prev){ %> disabled="true" <% } %> onclick="javascript:window.location.href='<%- url_for(page.prev_link) %>';"></paper-icon-button>
 
       <% if (page.current>1){ %>
         <span class="pagination-current"><%= page.current %></span>
       <% } %>
 
-      <% if (page.next){ %>
-        <paper-icon-button class="pagination-item" icon="chevron-right" onclick="javascript:window.location.href='<%- url_for(page.next_link) %>';"></paper-icon-button>
-      <% } else { %>
-        <paper-icon-button class="pagination-item" icon="chevron-right" disabled="true" onclick="javascript:window.location.href='<%- url_for(page.next_link) %>';"></paper-icon-button>
-      <% } %>
+        <paper-icon-button class="pagination-item" icon="chevron-right" <% if (!page.next){ %> disabled="true" <% } %> onclick="javascript:window.location.href='<%- url_for(page.next_link) %>';"></paper-icon-button>
+
     <% }  %>
     </paper-material>
   <% } %>
