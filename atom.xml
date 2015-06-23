@@ -5,7 +5,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://wayou.github.io//"/>
-  <updated>2015-06-23T13:50:11.000Z</updated>
+  <updated>2015-06-23T14:39:32.000Z</updated>
   <id>http://wayou.github.io//</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://wayou.github.io/2015/03/08/2015-03-08-redirect-before-routing-in-angular/"/>
     <id>http://wayou.github.io/2015/03/08/2015-03-08-redirect-before-routing-in-angular/</id>
     <published>2015-03-08T11:43:04.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<p>对于Web程序通常会有这样的需求：针对不同的情况，我们希望用户进入站点后打开不同的页面。<br>写一下Web程序的时候，会有这样的需求：根据用户的类型，将用户导向不同的页面。<br>譬如，对于非注册用户，打开站点后导向到注册页面;<br>或者，以之前做的一个项目为例，对于普通用户，打开培训页面，而培训合格的用户，我们希望默认打开管理页面。</p>
 <p>这样的路由控制当然可以由后端来做。</p>
 <a id="more"></a>
@@ -51,7 +51,7 @@
     <link href="http://wayou.github.io/2015/01/18/2015-01-18-all-this/"/>
     <id>http://wayou.github.io/2015/01/18/2015-01-18-all-this/</id>
     <published>2015-01-18T20:47:24.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p><code>this</code> 虐我千百遍，看完此文效立见！不得不说，这篇文章的总结很地道很全面，适合收藏之用。<br>原文：<a href="http://bjorn.tipling.com/all-this" target="_blank" rel="external">all this</a></p>
 </blockquote>
@@ -226,7 +226,7 @@
     <link href="http://wayou.github.io/2014/12/31/2014-12-31-chrome-request-stalled-problem/"/>
     <id>http://wayou.github.io/2014/12/31/2014-12-31-chrome-request-stalled-problem/</id>
     <published>2014-12-31T20:38:22.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<p>本文前戏较多，务实的同学可以直接跳到结论。</p>
 <a id="more"></a>
 <p>由「<a href="http://movie.douban.com/subject/4876722/" target="_blank" rel="external">钢的琴</a>」网友脑洞大开延伸出了吉的他二的胡琵的琶，以及后来许嵩的「<a href="http://music.douban.com/subject/6033105/" target="_blank" rel="external">苏格拉没有底</a>」，是否可以再拓展一下，得到哥本不爱吃哈根，哈根爱达斯等剧情乱入的关系。</p>
@@ -525,7 +525,7 @@
     <link href="http://wayou.github.io/2014/12/21/2014-12-21-nexus-root/"/>
     <id>http://wayou.github.io/2014/12/21/2014-12-21-nexus-root/</id>
     <published>2014-12-21T11:17:10.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>刷机有风险，root需谨慎！<br>following steps below on your own risk</p>
 </blockquote>
@@ -703,7 +703,7 @@
     <link href="http://wayou.github.io/2014/12/07/2014-12-07-css-currentColor/"/>
     <id>http://wayou.github.io/2014/12/07/2014-12-07-css-currentColor/</id>
     <published>2014-12-07T12:56:22.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<p>CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是<code>crrentColor</code>变量（或者说是CSS关键字，但我觉得称为变量好理解些）。</p>
 <a id="more"></a>
 <h1 id="初识">初识</h1><p>它是何物？具有怎样的功效？它从哪里来？带着这些疑问我们继续。</p>
@@ -801,7 +801,7 @@
     <link href="http://wayou.github.io/2014/11/30/2014-11-30-html5-details-tag/"/>
     <id>http://wayou.github.io/2014/11/30/2014-11-30-html5-details-tag/</id>
     <published>2014-11-30T12:54:43.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<p>HTML5 中新增的<code>&lt;details&gt;</code>标签允许用户创建一个可展开折叠的元件，让一段文字或标题包含一些隐藏的信息。</p>
 <a id="more"></a>
 <h1 id="用法">用法</h1><p>一般情况下，<code>details</code>用来对显示在页面的内容做进一步骤解释。其展现出来的效果和jQuery手风琴插件差不多。</p>
@@ -845,7 +845,7 @@
     <link href="http://wayou.github.io/2014/11/26/2014-11-26-javascript-benchmarking/"/>
     <id>http://wayou.github.io/2014/11/26/2014-11-26-javascript-benchmarking/</id>
     <published>2014-11-26T19:54:36.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>原文：<a href="https://mathiasbynens.be/notes/javascript-benchmarking" target="_blank" rel="external">Bulletproof JavaScript benchmarks</a></p>
 </blockquote>
@@ -915,7 +915,7 @@
     <link href="http://wayou.github.io/2014/11/08/2014-11-08-lazy-evaluation/"/>
     <id>http://wayou.github.io/2014/11/08/2014-11-08-lazy-evaluation/</id>
     <published>2014-11-08T15:29:27.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>「注释」作者在本文里没有说明这么一个事实：<br>目前的版本<code>Lo-Dash v2.4.1</code>并没有引入延迟求值的特性，<code>Lo-Dash 3.0.0-pre</code>中部分方法进行了引入，比如<code>filter()</code>,<code>map()</code>,<code>reverse()</code>。</p>
 <p>原文：<a href="http://filimanjaro.com/blog/2014/introducing-lazy-evaluation" target="_blank" rel="external">How to Speed Up Lo-Dash ×100? Introducing Lazy Evaluation</a></p>
@@ -969,7 +969,7 @@
     <link href="http://wayou.github.io/2014/11/02/2014-11-02-how-to-make-a-simple-html5-canvas-game-zh/"/>
     <id>http://wayou.github.io/2014/11/02/2014-11-02-how-to-make-a-simple-html5-canvas-game-zh/</id>
     <published>2014-11-02T13:14:34.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>原文：<a href="http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/" target="_blank" rel="external">How to make a simple HTML5 Canvas game</a></p>
 </blockquote>
@@ -1031,7 +1031,7 @@
     <link href="http://wayou.github.io/2014/09/14/2014-09-14-autocomplete-with-html5-datalist/"/>
     <id>http://wayou.github.io/2014/09/14/2014-09-14-autocomplete-with-html5-datalist/</id>
     <published>2014-09-14T14:23:54.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<p>HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。</p>
 <p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
 <a id="more"></a>
@@ -1071,7 +1071,7 @@
     <link href="http://wayou.github.io/2014/09/10/2014-09-10-chrome-console-tips-and-tricks/"/>
     <id>http://wayou.github.io/2014/09/10/2014-09-10-chrome-console-tips-and-tricks/</id>
     <published>2014-09-10T21:20:04.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<p>Chrome的开发者工具已经强大到没朋友的地步了，特别是其功能丰富界面友好的console，使用得当可以有如下功效：</p>
 <ul>
 <li>更高「逼格」更快「开发调试」更强「进阶级的Frontender」</li>
@@ -1177,7 +1177,7 @@
     <link href="http://wayou.github.io/2014/08/31/2014-08-31-how-to-customize-sublime-icon/"/>
     <id>http://wayou.github.io/2014/08/31/2014-08-31-how-to-customize-sublime-icon/</id>
     <published>2014-08-31T11:56:00.000Z</published>
-    <updated>2015-06-23T13:50:11.000Z</updated>
+    <updated>2015-06-23T14:39:32.000Z</updated>
     <content type="html"><![CDATA[<p><a href="http://www.sublimetext.com/3" target="_blank" rel="external">sublime text</a>很赞，windows上最接近mac逼格的轻量编辑器，对于我这样比较喜欢格调的人来说，简直不二之选啊。</p>
 <p>美中不足的是，看久了觉得它的图标似乎不是很上心。现在都流行扁平化了而它还停留在拟物的阶段，拟物也就算了还带一点立体感把整个平面内顷，于是乎想自己换个图标，换个好心情。</p>
 <p>如果你有同样的审美那我们继续。</p>
