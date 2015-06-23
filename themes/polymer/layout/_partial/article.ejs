@@ -47,7 +47,7 @@
               </div>
               <div secondary>
               <div class="markdown-body"><%- post.excerpt %></div>
-              <% if (theme.excerpt_link){ %>
+              <% if (post.excerpt){ %>
                   <a class="article-more-link" href="<%- url_for(post.path) %>"> MORE... </a>
               <% } %>
               </div>
