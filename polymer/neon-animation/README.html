@@ -1,0 +1,253 @@
+<h1 id="neon-animation">neon-animation</h1><p><code>neon-animation</code> is a suite of elements and behaviors to implement pluggable animated transitions for Polymer Elements using <a href="https://w3c.github.io/web-animations/">Web Animations</a>.</p>
+<p><em>Warning: The API may change.</em></p>
+<ul>
+<li><a href="#basic">A basic animatable element</a></li>
+<li><a href="#configuration">Animation configuration</a><ul>
+<li><a href="#configuration-types">Animation types</a></li>
+<li><a href="#configuration-properties">Configuration properties</a></li>
+<li><a href="#configuration-multiple">Using multiple animations</a></li>
+<li><a href="#configuration-encapsulation">Running animations encapsulated in children nodes</a></li>
+</ul>
+</li>
+<li><a href="#page-transitions">Page transitions</a><ul>
+<li><a href="#shared-element">Shared element animations</a></li>
+<li><a href="#declarative-page">Declarative page transitions</a></li>
+</ul>
+</li>
+<li><a href="#animations">Included animations</a></li>
+<li><a href="#demos">Demos</a></li>
+</ul>
+<p><a name="basic"></a></p>
+<h2 id="A_basic_animatable_element">A basic animatable element</h2><p>Elements that can be animated should implement the <code>Polymer.NeonAnimatableBehavior</code> behavior, or <code>Polymer.NeonAnimationRunnerBehavior</code> if they’re also responsible for running an animation.</p>
+<pre><code class="js">Polymer({
+  is: <span class="string">'my-animatable'</span>,
+  behaviors: [
+    Polymer.NeonAnimationRunnerBehavior
+  ],
+  properties: {
+    animationConfig: {
+      value: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+        <span class="keyword">return</span> {
+          <span class="comment">// provided by neon-animation/animations/scale-down-animation.html</span>
+          name: <span class="string">'scale-down-animation'</span>,
+          node: <span class="keyword">this</span>
+        }
+      }
+    }
+  },
+  listeners: {
+    <span class="comment">// this event is fired when the animation finishes</span>
+    <span class="string">'neon-animation-finish'</span>: <span class="string">'_onNeonAnimationFinish'</span>
+  },
+  animate: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+    <span class="comment">// run scale-down-animation</span>
+    <span class="keyword">this</span>.playAnimation();
+  },
+  _onNeonAnimationFinish: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+    <span class="built_in">console</span>.log(<span class="string">'animation done!'</span>);
+  }
+});
+</code></pre>
+<p><a href="http://morethanreal.github.io/neon-animation-demo/bower_components/neon-animation/demo/doc/basic.html">Live demo</a></p>
+<p><a name="configuration"></a></p>
+<h2 id="Animation_configuration">Animation configuration</h2><p><a name="configuration-types"></a></p>
+<h3 id="Animation_types">Animation types</h3><p>An element might run different animations, for example it might do something different when it enters the view and when it exits from view. You can set the <code>animationConfig</code> property to a map from an animation type to configuration.</p>
+<pre><code class="js">Polymer({
+  is: <span class="string">'my-dialog'</span>,
+  behaviors: [
+    Polymer.NeonAnimationRunnerBehavior
+  ],
+  properties: {
+    opened: {
+      type: <span class="built_in">Boolean</span>
+    },
+    animationConfig: {
+      value: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+        <span class="keyword">return</span> {
+          <span class="string">'entry'</span>: {
+            <span class="comment">// provided by neon-animation/animations/scale-up-animation.html</span>
+            name: <span class="string">'scale-up-animation'</span>,
+            node: <span class="keyword">this</span>
+          },
+          <span class="string">'exit'</span>: {
+            <span class="comment">// provided by neon-animation-animations/fade-out-animation.html</span>
+            name: <span class="string">'fade-out-animation'</span>,
+            node: <span class="keyword">this</span>
+          }
+        }
+      }
+    }
+  },
+  listeners: {
+    <span class="string">'neon-animation-finish'</span>: <span class="string">'_onNeonAnimationFinish'</span>
+  },
+  show: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+    <span class="keyword">this</span>.opened = <span class="literal">true</span>;
+    <span class="keyword">this</span>.style.display = <span class="string">'inline-block'</span>;
+    <span class="comment">// run scale-up-animation</span>
+    <span class="keyword">this</span>.playAnimation(<span class="string">'entry'</span>);
+  },
+  hide: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+    <span class="keyword">this</span>.opened = <span class="literal">false</span>;
+    <span class="comment">// run fade-out-animation</span>
+    <span class="keyword">this</span>.playAnimation(<span class="string">'fade-out-animation'</span>);
+  },
+  _onNeonAnimationFinish: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+    <span class="keyword">if</span> (!<span class="keyword">this</span>.opened) {
+      <span class="keyword">this</span>.style.display = <span class="string">'none'</span>;
+    }
+  }
+});
+</code></pre>
+<p><a href="http://morethanreal.github.io/neon-animation-demo/bower_components/neon-animation/demo/doc/types.html">Live demo</a></p>
+<p>You can also use the convenience properties <code>entryAnimation</code> and <code>exitAnimation</code> to set <code>entry</code> and <code>exit</code> animations:</p>
+<pre><code class="js">properties: {
+  entryAnimation: {
+    value: <span class="string">'scale-up-animation'</span>
+  },
+  exitAnimation: {
+    value: <span class="string">'fade-out-animation'</span>
+  }
+}
+</code></pre>
+<p><a name="configuration-properties"></a></p>
+<h3 id="Configuration_properties">Configuration properties</h3><p>You can pass additional parameters to configure an animation in the animation configuration object.<br>All animations should accept the following properties:</p>
+<ul>
+<li><code>name</code>: The name of an animation, ie. an element implementing <code>Polymer.NeonAnimationBehavior</code>.</li>
+<li><code>node</code>: The target node to apply the animation to. Defaults to <code>this</code>.</li>
+<li><code>timing</code>: Timing properties to use in this animation. They match the <a href="https://w3c.github.io/web-animations/#the-animationeffecttiming-interface">Web Animations Animation Effect Timing interface</a>. The<br>properties include the following:<ul>
+<li><code>duration</code>: The duration of the animation in milliseconds.</li>
+<li><code>delay</code>: The delay before the start of the animation in milliseconds.</li>
+<li><code>easing</code>: A timing function for the animation. Matches the CSS timing function values.</li>
+</ul>
+</li>
+</ul>
+<p>Animations may define additional configuration properties and they are listed in their documentation.</p>
+<p><a name="configuration-multiple"></a></p>
+<h3 id="Using_multiple_animations">Using multiple animations</h3><p>Set the animation configuration to an array to combine animations, like this:</p>
+<pre><code class="js">animationConfig: {
+  value: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+    <span class="keyword">return</span> {
+      <span class="comment">// fade-in-animation is run with a 50ms delay from slide-down-animation</span>
+      <span class="string">'entry'</span>: [{
+        name: <span class="string">'slide-down-animation'</span>,
+        node: <span class="keyword">this</span>
+      }, {
+        name: <span class="string">'fade-in-animation'</span>,
+        node: <span class="keyword">this</span>,
+        timing: {delay: <span class="number">50</span>}
+      }]
+    }
+  }
+}
+</code></pre>
+<p><a name="configuration-encapsulation"></a></p>
+<h3 id="Running_animations_encapsulated_in_children_nodes">Running animations encapsulated in children nodes</h3><p>You can include animations in the configuration that are encapsulated in a child element that implement <code>Polymer.NeonAnimatableBehavior</code> with the <code>animatable</code> property.</p>
+<pre><code class="js">animationConfig: {
+  value: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+    <span class="keyword">return</span> {
+      <span class="comment">// run fade-in-animation on this, and the entry animation on this.$.myAnimatable</span>
+      <span class="string">'entry'</span>: [
+        {name: <span class="string">'fade-in-animation'</span>, node: <span class="keyword">this</span>},
+        {animatable: <span class="keyword">this</span>.$.myAnimatable, type: <span class="string">'entry'</span>}
+      ]
+    }
+  }
+}
+</code></pre>
+<p><a name="page-transitions"></a></p>
+<h2 id="Page_transitions">Page transitions</h2><p><em>The artist formerly known as <code>&lt;core-animated-pages&gt;</code></em></p>
+<p>The <code>neon-animated-pages</code> element manages a set of pages to switch between, and runs animations between the page transitions. It implements the <code>Polymer.IronSelectableBehavior</code> behavior. Each child node should implement <code>Polymer.NeonAnimatableBehavior</code> and define the <code>entry</code> and <code>exit</code> animations. During a page transition, the <code>entry</code> animation is run on the new page and the <code>exit</code> animation is run on the old page.</p>
+<p><a name="shared-element"></a></p>
+<h3 id="Shared_element_animations">Shared element animations</h3><p>Shared element animations work on multiple nodes. For example, a “hero” animation is used during a page transition to make two elements from separate pages appear to animate as a single element. Shared element animation configurations have an <code>id</code> property that identify they belong in the same animation. Elements containing shared elements also have a <code>sharedElements</code> property defines a map from <code>id</code> to element, the element involved with the animation.</p>
+<p>In the incoming page:</p>
+<pre><code class="js">properties: {
+  animationConfig: {
+    value: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+      <span class="keyword">return</span> {
+        <span class="comment">// the incoming page defines the 'entry' animation</span>
+        <span class="string">'entry'</span>: {
+          name: <span class="string">'hero-animation'</span>,
+          id: <span class="string">'hero'</span>,
+          toPage: <span class="keyword">this</span>
+        }
+      }
+    }
+  },
+  sharedElements: {
+    value: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+      <span class="keyword">return</span> {
+        <span class="string">'hero'</span>: <span class="keyword">this</span>.$.hero
+      }
+    }
+  }
+}
+</code></pre>
+<p>In the outgoing page:</p>
+<pre><code class="js">properties: {
+  animationConfig: {
+    value: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+      <span class="keyword">return</span> {
+        <span class="comment">// the outgoing page defines the 'exit' animation</span>
+        <span class="string">'exit'</span>: {
+          name: <span class="string">'hero-animation'</span>,
+          id: <span class="string">'hero'</span>,
+          fromPage: <span class="keyword">this</span>
+        }
+      }
+    }
+  },
+  sharedElements: {
+    value: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+      <span class="keyword">return</span> {
+        <span class="string">'hero'</span>: <span class="keyword">this</span>.$.otherHero
+      }
+    }
+  }
+}
+</code></pre>
+<p><a name="declarative-page"></a></p>
+<h3 id="Declarative_page_transitions">Declarative page transitions</h3><p>For convenience, if you define the <code>entry-animation</code> and <code>exit-animation</code> attributes on <code>&lt;neon-animated-pages&gt;</code>, those animations will apply for all page transitions.</p>
+<p>For example:</p>
+<pre><code class="js">&lt;neon-animated-pages id=<span class="string">"pages"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"flex"</span> selected=<span class="string">"[[selected]]"</span> entry-animation=<span class="string">"slide-from-right-animation"</span> exit-animation=<span class="string">"slide-left-animation"</span>&gt;
+  <span class="xml"><span class="tag">&lt;<span class="title">neon-animatable</span>&gt;</span>1<span class="tag">&lt;/<span class="title">neon-animatable</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">neon-animatable</span>&gt;</span>2<span class="tag">&lt;/<span class="title">neon-animatable</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">neon-animatable</span>&gt;</span>3<span class="tag">&lt;/<span class="title">neon-animatable</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">neon-animatable</span>&gt;</span>4<span class="tag">&lt;/<span class="title">neon-animatable</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">neon-animatable</span>&gt;</span>5<span class="tag">&lt;/<span class="title">neon-animatable</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">neon-animated-pages</span>&gt;</span></span>
+</code></pre>
+<p>The new page will slide in from the right, and the old page slide away to the left.</p>
+<p><a name="animations"></a></p>
+<h2 id="Included_animations">Included animations</h2><p>Single element animations:</p>
+<ul>
+<li><code>fade-in-animation</code> Animates opacity from <code>0</code> to <code>1</code>.</li>
+<li><code>fade-out-animation</code> Animates opacity from <code>1</code> to <code>0</code>.</li>
+<li><code>scale-down-animation</code> Animates transform from <code>scale(1)</code> to <code>scale(0)</code>.</li>
+<li><code>scale-up-animation</code> Animates transform from <code>scale(0)</code> to <code>scale(1)</code>.</li>
+<li><code>slide-down-animation</code> Animates transform from <code>translateY(-100%)</code> to <code>none</code>.</li>
+<li><code>slide-up-animation</code> Animates transform from <code>none</code> to <code>translateY(-100%)</code>.</li>
+<li><code>slide-left-animation</code> Animates transform from <code>none</code> to <code>translateX(-100%)</code>;</li>
+<li><code>slide-right-animation</code> Animates transform from <code>none</code> to <code>translateX(100%)</code>;</li>
+<li><code>slide-from-left-animation</code> Animates transform from <code>translateX(-100%)</code> to <code>none</code>;</li>
+<li><code>slide-from-right-animation</code> Animates transform from <code>translateX(100%)</code> to <code>none</code>;</li>
+<li><code>transform-animation</code> Animates a custom transform.</li>
+</ul>
+<p>Note that there is a restriction that only one transform animation can be applied on the same element at a time. Use the custom <code>transform-animation</code> to combine transform properties.</p>
+<p>Shared element animations</p>
+<ul>
+<li><code>hero-animation</code> Animates an element such that it looks like it scales and transforms from another element.</li>
+<li><code>ripple-animation</code> Animates an element to full screen such that it looks like it ripples from another element.</li>
+</ul>
+<p>Group animations</p>
+<ul>
+<li><code>cascaded-animation</code> Applys an animation to an array of elements with a delay between each.</li>
+</ul>
+<p><a name="demos"></a></p>
+<h2 id="Demos">Demos</h2><ul>
+<li><a href="http://morethanreal.github.io/neon-animation-demo/bower_components/neon-animation/demo/grid/index.html">Grid to full screen</a></li>
+<li><a href="http://morethanreal.github.io/neon-animation-demo/bower_components/neon-animation/demo/load/index.html">Animation on load</a></li>
+<li><a href="http://morethanreal.github.io/neon-animation-demo/bower_components/neon-animation/demo/list/index.html">List item to detail</a> (For narrow width)</li>
+<li><a href="http://morethanreal.github.io/neon-animation-demo/bower_components/neon-animation/demo/tiles/index.html">Dots to squares</a></li>
+<li><a href="http://morethanreal.github.io/neon-animation-demo/bower_components/neon-animation/demo/declarative/index.html">Declarative</a></li>
+</ul>

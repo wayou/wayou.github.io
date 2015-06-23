@@ -1,0 +1,215 @@
+<h1 id="marked">marked</h1><blockquote>
+<p>A full-featured markdown parser and compiler, written in JavaScript. Built<br>for speed.</p>
+</blockquote>
+<p><a href="http://badge.fury.io/js/marked"><img src="https://badge.fury.io/js/marked.png" alt="NPM version"></a></p>
+<h2 id="Install">Install</h2><pre><code class="bash">npm install marked --save
+</code></pre>
+<h2 id="Usage">Usage</h2><p>Minimal usage:</p>
+<pre><code class="js"><span class="keyword">var</span> marked = <span class="built_in">require</span>(<span class="string">'marked'</span>);
+<span class="built_in">console</span>.log(marked(<span class="string">'I am using __markdown__.'</span>));
+<span class="comment">// Outputs: &lt;p&gt;I am using &lt;strong&gt;markdown&lt;/strong&gt;.&lt;/p&gt;</span>
+</code></pre>
+<p>Example setting options with default values:</p>
+<pre><code class="js"><span class="keyword">var</span> marked = <span class="built_in">require</span>(<span class="string">'marked'</span>);
+marked.setOptions({
+  renderer: <span class="keyword">new</span> marked.Renderer(),
+  gfm: <span class="literal">true</span>,
+  tables: <span class="literal">true</span>,
+  breaks: <span class="literal">false</span>,
+  pedantic: <span class="literal">false</span>,
+  sanitize: <span class="literal">true</span>,
+  smartLists: <span class="literal">true</span>,
+  smartypants: <span class="literal">false</span>
+});
+
+<span class="built_in">console</span>.log(marked(<span class="string">'I am using __markdown__.'</span>));
+</code></pre>
+<h3 id="Browser">Browser</h3><pre><code class="html"><span class="doctype">&lt;!doctype html&gt;</span>
+<span class="tag">&lt;<span class="title">html</span>&gt;</span>
+<span class="tag">&lt;<span class="title">head</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">meta</span> <span class="attribute">charset</span>=<span class="value">"utf-8"</span>/&gt;</span>
+  <span class="tag">&lt;<span class="title">title</span>&gt;</span>Marked in the browser<span class="tag">&lt;/<span class="title">title</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"lib/marked.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"content"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="armasm">
+    document.getElementById(<span class="string">'content'</span>).innerHTML =
+      <span class="keyword">marked('# </span><span class="keyword">Marked </span>in <span class="keyword">browser\n\nRendered </span><span class="keyword">by </span>**<span class="keyword">marked**.');
+</span>  </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span>
+</code></pre>
+<h2 id="marked(markdownString_[,options]_[,callback])">marked(markdownString [,options] [,callback])</h2><h3 id="markdownString">markdownString</h3><p>Type: <code>string</code></p>
+<p>String of markdown source to be compiled.</p>
+<h3 id="options">options</h3><p>Type: <code>object</code></p>
+<p>Hash of options. Can also be set using the <code>marked.setOptions</code> method as seen<br>above.</p>
+<h3 id="callback">callback</h3><p>Type: <code>function</code></p>
+<p>Function called when the <code>markdownString</code> has been fully parsed when using<br>async highlighting. If the <code>options</code> argument is omitted, this can be used as<br>the second argument.</p>
+<h2 id="Options">Options</h2><h3 id="highlight">highlight</h3><p>Type: <code>function</code></p>
+<p>A function to highlight code blocks. The first example below uses async highlighting with<br><a href="https://github.com/rvagg/node-pygmentize-bundled">node-pygmentize-bundled</a>, and the second is a synchronous example using<br><a href="https://github.com/isagalaev/highlight.js">highlight.js</a>:</p>
+<pre><code class="js"><span class="keyword">var</span> marked = <span class="built_in">require</span>(<span class="string">'marked'</span>);
+
+<span class="keyword">var</span> markdownString = <span class="string">'```js\n console.log("hello"); \n```'</span>;
+
+<span class="comment">// Async highlighting with pygmentize-bundled</span>
+marked.setOptions({
+  highlight: <span class="function"><span class="keyword">function</span> (<span class="params">code, lang, callback</span>) </span>{
+    <span class="built_in">require</span>(<span class="string">'pygmentize-bundled'</span>)({ lang: lang, format: <span class="string">'html'</span> }, code, <span class="function"><span class="keyword">function</span> (<span class="params">err, result</span>) </span>{
+      callback(err, result.toString());
+    });
+  }
+});
+
+<span class="comment">// Using async version of marked</span>
+marked(markdownString, <span class="function"><span class="keyword">function</span> (<span class="params">err, content</span>) </span>{
+  <span class="keyword">if</span> (err) <span class="keyword">throw</span> err;
+  <span class="built_in">console</span>.log(content);
+});
+
+<span class="comment">// Synchronous highlighting with highlight.js</span>
+marked.setOptions({
+  highlight: <span class="function"><span class="keyword">function</span> (<span class="params">code</span>) </span>{
+    <span class="keyword">return</span> <span class="built_in">require</span>(<span class="string">'highlight.js'</span>).highlightAuto(code).value;
+  }
+});
+
+<span class="built_in">console</span>.log(marked(markdownString));
+</code></pre>
+<h4 id="highlight_arguments">highlight arguments</h4><p><code>code</code></p>
+<p>Type: <code>string</code></p>
+<p>The section of code to pass to the highlighter.</p>
+<p><code>lang</code></p>
+<p>Type: <code>string</code></p>
+<p>The programming language specified in the code block.</p>
+<p><code>callback</code></p>
+<p>Type: <code>function</code></p>
+<p>The callback function to call when using an async highlighter.</p>
+<h3 id="renderer">renderer</h3><p>Type: <code>object</code><br>Default: <code>new Renderer()</code></p>
+<p>An object containing functions to render tokens to HTML.</p>
+<h4 id="Overriding_renderer_methods">Overriding renderer methods</h4><p>The renderer option allows you to render tokens in a custom manor. Here is an<br>example of overriding the default heading token rendering by adding an embedded anchor tag like on GitHub:</p>
+<pre><code class="javascript"><span class="keyword">var</span> marked = <span class="built_in">require</span>(<span class="string">'marked'</span>);
+<span class="keyword">var</span> renderer = <span class="keyword">new</span> marked.Renderer();
+
+renderer.heading = <span class="function"><span class="keyword">function</span> (<span class="params">text, level</span>) </span>{
+  <span class="keyword">var</span> escapedText = text.toLowerCase().replace(<span class="regexp">/[^\w]+/g</span>, <span class="string">'-'</span>);
+
+  <span class="keyword">return</span> <span class="string">'&lt;h'</span> + level + <span class="string">'&gt;&lt;a name="'</span> +
+                escapedText +
+                 <span class="string">'" class="anchor" href="#'</span> +
+                 escapedText +
+                 <span class="string">'"&gt;&lt;span class="header-link"&gt;&lt;/span&gt;&lt;/a&gt;'</span> +
+                  text + <span class="string">'&lt;/h'</span> + level + <span class="string">'&gt;'</span>;
+},
+
+<span class="built_in">console</span>.log(marked(<span class="string">'# heading+'</span>, { renderer: renderer }));
+</code></pre>
+<p>This code will output the following HTML:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">h1</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">a</span> <span class="attribute">name</span>=<span class="value">"heading-"</span> <span class="attribute">class</span>=<span class="value">"anchor"</span> <span class="attribute">href</span>=<span class="value">"#heading-"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"header-link"</span>&gt;</span><span class="tag">&lt;/<span class="title">span</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">a</span>&gt;</span>
+  heading+
+<span class="tag">&lt;/<span class="title">h1</span>&gt;</span>
+</code></pre>
+<h4 id="Block_level_renderer_methods">Block level renderer methods</h4><ul>
+<li>code(<em>string</em> code, <em>string</em> language)</li>
+<li>blockquote(<em>string</em> quote)</li>
+<li>html(<em>string</em> html)</li>
+<li>heading(<em>string</em> text, <em>number</em>  level)</li>
+<li>hr()</li>
+<li>list(<em>string</em> body, <em>boolean</em> ordered)</li>
+<li>listitem(<em>string</em>  text)</li>
+<li>paragraph(<em>string</em> text)</li>
+<li>table(<em>string</em> header, <em>string</em> body)</li>
+<li>tablerow(<em>string</em> content)</li>
+<li>tablecell(<em>string</em> content, <em>object</em> flags)</li>
+</ul>
+<p><code>flags</code> has the following properties:</p>
+<pre><code class="js">{
+    header: <span class="literal">true</span> || <span class="literal">false</span>,
+    align: <span class="string">'center'</span> || <span class="string">'left'</span> || <span class="string">'right'</span>
+}
+</code></pre>
+<h4 id="Inline_level_renderer_methods">Inline level renderer methods</h4><ul>
+<li>strong(<em>string</em> text)</li>
+<li>em(<em>string</em> text)</li>
+<li>codespan(<em>string</em> code)</li>
+<li>br()</li>
+<li>del(<em>string</em> text)</li>
+<li>link(<em>string</em> href, <em>string</em> title, <em>string</em> text)</li>
+<li>image(<em>string</em> href, <em>string</em> title, <em>string</em> text)</li>
+</ul>
+<h3 id="gfm">gfm</h3><p>Type: <code>boolean</code><br>Default: <code>true</code></p>
+<p>Enable <a href="https://help.github.com/articles/github-flavored-markdown">GitHub flavored markdown</a>.</p>
+<h3 id="tables">tables</h3><p>Type: <code>boolean</code><br>Default: <code>true</code></p>
+<p>Enable GFM <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#wiki-tables">tables</a>.<br>This option requires the <code>gfm</code> option to be true.</p>
+<h3 id="breaks">breaks</h3><p>Type: <code>boolean</code><br>Default: <code>false</code></p>
+<p>Enable GFM <a href="https://help.github.com/articles/github-flavored-markdown#newlines">line breaks</a>.<br>This option requires the <code>gfm</code> option to be true.</p>
+<h3 id="pedantic">pedantic</h3><p>Type: <code>boolean</code><br>Default: <code>false</code></p>
+<p>Conform to obscure parts of <code>markdown.pl</code> as much as possible. Don’t fix any of<br>the original markdown bugs or poor behavior.</p>
+<h3 id="sanitize">sanitize</h3><p>Type: <code>boolean</code><br>Default: <code>false</code></p>
+<p>Sanitize the output. Ignore any HTML that has been input.</p>
+<h3 id="smartLists">smartLists</h3><p>Type: <code>boolean</code><br>Default: <code>true</code></p>
+<p>Use smarter list behavior than the original markdown. May eventually be<br>default with the old behavior moved into <code>pedantic</code>.</p>
+<h3 id="smartypants">smartypants</h3><p>Type: <code>boolean</code><br>Default: <code>false</code></p>
+<p>Use “smart” typograhic punctuation for things like quotes and dashes.</p>
+<h2 id="Access_to_lexer_and_parser">Access to lexer and parser</h2><p>You also have direct access to the lexer and parser if you so desire.</p>
+<pre><code class="js"><span class="keyword">var</span> tokens = marked.lexer(text, options);
+<span class="built_in">console</span>.log(marked.parser(tokens));
+</code></pre>
+<pre><code class="js"><span class="keyword">var</span> lexer = <span class="keyword">new</span> marked.Lexer(options);
+<span class="keyword">var</span> tokens = lexer.lex(text);
+<span class="built_in">console</span>.log(tokens);
+<span class="built_in">console</span>.log(lexer.rules);
+</code></pre>
+<h2 id="CLI">CLI</h2><pre><code class="bash">$ marked -o hello.html
+hello world
+^D
+$ cat hello.html
+&lt;p&gt;hello world&lt;/p&gt;
+</code></pre>
+<h2 id="Philosophy_behind_marked">Philosophy behind marked</h2><p>The point of marked was to create a markdown compiler where it was possible to<br>frequently parse huge chunks of markdown without having to worry about<br>caching the compiled output somehow…or blocking for an unnecesarily long time.</p>
+<p>marked is very concise and still implements all markdown features. It is also<br>now fully compatible with the client-side.</p>
+<p>marked more or less passes the official markdown test suite in its<br>entirety. This is important because a surprising number of markdown compilers<br>cannot pass more than a few tests. It was very difficult to get marked as<br>compliant as it is. It could have cut corners in several areas for the sake<br>of performance, but did not in order to be exactly what you expect in terms<br>of a markdown rendering. In fact, this is why marked could be considered at a<br>disadvantage in the benchmarks above.</p>
+<p>Along with implementing every markdown feature, marked also implements <a href="http://github.github.com/github-flavored-markdown/">GFM<br>features</a>.</p>
+<h2 id="Benchmarks">Benchmarks</h2><p>node v0.8.x</p>
+<pre><code class="bash">$ node <span class="built_in">test</span> --bench
+marked completed <span class="keyword">in</span> <span class="number">3411</span>ms.
+marked (gfm) completed <span class="keyword">in</span> <span class="number">3727</span>ms.
+marked (pedantic) completed <span class="keyword">in</span> <span class="number">3201</span>ms.
+robotskirt completed <span class="keyword">in</span> <span class="number">808</span>ms.
+showdown (reuse converter) completed <span class="keyword">in</span> <span class="number">11954</span>ms.
+showdown (new converter) completed <span class="keyword">in</span> <span class="number">17774</span>ms.
+markdown-js completed <span class="keyword">in</span> <span class="number">17191</span>ms.
+</code></pre>
+<p><strong>Marked is now faster than Discount, which is written in C.</strong></p>
+<p>For those feeling skeptical: These benchmarks run the entire markdown test suite 1000 times. The test suite tests every feature. It doesn’t cater to specific aspects.</p>
+<h3 id="Pro_level">Pro level</h3><p>You also have direct access to the lexer and parser if you so desire.</p>
+<pre><code class="js"><span class="keyword">var</span> tokens = marked.lexer(text, options);
+<span class="built_in">console</span>.log(marked.parser(tokens));
+</code></pre>
+<pre><code class="js"><span class="keyword">var</span> lexer = <span class="keyword">new</span> marked.Lexer(options);
+<span class="keyword">var</span> tokens = lexer.lex(text);
+<span class="built_in">console</span>.log(tokens);
+<span class="built_in">console</span>.log(lexer.rules);
+</code></pre>
+<pre><code class="bash">$ node
+&gt; require(<span class="string">'marked'</span>).lexer(<span class="string">'&gt; i am using marked.'</span>)
+[ { <span class="built_in">type</span>: <span class="string">'blockquote_start'</span> },
+  { <span class="built_in">type</span>: <span class="string">'paragraph'</span>,
+    text: <span class="string">'i am using marked.'</span> },
+  { <span class="built_in">type</span>: <span class="string">'blockquote_end'</span> },
+  links: {} ]
+</code></pre>
+<h2 id="Running_Tests_&amp;_Contributing">Running Tests &amp; Contributing</h2><p>If you want to submit a pull request, make sure your changes pass the test<br>suite. If you’re adding a new feature, be sure to add your own test.</p>
+<p>The marked test suite is set up slightly strangely: <code>test/new</code> is for all tests<br>that are not part of the original markdown.pl test suite (this is where your<br>test should go if you make one). <code>test/original</code> is only for the original<br>markdown.pl tests. <code>test/tests</code> houses both types of tests after they have been<br>combined and moved/generated by running <code>node test --fix</code> or <code>marked --test
+--fix</code>.</p>
+<p>In other words, if you have a test to add, add it to <code>test/new/</code> and then<br>regenerate the tests with <code>node test --fix</code>. Commit the result. If your test<br>uses a certain feature, for example, maybe it assumes GFM is <em>not</em> enabled, you<br>can add <code>.nogfm</code> to the filename. So, <code>my-test.text</code> becomes<br><code>my-test.nogfm.text</code>. You can do this with any marked option. Say you want<br>line breaks and smartypants enabled, your filename should be:<br><code>my-test.breaks.smartypants.text</code>.</p>
+<p>To run the tests:</p>
+<pre><code class="bash"><span class="built_in">cd</span> marked/
+node <span class="built_in">test</span>
+</code></pre>
+<h3 id="Contribution_and_License_Agreement">Contribution and License Agreement</h3><p>If you contribute code to this project, you are implicitly allowing your code<br>to be distributed under the MIT license. You are also implicitly verifying that<br>all code is your original work. <code>&lt;/legalese&gt;</code></p>
+<h2 id="License">License</h2><p>Copyright (c) 2011-2014, Christopher Jeffrey. (MIT License)</p>
+<p>See LICENSE for more info.</p>

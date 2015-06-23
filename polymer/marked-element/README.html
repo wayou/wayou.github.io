@@ -1,0 +1,20 @@
+<h1 id="marked-element">marked-element</h1><p>Element wrapper for the <a href="http://marked.org/">marked</a> library.</p>
+<p><code>&lt;marked-element&gt;</code> accepts Markdown source either via its <code>markdown</code> attribute:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">marked-element</span> <span class="attribute">markdown</span>=<span class="value">"`Markdown` is _awesome_!"</span>&gt;</span><span class="tag">&lt;/<span class="title">marked-element</span>&gt;</span>
+</code></pre>
+<p>Or, you can provide it via a <code>&lt;script type=&quot;text/markdown&quot;&gt;</code> element child:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">marked-element</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/markdown"</span>&gt;</span><span class="applescript">
+    Check out <span class="keyword">my</span> markdown!
+
+    We can even embed elements <span class="keyword">without</span> fear <span class="keyword">of</span> <span class="keyword">the</span> HTML parser mucking up their
+    textual representation:
+
+    &lt;awesome-sauce&gt;
+      &lt;<span class="keyword">div</span>&gt;Oops, I'm <span class="keyword">about</span> <span class="keyword">to</span> forget <span class="keyword">to</span> close this <span class="keyword">div</span>.
+    &lt;/awesome-sauce&gt;
+
+  </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">marked-element</span>&gt;</span>
+</code></pre>
+<p>Note that the <code>&lt;script type=&quot;text/markdown&quot;&gt;</code> approach is <em>static</em>. Changes to<br>the script content will <em>not</em> update the rendered markdown!</p>

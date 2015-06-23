@@ -1,0 +1,98 @@
+<h1 id="paper-header-panel">paper-header-panel</h1><p><code>paper-header-panel</code> contains a header section and a content panel section.</p>
+<p><strong>Important:</strong> The <code>paper-header-panel</code> will not display if its parent does not have a height.</p>
+<p>Using <a href="http://www.polymer-project.org/docs/polymer/layout-attrs.html">layout classes</a>, you can make<br>the <code>paper-header-panel</code> fill the screen</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">body</span> <span class="attribute">class</span>=<span class="value">"fullbleed layout vertical"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">paper-header-panel</span> <span class="attribute">class</span>=<span class="value">"flex"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">paper-toolbar</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">div</span>&gt;</span>Hello World!<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">paper-toolbar</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">paper-header-panel</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+</code></pre>
+<p>Special support is provided for scrolling modes when one uses a <code>paper-toolbar</code> or equivalent for the header section. For example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-header-panel</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">paper-toolbar</span>&gt;</span>Header<span class="tag">&lt;/<span class="title">paper-toolbar</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span>&gt;</span>Content goes here...<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">paper-header-panel</span>&gt;</span>
+</code></pre>
+<p>If you want to use other than <code>paper-toolbar</code> for the header, add <code>paper-header</code> class to that<br>element:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-header-panel</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"paper-header"</span>&gt;</span>Header<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span>&gt;</span>Content goes here...<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">paper-header-panel</span>&gt;</span>
+</code></pre>
+<p>To have the content fit to the main area, use the <code>fit</code> class:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-header-panel</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"paper-header"</span>&gt;</span>standard<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"content fit"</span>&gt;</span>content fits 100% below the header<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">paper-header-panel</span>&gt;</span>
+</code></pre>
+<h3 id="Mode">Mode</h3><p>Controls header and scrolling behavior. Options are <code>standard</code>, <code>seamed</code>, <code>waterfall</code>, <code>waterfall-tall</code>, <code>scroll</code> and<br><code>cover</code>. Default is <code>standard</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>standard</code></td>
+<td>The header is a step above the panel. The header will consume the panel at the point of entry, preventing it from passing through to the opposite side.</td>
+</tr>
+<tr>
+<td><code>seamed</code></td>
+<td>The header is presented as seamed with the panel.</td>
+</tr>
+<tr>
+<td><code>waterfall</code></td>
+<td>Similar to standard mode, but header is initially presented as seamed with panel, but then separates to form the step.</td>
+</tr>
+<tr>
+<td><code>waterfall-tall</code></td>
+<td>The header is initially taller (<code>tall</code> class is added to the header). As the user scrolls, the header separates (forming an edge) while condensing (<code>tall</code> class is removed from the header).</td>
+</tr>
+<tr>
+<td><code>scroll</code></td>
+<td>The header keeps its seam with the panel, and is pushed off screen.</td>
+</tr>
+<tr>
+<td><code>cover</code></td>
+<td>The panel covers the whole <code>paper-header-panel</code> including the header. This allows user to style the panel in such a way that the panel is partially covering the header.</td>
+</tr>
+</tbody>
+</table>
+<p>Example: </p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-header-panel</span> <span class="attribute">mode</span>=<span class="value">"waterfall"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"paper-header"</span>&gt;</span>standard<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"content fit"</span>&gt;</span>content fits 100% below the header<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">paper-header-panel</span>&gt;</span>
+</code></pre>
+<h3 id="Styling_header_panel:">Styling header panel:</h3><p>To change the shadow that shows up underneath the header:</p>
+<pre><code class="css"><span class="tag">paper-header-panel</span> <span class="rules">{
+  <span class="rule"><span class="attribute">--paper-header-panel-shadow</span>:<span class="value"> {
+      height: <span class="number">6px</span></span></span>;
+      <span class="rule"><span class="attribute">bottom</span>:<span class="value"> -<span class="number">6px</span></span></span>;
+      <span class="rule"><span class="attribute">box-shadow</span>:<span class="value"> inset <span class="number">0px</span> <span class="number">5px</span> <span class="number">6px</span> -<span class="number">3px</span> <span class="function">rgba</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.4</span>)</span></span>;
+  }</span>;
+}
+</code></pre>
+<p>To change the panel container:</p>
+<pre><code class="css"><span class="tag">paper-slider</span> <span class="rules">{
+  <span class="rule"><span class="attribute">--paper-header-panel-standard-container</span>:<span class="value"> {
+    border: <span class="number">1px</span> solid gray</span></span>;
+  }</span>;
+
+  <span class="rule"><span class="attribute">--paper-header-panel-cover-container</span>:<span class="value"> {
+    border: <span class="number">1px</span> solid gray</span></span>;
+  };
+
+  <span class="rule"><span class="attribute">--paper-header-panel-waterfall-container</span>:<span class="value"> {
+    border: <span class="number">1px</span> solid gray</span></span>;
+  };
+
+  <span class="rule"><span class="attribute">--paper-header-panel-waterfall-tall-container</span>:<span class="value"> {
+    border: <span class="number">1px</span> solid gray</span></span>;
+  };
+}
+</code></pre>

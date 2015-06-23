@@ -1,0 +1,32 @@
+<h1 id="iron-icon">iron-icon</h1><p>The <code>iron-icon</code> element displays an icon. By default an icon renders as a 24px square.</p>
+<p>Example using src:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">iron-icon</span> <span class="attribute">src</span>=<span class="value">"star.png"</span>&gt;</span><span class="tag">&lt;/<span class="title">iron-icon</span>&gt;</span>
+</code></pre>
+<p>Example setting size to 32px x 32px:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">iron-icon</span> <span class="attribute">class</span>=<span class="value">"big"</span> <span class="attribute">src</span>=<span class="value">"big_star.png"</span>&gt;</span><span class="tag">&lt;/<span class="title">iron-icon</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">style</span>&gt;</span><span class="css">
+  <span class="class">.big</span> <span class="rules">{
+    <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">32px</span></span></span>;
+    <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">32px</span></span></span>;
+  }</span>
+</span><span class="tag">&lt;/<span class="title">style</span>&gt;</span>
+</code></pre>
+<p>The iron elements include several sets of icons.<br>To use the default set of icons, import  <code>iron-icons.html</code> and use the <code>icon</code> attribute to specify an icon:</p>
+<pre><code class="html"><span class="comment">&lt;!-- import default iconset and iron-icon --&gt;</span>
+<span class="tag">&lt;<span class="title">link</span> <span class="attribute">rel</span>=<span class="value">"import"</span> <span class="attribute">href</span>=<span class="value">"/components/iron-icons/iron-icons.html"</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">iron-icon</span> <span class="attribute">icon</span>=<span class="value">"menu"</span>&gt;</span><span class="tag">&lt;/<span class="title">iron-icon</span>&gt;</span>
+</code></pre>
+<p>To use a different built-in set of icons, import  <code>iron-icons/&lt;iconset&gt;-icons.html</code>, and<br>specify the icon as <code>&lt;iconset&gt;:&lt;icon&gt;</code>. For example:</p>
+<pre><code class="html"><span class="comment">&lt;!-- import communication iconset and iron-icon --&gt;</span>
+<span class="tag">&lt;<span class="title">link</span> <span class="attribute">rel</span>=<span class="value">"import"</span> <span class="attribute">href</span>=<span class="value">"/components/iron-icons/communication-icons.html"</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">iron-icon</span> <span class="attribute">icon</span>=<span class="value">"communication:email"</span>&gt;</span><span class="tag">&lt;/<span class="title">iron-icon</span>&gt;</span>
+</code></pre>
+<p>You can also create custom icon sets of bitmap or SVG icons.</p>
+<p>Example of using an icon named <code>cherry</code> from a custom iconset with the ID <code>fruit</code>:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">iron-icon</span> <span class="attribute">icon</span>=<span class="value">"fruit:cherry"</span>&gt;</span><span class="tag">&lt;/<span class="title">iron-icon</span>&gt;</span>
+</code></pre>
+<p>See <a href="#iron-iconset">iron-iconset</a> and <a href="#iron-iconset-svg">iron-iconset-svg</a> for more information about<br>how to create a custom iconset.</p>
+<p>See <a href="http://www.polymer-project.org/components/iron-icons/demo.html">iron-icons</a> for the default set of icons.</p>

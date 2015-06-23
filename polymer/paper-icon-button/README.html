@@ -1,0 +1,23 @@
+<h1 id="paper-icon-button">paper-icon-button</h1><p>Material Design: <a href="http://www.google.com/design/spec/components/buttons.html">Buttons</a></p>
+<p><code>paper-icon-button</code> is a button with an image placed at the center. When the user touches<br>the button, a ripple effect emanates from the center of the button.</p>
+<p><code>paper-icon-button</code> includes a default icon set.  Use <code>icon</code> to specify which icon<br>from the icon set to use.</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-icon-button</span> <span class="attribute">icon</span>=<span class="value">"menu"</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-icon-button</span>&gt;</span>
+</code></pre>
+<p>See <a href="#iron-iconset"><code>iron-iconset</code></a> for more information about<br>how to use a custom icon set.</p>
+<p>Example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">link</span> <span class="attribute">href</span>=<span class="value">"path/to/iron-icons/iron-icons.html"</span> <span class="attribute">rel</span>=<span class="value">"import"</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">paper-icon-button</span> <span class="attribute">icon</span>=<span class="value">"favorite"</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-icon-button</span>&gt;</span>
+<span class="tag">&lt;<span class="title">paper-icon-button</span> <span class="attribute">src</span>=<span class="value">"star.png"</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-icon-button</span>&gt;</span>
+</code></pre>
+<h2 id="Styling">Styling</h2><p>Style the button with CSS as you would a normal DOM element. If you are using the icons<br>provided by <code>iron-icons</code>, they will inherit the foreground color of the button.</p>
+<pre><code class="html"><span class="comment">&lt;!-- make a red "favorite" button --&gt;</span>
+<span class="tag">&lt;<span class="title">paper-icon-button</span> <span class="attribute">icon</span>=<span class="value">"favorite"</span> <span class="attribute">style</span>=<span class="value">"color: red;"</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-icon-button</span>&gt;</span>
+</code></pre>
+<p>By default, the ripple is the same color as the foreground at 25% opacity. You may<br>customize the color using this selector:</p>
+<pre><code class="css"><span class="comment">/* make #my-button use a blue ripple instead of foreground color */</span>
+<span class="id">#my-button</span><span class="pseudo">::shadow</span> <span class="id">#ripple</span> <span class="rules">{
+  <span class="rule"><span class="attribute">color</span>:<span class="value"> blue</span></span>;
+}</span>
+</code></pre>
+<p>The opacity of the ripple is not customizable via CSS.</p>

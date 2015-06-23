@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  
+
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Polymer Starter Kit" />
+  <title>延迟求值-如何让Lo-Dash再提速x100? | 刘哇勇的部落格</title>
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#303F9F">
+
+  <!-- Web Application Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tile color for Win8 -->
+  <meta name="msapplication-TileColor" content="#3372DF">
+
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Polymer Starter Kit">
+  <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+  <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+
+  <!-- Tile icon for Win8 (144x144) -->
+  <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+
+  <!-- rss -->
+  
+  <link rel="alternative" href="/atom.xml" title="刘哇勇的部落格" type="application/atom+xml">
+  
+  <!-- favicon -->
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link rel="stylesheet" href="/css/github-markdown.css" type="text/css">
+  <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+  <link rel="stylesheet" href="/css/main.css" type="text/css">
+
+  <script src="/polymer/webcomponentsjs/webcomponents-lite.js" type="text/javascript"></script>
+
+  <link rel="import" href="/elements/elements.html">
+
+</head>
+
+
+<style is="custom-style">
+
+  paper-scroll-header-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: var(--paper-grey-200, #eee);
+
+    /* background for toolbar when it is at its full size */
+    --paper-scroll-header-panel-full-header: {
+      background-image: url( / );
+    };
+
+    /* background for toolbar when it is condensed */
+    --paper-scroll-header-panel-condensed-header: {
+      background-color: var(--paper-deep-orange-500, #ff5722);
+    };
+  }
+
+
+
+</style>
+
+<body unresolved class="fullbleed layout vertical">
+  <template is="dom-bind" id="app">
+
+    <paper-drawer-panel id="paperDrawerPanel">
+
+       <div drawer>
+	<!-- Drawer Toolbar -->
+	<paper-toolbar id="drawerToolbar">
+	  <span class="paper-font-title"> 刘哇勇的部落格 </span>
+	</paper-toolbar>
+
+	<!-- Drawer Content -->
+	<paper-menu class="list" attr-for-selected="data-route"  on-iron-select="onMenuSelect">
+
+	  
+	    <a href="/">
+	        <iron-icon icon="home"></iron-icon>
+	        <span>Home</span>
+	    </a>
+	  
+	    <a href="/archives">
+	        <iron-icon icon="archive"></iron-icon>
+	        <span>Archives</span>
+	    </a>
+	  
+	    <a href="/about">
+	        <iron-icon icon="info"></iron-icon>
+	        <span>About</span>
+	    </a>
+	  
+	    <a href="/atom.xml">
+	        <iron-icon icon="bookmark"></iron-icon>
+	        <span>RSS</span>
+	    </a>
+	  
+	 
+	</paper-menu>
+</div>
+
+      <paper-header-panel main mode="waterfall-tall">
+
+         <paper-scroll-header-panel condenses>
+
+          <paper-toolbar class="tall" id="mainToolbar">
+
+  <!-- index -->
+  
+  	<paper-icon-button icon="arrow-back" onclick="back(event)"></paper-icon-button>
+  
+
+  <div class="flex"></div>
+  <!-- <paper-icon-button icon="search"></paper-icon-button> -->
+
+  <!-- Application sub title -->
+  <!-- index -->
+  
+	  <div class="bottom title"> 延迟求值-如何让Lo-Dash再提速x100? </div>
+  
+  
+</paper-toolbar>
+
+<!-- Main Content -->
+<div class="content">
+
+  <!-- index -->
+  
+    <paper-material class="markdown-body">
+      <p><blockquote>
+<p>「注释」作者在本文里没有说明这么一个事实：<br>目前的版本<code>Lo-Dash v2.4.1</code>并没有引入延迟求值的特性，<code>Lo-Dash 3.0.0-pre</code>中部分方法进行了引入，比如<code>filter()</code>,<code>map()</code>,<code>reverse()</code>。</p>
+<p>原文：<a href="http://filimanjaro.com/blog/2014/introducing-lazy-evaluation" target="_blank" rel="external">How to Speed Up Lo-Dash ×100? Introducing Lazy Evaluation</a></p>
+</blockquote>
+<p>我时常觉得像<code>Lo-Dash</code>这样优秀的库已经无法再优化了。它整合了各种<a href="https://www.youtube.com/watch?v=NthmeLEhDDM" target="_blank" rel="external">奇技淫巧</a>已经将JavaScript的性能开发到了极限。它使用了最快速的语句，优化的算法，甚至还会在发版前做性能测试以保证回归没问题。</p>
+<a id="more"></a>
+<h1 id="延迟求值">延迟求值</h1><p>但似乎我错了-还可以让<code>Lo-Dash</code>有明显的提升。只需将关注点从细微的优化转移到算法上来。譬如，在一次循环中我们往往会去优化循环体：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> len = getLength();</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">    operation(); <span class="comment">// &lt;- 10ms - 如何做到 9ms?!</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但针对循环体的优化往往很难，很多时候已经到极限了。相反，优化<code>getLength()</code> 函数尽量减少循环次数变得更有意义了。你想啊，这个数值越小，需要循环的<code>10ms</code>就越少。</p>
+<p>这便是<code>Lo-Dash</code>实现延迟求值的大致思路。重要的是减少循环次数，而不是每次循环的时间。让我们考察下面的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">priceLt</span>(<span class="params">x</span>) </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">item</span>) </span>&#123; <span class="keyword">return</span> item.price &lt; x; &#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> gems = [</span><br><span class="line">   &#123; name: <span class="string">'Sunstone'</span>, price: <span class="number">4</span> &#125;, &#123; name: <span class="string">'Amethyst'</span>, price: <span class="number">15</span> &#125;,</span><br><span class="line">   &#123; name: <span class="string">'Prehnite'</span>, price: <span class="number">20</span>&#125;, &#123; name: <span class="string">'Sugilite'</span>, price: <span class="number">7</span>  &#125;,</span><br><span class="line">   &#123; name: <span class="string">'Diopside'</span>, price: <span class="number">3</span> &#125;, &#123; name: <span class="string">'Feldspar'</span>, price: <span class="number">13</span> &#125;,</span><br><span class="line">   &#123; name: <span class="string">'Dioptase'</span>, price: <span class="number">2</span> &#125;, &#123; name: <span class="string">'Sapphire'</span>, price: <span class="number">20</span> &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> chosen = _(gems).filter(priceLt(<span class="number">10</span>)).take(<span class="number">3</span>).value();</span><br></pre></td></tr></table></figure>
+<p>我们只想取出3个价格低于10元的小球。通常情况下我们先过滤整个数据源，最后从所有小于10的元素里返回前面三个即可。</p>
+<p><img src="/asset/posts/2014-11-08-lazy-evaluation/lodash-naive.gif" alt="lo-dash naive"></p>
+<p>但这种做法并不优雅。它处理了全部8个数据，但其实只需要处理前面5个我们就能拿到结果了。同样为了得到正确的结果，延迟求值则只处理最少的元素。优化后如下图所示：</p>
+<p><img src="/asset/posts/2014-11-08-lazy-evaluation/grafika.gif" alt="lo-dash naive"></p>
+<p>一下子就获得了37.5%的性能提升。很容易找出提升X1000+的例子。比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> phoneNumbers = [<span class="number">5554445555</span>, <span class="number">1424445656</span>, <span class="number">5554443333</span>, … ×<span class="number">99</span>,<span class="number">999</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 取出100个含 `55` 的号码</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">contains55</span>(<span class="params">str</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> str.contains(<span class="string">"55"</span>); </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> r = _(phoneNumbers).map(<span class="built_in">String</span>).filter(contains55).take(<span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+<p>这个例子中<code>map</code>和<code>filter</code> 将遍历99999 个元素，但很有可能我们只需处理到1000个元素的时候就已经拿到想要的结果了。这回性能的提升就太明显了（<a href="http://jsperf.com/lazy-demo" target="_blank" rel="external">benchmark</a>）：</p>
+<p><img src="/asset/posts/2014-11-08-lazy-evaluation/benchmark.jpg" alt="benchmark"></p>
+<h1 id="流水线">流水线</h1><p>延迟求值同时带来了另一个好处，我称之为“流水线”。要旨就是避免产生中间数组，而是对一个元素一次性进行完所有操作。下面用代码说话：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = _(source).map(func1).map(func2).map(func3).value();</span><br></pre></td></tr></table></figure>
+<p>上面看似优雅的写法在原始的<code>Lo-Dash</code>里会转换成下面的样子（直接求值）：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = [], temp1 = [], temp2 = [], temp3 = [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; source.length; i++) &#123;</span><br><span class="line">   temp1[i] = func1(source[i]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; source.length; i++) &#123;</span><br><span class="line">   temp2[i] = func2(temp1[i]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; source.length; i++) &#123;</span><br><span class="line">   temp3[i] = func3(temp2[i]);</span><br><span class="line">&#125;</span><br><span class="line">result = temp3;</span><br></pre></td></tr></table></figure>
+<p>当引入了延迟求值后，代码大致就成这样的了：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = [];</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; source.length; i++) &#123;</span><br><span class="line">   result[i] = func3(func2(func1(source[i])));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>减少不必要的中间变量多少会带来性能上的提升，特别是在数据源特别巨大，内存又吃紧的情况下。</p>
+<h1 id="延迟执行">延迟执行</h1><p>延迟求值带来的另一个好处是延迟执行。无论何时你写了段链式代码，只有在显式地调用了<code>.value()</code>后才会真正执行。这样一来，在数据源需要异步去拉取的情况下，可以保证我们处理的是最新的数据。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wallet = _(assets).filter(ownedBy(<span class="string">'me'</span>))</span><br><span class="line">                      .pluck(<span class="string">'value'</span>)</span><br><span class="line">                      .reduce(sum);</span><br><span class="line"></span><br><span class="line">$json.get(<span class="string">"/new/assets"</span>).success(<span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">    assets.push.apply(assets, data); <span class="comment">// 更新数据源</span></span><br><span class="line">    wallet.value(); <span class="comment">// 返回的结果是最新的</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>而且这种机制在某些情况下也会提高执行效果。我们可以老早发送一个请求获取数据，然后指定一个精确的时间来执行。</p>
+<h1 id="后记">后记</h1><p>延迟求值并且不算什么新技术。在一些库中已经在使用了，比如<a href="http://en.wikipedia.org/wiki/Language_Integrated_Query" target="_blank" rel="external">LINQ</a>,<a href="http://danieltao.com/lazy.js/" target="_blank" rel="external">Lazy.js</a>还有其他等等。那么问题来了，<code>Lo-Dash</code>存在的意义是啥？我想就是你仍然可以使用你熟悉的<code>Underscore</code> 接口但享受一个更高效的底层实现，不需要额外的学习成本，代码上面也不会有大的变动，只需稍加修改。</p>
+</p>
+    </paper-material>
+	  <paper-material>
+      
+  
+   <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="_posts/2014-11-08-lazy-evaluation.md" data-title="延迟求值-如何让Lo-Dash再提速x100?" data-url="http://wayou.github.io/2014/11/08/2014-11-08-lazy-evaluation/"></div>
+    <!-- 多说评论框 end -->
+   <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'wayouliu'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+  
+
+
+		</paper-material>
+  
+
+  <!-- pagination -->
+  
+
+  
+<footer>
+	<p>由 <a href="https://hexo.io">hexo</a> 强力驱动 | 搭载 <a href="">polymer</a> 主题 </p>
+	<p>&copy;2015 copy left or right? </p>
+</footer>
+
+<script src="/js/main.js" type="text/javascript"></script>
+
+<!-- 百度统计 -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?392796d51567e848aebf813b65cb8656";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<!-- 谷歌统计 -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46794744-6', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</div>
+
+
+
+
+
+
+        </paper-scroll-header-panel>
+
+      </paper-header-panel>
+
+    </paper-drawer-panel>
+
+  </template>
+
+</body>
+
+</html>

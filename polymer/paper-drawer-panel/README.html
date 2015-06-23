@@ -1,0 +1,45 @@
+<h1 id="paper-drawer-panel">paper-drawer-panel</h1><p><code>paper-drawer-panel</code> contains a drawer panel and a main panel.  The drawer<br>and the main panel are side-by-side with drawer on the left.  When the browser<br>window size is smaller than the <code>responsiveWidth</code>, <code>paper-drawer-panel</code><br>changes to narrow layout.  In narrow layout, the drawer will be stacked on top<br>of the main panel.  The drawer will slide in/out to hide/reveal the main<br>panel.</p>
+<p>Use the attribute <code>drawer</code> to indicate that the element is the drawer panel and<br><code>main</code> to indicate that the element is the main panel.</p>
+<p>Example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-drawer-panel</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">drawer</span>&gt;</span> Drawer panel... <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">main</span>&gt;</span> Main panel... <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">paper-drawer-panel</span>&gt;</span>
+</code></pre>
+<p>The drawer and the main panels are not scrollable.  You can set CSS overflow<br>property on the elements to make them scrollable or use <code>paper-header-panel</code>.</p>
+<p>Example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-drawer-panel</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">paper-header-panel</span> <span class="attribute">drawer</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">paper-toolbar</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-toolbar</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">div</span>&gt;</span> Drawer content... <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">paper-header-panel</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">paper-header-panel</span> <span class="attribute">main</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">paper-toolbar</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-toolbar</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">div</span>&gt;</span> Main content... <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">paper-header-panel</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">paper-drawer-panel</span>&gt;</span>
+</code></pre>
+<p>An element that should toggle the drawer will automatically do so if it’s<br>given the <code>paper-drawer-toggle</code> attribute.  Also this element will automatically<br>be hidden in wide layout.</p>
+<p>Example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-drawer-panel</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">paper-header-panel</span> <span class="attribute">drawer</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">paper-toolbar</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">div</span>&gt;</span>Application<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">paper-toolbar</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">div</span>&gt;</span> Drawer content... <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">paper-header-panel</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">paper-header-panel</span> <span class="attribute">main</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">paper-toolbar</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">paper-icon-button</span> <span class="attribute">icon</span>=<span class="value">"menu"</span> <span class="attribute">paper-drawer-toggle</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-icon-button</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">div</span>&gt;</span>Title<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">paper-toolbar</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">div</span>&gt;</span> Main content... <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">paper-header-panel</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">paper-drawer-panel</span>&gt;</span>
+</code></pre>
+<p>To position the drawer to the right, add <code>right-drawer</code> attribute.</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-drawer-panel</span> <span class="attribute">right-drawer</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">drawer</span>&gt;</span> Drawer panel... <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">main</span>&gt;</span> Main panel... <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">paper-drawer-panel</span>&gt;</span>
+</code></pre>

@@ -1,0 +1,1 @@
+"use strict";var findAlias=function i(n,r,e){if(!n){return null}return r[n.indexOf(e)]};module.exports=findAlias;

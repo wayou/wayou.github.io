@@ -1,0 +1,33 @@
+<h1 id="paper-ripple">paper-ripple</h1><p><code>paper-ripple</code> provides a visual effect that other paper elements can<br>use to simulate a rippling effect emanating from the point of contact.  The<br>effect can be visualized as a concentric circle with motion.</p>
+<p>Example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-ripple</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-ripple</span>&gt;</span>
+</code></pre>
+<p><code>paper-ripple</code> listens to “mousedown” and “mouseup” events so it would display ripple<br>effect when touches on it.  You can also defeat the default behavior and<br>manually route the down and up actions to the ripple element.  Note that it is<br>important if you call downAction() you will have to make sure to call<br>upAction() so that <code>paper-ripple</code> would end the animation loop.</p>
+<p>Example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-ripple</span> <span class="attribute">id</span>=<span class="value">"ripple"</span> <span class="attribute">style</span>=<span class="value">"pointer-events: none;"</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-ripple</span>&gt;</span>
+...
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="css">
+  <span class="rule"><span class="attribute">downAction</span>:<span class="value"> <span class="function">function</span>(e) {
+    this.$.ripple.<span class="function">downAction</span>({x: e.x, y: e.y})</span></span>;
+  },
+  <span class="rule"><span class="attribute">upAction</span>:<span class="value"> <span class="function">function</span>(e) {
+    this.$.ripple.<span class="function">upAction</span>()</span></span>;
+  }
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+</code></pre>
+<p>Styling ripple effect:</p>
+<p>Use CSS color property to style the ripple:</p>
+<pre><code class="css"><span class="tag">paper-ripple</span> <span class="rules">{
+  <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#4285f4</span></span></span>;
+}</span>
+</code></pre>
+<p>Note that CSS color property is inherited so it is not required to set it on<br>the <code>paper-ripple</code> element directly.</p>
+<p>By default, the ripple is centered on the point of contact. Apply the <code>recenters</code> attribute to have the ripple grow toward the center of its container.</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-ripple</span> <span class="attribute">recenters</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-ripple</span>&gt;</span>
+</code></pre>
+<p>Apply <code>center</code> to center the ripple inside its container from the start.</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-ripple</span> <span class="attribute">center</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-ripple</span>&gt;</span>
+</code></pre>
+<p>Apply <code>circle</code> class to make the rippling effect within a circle.</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">paper-ripple</span> <span class="attribute">class</span>=<span class="value">"circle"</span>&gt;</span><span class="tag">&lt;/<span class="title">paper-ripple</span>&gt;</span>
+</code></pre>

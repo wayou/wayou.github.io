@@ -1,0 +1,17 @@
+<h1 id="hydrolysis">hydrolysis</h1><p>Static anlaysis utilities for polymer.</p>
+<h2 id="Install">Install</h2><pre><code>npm <span class="keyword">install</span> hydrolysis
+</code></pre><h2 id="Usage">Usage</h2><pre><code class="js"><span class="keyword">var</span> hyd = <span class="built_in">require</span>(<span class="string">'hydrolysis'</span>);
+
+hyd.Analyzer.analyze(<span class="string">'path-to-polymer-element.html'</span>)
+    .then(<span class="function"><span class="keyword">function</span>(<span class="params">analyzer</span>) </span>{
+      <span class="built_in">console</span>.log(analyzer.elementsByTagName[<span class="string">'my-element'</span>])
+    });
+</code></pre>
+<p>For more detail, see the <a href="API.md">API Docs</a>.</p>
+<h2 id="Developing">Developing</h2><p>You need <a href="https://github.com/Polymer/web-component-tester">wct</a> to run the tests.</p>
+<p>Run a one-off build of the project:</p>
+<pre><code class="sh">npm run build
+</code></pre>
+<p>Or watch the source for changes, and rebuild each time a file is modified:</p>
+<pre><code class="sh">npm run watch
+</code></pre>

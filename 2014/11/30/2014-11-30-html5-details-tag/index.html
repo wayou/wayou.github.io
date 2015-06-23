@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  
+
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Polymer Starter Kit" />
+  <title>HTML5 &lt;details&gt; 标签 | 刘哇勇的部落格</title>
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#303F9F">
+
+  <!-- Web Application Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tile color for Win8 -->
+  <meta name="msapplication-TileColor" content="#3372DF">
+
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Polymer Starter Kit">
+  <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+  <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+
+  <!-- Tile icon for Win8 (144x144) -->
+  <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+
+  <!-- rss -->
+  
+  <link rel="alternative" href="/atom.xml" title="刘哇勇的部落格" type="application/atom+xml">
+  
+  <!-- favicon -->
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link rel="stylesheet" href="/css/github-markdown.css" type="text/css">
+  <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+  <link rel="stylesheet" href="/css/main.css" type="text/css">
+
+  <script src="/polymer/webcomponentsjs/webcomponents-lite.js" type="text/javascript"></script>
+
+  <link rel="import" href="/elements/elements.html">
+
+</head>
+
+
+<style is="custom-style">
+
+  paper-scroll-header-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: var(--paper-grey-200, #eee);
+
+    /* background for toolbar when it is at its full size */
+    --paper-scroll-header-panel-full-header: {
+      background-image: url( / );
+    };
+
+    /* background for toolbar when it is condensed */
+    --paper-scroll-header-panel-condensed-header: {
+      background-color: var(--paper-deep-orange-500, #ff5722);
+    };
+  }
+
+
+
+</style>
+
+<body unresolved class="fullbleed layout vertical">
+  <template is="dom-bind" id="app">
+
+    <paper-drawer-panel id="paperDrawerPanel">
+
+       <div drawer>
+	<!-- Drawer Toolbar -->
+	<paper-toolbar id="drawerToolbar">
+	  <span class="paper-font-title"> 刘哇勇的部落格 </span>
+	</paper-toolbar>
+
+	<!-- Drawer Content -->
+	<paper-menu class="list" attr-for-selected="data-route"  on-iron-select="onMenuSelect">
+
+	  
+	    <a href="/">
+	        <iron-icon icon="home"></iron-icon>
+	        <span>Home</span>
+	    </a>
+	  
+	    <a href="/archives">
+	        <iron-icon icon="archive"></iron-icon>
+	        <span>Archives</span>
+	    </a>
+	  
+	    <a href="/about">
+	        <iron-icon icon="info"></iron-icon>
+	        <span>About</span>
+	    </a>
+	  
+	    <a href="/atom.xml">
+	        <iron-icon icon="bookmark"></iron-icon>
+	        <span>RSS</span>
+	    </a>
+	  
+	 
+	</paper-menu>
+</div>
+
+      <paper-header-panel main mode="waterfall-tall">
+
+         <paper-scroll-header-panel condenses>
+
+          <paper-toolbar class="tall" id="mainToolbar">
+
+  <!-- index -->
+  
+  	<paper-icon-button icon="arrow-back" onclick="back(event)"></paper-icon-button>
+  
+
+  <div class="flex"></div>
+  <!-- <paper-icon-button icon="search"></paper-icon-button> -->
+
+  <!-- Application sub title -->
+  <!-- index -->
+  
+	  <div class="bottom title"> HTML5 &lt;details&gt; 标签 </div>
+  
+  
+</paper-toolbar>
+
+<!-- Main Content -->
+<div class="content">
+
+  <!-- index -->
+  
+    <paper-material class="markdown-body">
+      <p><p>HTML5 中新增的<code>&lt;details&gt;</code>标签允许用户创建一个可展开折叠的元件，让一段文字或标题包含一些隐藏的信息。</p>
+<a id="more"></a>
+<h1 id="用法">用法</h1><p>一般情况下，<code>details</code>用来对显示在页面的内容做进一步骤解释。其展现出来的效果和jQuery手风琴插件差不多。</p>
+<p>其大致写法如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">details</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">summary</span>&gt;</span>Google Nexus 6<span class="tag">&lt;/<span class="title">summary</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">p</span>&gt;</span>商品详情：<span class="tag">&lt;/<span class="title">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">dl</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>屏幕<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>5.96” 2560x1440 QHD AMOLED display (493 ppi)<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>电池<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>3220 mAh<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>相机<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>13MP rear-facing with optical image stabilization 2MP front-facing<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>处理器<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>Qualcomm® Snapdragon™ 805 processor<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dl</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">details</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>首先是<code>&lt;details&gt;</code>标签，里面接着是标题<code>&lt;summary&gt;</code>，这里面的内容一般简短，具有总结性，会展示在页面。接着可以跟任意类型的HTML元素作为详情内容，这些内容需要在点击<code>&lt;summary&gt;</code>才会呈现。</p>
+<p>上面代码呈现出来的效果会是下面这样的：</p>
+<p><img src="/asset/posts/2014-11-30-html5-details-tag/html5_details_tag.gif" alt="html5 details tag"></p>
+<p>最开始详情是隐藏的，当点击时都会展现。</p>
+<h2 id="open_属性">open 属性</h2><p>当然，你也可以通过给<code>&lt;details&gt;</code>标签设置<code>open</code>属性让它默认为展开状态。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">details</span> <span class="attribute">open</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">summary</span>&gt;</span>Google Nexus 6<span class="tag">&lt;/<span class="title">summary</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">p</span>&gt;</span>商品详情：<span class="tag">&lt;/<span class="title">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">dl</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>屏幕<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>5.96” 2560x1440 QHD AMOLED display (493 ppi)<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>电池<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>3220 mAh<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>相机<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>13MP rear-facing with optical image stabilization 2MP front-facing<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>处理器<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>Qualcomm® Snapdragon™ 805 processor<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dl</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">details</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>此时默认会把详情展开，而点击标题后会折叠起来。</p>
+<h1 id="示例">示例</h1><p>示例如上面那样，预览在线版本可<a href="http://sandbox.runjs.cn/show/hjotymth" target="_blank" rel="external">点击此处</a>。</p>
+<h1 id="浏览器兼容性">浏览器兼容性</h1><p>由于是HTML5新标签，浏览器支持情况不是很理想。从来自<a href="http://caniuse.com/#feat=details" target="_blank" rel="external">caniuse</a>的数据来看，目前仅Chrome, Safari 8+ 和Opera 26+支持此标签。</p>
+<p>可喜的是，如果你在caniuse开启了「显示来自UC浏览器的结果」 选项的话，会发现，国产的UC浏览器也支持了此标签。</p>
+<p><img src="/asset/posts/2014-11-30-html5-details-tag/browser_compatability.jpg" alt="can i use details tag"></p>
+<h1 id="Polyfill">Polyfill</h1><p>既然支持情况如此不理解，那么使用垫片（polyfill）就很有必要了。</p>
+<p>垫片就是在那些不支持此特性的浏览器上使用JavaScript来手动模拟，看起来好像是浏览器支持了一样。</p>
+<p><a href="http://www.smashingmagazine.com/author/maksim-chemerisuk/?rel=author" target="_blank" rel="external">chemerisuk</a>给出了他的一个实现，源码在<a href="https://github.com/chemerisuk/better-
+[details-polyfill" target="_blank" rel="external">GitHub上</a>，具体的实现思路也写成了博文发到了<a href="http://www.smashingmagazine.com/2014/11/28/complete-polyfill-html5-details-element/" target="_blank" rel="external">Smashing Magazine</a>，用法可参见GitHub。</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="http://www.w3schools.com/tags/tag_details.asp" target="_blank" rel="external">HTML &lt;details&gt; Tag</a></li>
+<li><a href="http://www.w3schools.com/tags/tag_dt.asp" target="_blank" rel="external">HTML &lt;dt&gt; Tag</a></li>
+<li><a href="http://www.smashingmagazine.com/2014/11/28/complete-polyfill-html5-details-element/" target="_blank" rel="external">Making A Complete Polyfill For The HTML5 Details Element</a></li>
+<li><a href="https://github.com/chemerisuk/better-details-polyfill" target="_blank" rel="external">better-details-polyfill</a></li>
+</ul>
+</p>
+    </paper-material>
+	  <paper-material>
+      
+  
+   <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="_posts/2014-11-30-html5-details-tag.md" data-title="HTML5 &lt;details&gt; 标签" data-url="http://wayou.github.io/2014/11/30/2014-11-30-html5-details-tag/"></div>
+    <!-- 多说评论框 end -->
+   <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'wayouliu'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+  
+
+
+		</paper-material>
+  
+
+  <!-- pagination -->
+  
+
+  
+<footer>
+	<p>由 <a href="https://hexo.io">hexo</a> 强力驱动 | 搭载 <a href="">polymer</a> 主题 </p>
+	<p>&copy;2015 copy left or right? </p>
+</footer>
+
+<script src="/js/main.js" type="text/javascript"></script>
+
+<!-- 百度统计 -->
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?392796d51567e848aebf813b65cb8656";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<!-- 谷歌统计 -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46794744-6', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</div>
+
+
+
+
+
+
+        </paper-scroll-header-panel>
+
+      </paper-header-panel>
+
+    </paper-drawer-panel>
+
+  </template>
+
+</body>
+
+</html>

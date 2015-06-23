@@ -1,0 +1,1 @@
+(function(){if(!self.Prism){return}Prism.hooks.add("wrap",function(r){if(r.type!=="keyword"){return}r.classes.push("keyword-"+r.content)})})();

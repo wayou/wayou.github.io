@@ -1,0 +1,1 @@
+(function(){if(!window.Prism){return}for(var r in Prism.languages){var n=Prism.languages[r];n.tab=/\t/g;n.crlf=/\r\n/g;n.lf=/\n/g;n.cr=/\r/g}})();

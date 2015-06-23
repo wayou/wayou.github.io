@@ -1,0 +1,108 @@
+<h1 id="webcomponents-js">webcomponents.js</h1><p><a href="https://gitter.im/webcomponents/webcomponentsjs?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/webcomponents/webcomponentsjs"></a></p>
+<p>A suite of polyfills supporting the <a href="http://webcomponents.org">Web Components</a> specs:</p>
+<p><strong>Custom Elements</strong>: allows authors to define their own custom tags (<a href="https://w3c.github.io/webcomponents/spec/custom/">spec</a>).</p>
+<p><strong>HTML Imports</strong>: a way to include and reuse HTML documents via other HTML documents (<a href="https://w3c.github.io/webcomponents/spec/imports/">spec</a>).</p>
+<p><strong>Shadow DOM</strong>: provides encapsulation by hiding DOM subtrees under shadow roots (<a href="https://w3c.github.io/webcomponents/spec/shadow/">spec</a>).</p>
+<p>This also folds in polyfills for <code>MutationObserver</code> and <code>WeakMap</code>.</p>
+<h2 id="Releases">Releases</h2><p>Pre-built (concatenated &amp; minified) versions of the polyfills are maintained in the <a href="https://github.com/webcomponents/webcomponentsjs/releases">tagged versions</a> of this repo. There are two variants:</p>
+<p><code>webcomponents.js</code> includes all of the polyfills.</p>
+<p><code>webcomponents-lite.js</code> includes all polyfills except for shadow DOM.</p>
+<h2 id="Browser_Support">Browser Support</h2><p>Our polyfills are intended to work in the latest versions of evergreen browsers. See below<br>for our complete browser support matrix:</p>
+<table>
+<thead>
+<tr>
+<th>Polyfill</th>
+<th style="text-align:center">IE10</th>
+<th style="text-align:center">IE11+</th>
+<th style="text-align:center">Chrome*</th>
+<th style="text-align:center">Firefox*</th>
+<th style="text-align:center">Safari 7+*</th>
+<th style="text-align:center">Chrome Android*</th>
+<th style="text-align:center">Mobile Safari*</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Custom Elements</td>
+<td style="text-align:center">~</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+</tr>
+<tr>
+<td>HTML Imports</td>
+<td style="text-align:center">~</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+</tr>
+<tr>
+<td>Shadow DOM</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+</tr>
+<tr>
+<td>Templates</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+<td style="text-align:center">✓</td>
+</tr>
+</tbody>
+</table>
+<p>*Indicates the current version of the browser</p>
+<p>~Indicates support may be flaky. If using Custom Elements or HTML Imports with Shadow DOM,<br>you will get the non-flaky Mutation Observer polyfill that Shadow DOM includes.</p>
+<p>The polyfills may work in older browsers, however require additional polyfills (such as classList)<br>to be used. We cannot guarantee support for browsers outside of our compatibility matrix.</p>
+<h3 id="Manually_Building">Manually Building</h3><p>If you wish to build the polyfills yourself, you’ll need <code>node</code> and <code>gulp</code> on your system:</p>
+<ul>
+<li>install <a href="http://nodejs.org/">node.js</a> using the instructions on their website</li>
+<li>use <code>npm</code> to install <a href="http://gulpjs.com/">gulp.js</a>: <code>npm install -g gulp</code></li>
+</ul>
+<p>Now you are ready to build the polyfills with:</p>
+<pre><code><span class="preprocessor"># install dependencies</span>
+npm install
+<span class="preprocessor"># build</span>
+gulp build
+</code></pre><p>The builds will be placed into the <code>dist/</code> directory.</p>
+<h2 id="Contribute">Contribute</h2><p>See the <a href="CONTRIBUTING.md">contributing guide</a></p>
+<h2 id="License">License</h2><p>Everything in this repository is BSD style license unless otherwise specified.</p>
+<p>Copyright (c) 2015 The Polymer Authors. All rights reserved.</p>
+<h2 id="Helper_utilities">Helper utilities</h2><h3 id="WebComponentsReady"><code>WebComponentsReady</code></h3><p>Under native HTML Imports, <code>&lt;script&gt;</code> tags in the main document block the loading of such imports. This is to ensure the imports have loaded and any registered elements in them have been upgraded. </p>
+<p>The webcomponents.js and webcomponents-lite.js polyfills parse element definitions and handle their upgrade asynchronously. If prematurely fetching the element from the DOM before it has an opportunity to upgrade, you’ll be working with an <code>HTMLUnknownElement</code>. </p>
+<p>For these situations (or when you need an approximate replacement for the Polymer 0.5 <code>polymer-ready</code> behavior), you can use the <code>WebComponentsReady</code> event as a signal before interacting with the element. The criteria for this event to fire is all Custom Elements with definitions registered by the time HTML Imports available at load time have loaded have upgraded.</p>
+<pre><code class="js"><span class="built_in">window</span>.addEventListener(<span class="string">'WebComponentsReady'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>{
+  <span class="comment">// imports are loaded and elements have been registered</span>
+  <span class="built_in">console</span>.log(<span class="string">'Components are ready'</span>);
+});
+</code></pre>
+<h2 id="Known_Issues">Known Issues</h2><ul>
+<li><a href="#constructor">Custom element’s constructor property is unreliable</a></li>
+<li><a href="#contentedit">Contenteditable elements do not trigger MutationObserver</a></li>
+<li><a href="#hostcontext">ShadowCSS: :host-context(…):host(…) doesn’t work</a></li>
+<li><a href="#execcommand">execCommand isn’t supported under Shadow DOM</a></li>
+</ul>
+<h3 id="Custom_element’s_constructor_property_is_unreliable">Custom element’s constructor property is unreliable <a id="constructor"></a></h3><p>See <a href="https://github.com/webcomponents/webcomponentsjs/issues/215">#215</a> for background.</p>
+<p>In Safari and IE, instances of Custom Elements have a <code>constructor</code> property of <code>HTMLUnknownElementConstructor</code> and <code>HTMLUnknownElement</code>, respectively. It’s unsafe to rely on this property for checking element types.</p>
+<p>It’s worth noting that <code>customElement.__proto__.__proto__.constructor</code> is <code>HTMLElementPrototype</code> and that the prototype chain isn’t modified by the polyfills(onto <code>ElementPrototype</code>, etc.)</p>
+<h3 id="Contenteditable_elements_do_not_trigger_MutationObserver">Contenteditable elements do not trigger MutationObserver <a id="contentedit"></a></h3><p>Using the MutationObserver polyfill, it isn’t possible to monitor mutations of an element marked <code>contenteditable</code>.<br>See <a href="https://groups.google.com/forum/#!msg/polymer-dev/LHdtRVXXVsA/v1sGoiTYWUkJ">the mailing list</a></p>
+<h3 id="ShadowCSS:_:host-context(…):host(…)_doesn’t_work">ShadowCSS: :host-context(…):host(…) doesn’t work <a id="hostcontext"></a></h3><p>See <a href="https://github.com/webcomponents/webcomponentsjs/issues/16">#16</a> for background.</p>
+<p>Under the shadow DOM polyfill, rules like:</p>
+<pre><code><span class="attribute">:host-context(.foo):host(.bar)</span> {...}
+</code></pre><p>don’t work, despite working under native Shadow DOM. The solution is to use <code>polyfill-next-selector</code> like:</p>
+<pre><code><span class="tag">polyfill-next-selector</span> <span class="rules">{ <span class="rule"><span class="attribute">content</span>:<span class="value"> <span class="string">'.foo :host.bar, :host.foo.bar'</span></span></span>; }</span>
+</code></pre><h3 id="execCommand_and_contenteditable_isn’t_supported_under_Shadow_DOM">execCommand and contenteditable isn’t supported under Shadow DOM <a id="execcommand"></a></h3><p>See <a href="https://github.com/webcomponents/webcomponentsjs/issues/212">#212</a></p>
+<p><code>execCommand</code>, and <code>contenteditable</code> aren’t supported under the ShadowDOM polyfill, with commands that insert or remove nodes being especially prone to failure.</p>

@@ -1,0 +1,1 @@
+var SimpleBehavior={simple:true};var CustomNamedBehavior={custom:true,properties:{a:{value:1}}};Really.Really.Deep.Behavior=[{deep:true},Do.Re.Mi.Fa];

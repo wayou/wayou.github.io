@@ -1,0 +1,32 @@
+<h1 id="iron-selector">iron-selector</h1><p><code>iron-selector</code> is an element which can be used to manage a list of elements<br>that can be selected.  Tapping on the item will make the item selected.  The <code>selected</code> indicates<br>which item is being selected.  The default is to use the index of the item.</p>
+<p>Example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">iron-selector</span> <span class="attribute">selected</span>=<span class="value">"0"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span>&gt;</span>Item 1<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span>&gt;</span>Item 2<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span>&gt;</span>Item 3<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">iron-selector</span>&gt;</span>
+</code></pre>
+<p>If you want to use the attribute value of an element for <code>selected</code> instead of the index,<br>set <code>attrForSelected</code> to the name of the attribute.  For example, if you want to select item by<br><code>name</code>, set <code>attrForSelected</code> to <code>name</code>.</p>
+<p>Example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">iron-selector</span> <span class="attribute">attr-for-selected</span>=<span class="value">"name"</span> <span class="attribute">selected</span>=<span class="value">"foo"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">name</span>=<span class="value">"foo"</span>&gt;</span>Foo<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">name</span>=<span class="value">"bar"</span>&gt;</span>Bar<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">name</span>=<span class="value">"zot"</span>&gt;</span>Zot<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">iron-selector</span>&gt;</span>
+</code></pre>
+<p><code>iron-selector</code> is not styled. Use the <code>iron-selected</code> CSS class to style the selected element.</p>
+<p>Example:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="title">style</span>&gt;</span><span class="css">
+  <span class="class">.iron-selected</span> <span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> <span class="hexcolor">#eee</span></span></span>;
+  }</span>
+</span><span class="tag">&lt;/<span class="title">style</span>&gt;</span>
+
+...
+
+<span class="tag">&lt;<span class="title">iron-selector</span> <span class="attribute">selected</span>=<span class="value">"0"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span>&gt;</span>Item 1<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span>&gt;</span>Item 2<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span>&gt;</span>Item 3<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">iron-selector</span>&gt;</span>
+</code></pre>

@@ -1,0 +1,515 @@
+<h2 id="Objects">Objects</h2><p><dl></p>
+<p><dt><a href="#hydrolysis">hydrolysis</a> : <code>object</code></dt></p>
+<p><dd><p>Static analysis for Polymer.</p><br></dd><br></dl></p>
+<h2 id="Functions">Functions</h2><p><dl></p>
+<p><dt><a href="#isSiblingOrAunt">isSiblingOrAunt()</a> ⇒ <code>boolean</code></dt></p>
+<p><dd><p>Returns true if <code>patha</code> is a sibling or aunt of <code>pathb</code>.</p><br></dd></p>
+<p><dt><a href="#redirectSibling">redirectSibling()</a> ⇒ <code>string</code></dt></p>
+<p><dd><p>Change <code>localPath</code> from a sibling of <code>basePath</code> to be a child of<br><code>basePath</code> joined with <code>redirect</code>.</p><br></dd><br></dl><br><a name="hydrolysis"></a></p>
+<h2 id="hydrolysis_:_object">hydrolysis : <code>object</code></h2><p>Static analysis for Polymer.</p>
+<p><strong>Kind</strong>: global namespace  </p>
+<ul>
+<li><a href="#hydrolysis">hydrolysis</a> : <code>object</code><ul>
+<li><a href="#hydrolysis.Analyzer">.Analyzer</a><ul>
+<li><a href="#new_hydrolysis.Analyzer_new">new Analyzer(attachAST, [loader])</a></li>
+<li><em>instance</em><ul>
+<li><a href="#hydrolysis.Analyzer#elements">.elements</a> : <code>Array.&lt;ElementDescriptor&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#elementsByTagName">.elementsByTagName</a> : <code>Object.&lt;string, ElementDescriptor&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#features">.features</a> : <code>Array.&lt;FeatureDescriptor&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#behaviors">.behaviors</a> : <code>Array.&lt;BehaviorDescriptor&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#html">.html</a> : <code>Object.&lt;string, AnalyzedDocument&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#parsedDocuments">.parsedDocuments</a> : <code>Object</code></li>
+<li><a href="#hydrolysis.Analyzer#_getDependencies">._getDependencies(href, [found], [transitive])</a> ⇒ <code>Array.&lt;string&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#metadataTree">.metadataTree(href)</a> ⇒ <code>Promise</code></li>
+<li><a href="#hydrolysis.Analyzer#nodeWalkDocuments">.nodeWalkDocuments(predicate)</a> ⇒ <code>Object</code></li>
+<li><a href="#hydrolysis.Analyzer#annotate">.annotate()</a></li>
+<li><a href="#hydrolysis.Analyzer#clean">.clean()</a></li>
+</ul>
+</li>
+<li><em>static</em><ul>
+<li><a href="#hydrolysis.Analyzer.analyze">.analyze(href, [options])</a> ⇒ <code>Promise.&lt;Analyzer&gt;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#hydrolysis.FileLoader">.FileLoader</a><ul>
+<li><a href="#new_hydrolysis.FileLoader_new">new FileLoader()</a></li>
+<li><a href="#hydrolysis.FileLoader#addResolver">.addResolver(resolver)</a></li>
+<li><a href="#hydrolysis.FileLoader#request">.request(url)</a> ⇒ <code>Promise.&lt;string&gt;</code></li>
+</ul>
+</li>
+<li><a href="#hydrolysis.FSResolver">.FSResolver</a><ul>
+<li><a href="#new_hydrolysis.FSResolver_new">new FSResolver(config)</a></li>
+</ul>
+</li>
+<li><a href="#hydrolysis.NoopResolver">.NoopResolver</a><ul>
+<li><a href="#new_hydrolysis.NoopResolver_new">new NoopResolver(config)</a></li>
+<li><a href="#hydrolysis.NoopResolver#accept">.accept(uri, deferred)</a> ⇒ <code>boolean</code></li>
+</ul>
+</li>
+<li><a href="#hydrolysis.XHRResolver">.XHRResolver</a><ul>
+<li><a href="#new_hydrolysis.XHRResolver_new">new XHRResolver(config)</a></li>
+</ul>
+</li>
+<li><a href="#hydrolysis.DocumentAST">.DocumentAST</a> : <code>Object</code></li>
+<li><a href="#hydrolysis.ElementDescriptor">.ElementDescriptor</a> : <code>Object</code></li>
+<li><a href="#hydrolysis.FeatureDescriptor">.FeatureDescriptor</a> : <code>Object</code></li>
+<li><a href="#hydrolysis.BehaviorDescriptor">.BehaviorDescriptor</a> : <code>Object</code></li>
+<li><a href="#hydrolysis.DocumentDescriptor">.DocumentDescriptor</a> : <code>Object</code></li>
+<li><a href="#hydrolysis.AnalyzedDocument">.AnalyzedDocument</a> : <code>Object</code></li>
+<li><a href="#hydrolysis.LoadOptions">.LoadOptions</a> : <code>Object</code></li>
+<li><a href="#hydrolysis.Resolver">.Resolver</a> : <code>Object</code></li>
+</ul>
+</li>
+</ul>
+<p><a name="hydrolysis.Analyzer"></a></p>
+<h3 id="hydrolysis-Analyzer">hydrolysis.Analyzer</h3><p><strong>Kind</strong>: static class of <code><a href="#hydrolysis">hydrolysis</a></code>  </p>
+<ul>
+<li><a href="#hydrolysis.Analyzer">.Analyzer</a><ul>
+<li><a href="#new_hydrolysis.Analyzer_new">new Analyzer(attachAST, [loader])</a></li>
+<li><em>instance</em><ul>
+<li><a href="#hydrolysis.Analyzer#elements">.elements</a> : <code>Array.&lt;ElementDescriptor&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#elementsByTagName">.elementsByTagName</a> : <code>Object.&lt;string, ElementDescriptor&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#features">.features</a> : <code>Array.&lt;FeatureDescriptor&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#behaviors">.behaviors</a> : <code>Array.&lt;BehaviorDescriptor&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#html">.html</a> : <code>Object.&lt;string, AnalyzedDocument&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#parsedDocuments">.parsedDocuments</a> : <code>Object</code></li>
+<li><a href="#hydrolysis.Analyzer#_getDependencies">._getDependencies(href, [found], [transitive])</a> ⇒ <code>Array.&lt;string&gt;</code></li>
+<li><a href="#hydrolysis.Analyzer#metadataTree">.metadataTree(href)</a> ⇒ <code>Promise</code></li>
+<li><a href="#hydrolysis.Analyzer#nodeWalkDocuments">.nodeWalkDocuments(predicate)</a> ⇒ <code>Object</code></li>
+<li><a href="#hydrolysis.Analyzer#annotate">.annotate()</a></li>
+<li><a href="#hydrolysis.Analyzer#clean">.clean()</a></li>
+</ul>
+</li>
+<li><em>static</em><ul>
+<li><a href="#hydrolysis.Analyzer.analyze">.analyze(href, [options])</a> ⇒ <code>Promise.&lt;Analyzer&gt;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><a name="new_hydrolysis.Analyzer_new"></a></p>
+<h4 id="new_Analyzer(attachAST,_[loader])">new Analyzer(attachAST, [loader])</h4><p>A database of Polymer metadata defined in HTML</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>attachAST</td>
+<td><code>boolean</code></td>
+<td>If true, attach a parse5 compliant AST</td>
+</tr>
+<tr>
+<td>[loader]</td>
+<td><code>FileLoader</code></td>
+<td>An optional <code>FileLoader</code> used to load external                              resources</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.Analyzer#elements"></a></p>
+<h4 id="analyzer-elements_:_Array-&lt;ElementDescriptor&gt;">analyzer.elements : <code>Array.&lt;ElementDescriptor&gt;</code></h4><p>A list of all elements the <code>Analyzer</code> has metadata for.</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><a name="hydrolysis.Analyzer#elementsByTagName"></a></p>
+<h4 id="analyzer-elementsByTagName_:_Object-&lt;string,_ElementDescriptor&gt;">analyzer.elementsByTagName : <code>Object.&lt;string, ElementDescriptor&gt;</code></h4><p>A view into <code>elements</code>, keyed by tag name.</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><a name="hydrolysis.Analyzer#features"></a></p>
+<h4 id="analyzer-features_:_Array-&lt;FeatureDescriptor&gt;">analyzer.features : <code>Array.&lt;FeatureDescriptor&gt;</code></h4><p>A list of API features added to <code>Polymer.Base</code> encountered by the<br>analyzer.</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><a name="hydrolysis.Analyzer#behaviors"></a></p>
+<h4 id="analyzer-behaviors_:_Array-&lt;BehaviorDescriptor&gt;">analyzer.behaviors : <code>Array.&lt;BehaviorDescriptor&gt;</code></h4><p>The behaviors collected by the analysis pass.</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><a name="hydrolysis.Analyzer#html"></a></p>
+<h4 id="analyzer-html_:_Object-&lt;string,_AnalyzedDocument&gt;">analyzer.html : <code>Object.&lt;string, AnalyzedDocument&gt;</code></h4><p>A map, keyed by absolute path, of Document metadata.</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><a name="hydrolysis.Analyzer#parsedDocuments"></a></p>
+<h4 id="analyzer-parsedDocuments_:_Object">analyzer.parsedDocuments : <code>Object</code></h4><p>A map, keyed by path, of HTML document ASTs.</p>
+<p><strong>Kind</strong>: instance property of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><a name="hydrolysis.Analyzer#_getDependencies"></a></p>
+<h4 id="analyzer-_getDependencies(href,_[found],_[transitive])_⇒_Array-&lt;string&gt;">analyzer._getDependencies(href, [found], [transitive]) ⇒ <code>Array.&lt;string&gt;</code></h4><p>List all the html dependencies for the document at <code>href</code>.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><strong>Returns</strong>: <code>Array.&lt;string&gt;</code> - A list of all the html dependencies.  </p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>href</td>
+<td><code>string</code></td>
+<td>The href to get dependencies for.</td>
+</tr>
+<tr>
+<td>[found]</td>
+<td><code>Object.&lt;string, boolean&gt;</code></td>
+<td>An object keyed by URL of the     already resolved dependencies.</td>
+</tr>
+<tr>
+<td>[transitive]</td>
+<td><code>boolean</code></td>
+<td>Whether to load transitive     dependencies. Defaults to true.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.Analyzer#metadataTree"></a></p>
+<h4 id="analyzer-metadataTree(href)_⇒_Promise">analyzer.metadataTree(href) ⇒ <code>Promise</code></h4><p>Returns a promise that resolves to a POJO representation of the import<br>tree, in a format that maintains the ordering of the HTML imports spec.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code>  </p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>href</td>
+<td><code>string</code></td>
+<td>the import to get metadata for.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.Analyzer#nodeWalkDocuments"></a></p>
+<h4 id="analyzer-nodeWalkDocuments(predicate)_⇒_Object">analyzer.nodeWalkDocuments(predicate) ⇒ <code>Object</code></h4><p>Calls <code>dom5.nodeWalk</code> on each document that <code>Anayzler</code> has laoded.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code>  </p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>predicate</td>
+<td><code>Object</code></td>
+<td>A dom5 predicate.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.Analyzer#annotate"></a></p>
+<h4 id="analyzer-annotate()">analyzer.annotate()</h4><p>Annotates all loaded metadata with its documentation.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><a name="hydrolysis.Analyzer#clean"></a></p>
+<h4 id="analyzer-clean()">analyzer.clean()</h4><p>Removes redundant properties from the collected descriptors.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><a name="hydrolysis.Analyzer.analyze"></a></p>
+<h4 id="Analyzer-analyze(href,_[options])_⇒_Promise-&lt;Analyzer&gt;">Analyzer.analyze(href, [options]) ⇒ <code>Promise.&lt;Analyzer&gt;</code></h4><p>Shorthand for transitively loading and processing all imports beginning at<br><code>href</code>.</p>
+<p>In order to properly filter paths, <code>href</code> <em>must</em> be an absolute URI.</p>
+<p><strong>Kind</strong>: static method of <code><a href="#hydrolysis.Analyzer">Analyzer</a></code><br><strong>Returns</strong>: <code>Promise.&lt;Analyzer&gt;</code> - A promise that will resolve once <code>href</code> and its<br>    dependencies have been loaded and analyzed.  </p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>href</td>
+<td><code>string</code></td>
+<td>The root import to begin loading from.</td>
+</tr>
+<tr>
+<td>[options]</td>
+<td><code>LoadOptions</code></td>
+<td>Any additional options for the load.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.FileLoader"></a></p>
+<h3 id="hydrolysis-FileLoader">hydrolysis.FileLoader</h3><p><strong>Kind</strong>: static class of <code><a href="#hydrolysis">hydrolysis</a></code>  </p>
+<ul>
+<li><a href="#hydrolysis.FileLoader">.FileLoader</a><ul>
+<li><a href="#new_hydrolysis.FileLoader_new">new FileLoader()</a></li>
+<li><a href="#hydrolysis.FileLoader#addResolver">.addResolver(resolver)</a></li>
+<li><a href="#hydrolysis.FileLoader#request">.request(url)</a> ⇒ <code>Promise.&lt;string&gt;</code></li>
+</ul>
+</li>
+</ul>
+<p><a name="new_hydrolysis.FileLoader_new"></a></p>
+<h4 id="new_FileLoader()">new FileLoader()</h4><p>A FileLoader lets you resolve URLs with a set of potential resolvers.</p>
+<p><a name="hydrolysis.FileLoader#addResolver"></a></p>
+<h4 id="fileLoader-addResolver(resolver)">fileLoader.addResolver(resolver)</h4><p>Add an instance of a Resolver class to the list of url resolvers</p>
+<p>Ordering of resolvers is most to least recently added<br>The first resolver to “accept” the url wins.</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#hydrolysis.FileLoader">FileLoader</a></code>  </p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>resolver</td>
+<td><code>Resolver</code></td>
+<td>The resolver to add.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.FileLoader#request"></a></p>
+<h4 id="fileLoader-request(url)_⇒_Promise-&lt;string&gt;">fileLoader.request(url) ⇒ <code>Promise.&lt;string&gt;</code></h4><p>Return a promise for an absolute url</p>
+<p>Url requests are deduplicated by the loader, returning the same Promise for<br>identical urls</p>
+<p><strong>Kind</strong>: instance method of <code><a href="#hydrolysis.FileLoader">FileLoader</a></code><br><strong>Returns</strong>: <code>Promise.&lt;string&gt;</code> - A promise that resolves to the contents of the URL.  </p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>url</td>
+<td><code>string</code></td>
+<td>The absolute url to request.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.FSResolver"></a></p>
+<h3 id="hydrolysis-FSResolver">hydrolysis.FSResolver</h3><p><strong>Kind</strong>: static class of <code><a href="#hydrolysis">hydrolysis</a></code><br><a name="new_hydrolysis.FSResolver_new"></a></p>
+<h4 id="new_FSResolver(config)">new FSResolver(config)</h4><p>Resolves requests via the file system.</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>config</td>
+<td><code>Object</code></td>
+<td>configuration options.</td>
+</tr>
+<tr>
+<td>config.host</td>
+<td><code>string</code></td>
+<td>Hostname to match for absolute urls.     Matches “/“ by default</td>
+</tr>
+<tr>
+<td>config.basePath</td>
+<td><code>string</code></td>
+<td>Prefix directory for components in url.     Defaults to “/“.</td>
+</tr>
+<tr>
+<td>config.root</td>
+<td><code>string</code></td>
+<td>Filesystem root to search. Defaults to the     current working directory.</td>
+</tr>
+<tr>
+<td>config.redirect</td>
+<td><code>string</code></td>
+<td>Where to redirect lookups to siblings.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.NoopResolver"></a></p>
+<h3 id="hydrolysis-NoopResolver">hydrolysis.NoopResolver</h3><p><strong>Kind</strong>: static class of <code><a href="#hydrolysis">hydrolysis</a></code>  </p>
+<ul>
+<li><a href="#hydrolysis.NoopResolver">.NoopResolver</a><ul>
+<li><a href="#new_hydrolysis.NoopResolver_new">new NoopResolver(config)</a></li>
+<li><a href="#hydrolysis.NoopResolver#accept">.accept(uri, deferred)</a> ⇒ <code>boolean</code></li>
+</ul>
+</li>
+</ul>
+<p><a name="new_hydrolysis.NoopResolver_new"></a></p>
+<h4 id="new_NoopResolver(config)">new NoopResolver(config)</h4><p>A resolver that resolves to null any uri matching config.</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>config</td>
+<td><code>string</code></td>
+<td>The url to <code>accept</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.NoopResolver#accept"></a></p>
+<h4 id="noopResolver-accept(uri,_deferred)_⇒_boolean">noopResolver.accept(uri, deferred) ⇒ <code>boolean</code></h4><p><strong>Kind</strong>: instance method of <code><a href="#hydrolysis.NoopResolver">NoopResolver</a></code><br><strong>Returns</strong>: <code>boolean</code> - Whether the URI is handled by this resolver.  </p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>uri</td>
+<td><code>string</code></td>
+<td>The absolute URI being requested.</td>
+</tr>
+<tr>
+<td>deferred</td>
+<td><code>Deferred</code></td>
+<td>The deferred promise that should be resolved if     this resolver handles the URI.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.XHRResolver"></a></p>
+<h3 id="hydrolysis-XHRResolver">hydrolysis.XHRResolver</h3><p><strong>Kind</strong>: static class of <code><a href="#hydrolysis">hydrolysis</a></code><br><a name="new_hydrolysis.XHRResolver_new"></a></p>
+<h4 id="new_XHRResolver(config)">new XHRResolver(config)</h4><p>Construct a resolver that requests resources over XHR.</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>config</td>
+<td><code>Object</code></td>
+<td>configuration arguments.</td>
+</tr>
+<tr>
+<td>config.responseType</td>
+<td><code>string</code></td>
+<td>Type of object to be returned by the     XHR. Defaults to ‘text’, accepts ‘document’, ‘arraybuffer’, and ‘json’.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.DocumentAST"></a></p>
+<h3 id="hydrolysis-DocumentAST_:_Object">hydrolysis.DocumentAST : <code>Object</code></h3><p>Parse5’s representation of a parsed html document</p>
+<p><strong>Kind</strong>: static typedef of <code><a href="#hydrolysis">hydrolysis</a></code><br><a name="hydrolysis.ElementDescriptor"></a></p>
+<h3 id="hydrolysis-ElementDescriptor_:_Object">hydrolysis.ElementDescriptor : <code>Object</code></h3><p>The metadata for a single polymer element</p>
+<p><strong>Kind</strong>: static typedef of <code><a href="#hydrolysis">hydrolysis</a></code><br><a name="hydrolysis.FeatureDescriptor"></a></p>
+<h3 id="hydrolysis-FeatureDescriptor_:_Object">hydrolysis.FeatureDescriptor : <code>Object</code></h3><p>The metadata for a Polymer feature.</p>
+<p><strong>Kind</strong>: static typedef of <code><a href="#hydrolysis">hydrolysis</a></code><br><a name="hydrolysis.BehaviorDescriptor"></a></p>
+<h3 id="hydrolysis-BehaviorDescriptor_:_Object">hydrolysis.BehaviorDescriptor : <code>Object</code></h3><p>The metadata for a Polymer behavior mixin.</p>
+<p><strong>Kind</strong>: static typedef of <code><a href="#hydrolysis">hydrolysis</a></code><br><a name="hydrolysis.DocumentDescriptor"></a></p>
+<h3 id="hydrolysis-DocumentDescriptor_:_Object">hydrolysis.DocumentDescriptor : <code>Object</code></h3><p>The metadata for all features and elements defined in one document</p>
+<p><strong>Kind</strong>: static typedef of <code><a href="#hydrolysis">hydrolysis</a></code><br><strong>Properties</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>elements</td>
+<td><code>Array.&lt;ElementDescriptor&gt;</code></td>
+<td>The elements from the document</td>
+</tr>
+<tr>
+<td>features</td>
+<td><code>Array.&lt;FeatureDescriptor&gt;</code></td>
+<td>The features from the document</td>
+</tr>
+<tr>
+<td>behaviors</td>
+<td><code>Array.&lt;FeatureDescriptor&gt;</code></td>
+<td>The behaviors from the document</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.AnalyzedDocument"></a></p>
+<h3 id="hydrolysis-AnalyzedDocument_:_Object">hydrolysis.AnalyzedDocument : <code>Object</code></h3><p>The metadata of an entire HTML document, in promises.</p>
+<p><strong>Kind</strong>: static typedef of <code><a href="#hydrolysis">hydrolysis</a></code><br><strong>Properties</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>href</td>
+<td><code>string</code></td>
+<td>The url of the document.</td>
+</tr>
+<tr>
+<td>htmlLoaded</td>
+<td><code>Promise.&lt;ParsedImport&gt;</code></td>
+<td>The parsed representation of     the doc. Use the <code>ast</code> property to get the full <code>parse5</code> ast</td>
+</tr>
+<tr>
+<td>depsLoaded</td>
+<td><code>Promise.&lt;Array.&lt;string&gt;&gt;</code></td>
+<td>Resolves to the list of this     Document’s transitive import dependencies</td>
+</tr>
+<tr>
+<td>depHrefs</td>
+<td><code>Array.&lt;string&gt;</code></td>
+<td>The direct dependencies of the document.</td>
+</tr>
+<tr>
+<td>metadataLoaded</td>
+<td><code>Promise.&lt;DocumentDescriptor&gt;</code></td>
+<td>Resolves to the list of     this Document’s import dependencies</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.LoadOptions"></a></p>
+<h3 id="hydrolysis-LoadOptions_:_Object">hydrolysis.LoadOptions : <code>Object</code></h3><p>Options for <code>Analyzer.analzye</code></p>
+<p><strong>Kind</strong>: static typedef of <code><a href="#hydrolysis">hydrolysis</a></code><br><strong>Properties</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>noAnnotations</td>
+<td><code>boolean</code></td>
+<td>Whether <code>annotate()</code> should be skipped.</td>
+</tr>
+<tr>
+<td>clean</td>
+<td><code>boolean</code></td>
+<td>Whether the generated descriptors should be cleaned     of redundant data.</td>
+</tr>
+<tr>
+<td>filter</td>
+<td><code>function</code></td>
+<td>A predicate function that     indicates which files should be ignored by the loader. By default all     files not located under the dirname of <code>href</code> will be ignored.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="hydrolysis.Resolver"></a></p>
+<h3 id="hydrolysis-Resolver_:_Object">hydrolysis.Resolver : <code>Object</code></h3><p>An object that knows how to resolve resources.</p>
+<p><strong>Kind</strong>: static typedef of <code><a href="#hydrolysis">hydrolysis</a></code><br><strong>Properties</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>accept</td>
+<td><code>function</code></td>
+<td>Attempt to resolve     <code>deferred</code> with the contents the specified URL. Returns false if the     Resolver is unable to resolve the URL.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="isSiblingOrAunt"></a></p>
+<h2 id="isSiblingOrAunt()_⇒_boolean">isSiblingOrAunt() ⇒ <code>boolean</code></h2><p>Returns true if <code>patha</code> is a sibling or aunt of <code>pathb</code>.</p>
+<p><strong>Kind</strong>: global function<br><a name="redirectSibling"></a></p>
+<h2 id="redirectSibling()_⇒_string">redirectSibling() ⇒ <code>string</code></h2><p>Change <code>localPath</code> from a sibling of <code>basePath</code> to be a child of<br><code>basePath</code> joined with <code>redirect</code>.</p>
+<p><strong>Kind</strong>: global function  </p>
