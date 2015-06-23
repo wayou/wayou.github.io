@@ -2,7 +2,7 @@
 language: node_js
 branches:
   only:
-  - master
+  - source
 before_install:
 - npm install hexo-cli -g
 install:
@@ -15,10 +15,10 @@ script:
 after_success:
 - mkdir .deploy
 - cd .deploy
-- git clone --depth 1 --branch gh-pages --single-branch $GH_TOKEN . || (git init && git remote add -t gh-pages origin $GH_TOKEN)
+- git clone --depth 1 --branch master --single-branch $GH_TOKEN . || (git init && git remote add -t master origin $GH_TOKEN)
 - rm -rf ./*
 - cp -r ../public/* .
 - git add -A .
 - git commit -m 'Auto Update from TRAVIS-CI'
-- git branch -m gh-pages
-- git push -q $GH_TOKEN HEAD:gh-pages
+- git branch -m master
+- git push -q $GH_TOKEN HEAD:master
