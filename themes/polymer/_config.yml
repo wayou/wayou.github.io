@@ -19,6 +19,7 @@ rss: /atom.xml
 google_analytics: 
 baidu_analytics: 392796d51567e848aebf813b65cb8656
 favicon: /favicon.ico
+appicon: app-icon-192x192.png
 twitter:
 
 #cover: img/bg6.jpg
