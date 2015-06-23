@@ -1,0 +1,109 @@
+<paper-toolbar class="tall" id="mainToolbar">
+
+  <!-- index -->
+  <% if( pageType == 'index') {%>
+  	<paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+  <!-- not index, show the back button -->
+  <% } else {%>
+  	<paper-icon-button icon="arrow-back" onclick="back(event)"></paper-icon-button>
+  <% } %>
+
+  <div class="flex"></div>
+  <!-- <paper-icon-button icon="search"></paper-icon-button> -->
+
+  <!-- Application sub title -->
+  <!-- index -->
+  <% if( pageType == 'index') {%>
+	  <!-- Application name -->
+	  <div class="middle paper-font-display2 app-name"> <%= config.title %> </div>
+	  <% if( theme.slogan ) {%>
+	  <div class="bottom title"> <%= theme.slogan %> </div>
+	  <% } %>
+  <!-- archives -->
+  <% } else if( pageType == 'archives') {%>
+	  <div class="bottom title"><%= __('Archives') %> </div>
+  <!-- post -->
+  <% } else if( pageType == 'post') {%>
+	  <div class="bottom title"> <%= page.title %> </div>
+  <% } %>
+  
+</paper-toolbar>
+
+<!-- Main Content -->
+<div class="content">
+
+  <!-- index -->
+  <% if( pageType == 'index') {%>
+		<% page.posts.each(function(post){ %>
+			<paper-material >
+
+          <paper-item>
+            <paper-item-body two-line class="index-item-wrapper">
+              <div>
+                <h1>
+                  <a class="post-title" href="<%= url_for(post.path) %>"><%= post.title %></a>
+                  <span class="index post-time"><%= date(post.date) %></span>
+                </h1>
+              </div>
+              <div secondary>
+              <div class="markdown-body"><%- post.excerpt %></div>
+              <% if (theme.excerpt_link){ %>
+                  <a class="article-more-link" href="<%- url_for(post.path) %>"> MORE... </a>
+              <% } %>
+              </div>
+            </paper-item-body>
+          </paper-item>
+
+			</paper-material>
+		<% }) %>
+  <!-- archives -->
+  <% } else if( pageType == 'archives') {%>
+		<paper-material >
+	  		<% page.posts.each(function(post){ %>
+
+          <paper-item>
+              <div class="archive-item">
+                <a href="<%= url_for(post.path) %>"><%= post.title %></a><span class="post-time"><%= date(post.date) %></span>
+              </div>
+          </paper-item>
+          
+		  	<% }) %>
+		</paper-material>
+  <!-- post -->
+  <% } else if( pageType == 'post') {%>
+    <paper-material class="markdown-body">
+      <p><%- page.content %></p>
+    </paper-material>
+	  <paper-material>
+      <%- partial('comment') %>
+		</paper-material>
+  <% } %>
+
+  <!-- pagination -->
+  <% if (page.total > 1 && pageType=='index'){ %>
+    <paper-material class="pagination-wrapper">
+     <% if (page.prev || page.next) { %>
+      <% if (page.prev){ %>  
+        <paper-icon-button  class="pagination-item" icon="chevron-left" onclick="javascript:window.location.href='<%- url_for(page.prev_link) %>';"></paper-icon-button>
+      <% } else { %>
+        <paper-icon-button class="pagination-item" icon="chevron-left" disabled="true" onclick="javascript:window.location.href='<%- url_for(page.prev_link) %>';"></paper-icon-button>
+      <% } %>
+
+      <% if (page.current>1){ %>
+        <span class="pagination-current"><%= page.current %></span>
+      <% } %>
+
+      <% if (page.next){ %>
+        <paper-icon-button class="pagination-item" icon="chevron-right" onclick="javascript:window.location.href='<%- url_for(page.next_link) %>';"></paper-icon-button>
+      <% } else { %>
+        <paper-icon-button class="pagination-item" icon="chevron-right" disabled="true" onclick="javascript:window.location.href='<%- url_for(page.next_link) %>';"></paper-icon-button>
+      <% } %>
+    <% }  %>
+    </paper-material>
+  <% } %>
+
+  <%- partial('_partial/footer') %>
+</div>
+
+
+

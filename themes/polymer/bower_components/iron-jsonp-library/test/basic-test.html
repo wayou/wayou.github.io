@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <!-- Step 1: import the element to test -->
+    <link rel="import" href="../iron-jsonp-library.html">
+  </head>
+  <body>
+    <iron-jsonp-library id="plusone"
+      library-url="https://apis.google.com/js/plusone.js?onload=%%callback%%"
+      notify-event="api-load"></iron-jsonp-library>
+    <iron-jsonp-library id="badliburl"
+      library-url="https://badapis.google.com/js/plusone.js?onload=%%callback%%"
+      notify-event="api-load"></iron-jsonp-library>
+    <iron-jsonp-library id="badlibcallback"
+      library-url="https://apis.google.com/"
+      notify-event="api-load"></iron-jsonp-library>
+
+    <script>
+      var goodLib = document.querySelector('#plusone');
+      var badliburl = document.querySelector('#badliburl');
+      var badlibcallback = document.querySelector('#badlibcallback');
+
+      suite('<iron-jsonp-library>', function() {
+
+        test('good library loads', function(done) {
+          goodLib.addEventListener('api-load', function() {
+            assert.equal(goodLib.libraryLoaded, true);
+            done();
+          });
+        });
+
+        test('bad library dns fails to load', function() {
+          badliburl.addEventListener('libraryErrorMessage-changed', function() {
+            assert.isNotNull(badliburl.libraryErrorMessage);
+            done();
+          });
+        });
+
+        test('libraryurl mising %%callback%%', function() {
+          assert.isNotNull(badlibcallback.libraryErrorMessage);
+        });
+
+      });
+    </script>
+
+  </body>
+</html>

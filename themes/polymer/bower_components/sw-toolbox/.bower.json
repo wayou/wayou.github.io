@@ -1,0 +1,25 @@
+{
+  "name": "sw-toolbox",
+  "main": "sw-toolbox.js",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "Apache-2",
+  "ignore": [
+    "**/.*",
+    "lib",
+    "tests",
+    "gulpfile.js"
+  ],
+  "homepage": "https://github.com/GoogleChrome/sw-toolbox",
+  "version": "2.0.3",
+  "_release": "2.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.0.3",
+    "commit": "8763dcc9fbc9352d58f184050e2131c42f7b6d68"
+  },
+  "_source": "git://github.com/GoogleChrome/sw-toolbox.git",
+  "_target": "^2.0.2",
+  "_originalSource": "sw-toolbox"
+}
