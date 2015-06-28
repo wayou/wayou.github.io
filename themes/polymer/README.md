@@ -5,6 +5,8 @@ a theme for [hexo](http://hexo.io/) static blog based on google polymer
 
 ![hexo theme polymer preview](https://github.com/wayou/hexo-theme-polymer/blob/master/source/img/preview.gif?raw=true)
 
+visit [「刘哇勇的部落格」](http://wayou.github.io/) to or see it in action
+
 ## install
 
 - clone this repo
@@ -12,7 +14,7 @@ a theme for [hexo](http://hexo.io/) static blog based on google polymer
 git clone https://github.com/wayou/hexo-theme-polymer.git themes/polmyer
 ```
 
-- omdify the hexo _config.yml file to enable this theme
+- omdify the hexo `_config.yml` file to enable this theme
 
 ```yml
 theme: polymer
@@ -31,7 +33,7 @@ menu: #site menu, showing in the side navigation
 
 # Miscellaneous
 google_analytics: # here goes your google analytics track id
-baidu_analytics: 392796d51567e848aebf813b65cb8656  # here goes the baidu track id, for chinese users only
+baidu_analytics: # here goes the baidu track id, for chinese users only
 favicon: /favicon.ico  # path for favicon
 appicon: app-icon-192x192.png  # path for app when site added to home screen on mobile device
 
