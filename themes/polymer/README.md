@@ -1,5 +1,5 @@
 # hexo-theme-polymer
-a theme for [hexo](http://hexo.io/) static blog based on google polymer
+a mobile friendly theme for [hexo](http://hexo.io/) static blog based on google polymer
 
 ## preview
 
