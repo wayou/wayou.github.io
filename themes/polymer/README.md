@@ -23,6 +23,8 @@ theme: polymer
 
 ## config
 
+customize the `_config.yml` file under the themes directory as you wish
+
 ```yml
 # Header
 menu: #site menu, showing in the side navigation
