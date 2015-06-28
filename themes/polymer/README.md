@@ -5,7 +5,7 @@ a theme for [hexo](http://hexo.io/) static blog based on google polymer
 
 ![hexo theme polymer preview](https://github.com/wayou/hexo-theme-polymer/blob/master/source/img/preview.gif?raw=true)
 
-visit [「刘哇勇的部落格」](http://wayou.github.io/) to or see it in action
+visit [「刘哇勇的部落格」](http://wayou.github.io/) to see it in action
 
 ## install
 
