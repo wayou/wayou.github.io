@@ -5,8 +5,12 @@
 
 body {
     background: #fafafa;
-    font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", "STHeiti", "WenQuanYi Micro Hei", SimSun,  sans-serif;
     color: #333;
+}
+
+paper-item.paper-item-0{
+    font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", "STHeiti", "WenQuanYi Micro Hei", SimSun,  sans-serif;
 }
 
 paper-material {
@@ -16,6 +20,7 @@ paper-material {
 .markdown-body {
     margin: 0 auto;
     padding: 30px;
+    line-height: 1.8;
 }
 
 /*pagination*/
@@ -113,4 +118,8 @@ footer {
 
 footer a, footer a:visited {
     color: #777;
+}
+
+blockquote{
+    margin:15px 0;
 }

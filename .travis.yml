@@ -19,6 +19,6 @@ after_success:
 - rm -rf ./*
 - cp -r ../public/* .
 - git add -A .
-- git commit -m 'site update via TRAVIS-CI'
+- git commit -m 'auto update via travis-ci on {{ now(\'YYYY-MM-DD HH:mm:ss\') }}'
 - git branch -m master
 - git push -q $GH_TOKEN HEAD:master
