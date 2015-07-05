@@ -16,13 +16,17 @@
 
     /* background for toolbar when it is condensed */
     --paper-scroll-header-panel-condensed-header: {
-      background-color: var(--paper-deep-orange-500, #ff5722);
+      /*background-color: var(--paper-deep-orange-500, #ff5722);*/
+      background-color: #3F51B5;
     };
   }
 
 <% if (theme.cover){ %>
   paper-toolbar {
     background-color: transparent;
+  }
+  #drawerToolbar{
+    background-image: url( <%- url_for(theme.cover) %> );
   }
 <% } %>
 

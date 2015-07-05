@@ -17,10 +17,21 @@ paper-material {
     max-width: 900px;
 }
 
+#drawerToolbar .toolbar-tools.paper-toolbar > .title{
+    margin-left: 0;
+}
+
 .markdown-body {
     margin: 0 auto;
     padding: 30px;
     line-height: 1.8;
+}
+
+pre .comment, pre .diff .header, pre .doctype, pre .javadoc, pre .lisp .string, pre .pi, pre .template_comment{
+    font-style: normal;
+}
+.markdown-body p>code{
+    margin: 0 5px;
 }
 
 /*pagination*/
@@ -107,6 +118,14 @@ figure.highlight {
     padding: 0;
 }
 .markdown-body p, .markdown-body blockquote, .markdown-body ul, .markdown-body ol, .markdown-body dl, .markdown-body table, .markdown-body pre{
+    /*margin-bottom: 0;*/
+}
+
+figure.highlight .code{
+    border-left: none;
+}
+
+figure.highlight>table{
     margin-bottom: 0;
 }
 
