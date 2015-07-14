@@ -1,4 +1,7 @@
-# reference https://github.com/jkeylu/deploy-hexo-site-by-travis-ci
+# references
+# https://github.com/jkeylu/deploy-hexo-site-by-travis-ci
+# https://github.com/yous/yous.github.io/blob/source/.travis.yml
+
 language: node_js
 branches:
   only:
@@ -19,6 +22,6 @@ after_success:
 - rm -rf ./*
 - cp -r ../public/* .
 - git add -A .
-- git commit -m "site updated via travis-ci at $(date -u +'%Y-%m-%d %H:%M:%S %Z')"
+- git commit -m "site updated via travis-ci at $(date -u +'%Y-%m-%d %H:%M:%S') $TRAVIS_COMMIT"
 - git branch -m master
 - git push -q $GH_TOKEN HEAD:master

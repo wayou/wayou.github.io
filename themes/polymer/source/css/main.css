@@ -7,9 +7,12 @@ body {
     background: #fafafa;
     font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", "STHeiti", "WenQuanYi Micro Hei", SimSun,  sans-serif;
     color: #333;
+    /*text-shadow: #E0E0E0 0px 0px 2px;*/
+    -webkit-text-stroke-width: 0.2px;
 }
 
-paper-item.paper-item-0{
+/*fix font for thoese items*/
+paper-item.paper-item-0,.paper-toolbar-0 .toolbar-tools.paper-toolbar .title{
     font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", "STHeiti", "WenQuanYi Micro Hei", SimSun,  sans-serif;
 }
 
@@ -108,7 +111,7 @@ figure.highlight {
     border-top:none;
 }
 .markdown-body .highlight {
-   margin-top: 16px; 
+   margin-top: 16px;
 }
 .markdown-body table th, .markdown-body table td{
     border: none;
