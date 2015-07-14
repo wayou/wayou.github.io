@@ -39,6 +39,31 @@
         <link rel="stylesheet" href="/css/main.css" type="text/css">
         <script src="/polymer/webcomponentsjs/webcomponents-lite.js" type="text/javascript"></script>
         <link rel="import" href="/elements/elements.html">
+        <style type="text/css">
+        /*style for polymer scroll header*/
+          paper-scroll-header-panel {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: var(--paper-grey-200, #eee);
+
+            /* background for toolbar when it is at its full size */
+            --paper-scroll-header-panel-full-header: {
+              background-image: url( / );
+            };
+
+            /* background for toolbar when it is condensed */
+            --paper-scroll-header-panel-condensed-header: {
+              /*background-color: var(--paper-deep-orange-500, #ff5722);*/
+              background-color: #3F51B5;
+            };
+          }
+
+        
+
+        </style>
     </head>
 
 
@@ -143,9 +168,10 @@
     <title>not found</title>
 </head>
 <body>
-查无此页
+查无此页 X___X
 </body>
-</html></p>
+</html>
+</p>
     </paper-material>
 	  <paper-material>
       
