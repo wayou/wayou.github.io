@@ -1,1 +1,0 @@
-"use strict";function NoopResolver(e){this.config=e}NoopResolver.prototype={accept:function(e,o){if(!this.config.test){if(e.search(this.config)==-1){return false}}else if(!this.config.test(e))return false;o.resolve("");return true}};module.exports=NoopResolver;

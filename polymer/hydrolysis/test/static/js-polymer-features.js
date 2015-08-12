@@ -1,1 +1,0 @@
-Polymer.Base._addFeature({num:123,bool:false,str:"ohai",array:[1,2,3],obj:{a:1,b:2},func:function(){}});Polymer.Base._addFeature({doesThings:function(){}});

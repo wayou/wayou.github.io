@@ -1,1 +1,0 @@
-(function(){if(!self.Prism){return}var e={csharp:"C#",cpp:"C++"};Prism.hooks.add("before-highlight",function(a){var r=a.element.parentNode;if(!r||!/pre/i.test(r.nodeName)){return}var t=e[a.language]||a.language;r.setAttribute("data-language",t)})})();
