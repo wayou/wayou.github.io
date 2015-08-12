@@ -89,7 +89,7 @@ feed:
   limit: 20
 
 ## Themes: http://hexo.io/themes/
-theme: polymer
+theme: material
 
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html

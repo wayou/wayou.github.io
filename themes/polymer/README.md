@@ -5,8 +5,6 @@ a mobile friendly theme for [hexo](http://hexo.io/) static blog based on google 
 
 ![hexo theme polymer preview](https://github.com/wayou/hexo-theme-polymer/blob/master/source/img/preview.gif?raw=true)
 
-visit [「刘哇勇的部落格」](http://wayou.github.io/) to see it in action
-
 ## install
 
 - clone this repo
