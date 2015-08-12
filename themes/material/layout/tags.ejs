@@ -1,0 +1,31 @@
+<!-- title -->
+<div class="page-header">
+	 <h1><i class="fa fa-tags"></i> <%= __('tags') %> </h1>
+</div>
+
+<div class="row page">
+
+	<% if (theme.widgets.length) { %>
+	<div class="col-md-9">
+	<% } else { %>
+	<div class="col-md-12">
+	<% } %>
+
+<% if (site.tags.length){ %>
+	<div class="widget">
+		<ul class="tag_box inline list-unstyled">
+		<% site.tags.sort('name').each(function(item){ %>
+			<li><a href="#<%= item.name %>"><%= item.name %><span><%= item.posts.length %></span></a></li>
+		<% }); %>
+		</ul>
+	</div>
+
+<% } %>
+
+</div> <!-- col-md-9 -->
+
+	<% if (theme.widgets.length) { %>
+		<%- partial('_partial/sidebar') %>
+	<% } %>
+
+</div> <!-- row-fluid -->
