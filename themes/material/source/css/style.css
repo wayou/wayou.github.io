@@ -55,6 +55,7 @@ blockquote{
 /*post*/
 .content{
 	min-height: 400px;
+	word-wrap: break-word;
 }
 .excerpt,.content{
 	margin: 10px 0;
