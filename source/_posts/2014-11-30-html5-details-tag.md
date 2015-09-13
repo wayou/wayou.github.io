@@ -10,7 +10,7 @@ HTML5 中新增的`<details>`标签允许用户创建一个可展开折叠的元
 
 <!-- more -->
 
-# 用法
+## 用法
 
 一般情况下，`details`用来对显示在页面的内容做进一步骤解释。其展现出来的效果和jQuery手风琴插件差不多。
 
@@ -42,7 +42,7 @@ HTML5 中新增的`<details>`标签允许用户创建一个可展开折叠的元
 
 最开始详情是隐藏的，当点击时都会展现。
 
-## open 属性
+### open 属性
 
 当然，你也可以通过给`<details>`标签设置`open`属性让它默认为展开状态。
 
@@ -65,12 +65,12 @@ HTML5 中新增的`<details>`标签允许用户创建一个可展开折叠的元
 
 此时默认会把详情展开，而点击标题后会折叠起来。
 
-# 示例
+## 示例
 
 示例如上面那样，预览在线版本可[点击此处](http://sandbox.runjs.cn/show/hjotymth)。
 
 
-# 浏览器兼容性
+## 浏览器兼容性
 
 由于是HTML5新标签，浏览器支持情况不是很理想。从来自[caniuse](http://caniuse.com/#feat=details)的数据来看，目前仅Chrome, Safari 8+ 和Opera 26+支持此标签。
 
@@ -78,7 +78,7 @@ HTML5 中新增的`<details>`标签允许用户创建一个可展开折叠的元
 
 ![can i use details tag](/asset/posts/2014-11-30-html5-details-tag/browser_compatability.jpg)
 
-# Polyfill
+## Polyfill
 
 既然支持情况如此不理解，那么使用垫片（polyfill）就很有必要了。
 
@@ -88,7 +88,7 @@ HTML5 中新增的`<details>`标签允许用户创建一个可展开折叠的元
 [details-polyfill)，具体的实现思路也写成了博文发到了[Smashing Magazine](http://www.smashingmagazine.com/2014/11/28/complete-polyfill-html5-details-element/)，用法可参见GitHub。
 
 
-# 参考
+## 参考及引用
 
 - [HTML &lt;details&gt; Tag](http://www.w3schools.com/tags/tag_details.asp)
 - [HTML &lt;dt&gt; Tag](http://www.w3schools.com/tags/tag_dt.asp)

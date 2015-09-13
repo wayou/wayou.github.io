@@ -1,23 +1,24 @@
-<nav id="main-nav" class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default">
     <div class="container">
-      <button type="button" class="navbar-header navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-		<span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-	  <a class="navbar-brand" href="<%- config.root %>"><%= config.title %></a>
-      <div class="collapse navbar-collapse nav-menu">
-		<ul class="nav navbar-nav navbar-right">
-		  <% theme.menu.forEach(function(m){ %>
-		  <li>
-			<a href="<%- config.root %><%- m.url %>" title="<%- m.intro %>">
-			  <i class="<%- m.icon %>"></i><%- m.title %>
-			</a>
-		  </li>
-		  <% }) %>
-		</ul>
-      </div>
-    </div> <!-- container -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="<%- config.root %>"><%= config.title %></a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <% theme.menu.forEach(function(m){ %>
+                <li>
+                    <a href="<%- config.root %><%- m.url %>" title="<%- m.intro %>">
+                    <i class="<%- m.icon %>"></i><%- m.title %>
+                    </a>
+                </li>
+                <% }) %>
+            </ul>
+        </div>
+    </div>
 </nav>
-<div class="clearfix"></div>

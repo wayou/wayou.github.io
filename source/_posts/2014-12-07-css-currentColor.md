@@ -10,7 +10,7 @@ CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用�
 
 <!-- more -->
 
-# 初识
+## 初识
 
 它是何物？具有怎样的功效？它从哪里来？带着这些疑问我们继续。
 
@@ -82,7 +82,7 @@ p{
 
 那，这个时候的黑色其实是浏览器默认给的。此时`p`标签的`currentColor`自然也跟`color`值一样，为黑色，纯黑的`#000`。
 
-# 如何用？
+## 如何用？
 
 了解它是怎样的物品后，下面问题来了，如何用？有额外的`buff`效果么，耗蓝多么，CD时间长么。。。
 
@@ -106,11 +106,11 @@ p{
 
 你似乎也知道了该如何用了。不只是`border`，其他能够使用颜色的地方，比如`background`，`box-shadow`等等。
 
-# 带你装逼带你飞
+## 带你装逼带你飞
 
 新技能就是如此炫酷。大开脑洞任性地去使用吧！
 
-## 与渐变混搭
+### 与渐变混搭
 你可能无法想象到的是，除了可以将`currentColor`用到普通需要颜色的场景，它同样可以被用在渐变中。
 
 ```html
@@ -129,14 +129,14 @@ p{
 
 甚至也可用于填充svg，下面会有相应示例。
 
-## 与CSS动画结合
+### 与CSS动画结合
 
 当与CSS `animation`结合，可以得到更加有创意的效果，比如[这个来自codepen的示例](http://codepen.io/scottkellum/pen/Fhxql)
 
 <p data-height="268" data-theme-id="2997" data-slug-hash="Fhxql" data-default-tab="result" data-user="scottkellum" class='codepen'>See the Pen <a href='http://codepen.io/scottkellum/pen/Fhxql/'>currentColor</a> by Scott Kellum (<a href='http://codepen.io/scottkellum'>@scottkellum</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-## 更加简洁的CSS
+### 更加简洁的CSS
 
 其实，新技能不只是装逼那么单纯，合理的使用`currentColor` 变量会让你的CSS代码变得简洁。这才是我们想要达到的目的。以炫技为目的技能是没有生产意义的。
 
@@ -201,7 +201,7 @@ p{
 
 <pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="oxuuu1ex" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script>
 
-## 更好维护的CSS
+### 更好维护的CSS
 
 仔细想想不难发现，当使用`currentColor`后，我们的CSS也变得更加好维护了。
 
@@ -210,7 +210,7 @@ p{
 但优化后就不一样了，因为`<svg>`使用的填充是`currentColor`，你只需要改变`<a>`标签的颜色，它也就跟着变了。真正做到了牵一发而不动全身。这不正是众码友们毕生所追求的理想编程境界么。
 
 
-# 浏览器兼容性
+## 浏览器兼容性
 
 一提到浏览器兼容性，FE同学们或许就不敢那么任性了。之前你可能是这样的：
 
@@ -231,9 +231,8 @@ p{
 
 根据[这篇文章](http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor)的描述，它是可以很好地工作在在所有现代浏览器和IE9+上的，甚至是各浏览器对应的移动版本。所以，在IE不是主要客户对象的情况下，还是可以放心使用的。
 
-# 参考
+## 参考
 
 - [css-tricks currentColor](http://css-tricks.com/currentcolor/)
 - [Keeping CSS short with currentColor](http://osvaldas.info/keeping-css-short-with-currentcolor)
 - [The First CSS Variable: currentColor](http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor)
-

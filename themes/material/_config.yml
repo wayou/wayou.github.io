@@ -1,8 +1,6 @@
-#slogan: ""
-
 menu:
   - title: 首页
-    url: 
+    url:
     intro: ""
     icon: "fa fa-home"
   - title: 存档
@@ -29,14 +27,11 @@ links:
     icon: "fa fa-weibo"
 
 widgets:
-# - search
-- category
-# - tagcloud
-- recent_posts  
+- recent_posts
 - links
 
-rss: 
-fancybox: false
+rss:
 favicon: favicon.ico
-google_analytics: 
+google_analytics:
 baidu_analytics: 392796d51567e848aebf813b65cb8656
+footer: ""

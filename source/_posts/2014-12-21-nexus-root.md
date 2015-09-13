@@ -28,20 +28,20 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 但先让我们来ROOT，因为官方都说了，安装新系统镜像前有可能需要`unlock`，所以为了提高成功率还是先ROOT一下。
 
-# ROOT
+## ROOT
 
 
-## ROOT视频教程
+### ROOT视频教程
 
 你可以看[此视频教程](http://v.youku.com/v_show/id_XODUzNDIyOTc2.html)（从Youtube 扒到优酷的），也可以跟随下面的步骤，多体位任君选择。
 
 <iframe height=498 width=510 src="http://player.youku.com/embed/XODUzNDIyOTc2" frameborder=0 allowfullscreen></iframe>
 
-## 准备
+### 准备
 
 开始之前，你需要准备一些工具。包括了系统驱动及一些`adb`命令行工具等，可以[点此下载](http://downloadandroidrom.com/file/Nexus5/root/Nexus5Root.zip)。
 
-### 开启手机开发者选项
+#### 开启手机开发者选项
 
 开启手机开发者调试选项。
 
@@ -58,7 +58,7 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 ![](/asset/posts/2014-12-21-nexus-root/4.png)
 
 
-### 驱动安装
+#### 驱动安装
 
 首先需要在电脑上安装识别手机的驱动。这里以Window为例。将手机用数据线连接到电脑。前面已经开启了USB调试选项，连接后，手机出现提示是否允许调试，选中同意。
 
@@ -87,7 +87,7 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 到此，驱动安装完成！
 
 
-### 资料备份
+#### 资料备份
 
 如果你是新手机，没啥重要数据，或者通讯录什么的都云端备份了，这一步就可以省了。如果你想保存手机上的APP信息什么的，那就过一下此步骤吧。
 
@@ -105,13 +105,13 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 分分钟后备份工作完毕！
 
-## ROOT 进行时
+### ROOT 进行时
 
 接下来开始ROOT。
 
 此时你的手机也保持和电脑连接的。
 
--  先是手机关机。之后按住音量向下键和电源键，一定是同时按住，大概2秒后进入启动界面。 
+-  先是手机关机。之后按住音量向下键和电源键，一定是同时按住，大概2秒后进入启动界面。
 
 - 此时你需要重复上面驱动安装的步骤再次安装一下驱动，如果设备管理器里面手机图标还是带黄色感叹号的话
 
@@ -121,7 +121,7 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 此时手机启动后就焕然一新了，需要重新设置时间等。
 
-## 安装ROOT授权管理软件
+### 安装ROOT授权管理软件
 
 接下来需要安装一个ROOT授权管理软件，以方便我们管理软件。
 
@@ -141,7 +141,7 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 到此系统ROOT完毕！
 
-## 资料还原
+### 资料还原
 
 现在需要做的就是还原之前备份的资料。
 
@@ -156,23 +156,23 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 如果顺利的话，到此你的手机就ROOT成功并且数据还原完毕啦！
 
 
-# 手动升级Android Lollipop
+## 手动升级Android Lollipop
 
 如果之前是Android 4.x，建议先升5再升5.0.1。升级系统不必ROOT，但至少官方有如下提示：
 > 4. If necessary, unlock the device's bootloader by running:
->   `fastboot oem unlock` 
+>   `fastboot oem unlock`
 
 所以如果你之前尝试过升级不成功的话可以试试上面步骤先ROOT一下。并且对于喜欢折腾的发烧友们来说，手机不ROOT就无法DIY，各种摄手摄脚啊。
 
 下面开始刷5.0.1系统。
 
-## 下载谷歌原厂系统镜像
+### 下载谷歌原厂系统镜像
 
 到[谷歌官网](https://developers.google.com/android/nexus/images)下载适配机型的img系统镜像文件。这里我们选择最新的[Nexus5 Android 5.0.1](https://dl.google.com/dl/android/aosp/hammerhead-lrx22c-factory-0f9eda1b.tgz)
 
 ![](/asset/posts/2014-12-21-nexus-root/2.jpg)
 
-## 解压写入
+### 解压写入
 
 此时你的手机连接到电脑并且开始的开发者调试模式。
 
@@ -188,7 +188,7 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 重启手机，感受全新的Material Design 美艳界面吧！
 
-## 手动写入
+### 手动写入
 
 如果你在执行上面的`flash-all` 脚本时出现错误了，此时需要手机写入。
 
@@ -219,14 +219,15 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 - 如果是Nexus9 完成上面的步骤后需要执行 `fastboot flash vendor vendor.img`, **注意：此步骤仅Nexus9需要**
 
 - 执行`fastboot flash cache cache.img`
-- 执行`fastboot flash userdata userdata.img` 
+- 执行`fastboot flash userdata userdata.img`
 
 到此，手动写入完成！
 
 开机即可体验！！
 
 
-# refernce
+## 参考及引用
+
 - [How to Root Nexus 5! [4.4.3/4.4.4/5.0]](http://rootnexus5.com/nexus-5-root/how-to-root-nexus-5/)
 - [Factory Images for Nexus Devices](https://developers.google.com/android/nexus/images)
 - [Running Into The Dreaded "missing system.img" Error Flashing Android 5.0 Factory Images? Here's How To Get Around It](http://www.androidpolice.com/2014/11/12/running-into-the-dreaded-missing-system-img-error-flashing-android-5-0-factory-images-heres-how-to-get-around-it/)

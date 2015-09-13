@@ -15,7 +15,7 @@ HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的
 
 <!-- more -->
 
-# datalist 标签
+## datalist 标签
 
 具体来说，页面上的`input`还是原来的`input`，只是在它的下面定义一下新的`datalist`在其中填充触发提示的文本,同时在该`input`元素上指定`list`属性指向这个`list`。一个大概的例子大概是像下面这样：
 ```html
@@ -48,7 +48,7 @@ input::-webkit-calendar-picker-indicator {
 ![HTML5 datalist 去掉箭头的版本](/asset/posts/2014-09-14-autocomplete-with-html5-datalist/datalist2.gif)
 
 
-# 浏览器兼容性
+## 浏览器兼容性
 
 下面的数据来自[caniuse](http://caniuse.com/#feat=datalist)。
 ![Datalist 元素兼容性](/asset/posts/2014-09-14-autocomplete-with-html5-datalist/caniuse_datalist.jpg)
@@ -60,7 +60,7 @@ Opera在边缘浏览器中表现强劲，绿得很耀眼；
 而IE虽然摆脱了末位的阴影，但即使是最新的IE11也只是对`Datalist`元素进行了部分支持，所以要与各强劲对手比肩而受到前端开发者的青睐还有些工作要做。但留给IE翻盘的时间已经不多了，正如留给中国队的时间一样~
 
 
-# REFERENCE
+## 参考及引用
 
 * [Can I Use Datalist element](http://caniuse.com/#feat=datalist)
 * [How to create Autocomplete Textbox using Datalist in HTML5](http://www.codelator.com/blog/2014/sep/how-to-create-autocomplete-textbox-using-datalist-in-html5.html)

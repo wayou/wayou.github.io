@@ -86,5 +86,6 @@ app.config(['$routeProvider',
 向模块添加`run`函数，首先发起一个请求获取用户数据，根据返回的数据进行判断，然后使用`$location.path`来重新路由。
 
 
-# references
-- [Angular Modeule Run Blocks](https://docs.angularjs.org/guide/module) 
+## 参考及引用
+
+- [Angular Modeule Run Blocks](https://docs.angularjs.org/guide/module)

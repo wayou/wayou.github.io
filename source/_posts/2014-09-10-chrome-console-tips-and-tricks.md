@@ -299,7 +299,7 @@ debug同样也是接收一个函数名作为参数。当该函数执行时自动
 而其他还有好些命令则让人没有说的欲望，因为好些都可以通过Chrome开发者工具的UI界面来操作并且比用在控制台输入要方便。
 
 
-REFERENCE
+## 参考及引用
 ---
 * [Styled console logging in the Chrome DevTools (Canary)](https://plus.google.com/+AddyOsmani/posts/TanDFKEN9Kn)
 * [Chrome Console API](https://developer.chrome.com/devtools/docs/console-api)

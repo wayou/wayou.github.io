@@ -1,6 +1,6 @@
 title: 如何开发一个简单的HTML5 Canvas 小游戏
 toc: true
-categories: 技术 
+categories: 技术
 date: 2014-11-02 13:14:34
 tags:
 - HTML5
@@ -17,11 +17,11 @@ tags:
 
 我们直接来看源码里的[game.js](https://github.com/lostdecade/simple_canvas_game/blob/master/js/game.js),当然你也可以[在线体验](http://www.lostdecadegames.com/demos/simple_canvas_game/)一下游戏先。
 
-# 游戏截图
+## 游戏截图
 
 ![游戏截图](/asset/posts/how-to-make-a-simple-html5-canvas-game-zh/screenshot.jpg)
 
-# 创建画布
+## 创建画布
 
 ```js
 // Create the canvas
@@ -34,7 +34,7 @@ document.body.appendChild(canvas);
 
 首先我们需要创建一张[画布](https://developer.mozilla.org/en/canvas_tutorial)作为游戏的舞台。这里通过JS代码而不是直接在HTML里写一个`<canvas>`元素目的是要说明代码创建也是很方便的。有了画布后就可以获得它的上下文来进行绘图了。然后我们还设置了画布大小，最后将其添加到页面上。
 
-# 准备图片
+## 准备图片
 
 ```js
 // 背景图片
@@ -50,7 +50,7 @@ bgImage.src = "images/background.png";
 
 整个游戏中需要用到的三张图片：[背景](https://github.com/lostdecade/simple_canvas_game/blob/master/images/background.png)，[英雄](https://github.com/lostdecade/simple_canvas_game/blob/master/images/hero.png)及[怪物](https://github.com/lostdecade/simple_canvas_game/blob/master/images/monster.png)我们都用上面的方法来处理。
 
-# 游戏对象
+## 游戏对象
 
 ```js
 // 游戏对象
@@ -68,7 +68,7 @@ var monstersCaught = 0;
 
 现在定义一些对象将在后面用到。我们的`英雄`有一个`speed`属性用来控制他每秒移动多少像素。`怪物`游戏过程中不会移动，所以只有坐标属性就够了。`monstersCaught `则用来存储怪物被捉住的次数。
 
-# 处理用户的输入
+## 处理用户的输入
 
 ```js
 // 处理按键
@@ -87,7 +87,7 @@ addEventListener("keyup", function (e) {
 
 为此，我们用`keysDown`这个对象来保存用户按下的键值(`keyCode`)，如果按下的键值在这个对象里，那么我们就做相应处理。
 
-# 开始一轮游戏
+## 开始一轮游戏
 
 ```js
 // 当用户抓住一只怪物后开始新一轮游戏
@@ -103,7 +103,7 @@ var reset = function () {
 
 `reset `方法用于开始新一轮和游戏，在这个方法里我们将英雄放回画布中心同时将怪物放到一个随机的地方。
 
-# 更新对象
+## 更新对象
 
 ```js
 // 更新游戏对象的属性
@@ -140,7 +140,7 @@ var update = function (modifier) {
 
 现在英雄的移动已经是基于用户的输入了，接下来该检查移动过程中所触发的事件了，也就是英雄与怪物相遇。这就是本游戏的胜利点，`monstersCaught` +1然后重新开始新一轮。
 
-# 渲染物体
+## 渲染物体
 
 ```js
 // 画出所有物体
@@ -170,7 +170,7 @@ var render = function () {
 
 这之后我们改变了一下`Canvas`的绘图上下文的样式并调用`fillText `来绘制文字，也就是记分板那一部分。本游戏没有其他复杂的动画效果和打斗场面，绘制部分大功告成！
 
-# 主循环函数
+## 主循环函数
 
 ```js
 // 游戏主函数
@@ -192,7 +192,7 @@ var main = function () {
 
 关于游戏中循环更新画面的讨论可参见「[ Onslaught! Arena Case Study](http://www.html5rocks.com/en/tutorials/casestudies/onslaught.html#toc-the-game-loop)」。
 
-# 关于循环的进一步解释
+## 关于循环的进一步解释
 
 ```js
 // requestAnimationFrame 的浏览器兼容性处理
@@ -204,7 +204,7 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 
 为了循环地调用`main`函数，本游戏之前用的是`setInterval`。但现今已经有了更好的方法那就是`requestAnimationFrame`。使用新方法就不得不考虑浏览器兼容性。上面的[垫片](https://en.wikipedia.org/wiki/Polyfill)就是出于这样的考虑，它是[Paul Irish 博客原版](http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/)的一个简化版本。
 
-# 启动游戏！
+## 启动游戏！
 
 ```js
 // 少年，开始游戏吧！
@@ -216,4 +216,3 @@ main();
 总算完成了，这是本游戏最后一段代码了。先是设置一个初始的时间变量`then`用于首先运行`main`函数使用。然后调用 `reset` 函数来开始新一轮游戏（如果你还记得的话，这个函数的作用是将英雄放到画面中间同时将怪物放到随机的地方以方便英雄去捉它）。
 
 到此，相信你已经掌握了开发一个简单H5小游戏需要的基本功了。[玩玩这个游戏](http://www.lostdecadegames.com/demos/simple_canvas_game/)或者[下载代码](https://github.com/lostdecade/simple_canvas_game)自己研究研究吧 :)
-

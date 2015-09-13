@@ -2,7 +2,7 @@ title: 延迟求值-如何让Lo-Dash再提速x100?
 toc: true
 categories: 技术
 date: 2014-11-08 15:29:27
-tags: 
+tags:
 - JavaScript
 - 性能
 ---
@@ -16,7 +16,7 @@ tags:
 
 <!--more-->
 
-# 延迟求值
+## 延迟求值
 
 但似乎我错了-还可以让`Lo-Dash`有明显的提升。只需将关注点从细微的优化转移到算法上来。譬如，在一次循环中我们往往会去优化循环体：
 
@@ -60,7 +60,7 @@ var phoneNumbers = [5554445555, 1424445656, 5554443333, … ×99,999];
 
 // 取出100个含 `55` 的号码
 function contains55(str) {
-    return str.contains("55"); 
+    return str.contains("55");
 };
 
 var r = _(phoneNumbers).map(String).filter(contains55).take(100);
@@ -71,7 +71,7 @@ var r = _(phoneNumbers).map(String).filter(contains55).take(100);
 ![benchmark](/asset/posts/2014-11-08-lazy-evaluation/benchmark.jpg)
 
 
-# 流水线
+## 流水线
 
 延迟求值同时带来了另一个好处，我称之为“流水线”。要旨就是避免产生中间数组，而是对一个元素一次性进行完所有操作。下面用代码说话：
 
@@ -110,7 +110,7 @@ for(var i = 0; i < source.length; i++) {
 减少不必要的中间变量多少会带来性能上的提升，特别是在数据源特别巨大，内存又吃紧的情况下。
 
 
-# 延迟执行
+## 延迟执行
 
 延迟求值带来的另一个好处是延迟执行。无论何时你写了段链式代码，只有在显式地调用了`.value()`后才会真正执行。这样一来，在数据源需要异步去拉取的情况下，可以保证我们处理的是最新的数据。
 
@@ -127,6 +127,6 @@ $json.get("/new/assets").success(function(data) {
 
 而且这种机制在某些情况下也会提高执行效果。我们可以老早发送一个请求获取数据，然后指定一个精确的时间来执行。
 
-# 后记
+## 后记
 
 延迟求值并且不算什么新技术。在一些库中已经在使用了，比如[LINQ](http://en.wikipedia.org/wiki/Language_Integrated_Query),[Lazy.js](http://danieltao.com/lazy.js/)还有其他等等。那么问题来了，`Lo-Dash`存在的意义是啥？我想就是你仍然可以使用你熟悉的`Underscore` 接口但享受一个更高效的底层实现，不需要额外的学习成本，代码上面也不会有大的变动，只需稍加修改。

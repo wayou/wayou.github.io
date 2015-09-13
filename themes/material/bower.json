@@ -1,0 +1,28 @@
+{
+  "name": "material",
+  "version": "0.1.0",
+  "homepage": "https://github.com/wayou/hexo-theme-material",
+  "authors": [
+    "wayou <liuwayong@gmail.com>"
+  ],
+  "description": "hexo theme with bootstrap material theme",
+  "keywords": [
+    "hexo",
+    "theme",
+    "bootstrap",
+    "material"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "bootstrap-material-design": "~0.3.0",
+    "jquery.tocify.js": "~1.9.0"
+  }
+}

@@ -39,7 +39,7 @@ relative_link: false
 future: true
 highlight:
   enable: true
-  line_number: false
+  line_number: true
   auto_detect: true
   tab_replace:
 
@@ -68,14 +68,14 @@ duoshuo_shortname: wayouliu
 
 # deploy minify
 clean_css:
-  exclude: 
+  exclude:
    - polymer/*.css
 
 uglify:
   mangle: true
   output:
   compress:
-  exclude: 
+  exclude:
    - polymer/*.js
    - node_modules/*.js
 
@@ -97,4 +97,4 @@ deploy:
   type: git
   repo: https://github.com/wayou/wayou.github.io.git
   branch: gh-pages
-  message: 
+  message:

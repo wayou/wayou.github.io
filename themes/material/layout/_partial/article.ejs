@@ -1,88 +1,79 @@
-<%- partial('post/title', {item: item, index: false}) %>
-
-<div class="row <% if (post) { %>post<% } else { %>page<% } %>">
-	<!-- cols -->
-	<% if (post) { %>
-	<div class="col-md-9">
-	<% } else { %>
-	<div class="col-md-12">
-	<% } %>
-
-	<% if (item.description) { %>
-		 <div class="alert alert-success description">
-			<i class="fa fa-info-circle"></i> <%- markdown(item.description) %>			
-		</div> <!-- alert -->
-	<% } %>		
-
-	<!-- content -->
-	<div class="mypage">
-		<div class="row widget-wrapper">
-			<!-- date -->
-			<% if (item.date) { %>
-			<div class="post-meta-item">
+<div class="row">
+	<div class="col-md-8">
+	  <!-- index -->
+	  <% if( pageType == 'index') {%>
+	  <!-- archives -->
+	  <% } else if( pageType == 'archives') {%>
+			<h1><%= __('archives') %></h1>
+	  <!-- post -->
+	  <% } else if( pageType == 'post') {%>
+			<h1><%= page.title %></h1>
+			<% if (page.date) { %>
+			<div class="post-meta-page">
 				<i class="fa fa-clock-o"></i>
-				<span class="post-time"><%= item.date.format(config.date_format+' '+config.time_format) %></span>
+				<span class="post-time"><%= page.date.format(config.date_format+' '+config.time_format) %></span>
 			</div>
 			<% } %>
+	  <% } %>
 
-			<!-- author -->
-			<% if (item.author) { %>
-			<div class="post-meta-item">
-				<i class="fa fa-user" title="<%= __('author') %>"></i>
-				<span ><%= item.author %></span>
-			</div>
-			<% }else if(config.author){ %>
-			<div class="post-meta-item">
-				<i class="fa fa-user" title="<%= __('author') %>"></i>
-				<span ><%= config.author %></span>
-			</div>
-			<% } %>
-
-			<!-- categories -->
-		    <% if (item.categories  && item.categories.length ) { %>
-			<div class="post-meta-item">
-				<i class="fa fa-folder"></i>
-				<%
-				 var cats = [];
-				 item.categories.forEach(function(cat){
-				   cats.push('<a class="label label-success" href="' + config.root + cat.path + '">' + cat.name + '</a>');
-				 });
-				 %>
-				<%- cats.join(' ') %>
-			</div>
-			<% } %>
-
-			<!-- tags -->
-			<% if(item.tags && item.tags.length ){ %>
-			<div class="post-meta-item">
-				<i class="fa fa-tags"></i>
-				<% var tags = [];
-				 item.tags.forEach(function(tag){
-				   tags.push('<a class="label label-warning" href="' + config.root + tag.path + '">' + tag.name + '</a>');
-				 });
-				%>
-				<%- tags.join(' ') %>
-			</div>
-			<% } %>
+		<div class="content">
+			<!-- index -->
+		  <% if( pageType == 'index') {%>
+				<% page.posts.each(function(post){ %>
+            <div class="index-item-wrapper">
+              <h3>
+                <a class="post-title" href="<%= url_for(post.path) %>"><%= post.title %></a>
+              </h3>
+							<span class="post-time"><%= date(post.date) %></span>
+              <div class="excerpt"><%- post.excerpt %></div>
+              <% if (post.excerpt){ %>
+                  <a class="btn btn-default" href="<%- url_for(post.path) %>"> MORE... </a>
+              <% } %>
+            </div>
+				<% }) %>
+				<!-- archives -->
+			  <% } else if( pageType == 'archives') {%>
+		  		<% page.posts.each(function(post){ %>
+              <p class="archive-item">
+								<a href="<%= url_for(post.path) %>" class="archive-title"><%= post.title %></a><span class="archive post-time"><%= date(post.date) %></span>
+							</p>
+			  	<% }) %>
+			  <!-- post -->
+			  <% } else if( pageType == 'post') {%>
+					<%- page.content %>
+			  <% } %>
 		</div>
 
+		<!-- pagination -->
+	  <% if (page.total > 1 ){ %>
 
-	    <%- item.content %>	 
+			<div class="btn-group btn-group-justified">
+				<% if (page.prev || page.next) { %>
+
+					<a class="btn btn-default <% if (!page.prev){ %>disabled<% } %>" href="<%- url_for(page.prev_link) %>" ><%= __('prev') %></a>
+
+					<a class="btn btn-default" href="<%- config.root %><%- theme.menu[0].url %>"><%= __('home') %></a>
+
+					<a class="btn btn-default <% if (!page.next){ %>disabled<% } %>" href="<%- url_for(page.next_link) %>" ><%= __('next') %></a>
+
+	    	<% }  %>
+			</div>
+	  <% } %>
+
+		<%- partial('comment', {page: page}) %>
+	</div>
+	<div class="col-md-4">
+		<% if (page.toc) { %>
+			<div id="toc" ></div>
+		<% } else{%>
+			<% if (theme.widgets.length) { %>
+				<div id="sidebar">
+	 			<% theme.widgets.forEach(function(widget){ %>
+	 					<%- partial('../_widget/' + widget) %>
+	 				<% }); %>
+	 			</div>
+			<% } %>
+		<% } %>
 	</div>
 
-	<div>
-  	<center>
-	<%- partial('post/pagination', {page: item}) %>
-    </center>
-	</div>
-	
-	<!-- comment -->
-	<%- partial('post/comment', {page: item}) %>
-	
-	</div> <!-- col-md-9/col-md-12 -->
-	
-	<% if (post) { %>
-		<%- partial('post/meta', {item: item}) %>
-	<% } %>
-
-</div><!-- row -->
+</div>
