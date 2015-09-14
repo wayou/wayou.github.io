@@ -9,7 +9,7 @@
 	  <% } else if( pageType == 'post') {%>
 			<h1><%= page.title %></h1>
 			<% if (page.date) { %>
-			<div class="post-meta-page">
+			<div>
 				<i class="fa fa-clock-o"></i>
 				<span class="post-time"><%= page.date.format(config.date_format+' '+config.time_format) %></span>
 			</div>
