@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://wayou.github.io/"/>
-  <updated>2015-09-16T06:36:18.000Z</updated>
+  <updated>2015-09-19T12:06:45.000Z</updated>
   <id>http://wayou.github.io/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://wayou.github.io/2015/03/08/redirect-before-routing-in-angular/"/>
     <id>http://wayou.github.io/2015/03/08/redirect-before-routing-in-angular/</id>
     <published>2015-03-08T11:43:04.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<p>对于Web程序通常会有这样的需求：针对不同的情况，我们希望用户进入站点后打开不同的页面。<br>写一下Web程序的时候，会有这样的需求：根据用户的类型，将用户导向不同的页面。<br>譬如，对于非注册用户，打开站点后导向到注册页面;<br>或者，以之前做的一个项目为例，对于普通用户，打开培训页面，而培训合格的用户，我们希望默认打开管理页面。</p>
 <p>这样的路由控制当然可以由后端来做。</p>
 <a id="more"></a>
@@ -50,7 +50,7 @@
     <link href="http://wayou.github.io/2015/01/18/all-this/"/>
     <id>http://wayou.github.io/2015/01/18/all-this/</id>
     <published>2015-01-18T20:47:24.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<p><code>this</code> 虐我千百遍，看完此文效立见！不得不说，这篇文章的总结很地道很全面，适合收藏之用。</p>
 <blockquote>
 <p>原文：<a href="http://bjorn.tipling.com/all-this" target="_blank" rel="external">all this</a></p>
@@ -227,7 +227,7 @@
     <link href="http://wayou.github.io/2014/12/31/chrome-request-stalled-problem/"/>
     <id>http://wayou.github.io/2014/12/31/chrome-request-stalled-problem/</id>
     <published>2014-12-31T20:38:22.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<p>本文前戏较多，务实的同学可以直接跳到结论。</p>
 <a id="more"></a>
 <p>由「<a href="http://movie.douban.com/subject/4876722/" target="_blank" rel="external">钢的琴</a>」网友脑洞大开延伸出了吉的他二的胡琵的琶，以及后来许嵩的「<a href="http://music.douban.com/subject/6033105/" target="_blank" rel="external">苏格拉没有底</a>」，是否可以再拓展一下，得到哥本不爱吃哈根，哈根爱达斯等剧情乱入的关系。</p>
@@ -237,7 +237,7 @@
 <p>最致命的是：偶发！你不能准确知道它抽风的时间点，无法在想要追查问题的时候必现它。<br>这只是一方面，另外，慢的可能实在太多了，那么问题来了，是前端导致的还是后端的问题？</p>
 <p>对慢的定义也有待商榷，多久算慢？如果这个页面加载大量数据耗时增加那我认为这是正常的。但这个时限超过了一个合理的自然值，就变得不那么正常了，比如四五十秒，一分多钟。</p>
 <p>最奇葩的是，如此久的耗时居然不会报超时错误，而是拿到正确返回后将页面呈现了出来！</p>
-<h2 id="能的原因">能的原因</h2><h3 id="初步猜测">初步猜测</h3><p>初步的猜测可能是后端迟迟未返回造成浏览器处于等待状态。这个猜测是很合乎逻辑的，至少能够很合理地解释Chrome Dev Tool 网络面板中我们看到的状态<code>pending</code>。<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/pending.jpg" alt=""></p>
+<h2 id="能的原因">能的原因</h2><h3 id="初步猜测">初步猜测</h3><p>初步的猜测可能是后端迟迟未返回造成浏览器处于等待状态。这个猜测是很合乎逻辑的，至少能够很合理地解释Chrome Dev Tool 网络面板中我们看到的状态<code>pending</code>。<br><img src="pending.jpg" alt=""></p>
 <p>但我们不能停留在猜测阶段，要用事实说话，数据才不会骗人。这也正是本文将要展开的。</p>
 <p>下面是另外一些被提出来的可能性。</p>
 <h3 id="Angular">Angular</h3><p>Angular首当其冲。为什么，因为这个问题出现在后台MIS系统中，且这些系统多用Angular开发。</p>
@@ -256,17 +256,17 @@
 <blockquote>
 <p>OS： Windows 7 Ultimate<br>Chrome：Version 39.0.2171.95 m</p>
 </blockquote>
-<p>这是请求<code>Pending</code>时的请求信息：<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/before-response.jpg" alt=""></p>
-<p>这是请求成功返回后：<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/stalled-timeline.jpg" alt=""></p>
+<p>这是请求<code>Pending</code>时的请求信息：<br><img src="before-response.jpg" alt=""></p>
+<p>这是请求成功返回后：<br><img src="stalled-timeline.jpg" alt=""></p>
 <p>可以看到<code>Stalled</code>了1分多钟。神奇的是竟然不报超时错误而是成功返回了。</p>
 <p>同时保存了请求头，响应头，还将本次问题请求保存成了CURL等。现场已经留下，感觉Bug不会存活太久了。</p>
 <p>接下来就是对比正常请求跟这次异常请求的不同，一轮比较下来，未发现多少异常。</p>
 <h3 id="常态与变态的对比">常态与变态的对比</h3><p>请求头对比：</p>
 <p>请求头的对比已丢失，但除了时间外，其余无差别。</p>
 <p>响应头对比：</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/response-header-compaire.jpg" alt=""></p>
+<p><img src="response-header-compaire.jpg" alt=""></p>
 <p>返回结果对比：</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/response.jpg" alt=""></p>
+<p><img src="response.jpg" alt=""></p>
 <p>上面的对比意义不大，但还是要做的，万一发现有价值的情报了呢。</p>
 <h2 id="一次失败的尝试">一次失败的尝试</h2><p>解决问题时，习惯性地看有没有人已经碰过到类似问题，这样做的好处很明显：<br>如果有，站在巨人的肩上轻松地牛逼着；<br>如果没有，这是个机会。</p>
 <p>于是信心满满地出发了，因为根据一条互联网准则，70%的问题已经有人解决过了，那些没有被解决的要么是现有技术达不到，要么是未被人发现。所以能够搜索出问题答案的概率还是蛮大的。</p>
@@ -324,7 +324,7 @@
 <p>并且开多个标签也是无法进行有效重现的。</p>
 <p>因此可以排除缓存的干扰。那么似乎这里的缓存锁并不是导致问题的原因，只能另寻他路。不得不说，高兴过后有点失望。</p>
 <h3 id="八卦时间">八卦时间</h3><p>可喜的是，在细细口味了上面缓存机制引入的过程后，真是耐人寻味。这里不妨八卦一下。相信你也注意到了，上面提到，该<a href="https://code.google.com/p/chromium/issues/detail?id=46104" target="_blank" rel="external">缓存问题</a>的提出是在2010年，确切地说是<code>Jun 8, 2010</code>。是的，2010年6月8日由<a href="mailto:eroman@chromium.org" target="_blank" rel="external">eroman</a> 同学提出。但最后针对该问题进行修复的代码<a href="https://src.chromium.org/viewvc/chrome?revision=279326&amp;view=revision" target="_blank" rel="external">提交</a>却是在今年6月份，2014年6月24日，提交时间摆在那里我会乱说？</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/cache-fix-commit.jpg" alt=""></p>
+<p><img src="cache-fix-commit.jpg" alt=""></p>
 <p>于是好奇为什么会拖了这么久，遂跟了一下该问题下面的回复看看发生了什么。简直惊呆了。</p>
 <ul>
 <li><p>同月14号，有了首次对这个问题的回复，那是将该问题指派给了<a href="mailto:rvargas@chromium.org" target="_blank" rel="external">rvargas</a>同学。</p>
@@ -365,12 +365,12 @@
 </ul>
 <h2 id="开始新的征程">开始新的征程</h2><p>虽然上面的努力没能定位到问题，但作为这次对解决这次问题的尝试，还是将它记录了下来，估且称作「旧的回忆」吧。</p>
 <p>下面开始「新的征程」。</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/new-journey.jpg" alt=""></p>
+<p><img src="new-journey.jpg" alt=""></p>
 <h2 id="再次重现">再次重现</h2><p>这次受到上面的启发，开启<code>chrome://net-internals/#events</code>页面来捕获事件日志。看是否有错误或异常发生。</p>
 <p>再次经过旷日持久的机械操作，重现了！这次，日志在手，天下我有。感觉Bug不会存活多久了。</p>
-<p>Chrome Dev Tools 网络面板截图：<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/timeline-screen-capture2.jpg" alt=""></p>
+<p>Chrome Dev Tools 网络面板截图：<br><img src="timeline-screen-capture2.jpg" alt=""></p>
 <p>由上面的截图看到，本次出问题的请求总耗时42.74秒。</p>
-<p>问题请求的时间线信息截图：<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/timeline-screen-capture.jpg" alt=""></p>
+<p>问题请求的时间线信息截图：<br><img src="timeline-screen-capture.jpg" alt=""></p>
 <p>可以预见，通过捕获的日志完全可以看到<code>Stalled</code>那么久都发生了些什么鬼。</p>
 <p>话不多说，切换到事件捕获页面，定位到出问题的请求，查看其详情。同时将该日志导出，永久保存！作为纪念，也方便以后再次导入查看。有兴趣的同学可以访问下方下载后进行导入，就可以清晰地查看到现场了，就好像你亲历了整个犯罪现场一样。</p>
 <h3 id="日志还原">日志还原</h3><ul>
@@ -398,10 +398,10 @@
 <li>发送请求头 <code>+HTTP_TRANSACTION_SEND_REQUEST  [dt=1]</code></li>
 <li>读取响应头 <code>+HTTP_TRANSACTION_READ_HEADERS  [dt=161]</code></li>
 </ul>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/normal-section.jpg" alt=""></p>
+<p><img src="normal-section.jpg" alt=""></p>
 <p>这是正常的情况下，没有什么问题。并且日志里可以清晰地看到发送的请求头是什么，然后解析出来的响应头是什么。这跟在网络面板看到的是一致的。</p>
 <p>再回到出问题的请求日志上来，同样我们只关注这两部分。如下面的截图：</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/3retry.jpg" alt=""></p>
+<p><img src="3retry.jpg" alt=""></p>
 <p>与正常相比，最后一次发送请求和读取响应头无异常，时间就多在了前面还有再次发送和请求的过程，细看时间都花在了以下两个事件中：</p>
 <ul>
 <li><code>HTTP_STREAM_PARSER_READ_HEADERS  [dt=21301]</code></li>
@@ -420,7 +420,7 @@
 <h2 id="Chromium_源码">Chromium 源码</h2><p>那么这个错误究竟是什么。能不能找到点靠谱的解释。当然能，让我们进入到Chromium的源码中去。</p>
 <h3 id="ERR_CONNECTION_RESET被唤起的地方">ERR_CONNECTION_RESET被唤起的地方</h3><p>在Chromium的源码中搜索该常量名，确实出现很多<a href="https://code.google.com/p/chromium/codesearch#search/&amp;q=ERR_CONNECTION_RESET&amp;sq=package:chromium&amp;type=cs" target="_blank" rel="external">结果</a>。联系到我们查看日志发现问题的上下文，是在解析响应头报的。所以我们定位到<code>http_stream_parser.cc</code>文件，同时注意到有一个文件叫<code>net_errors_win.cc</code>，所以猜测他是定义所有错误常量用的，也顺便打开之。</p>
 <p>经过观察<code>src/net/base/net_errors_win.cc</code> 其路径和代码得知其中多为系统级别的错误，似乎跟我们的问题不是很关联，忽略该文件。</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/source.jpg" alt=""></p>
+<p><img src="source.jpg" alt=""></p>
 <p><code>http_stream_parser.cc</code>文件中，<code>ERR_CONNECTION_RESET</code>仅出现一次。这给我们定位带来了极大的便利。</p>
 <figure class="highlight cpp"><figcaption><span>[chromium]//src/net/base/net_errors_win.cc</span><a href="https://code.google.com/p/chromium/codesearch#chromium/src/net/http/http_stream_parser.cc&q=ERR_CONNECTION_RESET&sq=package:chromium&dr=C" target="_blank" rel="external">http_stream_parser.cc</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Returns true if |error_code| is an error for which we give the server a</span></span><br><span class="line"><span class="comment">// chance to send a body containing error information, if the error was received</span></span><br><span class="line"><span class="comment">// while trying to upload a request body.</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">ShouldTryReadingOnUploadError</span><span class="params">(<span class="keyword">int</span> error_code)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (error_code == ERR_CONNECTION_RESET);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里定义了一个<code>ShouldTryReadingOnUploadError</code> 的方法，注释耐人寻味，这个时候，这样的情景，能否正确解读注释成为了比读懂代码更重要（这是我在看JS代码时永远无法体味到的感觉），下面尽可能对它进行理解：</p>
@@ -430,7 +430,7 @@
 <p>我承认被上面的复杂从句打败！</p>
 <p>那么我们来看这个方法被调用的场景。</p>
 <p>现在我们点击上面的<code>ShouldTryReadingOnUploadError</code>方法，代码下方出现调用了该方法的地方，一共有两处。</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/call.jpg" alt=""></p>
+<p><img src="call.jpg" alt=""></p>
 <p>分别点击进行查看。</p>
 <figure class="highlight"><figcaption><span>459行DoSendHeadersComplete方法里进行了调用</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">int HttpStreamParser::DoSendHeadersComplete(int result) &#123;</span><br><span class="line">  if (result &lt; 0) &#123;</span><br><span class="line">    // In the unlikely case that the headers and body were merged, all the</span><br><span class="line">    // the headers were sent, but not all of the body way, and |result| is</span><br><span class="line">    // an error that this should try reading after, stash the error for now and</span><br><span class="line">    // act like the request was successfully sent.</span><br><span class="line">    if (request_headers_-&gt;BytesConsumed() &gt;= request_headers_length_ &amp;&amp;</span><br><span class="line">        ShouldTryReadingOnUploadError(result)) &#123;</span><br><span class="line">      upload_error_ = result;</span><br><span class="line">      return OK;</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
@@ -486,7 +486,7 @@
 <li>是什么让浏览器21秒后才收到重置信息？服务器作出反应过慢还是网络原因？</li>
 </ul>
 <h2 id="Chrome_Dev_Tool_中时间线各阶段代表的意义">Chrome Dev Tool 中时间线各阶段代表的意义</h2><p>另附注一下Chrome Dev Tool 中请求的时间线各阶段代表的意义。<br>以下内容扒自<a href="https://developer.chrome.com/devtools/docs/network#resource-network-timing" target="_blank" rel="external">Chrome 开发者文档页</a>，然后我将它本地化了一下下。</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/timing.png" alt=""></p>
+<p><img src="timing.png" alt=""></p>
 <h3 id="Stalled/Blocking">Stalled/Blocking</h3><p>在请求能够被发出去前的等等时间。包含了用于处理代理的时间。另外，如果有已经建立好的连接，那么这个时间还包括等待已建立连接被复用的时间，这个遵循Chrome对同一源最大6个TCP连接的规则。</p>
 <p>「拿我们的情况来说，上面出错所有的耗时也是算在了这部分里面。网络面板中显示的其余时间比如DNS查找，连接建立等都是属于最后那次成功请求的了」</p>
 <h3 id="Proxy_Negotiation">Proxy Negotiation</h3><p>处理代理的时间。</p>
@@ -526,7 +526,7 @@
     <link href="http://wayou.github.io/2014/12/21/nexus-root/"/>
     <id>http://wayou.github.io/2014/12/21/nexus-root/</id>
     <published>2014-12-21T11:17:10.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>刷机有风险，root需谨慎！<br>following steps below on your own risk</p>
 </blockquote>
@@ -534,7 +534,7 @@
 <p>Google死忠入手一台Nexus是必需的事情。Nexus6 刚出，特别赞，但被尺寸吓到了，机身跟6 plus差不离。觉得这样的尺寸无法接受，遂入手Nexus5。我不算太能折腾，所以不想去刷机什么的。但问题来了，Android 5 棒棒糖太吸引人，Material Design 简直美Cry。</p>
 <p>对于Google死忠来说，这样的诱惑是难以抵挡的。于是咬咬牙，升！</p>
 <p>Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。鉴于国内特殊情况，要完成顺利的升级你得懂得科学上网，而且是让手机科学上网。</p>
-<p><img src="/asset/posts/2014-12-21-nexus-root/1.png" alt=""></p>
+<p><img src="1.png" alt=""></p>
 <p>科学上网只是第一步，保证你手机可以下载到更新，值得提及的是升级过程似乎只能一步一步来，4.4.3 到4.4.4，然后4.4.4 到 5.0， 最后才是5.0.1。</p>
 <p>如果手机之前ROOT过，OTA有可能不会那么自动，更新包下载完成重启时可能进入安装界面，于是不知道怎么操作，也没搜到相关资料，只能手动刷了。</p>
 <p>当然，如果你没有VPN，不能科学上网，你的唯一选择就只有手动刷了。</p>
@@ -548,12 +548,12 @@
 <p>Settings-&gt;About Phone</p>
 </blockquote>
 <p>进入「关于手机」界面，下拉到底部，连续点击<code>Build number</code> 直到出现提示说还剩多少次点击便可开启开发者选项，再继续，最后会提示你开启成功。</p>
-<p><img src="/asset/posts/2014-12-21-nexus-root/3.jpg" alt=""></p>
+<p><img src="3.jpg" alt=""></p>
 <blockquote>
 <p>图片来自<a href="http://www.cnet.com/how-to/how-to-easily-root-an-android-device/" target="_blank" rel="external">How to easily root an Android device</a></p>
 </blockquote>
 <p>然后返回到上一级，会多出一个菜单 <code>Developer options</code>,点击进入。选中<code>USB debugging</code>。</p>
-<p><img src="/asset/posts/2014-12-21-nexus-root/4.png" alt=""></p>
+<p><img src="4.png" alt=""></p>
 <h4 id="驱动安装">驱动安装</h4><p>首先需要在电脑上安装识别手机的驱动。这里以Window为例。将手机用数据线连接到电脑。前面已经开启了USB调试选项，连接后，手机出现提示是否允许调试，选中同意。</p>
 <ul>
 <li><p>下载上面提到的<a href="http://downloadandroidrom.com/file/Nexus5/root/Nexus5Root.zip" target="_blank" rel="external">root工具</a>后解压。</p>
@@ -561,34 +561,34 @@
 <li><p>进入Windows的设备管理器（控制面板-&gt;设备管理器）, 此时我们的手机应该是未识别的设备，有黄色图标。</p>
 </li>
 </ul>
-<p><img src="/asset/posts/2014-12-21-nexus-root/5.jpg" alt=""></p>
+<p><img src="5.jpg" alt=""></p>
 <blockquote>
 <p>双击该设备打开属性面板，然后选择「更新驱动」，在弹出的窗口中选择从本地电脑中选择驱动。</p>
 </blockquote>
-<p><img src="/asset/posts/2014-12-21-nexus-root/6.jpg" alt=""></p>
+<p><img src="6.jpg" alt=""></p>
 <blockquote>
 <p>在弹出的窗口中再次选择从电脑中浏览，之后在弹出的窗口中直接点击「下一步」。</p>
 </blockquote>
-<p><img src="/asset/posts/2014-12-21-nexus-root/7.jpg" alt=""></p>
+<p><img src="7.jpg" alt=""></p>
 <blockquote>
 <p>下一步窗口中选择<code>Have Disk...</code> 打开<code>Install From Disk</code> 窗口。选择「浏览」定位到之前解压的位置，选中<code>Nexus5Root\usb_driver\android_winusb.inf</code> 进行安装。</p>
 </blockquote>
-<p><img src="/asset/posts/2014-12-21-nexus-root/8.jpg" alt=""></p>
+<p><img src="8.jpg" alt=""></p>
 <blockquote>
 <p>接下来选择<code>Android ADB Interface</code> 再点击「下一步」开始安装。</p>
 </blockquote>
-<p><img src="/asset/posts/2014-12-21-nexus-root/9.jpg" alt=""></p>
+<p><img src="9.jpg" alt=""></p>
 <p>到此，驱动安装完成！</p>
 <h4 id="资料备份">资料备份</h4><p>如果你是新手机，没啥重要数据，或者通讯录什么的都云端备份了，这一步就可以省了。如果你想保存手机上的APP信息什么的，那就过一下此步骤吧。</p>
 <p>注意这个时候你的手机应该是开机状态且用数据线连接到电脑了。</p>
 <ul>
 <li>还是在之前解压的文件夹下，按住左键在空白处右击，在出来的菜单中选择「在此处打开命令行」</li>
 </ul>
-<p><img src="/asset/posts/2014-12-21-nexus-root/10.png" alt=""></p>
+<p><img src="10.png" alt=""></p>
 <ul>
 <li>输入<code>adb devices</code> 查看设备连接状态。第一次可能会需要在手机上弹出的确认窗口中点击一下确认。正常情况下命令行里会返回已经识别到的机器。</li>
 </ul>
-<p><img src="/asset/posts/2014-12-21-nexus-root/11.jpg" alt=""></p>
+<p><img src="11.jpg" alt=""></p>
 <ul>
 <li>输入<code>adb backup -apk -all -f backup.ab</code> 进行资料备份。此时到手机上点击确定开始进行备份。</li>
 </ul>
@@ -642,7 +642,7 @@
 <p>所以如果你之前尝试过升级不成功的话可以试试上面步骤先ROOT一下。并且对于喜欢折腾的发烧友们来说，手机不ROOT就无法DIY，各种摄手摄脚啊。</p>
 <p>下面开始刷5.0.1系统。</p>
 <h3 id="下载谷歌原厂系统镜像">下载谷歌原厂系统镜像</h3><p>到<a href="https://developers.google.com/android/nexus/images" target="_blank" rel="external">谷歌官网</a>下载适配机型的img系统镜像文件。这里我们选择最新的<a href="https://dl.google.com/dl/android/aosp/hammerhead-lrx22c-factory-0f9eda1b.tgz" target="_blank" rel="external">Nexus5 Android 5.0.1</a></p>
-<p><img src="/asset/posts/2014-12-21-nexus-root/2.jpg" alt=""></p>
+<p><img src="2.jpg" alt=""></p>
 <h3 id="解压写入">解压写入</h3><p>此时你的手机连接到电脑并且开始的开发者调试模式。</p>
 <p>将下载的文件解压。我的建议是将解压出来的文件与上面的root工具放一起，这样方便执行<code>adb</code> 命令时好找文件。</p>
 <p>还是上面那个命令行工具，执行<code>adb reboot bootloader</code> 重启手机进入启动界面。</p>
@@ -704,7 +704,7 @@
     <link href="http://wayou.github.io/2014/12/07/css-currentColor/"/>
     <id>http://wayou.github.io/2014/12/07/css-currentColor/</id>
     <published>2014-12-07T12:56:22.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<p>CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是<code>crrentColor</code>变量（或者说是CSS关键字，但我觉得称为变量好理解些）。</p>
 <a id="more"></a>
 <h2 id="初识">初识</h2><p>它是何物？具有怎样的功效？它从哪里来？带着这些疑问我们继续。</p>
@@ -727,7 +727,7 @@
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"container"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">p</span>&gt;</span>约么？<span class="tag">&lt;/<span class="title">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class">.container</span><span class="rules">&#123;</span><br><span class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#00ff00</span></span></span>;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
 <p>现在，我们没有给<code>&lt;p&gt;</code>标签指定颜色，它的<code>color</code>从父级容器也就是<code>class</code>为<code>container</code>的<code>div</code>继承而来，换句话说此时<code>p</code>标签的<code>color</code>为<code>#00ff00</code>，<code>currentColor</code>又是直接去取元素的<code>color</code>值，所以此时<code>p</code>标签的<code>currentColor</code>值也为<code>#00ff00</code>。</p>
-<p><img src="/asset/posts/2014-12-07-css-currentColor/situation2.jpg" alt="situation2"></p>
+<p><img src="situation2.jpg" alt="situation2"></p>
 <ul>
 <li>场景3</li>
 </ul>
@@ -735,7 +735,7 @@
 <p>如果父级元素也没有指定颜色，那它的父级元素就会从父级的父级去继承，直到文档的根结点<code>html</code>标签都还没显示指定一个颜色呢，就应用上浏览器默认的颜色呗~</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="doctype">&lt;!doctype html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">title</span>&gt;</span>我来组成头部<span class="tag">&lt;/<span class="title">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">p</span>&gt;</span>约么？<span class="tag">&lt;/<span class="title">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">footer</span>&gt;</span>战神金钢，宇宙的保护神！<span class="tag">&lt;/<span class="title">footer</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * 无CSS</span><br><span class="line"> */</span></span><br></pre></td></tr></table></figure>
-<p><img src="/asset/posts/2014-12-07-css-currentColor/situation3.jpg" alt="situation3"></p>
+<p><img src="situation3.jpg" alt="situation3"></p>
 <p>那，这个时候的黑色其实是浏览器默认给的。此时<code>p</code>标签的<code>currentColor</code>自然也跟<code>color</code>值一样，为黑色，纯黑的<code>#000</code>。</p>
 <h2 id="如何用？">如何用？</h2><p>了解它是怎样的物品后，下面问题来了，如何用？有额外的<code>buff</code>效果么，耗蓝多么，CD时间长么。。。</p>
 <p>前面说道，它就是一个CSS变量，存储了颜色值，这个值来自当前元素的<code>color</code>CSS属性。当你需要为该元素其他属性指定颜色的时候，它就可以登上舞台了。</p>
@@ -756,7 +756,7 @@
 
 <h3 id="更加简洁的CSS">更加简洁的CSS</h3><p>其实，新技能不只是装逼那么单纯，合理的使用<code>currentColor</code> 变量会让你的CSS代码变得简洁。这才是我们想要达到的目的。以炫技为目的技能是没有生产意义的。</p>
 <p>看下面这个例子（这个示例灵感来自<a href="http://osvaldas.info/keeping-css-short-with-currentcolor" target="_blank" rel="external">这里</a>）</p>
-<p><img src="/asset/posts/2014-12-07-css-currentColor/btn_with_svg_st.jpg" alt="btn_with_svg_st"></p>
+<p><img src="btn_with_svg_st.jpg" alt="btn_with_svg_st"></p>
 <p>我们在按钮中使用了一个svg图标。你是一个负责任的FE，所以，对这个按钮的各种状态<code>:focus</code>，<code>:hover</code>，<code>:active</code>都作了样式上的处理。同时，为了让图标也跟着保持一致的姿态变更，需要把对<code>&lt;a&gt;</code>标签的样式处理同样就到到<code>&lt;svg&gt;</code>标签上。于是你的CSS代码看起来就是下面这样的了。</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*a 标签*/</span></span><br><span class="line"><span class="class">.button</span> <span class="rules">&#123;</span><br><span class="line">    <span class="rule"><span class="attribute">color</span>:<span class="value"> <span class="hexcolor">#117B6F</span></span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">font-size</span>:<span class="value"> <span class="number">1.2em</span></span></span>;</span><br><span class="line">&#125;</span></span><br><span class="line"><span class="rule"><span class="attribute">.button</span>:<span class="value">hover, .button:focus &#123;</span><br><span class="line">    color: <span class="hexcolor">#01B19A</span></span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="rule"><span class="attribute">.button</span>:<span class="value">active &#123;</span><br><span class="line">    color: <span class="hexcolor">#02D7BB</span></span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*svg 标签*/</span></span><br><span class="line"><span class="class">.button</span> <span class="tag">svg</span> <span class="rules">&#123;</span><br><span class="line">    <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">17px</span></span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">17px</span></span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">fill</span>:<span class="value"> <span class="hexcolor">#117B6F</span></span></span>;</span><br><span class="line">&#125;</span></span><br><span class="line"><span class="rule"><span class="attribute">.button</span>:<span class="value">hover svg, .button:focus svg &#123;</span><br><span class="line">    fill: <span class="hexcolor">#01B19A</span></span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="rule"><span class="attribute">.button</span>:<span class="value">active svg &#123;</span><br><span class="line">    fill: <span class="hexcolor">#02D7BB</span></span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="smxdd6mn" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p>
@@ -767,9 +767,9 @@
 <p>还拿上面的按钮示例来说，优化之前不但代码冗余，而且哪天PM来劲了说这颜色饱看，给换个其他色。于是你得把<code>&lt;a&gt;</code>标签和<code>&lt;svg&gt;</code>一起换了。</p>
 <p>但优化后就不一样了，因为<code>&lt;svg&gt;</code>使用的填充是<code>currentColor</code>，你只需要改变<code>&lt;a&gt;</code>标签的颜色，它也就跟着变了。真正做到了牵一发而不动全身。这不正是众码友们毕生所追求的理想编程境界么。</p>
 <h2 id="浏览器兼容性">浏览器兼容性</h2><p>一提到浏览器兼容性，FE同学们或许就不敢那么任性了。之前你可能是这样的：</p>
-<p><img src="/asset/posts/2014-12-07-css-currentColor/before.gif" alt="before"></p>
+<p><img src="before.gif" alt="before"></p>
 <p>当听到IE传来的噩耗，你可能是这样的：</p>
-<p><img src="/asset/posts/2014-12-07-css-currentColor/after.gif" alt="after"></p>
+<p><img src="after.gif" alt="after"></p>
 <p>经查，<a href="http://caniuse.com/#search=currentcolor" target="_blank" rel="external">can i use</a> 没有关于它的数据。</p>
 <p>经测，</p>
 <ul>
@@ -802,7 +802,7 @@
     <link href="http://wayou.github.io/2014/11/30/html5-details-tag/"/>
     <id>http://wayou.github.io/2014/11/30/html5-details-tag/</id>
     <published>2014-11-30T12:54:43.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<p>HTML5 中新增的<code>&lt;details&gt;</code>标签允许用户创建一个可展开折叠的元件，让一段文字或标题包含一些隐藏的信息。</p>
 <a id="more"></a>
 <h2 id="用法">用法</h2><p>一般情况下，<code>details</code>用来对显示在页面的内容做进一步骤解释。其展现出来的效果和jQuery手风琴插件差不多。</p>
@@ -810,7 +810,7 @@
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">details</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">summary</span>&gt;</span>Google Nexus 6<span class="tag">&lt;/<span class="title">summary</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">p</span>&gt;</span>商品详情：<span class="tag">&lt;/<span class="title">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">dl</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>屏幕<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>5.96” 2560x1440 QHD AMOLED display (493 ppi)<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>电池<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>3220 mAh<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>相机<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>13MP rear-facing with optical image stabilization 2MP front-facing<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>处理器<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>Qualcomm® Snapdragon™ 805 processor<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dl</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">details</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>首先是<code>&lt;details&gt;</code>标签，里面接着是标题<code>&lt;summary&gt;</code>，这里面的内容一般简短，具有总结性，会展示在页面。接着可以跟任意类型的HTML元素作为详情内容，这些内容需要在点击<code>&lt;summary&gt;</code>才会呈现。</p>
 <p>上面代码呈现出来的效果会是下面这样的：</p>
-<p><img src="/asset/posts/2014-11-30-html5-details-tag/html5_details_tag.gif" alt="html5 details tag"></p>
+<p><img src="html5_details_tag.gif" alt="html5 details tag"></p>
 <p>最开始详情是隐藏的，当点击时都会展现。</p>
 <h3 id="open_属性">open 属性</h3><p>当然，你也可以通过给<code>&lt;details&gt;</code>标签设置<code>open</code>属性让它默认为展开状态。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">details</span> <span class="attribute">open</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">summary</span>&gt;</span>Google Nexus 6<span class="tag">&lt;/<span class="title">summary</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">p</span>&gt;</span>商品详情：<span class="tag">&lt;/<span class="title">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">dl</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>屏幕<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>5.96” 2560x1440 QHD AMOLED display (493 ppi)<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>电池<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>3220 mAh<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>相机<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>13MP rear-facing with optical image stabilization 2MP front-facing<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dt</span>&gt;</span>处理器<span class="tag">&lt;/<span class="title">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">dd</span>&gt;</span>Qualcomm® Snapdragon™ 805 processor<span class="tag">&lt;/<span class="title">dd</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dl</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">details</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -818,7 +818,7 @@
 <h2 id="示例">示例</h2><p>示例如上面那样，预览在线版本可<a href="http://sandbox.runjs.cn/show/hjotymth" target="_blank" rel="external">点击此处</a>。</p>
 <h2 id="浏览器兼容性">浏览器兼容性</h2><p>由于是HTML5新标签，浏览器支持情况不是很理想。从来自<a href="http://caniuse.com/#feat=details" target="_blank" rel="external">caniuse</a>的数据来看，目前仅Chrome, Safari 8+ 和Opera 26+支持此标签。</p>
 <p>可喜的是，如果你在caniuse开启了「显示来自UC浏览器的结果」 选项的话，会发现，国产的UC浏览器也支持了此标签。</p>
-<p><img src="/asset/posts/2014-11-30-html5-details-tag/browser_compatability.jpg" alt="can i use details tag"></p>
+<p><img src="browser_compatability.jpg" alt="can i use details tag"></p>
 <h2 id="Polyfill">Polyfill</h2><p>既然支持情况如此不理解，那么使用垫片（polyfill）就很有必要了。</p>
 <p>垫片就是在那些不支持此特性的浏览器上使用JavaScript来手动模拟，看起来好像是浏览器支持了一样。</p>
 <p><a href="http://www.smashingmagazine.com/author/maksim-chemerisuk/?rel=author" target="_blank" rel="external">chemerisuk</a>给出了他的一个实现，源码在<a href="https://github.com/chemerisuk/better-
@@ -846,7 +846,7 @@
     <link href="http://wayou.github.io/2014/11/26/javascript-benchmarking/"/>
     <id>http://wayou.github.io/2014/11/26/javascript-benchmarking/</id>
     <published>2014-11-26T19:54:36.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>原文：<a href="https://mathiasbynens.be/notes/javascript-benchmarking" target="_blank" rel="external">Bulletproof JavaScript benchmarks</a></p>
 </blockquote>
@@ -916,7 +916,7 @@
     <link href="http://wayou.github.io/2014/11/08/lazy-evaluation/"/>
     <id>http://wayou.github.io/2014/11/08/lazy-evaluation/</id>
     <published>2014-11-08T15:29:27.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>「注释」作者在本文里没有说明这么一个事实：<br>目前的版本<code>Lo-Dash v2.4.1</code>并没有引入延迟求值的特性，<code>Lo-Dash 3.0.0-pre</code>中部分方法进行了引入，比如<code>filter()</code>,<code>map()</code>,<code>reverse()</code>。</p>
 <p>原文：<a href="http://filimanjaro.com/blog/2014/introducing-lazy-evaluation" target="_blank" rel="external">How to Speed Up Lo-Dash ×100? Introducing Lazy Evaluation</a></p>
@@ -929,13 +929,13 @@
 <p>这便是<code>Lo-Dash</code>实现延迟求值的大致思路。重要的是减少循环次数，而不是每次循环的时间。让我们考察下面的例子：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">priceLt</span>(<span class="params">x</span>) </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">item</span>) </span>&#123; <span class="keyword">return</span> item.price &lt; x; &#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> gems = [</span><br><span class="line">   &#123; name: <span class="string">'Sunstone'</span>, price: <span class="number">4</span> &#125;, &#123; name: <span class="string">'Amethyst'</span>, price: <span class="number">15</span> &#125;,</span><br><span class="line">   &#123; name: <span class="string">'Prehnite'</span>, price: <span class="number">20</span>&#125;, &#123; name: <span class="string">'Sugilite'</span>, price: <span class="number">7</span>  &#125;,</span><br><span class="line">   &#123; name: <span class="string">'Diopside'</span>, price: <span class="number">3</span> &#125;, &#123; name: <span class="string">'Feldspar'</span>, price: <span class="number">13</span> &#125;,</span><br><span class="line">   &#123; name: <span class="string">'Dioptase'</span>, price: <span class="number">2</span> &#125;, &#123; name: <span class="string">'Sapphire'</span>, price: <span class="number">20</span> &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> chosen = _(gems).filter(priceLt(<span class="number">10</span>)).take(<span class="number">3</span>).value();</span><br></pre></td></tr></table></figure>
 <p>我们只想取出3个价格低于10元的小球。通常情况下我们先过滤整个数据源，最后从所有小于10的元素里返回前面三个即可。</p>
-<p><img src="/asset/posts/2014-11-08-lazy-evaluation/lodash-naive.gif" alt="lo-dash naive"></p>
+<p><img src="lodash-naive.gif" alt="lo-dash naive"></p>
 <p>但这种做法并不优雅。它处理了全部8个数据，但其实只需要处理前面5个我们就能拿到结果了。同样为了得到正确的结果，延迟求值则只处理最少的元素。优化后如下图所示：</p>
-<p><img src="/asset/posts/2014-11-08-lazy-evaluation/grafika.gif" alt="lo-dash naive"></p>
+<p><img src="grafika.gif" alt="lo-dash naive"></p>
 <p>一下子就获得了37.5%的性能提升。很容易找出提升X1000+的例子。比如：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> phoneNumbers = [<span class="number">5554445555</span>, <span class="number">1424445656</span>, <span class="number">5554443333</span>, … ×<span class="number">99</span>,<span class="number">999</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 取出100个含 `55` 的号码</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">contains55</span>(<span class="params">str</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> str.contains(<span class="string">"55"</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> r = _(phoneNumbers).map(<span class="built_in">String</span>).filter(contains55).take(<span class="number">100</span>);</span><br></pre></td></tr></table></figure>
 <p>这个例子中<code>map</code>和<code>filter</code> 将遍历99999 个元素，但很有可能我们只需处理到1000个元素的时候就已经拿到想要的结果了。这回性能的提升就太明显了（<a href="http://jsperf.com/lazy-demo" target="_blank" rel="external">benchmark</a>）：</p>
-<p><img src="/asset/posts/2014-11-08-lazy-evaluation/benchmark.jpg" alt="benchmark"></p>
+<p><img src="benchmark.jpg" alt="benchmark"></p>
 <h2 id="流水线">流水线</h2><p>延迟求值同时带来了另一个好处，我称之为“流水线”。要旨就是避免产生中间数组，而是对一个元素一次性进行完所有操作。下面用代码说话：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = _(source).map(func1).map(func2).map(func3).value();</span><br></pre></td></tr></table></figure>
 <p>上面看似优雅的写法在原始的<code>Lo-Dash</code>里会转换成下面的样子（直接求值）：</p>
@@ -970,14 +970,14 @@
     <link href="http://wayou.github.io/2014/11/02/how-to-make-a-simple-html5-canvas-game-zh/"/>
     <id>http://wayou.github.io/2014/11/02/how-to-make-a-simple-html5-canvas-game-zh/</id>
     <published>2014-11-02T13:14:34.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<blockquote>
 <p>原文：<a href="http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/" target="_blank" rel="external">How to make a simple HTML5 Canvas game</a></p>
 </blockquote>
 <p>想要快速上手HTML5 Canvas小游戏开发？下面通过一个例子来进行手把手教学。（如果你怀疑我的资历， <a href="http://www.wizardslizard.com/" target="_blank" rel="external">A Wizard’s Lizard</a>这个游戏的半数以上开发是由我完成的）</p>
 <a id="more"></a>
 <p>我们直接来看源码里的<a href="https://github.com/lostdecade/simple_canvas_game/blob/master/js/game.js" target="_blank" rel="external">game.js</a>,当然你也可以<a href="http://www.lostdecadegames.com/demos/simple_canvas_game/" target="_blank" rel="external">在线体验</a>一下游戏先。</p>
-<h2 id="游戏截图">游戏截图</h2><p><img src="/asset/posts/how-to-make-a-simple-html5-canvas-game-zh/screenshot.jpg" alt="游戏截图"></p>
+<h2 id="游戏截图">游戏截图</h2><p><img src="screenshot.jpg" alt="游戏截图"></p>
 <h2 id="创建画布">创建画布</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Create the canvas</span></span><br><span class="line"><span class="keyword">var</span> canvas = <span class="built_in">document</span>.createElement(<span class="string">"canvas"</span>);</span><br><span class="line"><span class="keyword">var</span> ctx = canvas.getContext(<span class="string">"2d"</span>);</span><br><span class="line">canvas.width = <span class="number">512</span>;</span><br><span class="line">canvas.height = <span class="number">480</span>;</span><br><span class="line"><span class="built_in">document</span>.body.appendChild(canvas);</span><br></pre></td></tr></table></figure>
 <p>首先我们需要创建一张<a href="https://developer.mozilla.org/en/canvas_tutorial" target="_blank" rel="external">画布</a>作为游戏的舞台。这里通过JS代码而不是直接在HTML里写一个<code>&lt;canvas&gt;</code>元素目的是要说明代码创建也是很方便的。有了画布后就可以获得它的上下文来进行绘图了。然后我们还设置了画布大小，最后将其添加到页面上。</p>
 <h2 id="准备图片">准备图片</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 背景图片</span></span><br><span class="line"><span class="keyword">var</span> bgReady = <span class="literal">false</span>;</span><br><span class="line"><span class="keyword">var</span> bgImage = <span class="keyword">new</span> Image();</span><br><span class="line">bgImage.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    bgReady = <span class="literal">true</span>;</span><br><span class="line">&#125;;</span><br><span class="line">bgImage.src = <span class="string">"images/background.png"</span>;</span><br></pre></td></tr></table></figure>
@@ -1032,18 +1032,18 @@
     <link href="http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/"/>
     <id>http://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/</id>
     <published>2014-09-14T14:23:54.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<p>HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。</p>
 <p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
 <a id="more"></a>
 <h2 id="datalist_标签">datalist 标签</h2><p>具体来说，页面上的<code>input</code>还是原来的<code>input</code>，只是在它的下面定义一下新的<code>datalist</code>在其中填充触发提示的文本,同时在该<code>input</code>元素上指定<code>list</code>属性指向这个<code>list</code>。一个大概的例子大概是像下面这样：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">你最喜欢的浏览器是： <span class="tag">&lt;<span class="title">input</span> <span class="attribute">list</span>=<span class="value">"browsers"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">datalist</span> <span class="attribute">id</span>=<span class="value">"browsers"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Internet Explorer"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Firefox"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Chrome"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Opera"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Safari"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">datalist</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>最后出来的效果又差不多是这样的：<br><img src="/asset/posts/2014-09-14-autocomplete-with-html5-datalist/datalist1.gif" alt="HTML5 datalist demo"></p>
+<p>最后出来的效果又差不多是这样的：<br><img src="datalist1.gif" alt="HTML5 datalist demo"></p>
 <p>在线查看效果请点击<a href="http://sandbox.runjs.cn/show/lvgpes2k" target="_blank" rel="external">这里</a></p>
 <p>没什么特别之处，简单得发指~</p>
 <p>但相信大家在看了效果后跟我一样，发现了一个不足之处，在<code>input</code>右边会有向下的箭头，这让它看起来就像一个<code>dropdown</code> 或者<code>select</code> 「下拉框」，解决办法是多加两句CSS代码来将它隐藏，但此方法只是针对<code>webkit</code>内核的浏览器进行的优化：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="rule"><span class="attribute">input</span>:<span class="value">:-webkit-calendar-picker-indicator &#123;</span><br><span class="line">    display: none</span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">-webkit-appearance</span>:<span class="value"> none</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样之后出来的效果差不多成了这样：<br><img src="/asset/posts/2014-09-14-autocomplete-with-html5-datalist/datalist2.gif" alt="HTML5 datalist 去掉箭头的版本"></p>
-<h2 id="浏览器兼容性">浏览器兼容性</h2><p>下面的数据来自<a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">caniuse</a>。<br><img src="/asset/posts/2014-09-14-autocomplete-with-html5-datalist/caniuse_datalist.jpg" alt="Datalist 元素兼容性"><br>可以看出，遥遥领先的依然是风采依旧的Chrome，对该元素的支持全线飘绿；<br>同时Firefox也是毫不示弱，紧随版本帝之后;<br>而其他浏览器情况则各不相同，正所谓<strong>性</strong>福的人都相似，不幸的人各有不幸。<br>Opera在边缘浏览器中表现强劲，绿得很耀眼；<br>值得注意的是，在这场不算较量的较量中，苹果太子Safari则是黑马般拿到了垫底的位置，全线飘红。这直接一举打破IE在主流浏览器的各种评测中常年垫底的记录。<br>而IE虽然摆脱了末位的阴影，但即使是最新的IE11也只是对<code>Datalist</code>元素进行了部分支持，所以要与各强劲对手比肩而受到前端开发者的青睐还有些工作要做。但留给IE翻盘的时间已经不多了，正如留给中国队的时间一样~</p>
+<p>这样之后出来的效果差不多成了这样：<br><img src="datalist2.gif" alt="HTML5 datalist 去掉箭头的版本"></p>
+<h2 id="浏览器兼容性">浏览器兼容性</h2><p>下面的数据来自<a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">caniuse</a>。<br><img src="caniuse_datalist.jpg" alt="Datalist 元素兼容性"><br>可以看出，遥遥领先的依然是风采依旧的Chrome，对该元素的支持全线飘绿；<br>同时Firefox也是毫不示弱，紧随版本帝之后;<br>而其他浏览器情况则各不相同，正所谓<strong>性</strong>福的人都相似，不幸的人各有不幸。<br>Opera在边缘浏览器中表现强劲，绿得很耀眼；<br>值得注意的是，在这场不算较量的较量中，苹果太子Safari则是黑马般拿到了垫底的位置，全线飘红。这直接一举打破IE在主流浏览器的各种评测中常年垫底的记录。<br>而IE虽然摆脱了末位的阴影，但即使是最新的IE11也只是对<code>Datalist</code>元素进行了部分支持，所以要与各强劲对手比肩而受到前端开发者的青睐还有些工作要做。但留给IE翻盘的时间已经不多了，正如留给中国队的时间一样~</p>
 <h2 id="参考及引用">参考及引用</h2><ul>
 <li><a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">Can I Use Datalist element</a></li>
 <li><a href="http://www.codelator.com/blog/2014/sep/how-to-create-autocomplete-textbox-using-datalist-in-html5.html" target="_blank" rel="external">How to create Autocomplete Textbox using Datalist in HTML5</a></li>
@@ -1072,7 +1072,7 @@
     <link href="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/"/>
     <id>http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/</id>
     <published>2014-09-10T21:20:04.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<p>Chrome的开发者工具已经强大到没朋友的地步了，特别是其功能丰富界面友好的console，使用得当可以有如下功效：</p>
 <ul>
 <li>更高「逼格」更快「开发调试」更强「进阶级的Frontender」</li>
@@ -1088,40 +1088,40 @@
 </ul>
 <p>当合理使用上述log方法后，可以很方便地在控制台选择查看特定类型的信息。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'一颗红心向太阳'</span>,<span class="string">'吼吼~'</span>);</span><br><span class="line"><span class="built_in">console</span>.info(<span class="string">'楼上药不能停！'</span>);</span><br><span class="line"><span class="built_in">console</span>.warn(<span class="string">'楼上嘴太贱！'</span>);</span><br><span class="line"><span class="built_in">console</span>.error(<span class="string">'楼上关你毛事？'</span>);</span><br></pre></td></tr></table></figure>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/1.jpg" alt=""></p>
+<p><img src="1.jpg" alt=""></p>
 <p>如果再配合<code>console.group</code> 与<code>console.groupEnd</code>，可以将这种分类管理的思想发挥到极致。这适合于在开发一个规模很大模块很多很复杂的Web APP时，将各自的log信息分组到以各自命名空间为名称的组里面。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.group(<span class="string">"app.foo"</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"来自foo模块的信息 blah blah blah..."</span>);</span><br><span class="line"><span class="built_in">console</span>.groupEnd();</span><br><span class="line"><span class="built_in">console</span>.group(<span class="string">"app.bar"</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"来自bar模块的信息 blah blah blah..."</span>);</span><br><span class="line"><span class="built_in">console</span>.groupEnd();</span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/2.jpg" alt=""></p>
+<p><img src="2.jpg" alt=""></p>
 <p>而关于<code>console.log</code>，早已被玩儿坏了。一切都源于Chrome提供了这么一个API：第一个参数可以包含一些格式化的指令比如<code>%c</code>。</p>
 <p>比如给<code>hello world</code> 做件漂亮的嫁衣再拉出来见人：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'%chello world'</span>,<span class="string">'font-size:25px;color:red;'</span>);</span><br></pre></td></tr></table></figure>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/3.jpg" alt=""></p>
+<p><img src="3.jpg" alt=""></p>
 <p>如果你觉得不够过瘾，那就把你能写出来的最华丽的CSS样式都应用上吧，比如渐变。于是你可以得到如下华丽丽的效果：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'%chello world'</span>, <span class="string">'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:5em;'</span>);</span><br></pre></td></tr></table></figure>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/4.jpg" alt=""></p>
+<p><img src="4.jpg" alt=""></p>
 <p>各种招大招的节奏啊~</p>
 <p>看着上面密集的代码不用惊慌，上面<code>console.log()</code>第二个参数全是纯CSS用来控制样式的，你不会陌生。而第一个参数里可以带用百分号开头的转义指令，如上面输出带样式的文字时使用的<code>%c</code>指令。更详细的指令参见官方API文档的<a href="https://developer.chrome.com/devtools/docs/console-api#consolelogobject-object" target="_blank" rel="external">这个表格</a>。</p>
 <p>如果还不够过瘾，那咱们来log一些图片吧，甚至。。。动图？<br>对，你得先有图，我们拿<a href="http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/rabbit.gif">这张图</a>为例。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">"%c"</span>, <span class="string">"padding:50px 300px;line-height:120px;background:url('http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/rabbit.gif') no-repeat;"</span>);</span><br></pre></td></tr></table></figure>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/5.gif" alt=""></p>
+<p><img src="5.gif" alt=""></p>
 <p>看着上面摇摆的豆比兔是不是有种抽它一脸的冲动。</p>
 <p>除此，<code>console.table</code> 更是直接以表格的形式将数据输出，不能赞得太多！<br>借用之前写过的<a href="http://www.cnblogs.com/Wayou/p/things_you_dont_know_about_frontend.html" target="_blank" rel="external">一篇博文</a>里的例子：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> data = [&#123;<span class="string">'品名'</span>: <span class="string">'杜雷斯'</span>, <span class="string">'数量'</span>: <span class="number">4</span>&#125;, &#123;<span class="string">'品名'</span>: <span class="string">'冈本'</span>, <span class="string">'数量'</span>: <span class="number">3</span>&#125;];</span><br><span class="line"><span class="built_in">console</span>.table(data);</span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/6.jpg" alt=""></p>
+<p><img src="6.jpg" alt=""></p>
 <p>另外，<code>console.log()</code> 接收不定参数，参数间用逗号分隔，最终会输出会将它们以空白字符连接。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'%c你好'</span>,<span class="string">'color:red;'</span>,<span class="string">'小明'</span>,<span class="string">'你知道小红被妈妈打了么'</span>);</span><br></pre></td></tr></table></figure>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/7.jpg" alt=""></p>
+<p><img src="7.jpg" alt=""></p>
 <h2 id="console-assert">console.assert</h2><p>当你想代码满足某些条件时才输出信息到控制台，那么你大可不必写<code>if</code>或者三元表达式来达到目的，<code>cosole.assert</code>便是这样场景下一种很好的工具，它会先对传入的表达式进行断言，只有表达式为假时才输出相应信息到控制台。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> isDebug=<span class="literal">false</span>;</span><br><span class="line"><span class="built_in">console</span>.assert(isDebug,<span class="string">'开发中的log信息。。。'</span>);</span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/8.jpg" alt=""></p>
+<p><img src="8.jpg" alt=""></p>
 <h2 id="console-count">console.count</h2><p>除了条件输出的场景，还有常见的场景是计数。<br>当你想统计某段代码执行了多少次时也大可不必自己去写相关逻辑，内置的<code>console.count</code>可以很地胜任这样的任务。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="comment">//其他函数逻辑blah blah。。。</span></span><br><span class="line">	<span class="built_in">console</span>.count(<span class="string">'foo 被执行的次数：'</span>);</span><br><span class="line">&#125;</span><br><span class="line">foo();</span><br><span class="line">foo();</span><br><span class="line">foo();</span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/9.jpg" alt=""></p>
+<p><img src="9.jpg" alt=""></p>
 <h2 id="console-dir">console.dir</h2><p>将DOM结点以JavaScript对象的形式输出到控制台<br>而<code>console.log</code>是直接将该DOM结点以DOM树的结构进行输出，与在元素审查时看到的结构是一致的。不同的展现形式，同样的优雅，各种体位任君选择反正就是方便与体贴。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.dir(<span class="built_in">document</span>.body);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">document</span>.body);</span><br></pre></td></tr></table></figure>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/10.jpg" alt=""></p>
+<p><img src="10.jpg" alt=""></p>
 <h2 id="console-time_&amp;_console-timeEnd">console.time &amp; console.timeEnd</h2><p>输出一些调试信息是控制台最常用的功能，当然，它的功能远不止于此。当做一些性能测试时，同样可以在这里很方便地进行。<br>比如需要考量一段代码执行的耗时情况时，可以用<code>console.time</code>与 <code>console.timeEnd</code>来做此事。</p>
 <p>这里借用官方文档的例子：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.time(<span class="string">"Array initialize"</span>);</span><br><span class="line"><span class="keyword">var</span> array= <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1000000</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = array.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">    array[i] = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.timeEnd(<span class="string">"Array initialize"</span>);</span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/11.jpg" alt=""></p>
+<p><img src="11.jpg" alt=""></p>
 <p>当然，我们也可以选择自己写代码来计时：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> start=<span class="keyword">new</span> <span class="built_in">Date</span>().getTime();</span><br><span class="line"><span class="keyword">var</span> array= <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1000000</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = array.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">    array[i] = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().getTime()-start);</span><br></pre></td></tr></table></figure>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/12.jpg" alt=""></p>
+<p><img src="12.jpg" alt=""></p>
 <p>相信你也看到了，用内置的<code>console.time</code>是多么地方便，省去了自己写代码来计算的工作量。另外值得一提的是，通过调用内置的<code>console.time</code>得到的结果要比自己手动计算的时间差更精确可靠。</p>
 <h2 id="console-profile_&amp;_console-timeLime">console.profile &amp; console.timeLime</h2><p>当想要查看CPU使用相关的信息时，可以使用<code>console.profile</code>配合 <code>console.profileEnd</code>来完成这个需求。<br>这一功能可以通过UI界面来完成，Chrome 开发者工具里面有个tab便是<code>Profile</code>。</p>
 <p>与此类似的功能还有<code>console.timeLine</code>配合 <code>console.timeLineEnd</code>,它的作用是开始记录一段时间轴，同样可以通过Chrome开发者工具里的<code>Timeline</code> 标签来进行相应操作。</p>
@@ -1129,21 +1129,21 @@
 <h2 id="console-trace">console.trace</h2><p>堆栈跟踪相关的调试可以使用<code>console.trace</code>。这个同样可以通过UI界面完成。当代码被打断点后，可以在<code>Call Stack</code>面板中查看相关堆栈信息。</p>
 <p>上面介绍的都是挂在<code>window.console</code>这个对象下面的方法，统称为<a href="https://developer.chrome.com/devtools/docs/console-api" target="_blank" rel="external">Console API</a>，接下来的这些方法确切地说应该叫命令，是Chrome内置提供，在控制台中使用的，他们统称为<a href="https://developer.chrome.com/devtools/docs/commandline-api" target="_blank" rel="external">Command Line API</a>。</p>
 <h2 id="$">$</h2><p>似乎美刀总是被程序员及各种编程语言所青睐「你看看PHP代码就知道PHPer有多爱钱了」，在Chrome的控制台里，$用处还真是蛮多且方便的。<br><code>$_</code>命令返回最近一次表达式执行的结果，功能跟按向上的方向键再回车是一样的，但它可以做为一个变量使用在你接下来的表达式中：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>+<span class="number">2</span><span class="comment">//回车，再</span></span><br><span class="line">$_+<span class="number">1</span><span class="comment">//回车得5</span></span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/13.jpg" alt=""></p>
-<p>上面的<code>$_</code>需要领悟其奥义才能使用得当，而$0~$4则代表了最近5个你选择过的DOM节点。<br>什么意思？在页面右击选择<code>审查元素</code>，然后在弹出来的DOM结点树上面随便点选，这些被点过的节点会被记录下来，而<code>$0</code>会返回最近一次点选的DOM结点，以此类推，$1返回的是上上次点选的DOM节点，最多保存了5个，如果不够5个，则返回<code>undefined</code>。<br><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/$0.gif" alt=""></p>
+<p><img src="13.jpg" alt=""></p>
+<p>上面的<code>$_</code>需要领悟其奥义才能使用得当，而$0~$4则代表了最近5个你选择过的DOM节点。<br>什么意思？在页面右击选择<code>审查元素</code>，然后在弹出来的DOM结点树上面随便点选，这些被点过的节点会被记录下来，而<code>$0</code>会返回最近一次点选的DOM结点，以此类推，$1返回的是上上次点选的DOM节点，最多保存了5个，如果不够5个，则返回<code>undefined</code>。<br><img src="$0.gif" alt=""></p>
 <p>另外值得一赞的是，Chrome 控制台中原生支持类jQuery的选择器，也就是说你可以用<code>$</code>加上熟悉的css选择器来选择DOM节点，多么滴熟悉。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="string">'body'</span>)</span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/14.jpg" alt=""></p>
+<p><img src="14.jpg" alt=""></p>
 <p>$(selector)返回的是满足选择条件的首个DOM元素。<br>剥去她伪善的外衣，其实<code>$(selector)</code>是原生JavaScript <code>document.querySelector()</code> 的封装。<br>同时另一个命令<code>$$(selector)</code>返回的是所有满足选择条件的元素的一个集合，是对<code>document.querySelectorAll()</code> 的封装。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$$(<span class="string">'div'</span>)</span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/15.jpg" alt=""></p>
+<p><img src="15.jpg" alt=""></p>
 <h2 id="copy">copy</h2><p>通过此命令可以将在控制台获取到的内容复制到剪贴板。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy(<span class="built_in">document</span>.body)</span><br></pre></td></tr></table></figure></p>
 <p>然后你就可以到处粘了：</p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/16.jpg" alt=""></p>
+<p><img src="16.jpg" alt=""></p>
 <p>看完此条命令行，机智的你是不是跟脑洞全开的我一样，冒出了这样一个想法：那就是通过这个命令可以在JavaScript里进行复制操作从而不用依赖Flash插件了。<br>But现实是残酷的，如之前所述的，这里的控制台命令只能在控制台中环境中执行，因为他不依附于任何全局变量比如<code>window</code>，所以其实在JS代码里是访问不了这个<code>copy</code>方法的，所以从代码层面来调用复制功能也就无从谈起。但愿有天浏览器会提供相应的JS实现吧~</p>
 <h2 id="keys_&amp;_values">keys &amp; values</h2><p>这是一对基友。前者返回传入对象所有属性名组成的数据，后者返回所有属性值组成的数组。具体请看下面的例子：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> tboy=&#123;name:<span class="string">'wayou'</span>,gender:<span class="string">'unknown'</span>,hobby:<span class="string">'opposite to the gender'</span>&#125;;</span><br><span class="line">keys(tboy);</span><br><span class="line">values(tboy);</span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/17.jpg" alt=""></p>
+<p><img src="17.jpg" alt=""></p>
 <h2 id="monitor_&amp;_unmonitor">monitor &amp; unmonitor</h2><p>monitor(function)，它接收一个函数名作为参数，比如<code>function a</code>,每次<code>a</code>被执行了，都会在控制台输出一条信息，里面包含了函数的名称<code>a</code>及执行时所传入的参数。</p>
 <p>而unmonitor(function)便是用来停止这一监听。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sayHello</span>(<span class="params">name</span>)</span>&#123;</span><br><span class="line">	alert(<span class="string">'hello,'</span>+name);</span><br><span class="line">&#125;</span><br><span class="line">monitor(sayHello);</span><br><span class="line">sayHello(<span class="string">'wayou'</span>);</span><br><span class="line">unmonitor(sayHello);</span><br><span class="line">sayHello(<span class="string">'wayou'</span>);</span><br></pre></td></tr></table></figure></p>
-<p><img src="/asset/posts/2014-09-10-chrome-console-tips-and-tricks/18.jpg" alt=""></p>
+<p><img src="18.jpg" alt=""></p>
 <h2 id="debug_&amp;_undebug">debug &amp; undebug</h2><p>debug同样也是接收一个函数名作为参数。当该函数执行时自动断下来以供调试，类似于在该函数的入口处打了个断点，可以通过debugger来做到，同时也可以通过在Chrome开发者工具里找到相应源码然后手动打断点。<br>而<code>undebug</code> 则是解除该断点。</p>
 <p>而其他还有好些命令则让人没有说的欲望，因为好些都可以通过Chrome开发者工具的UI界面来操作并且比用在控制台输入要方便。</p>
 <h2 id="参考及引用">参考及引用</h2><hr>
@@ -1179,29 +1179,29 @@
     <link href="http://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/"/>
     <id>http://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/</id>
     <published>2014-08-31T11:56:00.000Z</published>
-    <updated>2015-09-16T06:36:18.000Z</updated>
+    <updated>2015-09-19T12:06:45.000Z</updated>
     <content type="html"><![CDATA[<p><a href="http://www.sublimetext.com/3" target="_blank" rel="external">sublime text</a>很赞，windows上最接近mac逼格的轻量编辑器，对于我这样比较喜欢格调的人来说，简直不二之选啊。</p>
 <p>美中不足的是，看久了觉得它的图标似乎不是很上心。现在都流行扁平化了而它还停留在拟物的阶段，拟物也就算了还带一点立体感把整个平面内顷，于是乎想自己换个图标，换个好心情。</p>
 <p>如果你有同样的审美那我们继续。</p>
 <a id="more"></a>
-<h2 id="step1-_选择喜欢的图片">step1. 选择喜欢的图片</h2><p>首先你需要选择一个中意的图片做为新的图标，这里拿我喜欢的章鱼猫为例。<br><img src="/asset/posts/2014-08-31-how-to-customize-sublime-icon/octocat.png" alt="octocat"></p>
-<p>当然你不喜欢章鱼猫，随便<a href="https://www.google.com/search?q=octocat+icon&amp;newwindow=1&amp;safe=off&amp;tbm=isch&amp;imgil=wqxX4jp591NZZM%253A%253Beb8wapPIz1AUTM%253Bhttps%25253A%25252F%25252Fsupport.wombat.co%25252Fhc%25252Fen-us%25252Farticles%25252F202245250-Shipstation-Integration-&amp;source=iu&amp;fir=wqxX4jp591NZZM%253A%252Ceb8wapPIz1AUTM%252C_&amp;usg=__2FX1-Ux3h7wdDssc2u6t_4Ba7Nc%3D&amp;sa=X&amp;ei=EJ8CVI32HNjd8AXYp4KIAw&amp;ved=0CCsQ9QEwBQ&amp;biw=1366&amp;bih=683#newwindow=1&amp;q=sublime+text+icon&amp;safe=off&amp;tbm=isch&amp;facrc=_&amp;imgdii=_&amp;imgrc=NPM_JHMY3bmkdM%253A%3BavC4jPKJkwSy8M%3Bhttp%253A%252F%252Fwww.jonathanfontes.pt%252Fassets%252Fimg%252Flogo-sublime-3.png%3Bhttp%253A%252F%252Fwww.jonathanfontes.pt%252F%3B512%3B512" target="_blank" rel="external">谷歌一下</a>还是有很多正常的ST图标的，比如下面这些<br><img src="/asset/posts/2014-08-31-how-to-customize-sublime-icon/sublime.png" alt="sublime"></p>
+<h2 id="step1-_选择喜欢的图片">step1. 选择喜欢的图片</h2><p>首先你需要选择一个中意的图片做为新的图标，这里拿我喜欢的章鱼猫为例。<br><img src="octocat.png" alt="octocat"></p>
+<p>当然你不喜欢章鱼猫，随便<a href="https://www.google.com/search?q=octocat+icon&amp;newwindow=1&amp;safe=off&amp;tbm=isch&amp;imgil=wqxX4jp591NZZM%253A%253Beb8wapPIz1AUTM%253Bhttps%25253A%25252F%25252Fsupport.wombat.co%25252Fhc%25252Fen-us%25252Farticles%25252F202245250-Shipstation-Integration-&amp;source=iu&amp;fir=wqxX4jp591NZZM%253A%252Ceb8wapPIz1AUTM%252C_&amp;usg=__2FX1-Ux3h7wdDssc2u6t_4Ba7Nc%3D&amp;sa=X&amp;ei=EJ8CVI32HNjd8AXYp4KIAw&amp;ved=0CCsQ9QEwBQ&amp;biw=1366&amp;bih=683#newwindow=1&amp;q=sublime+text+icon&amp;safe=off&amp;tbm=isch&amp;facrc=_&amp;imgdii=_&amp;imgrc=NPM_JHMY3bmkdM%253A%3BavC4jPKJkwSy8M%3Bhttp%253A%252F%252Fwww.jonathanfontes.pt%252Fassets%252Fimg%252Flogo-sublime-3.png%3Bhttp%253A%252F%252Fwww.jonathanfontes.pt%252F%3B512%3B512" target="_blank" rel="external">谷歌一下</a>还是有很多正常的ST图标的，比如下面这些<br><img src="sublime.png" alt="sublime"></p>
 <h2 id="step2-_转为ico格式">step2. 转为ico格式</h2><p>网上找的图片大多为<code>png</code>或<code>jpg</code>格式的，这里我们需要<code>ico</code>, so 需要转换一下下。<br>同样，转<code>ico</code>格式的网站也是蛮多的，比如<a href="http://www.convertico.com/" target="_blank" rel="external">这个</a>,进去后把图片上传，完了下下来后你得到的就是一个<code>.ico</code> 格式的图片啦~</p>
-<p><img src="/asset/posts/2014-08-31-how-to-customize-sublime-icon/convert_icon.png" alt="转ico格式"></p>
+<p><img src="convert_icon.png" alt="转ico格式"></p>
 <h2 id="step3-_ResEdit">step3. ResEdit</h2><p><a href="http://www.resedit.net/" target="_blank" rel="external">ResEdit</a>是一个Windows下的资源编辑器，可以直接编辑<code>exe</code>文件，更改替换其中的资源，这里我们就用它来更改<code>exe</code> 程序的图标。<br>如果你手头没有，可以点击上面的链接进入官方页面选择下载。</p>
 <h2 id="step4-_用ResEdit打开SublimeText">step4. 用ResEdit打开SublimeText</h2><p>将SublimeText安装目录下的<code>sublime_text.exe</code>复制一分放到比如桌面什么的。<br>运行ResEdit, <code>File-&gt;Open Project...</code>, 打开刚才复制的<code>sublime_text.exe</code>。</p>
-<p><img src="/asset/posts/2014-08-31-how-to-customize-sublime-icon/openned.png" alt="用ResEdit打开sublime_text.exe后"></p>
+<p><img src="openned.png" alt="用ResEdit打开sublime_text.exe后"></p>
 <h2 id="step5-_替换图标">step5. 替换图标</h2><p>打开后差不多就像上面截图一样，你会看到左边<code>Resources</code>里第一个便是<code>Icon</code>, 在这个文件夹上面右击选择<code>Add resource...-&gt;Icon</code>,如下图</p>
-<p><img src="/asset/posts/2014-08-31-how-to-customize-sublime-icon/add_resource.png" alt="添加icon资源"></p>
+<p><img src="add_resource.png" alt="添加icon资源"></p>
 <p>之后在弹出的对话框里选择<code>Create from an existing file</code></p>
-<p><img src="/asset/posts/2014-08-31-how-to-customize-sublime-icon/choose_type.png" alt="选择从现有文件创建"></p>
+<p><img src="choose_type.png" alt="选择从现有文件创建"></p>
 <p>之后去选中我们先前准备好的<code>ico</code>文件，将其加载进来。</p>
 <p>完了<code>Icon</code>文件夹下多了我们自己的icon文件，现在把原来的图标删除，右击<code>103[English (Australia)]</code> 选择<code>Remove from project</code>。</p>
-<p><img src="/asset/posts/2014-08-31-how-to-customize-sublime-icon/remove.png" alt="删除原来的图标"></p>
+<p><img src="remove.png" alt="删除原来的图标"></p>
 <p>最后点击<code>File-&gt;Save</code>。</p>
 <h2 id="step_final-_替换exe">step final. 替换exe</h2><p>最后，将更改后的<code>sublime_text.exe</code>考回SublimeText安装目录下将原来的文件覆盖，当然，如果你以后可能想要恢复原来的图标的话，建议你覆盖前将原来的<code>sublime_text.exe</code>文件备份一下。</p>
 <p>All done!</p>
-<p><img src="/asset/posts/2014-08-31-how-to-customize-sublime-icon/final.png" alt="octocat sublimetext"></p>
+<p><img src="final.png" alt="octocat sublimetext"></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p><a href="http://www.sublimetext.com/3">sublime text</a>很赞，windows上最接近mac逼格的轻量编辑器，对于我这样比较喜欢格调的人来说，简直不二之选啊。</p>

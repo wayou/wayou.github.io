@@ -124,7 +124,7 @@
 <p>最致命的是：偶发！你不能准确知道它抽风的时间点，无法在想要追查问题的时候必现它。<br>这只是一方面，另外，慢的可能实在太多了，那么问题来了，是前端导致的还是后端的问题？</p>
 <p>对慢的定义也有待商榷，多久算慢？如果这个页面加载大量数据耗时增加那我认为这是正常的。但这个时限超过了一个合理的自然值，就变得不那么正常了，比如四五十秒，一分多钟。</p>
 <p>最奇葩的是，如此久的耗时居然不会报超时错误，而是拿到正确返回后将页面呈现了出来！</p>
-<h2 id="能的原因">能的原因</h2><h3 id="初步猜测">初步猜测</h3><p>初步的猜测可能是后端迟迟未返回造成浏览器处于等待状态。这个猜测是很合乎逻辑的，至少能够很合理地解释Chrome Dev Tool 网络面板中我们看到的状态<code>pending</code>。<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/pending.jpg" alt=""></p>
+<h2 id="能的原因">能的原因</h2><h3 id="初步猜测">初步猜测</h3><p>初步的猜测可能是后端迟迟未返回造成浏览器处于等待状态。这个猜测是很合乎逻辑的，至少能够很合理地解释Chrome Dev Tool 网络面板中我们看到的状态<code>pending</code>。<br><img src="pending.jpg" alt=""></p>
 <p>但我们不能停留在猜测阶段，要用事实说话，数据才不会骗人。这也正是本文将要展开的。</p>
 <p>下面是另外一些被提出来的可能性。</p>
 <h3 id="Angular">Angular</h3><p>Angular首当其冲。为什么，因为这个问题出现在后台MIS系统中，且这些系统多用Angular开发。</p>
@@ -143,17 +143,17 @@
 <blockquote>
 <p>OS： Windows 7 Ultimate<br>Chrome：Version 39.0.2171.95 m</p>
 </blockquote>
-<p>这是请求<code>Pending</code>时的请求信息：<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/before-response.jpg" alt=""></p>
-<p>这是请求成功返回后：<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/stalled-timeline.jpg" alt=""></p>
+<p>这是请求<code>Pending</code>时的请求信息：<br><img src="before-response.jpg" alt=""></p>
+<p>这是请求成功返回后：<br><img src="stalled-timeline.jpg" alt=""></p>
 <p>可以看到<code>Stalled</code>了1分多钟。神奇的是竟然不报超时错误而是成功返回了。</p>
 <p>同时保存了请求头，响应头，还将本次问题请求保存成了CURL等。现场已经留下，感觉Bug不会存活太久了。</p>
 <p>接下来就是对比正常请求跟这次异常请求的不同，一轮比较下来，未发现多少异常。</p>
 <h3 id="常态与变态的对比">常态与变态的对比</h3><p>请求头对比：</p>
 <p>请求头的对比已丢失，但除了时间外，其余无差别。</p>
 <p>响应头对比：</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/response-header-compaire.jpg" alt=""></p>
+<p><img src="response-header-compaire.jpg" alt=""></p>
 <p>返回结果对比：</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/response.jpg" alt=""></p>
+<p><img src="response.jpg" alt=""></p>
 <p>上面的对比意义不大，但还是要做的，万一发现有价值的情报了呢。</p>
 <h2 id="一次失败的尝试">一次失败的尝试</h2><p>解决问题时，习惯性地看有没有人已经碰过到类似问题，这样做的好处很明显：<br>如果有，站在巨人的肩上轻松地牛逼着；<br>如果没有，这是个机会。</p>
 <p>于是信心满满地出发了，因为根据一条互联网准则，70%的问题已经有人解决过了，那些没有被解决的要么是现有技术达不到，要么是未被人发现。所以能够搜索出问题答案的概率还是蛮大的。</p>
@@ -211,7 +211,7 @@
 <p>并且开多个标签也是无法进行有效重现的。</p>
 <p>因此可以排除缓存的干扰。那么似乎这里的缓存锁并不是导致问题的原因，只能另寻他路。不得不说，高兴过后有点失望。</p>
 <h3 id="八卦时间">八卦时间</h3><p>可喜的是，在细细口味了上面缓存机制引入的过程后，真是耐人寻味。这里不妨八卦一下。相信你也注意到了，上面提到，该<a href="https://code.google.com/p/chromium/issues/detail?id=46104" target="_blank" rel="external">缓存问题</a>的提出是在2010年，确切地说是<code>Jun 8, 2010</code>。是的，2010年6月8日由<a href="mailto:eroman@chromium.org" target="_blank" rel="external">eroman</a> 同学提出。但最后针对该问题进行修复的代码<a href="https://src.chromium.org/viewvc/chrome?revision=279326&amp;view=revision" target="_blank" rel="external">提交</a>却是在今年6月份，2014年6月24日，提交时间摆在那里我会乱说？</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/cache-fix-commit.jpg" alt=""></p>
+<p><img src="cache-fix-commit.jpg" alt=""></p>
 <p>于是好奇为什么会拖了这么久，遂跟了一下该问题下面的回复看看发生了什么。简直惊呆了。</p>
 <ul>
 <li><p>同月14号，有了首次对这个问题的回复，那是将该问题指派给了<a href="mailto:rvargas@chromium.org" target="_blank" rel="external">rvargas</a>同学。</p>
@@ -252,12 +252,12 @@
 </ul>
 <h2 id="开始新的征程">开始新的征程</h2><p>虽然上面的努力没能定位到问题，但作为这次对解决这次问题的尝试，还是将它记录了下来，估且称作「旧的回忆」吧。</p>
 <p>下面开始「新的征程」。</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/new-journey.jpg" alt=""></p>
+<p><img src="new-journey.jpg" alt=""></p>
 <h2 id="再次重现">再次重现</h2><p>这次受到上面的启发，开启<code>chrome://net-internals/#events</code>页面来捕获事件日志。看是否有错误或异常发生。</p>
 <p>再次经过旷日持久的机械操作，重现了！这次，日志在手，天下我有。感觉Bug不会存活多久了。</p>
-<p>Chrome Dev Tools 网络面板截图：<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/timeline-screen-capture2.jpg" alt=""></p>
+<p>Chrome Dev Tools 网络面板截图：<br><img src="timeline-screen-capture2.jpg" alt=""></p>
 <p>由上面的截图看到，本次出问题的请求总耗时42.74秒。</p>
-<p>问题请求的时间线信息截图：<br><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/timeline-screen-capture.jpg" alt=""></p>
+<p>问题请求的时间线信息截图：<br><img src="timeline-screen-capture.jpg" alt=""></p>
 <p>可以预见，通过捕获的日志完全可以看到<code>Stalled</code>那么久都发生了些什么鬼。</p>
 <p>话不多说，切换到事件捕获页面，定位到出问题的请求，查看其详情。同时将该日志导出，永久保存！作为纪念，也方便以后再次导入查看。有兴趣的同学可以访问下方下载后进行导入，就可以清晰地查看到现场了，就好像你亲历了整个犯罪现场一样。</p>
 <h3 id="日志还原">日志还原</h3><ul>
@@ -285,10 +285,10 @@
 <li>发送请求头 <code>+HTTP_TRANSACTION_SEND_REQUEST  [dt=1]</code></li>
 <li>读取响应头 <code>+HTTP_TRANSACTION_READ_HEADERS  [dt=161]</code></li>
 </ul>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/normal-section.jpg" alt=""></p>
+<p><img src="normal-section.jpg" alt=""></p>
 <p>这是正常的情况下，没有什么问题。并且日志里可以清晰地看到发送的请求头是什么，然后解析出来的响应头是什么。这跟在网络面板看到的是一致的。</p>
 <p>再回到出问题的请求日志上来，同样我们只关注这两部分。如下面的截图：</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/3retry.jpg" alt=""></p>
+<p><img src="3retry.jpg" alt=""></p>
 <p>与正常相比，最后一次发送请求和读取响应头无异常，时间就多在了前面还有再次发送和请求的过程，细看时间都花在了以下两个事件中：</p>
 <ul>
 <li><code>HTTP_STREAM_PARSER_READ_HEADERS  [dt=21301]</code></li>
@@ -307,7 +307,7 @@
 <h2 id="Chromium_源码">Chromium 源码</h2><p>那么这个错误究竟是什么。能不能找到点靠谱的解释。当然能，让我们进入到Chromium的源码中去。</p>
 <h3 id="ERR_CONNECTION_RESET被唤起的地方">ERR_CONNECTION_RESET被唤起的地方</h3><p>在Chromium的源码中搜索该常量名，确实出现很多<a href="https://code.google.com/p/chromium/codesearch#search/&amp;q=ERR_CONNECTION_RESET&amp;sq=package:chromium&amp;type=cs" target="_blank" rel="external">结果</a>。联系到我们查看日志发现问题的上下文，是在解析响应头报的。所以我们定位到<code>http_stream_parser.cc</code>文件，同时注意到有一个文件叫<code>net_errors_win.cc</code>，所以猜测他是定义所有错误常量用的，也顺便打开之。</p>
 <p>经过观察<code>src/net/base/net_errors_win.cc</code> 其路径和代码得知其中多为系统级别的错误，似乎跟我们的问题不是很关联，忽略该文件。</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/source.jpg" alt=""></p>
+<p><img src="source.jpg" alt=""></p>
 <p><code>http_stream_parser.cc</code>文件中，<code>ERR_CONNECTION_RESET</code>仅出现一次。这给我们定位带来了极大的便利。</p>
 <figure class="highlight cpp"><figcaption><span>[chromium]//src/net/base/net_errors_win.cc</span><a href="https://code.google.com/p/chromium/codesearch#chromium/src/net/http/http_stream_parser.cc&q=ERR_CONNECTION_RESET&sq=package:chromium&dr=C" target="_blank" rel="external">http_stream_parser.cc</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Returns true if |error_code| is an error for which we give the server a</span></span><br><span class="line"><span class="comment">// chance to send a body containing error information, if the error was received</span></span><br><span class="line"><span class="comment">// while trying to upload a request body.</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">ShouldTryReadingOnUploadError</span><span class="params">(<span class="keyword">int</span> error_code)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (error_code == ERR_CONNECTION_RESET);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里定义了一个<code>ShouldTryReadingOnUploadError</code> 的方法，注释耐人寻味，这个时候，这样的情景，能否正确解读注释成为了比读懂代码更重要（这是我在看JS代码时永远无法体味到的感觉），下面尽可能对它进行理解：</p>
@@ -317,7 +317,7 @@
 <p>我承认被上面的复杂从句打败！</p>
 <p>那么我们来看这个方法被调用的场景。</p>
 <p>现在我们点击上面的<code>ShouldTryReadingOnUploadError</code>方法，代码下方出现调用了该方法的地方，一共有两处。</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/call.jpg" alt=""></p>
+<p><img src="call.jpg" alt=""></p>
 <p>分别点击进行查看。</p>
 <figure class="highlight"><figcaption><span>459行DoSendHeadersComplete方法里进行了调用</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">int HttpStreamParser::DoSendHeadersComplete(int result) &#123;</span><br><span class="line">  if (result &lt; 0) &#123;</span><br><span class="line">    // In the unlikely case that the headers and body were merged, all the</span><br><span class="line">    // the headers were sent, but not all of the body way, and |result| is</span><br><span class="line">    // an error that this should try reading after, stash the error for now and</span><br><span class="line">    // act like the request was successfully sent.</span><br><span class="line">    if (request_headers_-&gt;BytesConsumed() &gt;= request_headers_length_ &amp;&amp;</span><br><span class="line">        ShouldTryReadingOnUploadError(result)) &#123;</span><br><span class="line">      upload_error_ = result;</span><br><span class="line">      return OK;</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
@@ -373,7 +373,7 @@
 <li>是什么让浏览器21秒后才收到重置信息？服务器作出反应过慢还是网络原因？</li>
 </ul>
 <h2 id="Chrome_Dev_Tool_中时间线各阶段代表的意义">Chrome Dev Tool 中时间线各阶段代表的意义</h2><p>另附注一下Chrome Dev Tool 中请求的时间线各阶段代表的意义。<br>以下内容扒自<a href="https://developer.chrome.com/devtools/docs/network#resource-network-timing" target="_blank" rel="external">Chrome 开发者文档页</a>，然后我将它本地化了一下下。</p>
-<p><img src="/asset/posts/2014-12-31-chrome-request-stalled-problem/timing.png" alt=""></p>
+<p><img src="timing.png" alt=""></p>
 <h3 id="Stalled/Blocking">Stalled/Blocking</h3><p>在请求能够被发出去前的等等时间。包含了用于处理代理的时间。另外，如果有已经建立好的连接，那么这个时间还包括等待已建立连接被复用的时间，这个遵循Chrome对同一源最大6个TCP连接的规则。</p>
 <p>「拿我们的情况来说，上面出错所有的耗时也是算在了这部分里面。网络面板中显示的其余时间比如DNS查找，连接建立等都是属于最后那次成功请求的了」</p>
 <h3 id="Proxy_Negotiation">Proxy Negotiation</h3><p>处理代理的时间。</p>
