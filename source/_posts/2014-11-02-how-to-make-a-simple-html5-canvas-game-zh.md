@@ -19,7 +19,7 @@ tags:
 
 ## 游戏截图
 
-![游戏截图](/asset/posts/how-to-make-a-simple-html5-canvas-game-zh/screenshot.jpg)
+![游戏截图](screenshot.jpg)
 
 ## 创建画布
 

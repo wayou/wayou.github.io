@@ -47,11 +47,11 @@ var chosen = _(gems).filter(priceLt(10)).take(3).value();
 
 我们只想取出3个价格低于10元的小球。通常情况下我们先过滤整个数据源，最后从所有小于10的元素里返回前面三个即可。
 
-![lo-dash naive](/asset/posts/2014-11-08-lazy-evaluation/lodash-naive.gif)
+![lo-dash naive](lodash-naive.gif)
 
 但这种做法并不优雅。它处理了全部8个数据，但其实只需要处理前面5个我们就能拿到结果了。同样为了得到正确的结果，延迟求值则只处理最少的元素。优化后如下图所示：
 
-![lo-dash naive](/asset/posts/2014-11-08-lazy-evaluation/grafika.gif)
+![lo-dash naive](grafika.gif)
 
 一下子就获得了37.5%的性能提升。很容易找出提升X1000+的例子。比如：
 
@@ -68,7 +68,7 @@ var r = _(phoneNumbers).map(String).filter(contains55).take(100);
 
 这个例子中`map`和`filter` 将遍历99999 个元素，但很有可能我们只需处理到1000个元素的时候就已经拿到想要的结果了。这回性能的提升就太明显了（[benchmark](http://jsperf.com/lazy-demo)）：
 
-![benchmark](/asset/posts/2014-11-08-lazy-evaluation/benchmark.jpg)
+![benchmark](benchmark.jpg)
 
 
 ## 流水线

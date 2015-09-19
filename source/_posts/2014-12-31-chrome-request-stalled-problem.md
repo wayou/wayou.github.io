@@ -33,7 +33,7 @@ tags:
 ### 初步猜测
 
 初步的猜测可能是后端迟迟未返回造成浏览器处于等待状态。这个猜测是很合乎逻辑的，至少能够很合理地解释Chrome Dev Tool 网络面板中我们看到的状态`pending`。
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/pending.jpg)
+![](pending.jpg)
 
 但我们不能停留在猜测阶段，要用事实说话，数据才不会骗人。这也正是本文将要展开的。
 
@@ -82,11 +82,11 @@ Angular ：怪我咯。
 > Chrome：Version 39.0.2171.95 m
 
 这是请求`Pending`时的请求信息：
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/before-response.jpg)
+![](before-response.jpg)
 
 
 这是请求成功返回后：
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/stalled-timeline.jpg)
+![](stalled-timeline.jpg)
 
 可以看到`Stalled`了1分多钟。神奇的是竟然不报超时错误而是成功返回了。
 
@@ -103,12 +103,12 @@ Angular ：怪我咯。
 
 响应头对比：
 
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/response-header-compaire.jpg)
+![](response-header-compaire.jpg)
 
 
 返回结果对比：
 
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/response.jpg)
+![](response.jpg)
 
 上面的对比意义不大，但还是要做的，万一发现有价值的情报了呢。
 
@@ -221,7 +221,7 @@ Server: Apache
 
 可喜的是，在细细口味了上面缓存机制引入的过程后，真是耐人寻味。这里不妨八卦一下。相信你也注意到了，上面提到，该[缓存问题](https://code.google.com/p/chromium/issues/detail?id=46104)的提出是在2010年，确切地说是`Jun 8, 2010`。是的，2010年6月8日由[eroman](mailto:eroman@chromium.org) 同学提出。但最后针对该问题进行修复的代码[提交](https://src.chromium.org/viewvc/chrome?revision=279326&view=revision)却是在今年6月份，2014年6月24日，提交时间摆在那里我会乱说？
 
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/cache-fix-commit.jpg)
+![](cache-fix-commit.jpg)
 
 于是好奇为什么会拖了这么久，遂跟了一下该问题下面的回复看看发生了什么。简直惊呆了。
 
@@ -272,7 +272,7 @@ Server: Apache
 
 下面开始「新的征程」。
 
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/new-journey.jpg)
+![](new-journey.jpg)
 
 ## 再次重现
 
@@ -281,12 +281,12 @@ Server: Apache
 再次经过旷日持久的机械操作，重现了！这次，日志在手，天下我有。感觉Bug不会存活多久了。
 
 Chrome Dev Tools 网络面板截图：
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/timeline-screen-capture2.jpg)
+![](timeline-screen-capture2.jpg)
 
 由上面的截图看到，本次出问题的请求总耗时42.74秒。
 
 问题请求的时间线信息截图：
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/timeline-screen-capture.jpg)
+![](timeline-screen-capture.jpg)
 
 可以预见，通过捕获的日志完全可以看到`Stalled`那么久都发生了些什么鬼。
 
@@ -496,13 +496,13 @@ t=1728 [st=172] -REQUEST_ALIVE
 - 发送请求头 ` +HTTP_TRANSACTION_SEND_REQUEST  [dt=1]`
 - 读取响应头 ` +HTTP_TRANSACTION_READ_HEADERS  [dt=161]`
 
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/normal-section.jpg)
+![](normal-section.jpg)
 
 这是正常的情况下，没有什么问题。并且日志里可以清晰地看到发送的请求头是什么，然后解析出来的响应头是什么。这跟在网络面板看到的是一致的。
 
 再回到出问题的请求日志上来，同样我们只关注这两部分。如下面的截图：
 
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/3retry.jpg)
+![](3retry.jpg)
 
 与正常相比，最后一次发送请求和读取响应头无异常，时间就多在了前面还有再次发送和请求的过程，细看时间都花在了以下两个事件中：
 
@@ -542,7 +542,7 @@ t=1728 [st=172] -REQUEST_ALIVE
 
 经过观察`src/net/base/net_errors_win.cc` 其路径和代码得知其中多为系统级别的错误，似乎跟我们的问题不是很关联，忽略该文件。
 
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/source.jpg)
+![](source.jpg)
 
 `http_stream_parser.cc`文件中，`ERR_CONNECTION_RESET`仅出现一次。这给我们定位带来了极大的便利。
 
@@ -565,7 +565,7 @@ bool ShouldTryReadingOnUploadError(int error_code) {
 
 现在我们点击上面的`ShouldTryReadingOnUploadError`方法，代码下方出现调用了该方法的地方，一共有两处。
 
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/call.jpg)
+![](call.jpg)
 
 分别点击进行查看。
 
@@ -700,7 +700,7 @@ A收到B的肯定应答，到此A与B经历了三次通信或者说是握手，�
 另附注一下Chrome Dev Tool 中请求的时间线各阶段代表的意义。
 以下内容扒自[Chrome 开发者文档页](https://developer.chrome.com/devtools/docs/network#resource-network-timing)，然后我将它本地化了一下下。
 
-![](/asset/posts/2014-12-31-chrome-request-stalled-problem/timing.png)
+![](timing.png)
 
 ### Stalled/Blocking
 

@@ -32,7 +32,7 @@ console.info('楼上药不能停！');
 console.warn('楼上嘴太贱！');
 console.error('楼上关你毛事？');
 ```
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/1.jpg)
+![](1.jpg)
 
 
 
@@ -46,7 +46,7 @@ console.log("来自bar模块的信息 blah blah blah...");
 console.groupEnd();
 ```
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/2.jpg)
+![](2.jpg)
 
 
 而关于`console.log`，早已被玩儿坏了。一切都源于Chrome提供了这么一个API：第一个参数可以包含一些格式化的指令比如`%c`。
@@ -56,7 +56,7 @@ console.groupEnd();
 ```js
 console.log('%chello world','font-size:25px;color:red;');
 ```
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/3.jpg)
+![](3.jpg)
 
 
 
@@ -66,7 +66,7 @@ console.log('%chello world','font-size:25px;color:red;');
 console.log('%chello world', 'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:5em;');
 ```
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/4.jpg)
+![](4.jpg)
 
 
 
@@ -82,7 +82,7 @@ console.log('%chello world', 'background-image:-webkit-gradient( linear, left to
 ```js
 console.log("%c", "padding:50px 300px;line-height:120px;background:url('http://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/rabbit.gif') no-repeat;");
 ```
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/5.gif)
+![](5.gif)
 
 
 
@@ -95,7 +95,7 @@ var data = [{'品名': '杜雷斯', '数量': 4}, {'品名': '冈本', '数量':
 console.table(data);
 ```
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/6.jpg)
+![](6.jpg)
 
 
 
@@ -105,7 +105,7 @@ console.table(data);
 ```js
 console.log('%c你好','color:red;','小明','你知道小红被妈妈打了么');
 ```
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/7.jpg)
+![](7.jpg)
 
 
 
@@ -117,7 +117,7 @@ var isDebug=false;
 console.assert(isDebug,'开发中的log信息。。。');
 ```
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/8.jpg)
+![](8.jpg)
 
 
 
@@ -137,7 +137,7 @@ foo();
 foo();
 ```
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/9.jpg)
+![](9.jpg)
 
 
 
@@ -151,7 +151,7 @@ console.dir(document.body);
 console.log(document.body);
 ```
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/10.jpg)
+![](10.jpg)
 
 
 
@@ -170,7 +170,7 @@ for (var i = array.length - 1; i >= 0; i--) {
 };
 console.timeEnd("Array initialize");
 ```
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/11.jpg)
+![](11.jpg)
 
 
 
@@ -186,7 +186,7 @@ for (var i = array.length - 1; i >= 0; i--) {
 console.log(new Date().getTime()-start);
 ```
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/12.jpg)
+![](12.jpg)
 
 
 
@@ -220,12 +220,12 @@ $
 $_+1//回车得5
 ```
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/13.jpg)
+![](13.jpg)
 
 
 上面的`$_`需要领悟其奥义才能使用得当，而$0~$4则代表了最近5个你选择过的DOM节点。
 什么意思？在页面右击选择`审查元素`，然后在弹出来的DOM结点树上面随便点选，这些被点过的节点会被记录下来，而`$0`会返回最近一次点选的DOM结点，以此类推，$1返回的是上上次点选的DOM节点，最多保存了5个，如果不够5个，则返回`undefined`。
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/$0.gif)
+![]($0.gif)
 
 
 
@@ -234,7 +234,7 @@ $_+1//回车得5
 $('body')
 ```
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/14.jpg)
+![](14.jpg)
 
 
 $(selector)返回的是满足选择条件的首个DOM元素。
@@ -243,7 +243,7 @@ $(selector)返回的是满足选择条件的首个DOM元素。
 ```js
 $$('div')
 ```
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/15.jpg)
+![](15.jpg)
 
 
 
@@ -255,7 +255,7 @@ copy(document.body)
 ```
 然后你就可以到处粘了：
 
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/16.jpg)
+![](16.jpg)
 
 
 看完此条命令行，机智的你是不是跟脑洞全开的我一样，冒出了这样一个想法：那就是通过这个命令可以在JavaScript里进行复制操作从而不用依赖Flash插件了。
@@ -269,7 +269,7 @@ var tboy={name:'wayou',gender:'unknown',hobby:'opposite to the gender'};
 keys(tboy);
 values(tboy);
 ```
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/17.jpg)
+![](17.jpg)
 
 
 
@@ -287,7 +287,7 @@ sayHello('wayou');
 unmonitor(sayHello);
 sayHello('wayou');
 ```
-![](/asset/posts/2014-09-10-chrome-console-tips-and-tricks/18.jpg)
+![](18.jpg)
 
 
 

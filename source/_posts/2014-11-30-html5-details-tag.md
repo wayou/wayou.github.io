@@ -37,7 +37,7 @@ HTML5 中新增的`<details>`标签允许用户创建一个可展开折叠的元
 
 上面代码呈现出来的效果会是下面这样的：
 
-![html5 details tag](/asset/posts/2014-11-30-html5-details-tag/html5_details_tag.gif)
+![html5 details tag](html5_details_tag.gif)
 
 
 最开始详情是隐藏的，当点击时都会展现。
@@ -76,7 +76,7 @@ HTML5 中新增的`<details>`标签允许用户创建一个可展开折叠的元
 
 可喜的是，如果你在caniuse开启了「显示来自UC浏览器的结果」 选项的话，会发现，国产的UC浏览器也支持了此标签。
 
-![can i use details tag](/asset/posts/2014-11-30-html5-details-tag/browser_compatability.jpg)
+![can i use details tag](browser_compatability.jpg)
 
 ## Polyfill
 

@@ -29,7 +29,7 @@ HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的
 </datalist>
 ```
 最后出来的效果又差不多是这样的：
-![HTML5 datalist demo](/asset/posts/2014-09-14-autocomplete-with-html5-datalist/datalist1.gif)
+![HTML5 datalist demo](datalist1.gif)
 
 在线查看效果请点击[这里](http://sandbox.runjs.cn/show/lvgpes2k)
 
@@ -45,13 +45,13 @@ input::-webkit-calendar-picker-indicator {
 ```
 
 这样之后出来的效果差不多成了这样：
-![HTML5 datalist 去掉箭头的版本](/asset/posts/2014-09-14-autocomplete-with-html5-datalist/datalist2.gif)
+![HTML5 datalist 去掉箭头的版本](datalist2.gif)
 
 
 ## 浏览器兼容性
 
 下面的数据来自[caniuse](http://caniuse.com/#feat=datalist)。
-![Datalist 元素兼容性](/asset/posts/2014-09-14-autocomplete-with-html5-datalist/caniuse_datalist.jpg)
+![Datalist 元素兼容性](caniuse_datalist.jpg)
 可以看出，遥遥领先的依然是风采依旧的Chrome，对该元素的支持全线飘绿；
 同时Firefox也是毫不示弱，紧随版本帝之后;
 而其他浏览器情况则各不相同，正所谓**性**福的人都相似，不幸的人各有不幸。

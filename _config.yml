@@ -69,15 +69,15 @@ duoshuo_shortname: wayouliu
 # deploy minify
 clean_css:
   exclude:
-   - polymer/*.css
+    - polymer/*.css
 
 uglify:
   mangle: true
   output:
   compress:
   exclude:
-   - polymer/*.js
-   - node_modules/*.js
+    - polymer/*.js
+    - node_modules/*.js
 
 ## dev
 browsersync:

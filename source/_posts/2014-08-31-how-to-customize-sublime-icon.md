@@ -21,10 +21,10 @@ step1. 选择喜欢的图片
 ---
 
 首先你需要选择一个中意的图片做为新的图标，这里拿我喜欢的章鱼猫为例。
-![octocat](/asset/posts/2014-08-31-how-to-customize-sublime-icon/octocat.png)
+![octocat](octocat.png)
 
 当然你不喜欢章鱼猫，随便[谷歌一下](https://www.google.com/search?q=octocat+icon&newwindow=1&safe=off&tbm=isch&imgil=wqxX4jp591NZZM%253A%253Beb8wapPIz1AUTM%253Bhttps%25253A%25252F%25252Fsupport.wombat.co%25252Fhc%25252Fen-us%25252Farticles%25252F202245250-Shipstation-Integration-&source=iu&fir=wqxX4jp591NZZM%253A%252Ceb8wapPIz1AUTM%252C_&usg=__2FX1-Ux3h7wdDssc2u6t_4Ba7Nc%3D&sa=X&ei=EJ8CVI32HNjd8AXYp4KIAw&ved=0CCsQ9QEwBQ&biw=1366&bih=683#newwindow=1&q=sublime+text+icon&safe=off&tbm=isch&facrc=_&imgdii=_&imgrc=NPM_JHMY3bmkdM%253A%3BavC4jPKJkwSy8M%3Bhttp%253A%252F%252Fwww.jonathanfontes.pt%252Fassets%252Fimg%252Flogo-sublime-3.png%3Bhttp%253A%252F%252Fwww.jonathanfontes.pt%252F%3B512%3B512)还是有很多正常的ST图标的，比如下面这些
-![sublime](/asset/posts/2014-08-31-how-to-customize-sublime-icon/sublime.png)
+![sublime](sublime.png)
 
 step2. 转为ico格式
 ---
@@ -32,7 +32,7 @@ step2. 转为ico格式
 网上找的图片大多为`png`或`jpg`格式的，这里我们需要`ico`, so 需要转换一下下。
 同样，转`ico`格式的网站也是蛮多的，比如[这个](http://www.convertico.com/),进去后把图片上传，完了下下来后你得到的就是一个`.ico` 格式的图片啦~
 
-![转ico格式](/asset/posts/2014-08-31-how-to-customize-sublime-icon/convert_icon.png)
+![转ico格式](convert_icon.png)
 
 step3. ResEdit
 ---
@@ -46,24 +46,24 @@ step4. 用ResEdit打开SublimeText
 将SublimeText安装目录下的`sublime_text.exe`复制一分放到比如桌面什么的。
 运行ResEdit, `File->Open Project...`, 打开刚才复制的`sublime_text.exe`。
 
-![用ResEdit打开sublime_text.exe后](/asset/posts/2014-08-31-how-to-customize-sublime-icon/openned.png)
+![用ResEdit打开sublime_text.exe后](openned.png)
 
 step5. 替换图标
 ---
 
 打开后差不多就像上面截图一样，你会看到左边`Resources`里第一个便是`Icon`, 在这个文件夹上面右击选择`Add resource...->Icon`,如下图
 
-![添加icon资源](/asset/posts/2014-08-31-how-to-customize-sublime-icon/add_resource.png)
+![添加icon资源](add_resource.png)
 
 之后在弹出的对话框里选择`Create from an existing file`
 
-![选择从现有文件创建](/asset/posts/2014-08-31-how-to-customize-sublime-icon/choose_type.png)
+![选择从现有文件创建](choose_type.png)
 
 之后去选中我们先前准备好的`ico`文件，将其加载进来。
 
 完了`Icon`文件夹下多了我们自己的icon文件，现在把原来的图标删除，右击`103[English (Australia)]` 选择`Remove from project`。
 
-![删除原来的图标](/asset/posts/2014-08-31-how-to-customize-sublime-icon/remove.png)
+![删除原来的图标](remove.png)
 
 
 最后点击`File->Save`。
@@ -75,12 +75,4 @@ step final. 替换exe
 
 All done!
 
-![octocat sublimetext](/asset/posts/2014-08-31-how-to-customize-sublime-icon/final.png)
-
-
-
-
-
-
-
-
+![octocat sublimetext](final.png)

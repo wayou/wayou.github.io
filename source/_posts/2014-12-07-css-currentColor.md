@@ -52,7 +52,7 @@ p{
 
 现在，我们没有给`<p>`标签指定颜色，它的`color`从父级容器也就是`class`为`container`的`div`继承而来，换句话说此时`p`标签的`color`为`#00ff00`，`currentColor`又是直接去取元素的`color`值，所以此时`p`标签的`currentColor`值也为`#00ff00`。
 
-![situation2](/asset/posts/2014-12-07-css-currentColor/situation2.jpg)
+![situation2](situation2.jpg)
 
 - 场景3
 
@@ -78,7 +78,7 @@ p{
  */
 ```
 
-![situation3](/asset/posts/2014-12-07-css-currentColor/situation3.jpg)
+![situation3](situation3.jpg)
 
 那，这个时候的黑色其实是浏览器默认给的。此时`p`标签的`currentColor`自然也跟`color`值一样，为黑色，纯黑的`#000`。
 
@@ -142,7 +142,7 @@ p{
 
 看下面这个例子（这个示例灵感来自[这里](http://osvaldas.info/keeping-css-short-with-currentcolor)）
 
-![btn_with_svg_st](/asset/posts/2014-12-07-css-currentColor/btn_with_svg_st.jpg)
+![btn_with_svg_st](btn_with_svg_st.jpg)
 
 我们在按钮中使用了一个svg图标。你是一个负责任的FE，所以，对这个按钮的各种状态`:focus`，`:hover`，`:active`都作了样式上的处理。同时，为了让图标也跟着保持一致的姿态变更，需要把对`<a>`标签的样式处理同样就到到`<svg>`标签上。于是你的CSS代码看起来就是下面这样的了。
 
@@ -214,11 +214,11 @@ p{
 
 一提到浏览器兼容性，FE同学们或许就不敢那么任性了。之前你可能是这样的：
 
-![before](/asset/posts/2014-12-07-css-currentColor/before.gif)
+![before](before.gif)
 
 当听到IE传来的噩耗，你可能是这样的：
 
-![after](/asset/posts/2014-12-07-css-currentColor/after.gif)
+![after](after.gif)
 
 经查，[can i use](http://caniuse.com/#search=currentcolor) 没有关于它的数据。
 

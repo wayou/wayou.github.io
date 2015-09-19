@@ -18,7 +18,7 @@ Google死忠入手一台Nexus是必需的事情。Nexus6 刚出，特别赞，�
 
 Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。鉴于国内特殊情况，要完成顺利的升级你得懂得科学上网，而且是让手机科学上网。
 
-![](/asset/posts/2014-12-21-nexus-root/1.png)
+![](1.png)
 
 科学上网只是第一步，保证你手机可以下载到更新，值得提及的是升级过程似乎只能一步一步来，4.4.3 到4.4.4，然后4.4.4 到 5.0， 最后才是5.0.1。
 
@@ -49,13 +49,13 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 进入「关于手机」界面，下拉到底部，连续点击`Build number` 直到出现提示说还剩多少次点击便可开启开发者选项，再继续，最后会提示你开启成功。
 
-![](/asset/posts/2014-12-21-nexus-root/3.jpg)
+![](3.jpg)
 > 图片来自[How to easily root an Android device](http://www.cnet.com/how-to/how-to-easily-root-an-android-device/)
 
 
 然后返回到上一级，会多出一个菜单 `Developer options`,点击进入。选中`USB debugging`。
 
-![](/asset/posts/2014-12-21-nexus-root/4.png)
+![](4.png)
 
 
 #### 驱动安装
@@ -66,23 +66,23 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 - 进入Windows的设备管理器（控制面板->设备管理器）, 此时我们的手机应该是未识别的设备，有黄色图标。
 
-![](/asset/posts/2014-12-21-nexus-root/5.jpg)
+![](5.jpg)
 
 > 双击该设备打开属性面板，然后选择「更新驱动」，在弹出的窗口中选择从本地电脑中选择驱动。
 
-![](/asset/posts/2014-12-21-nexus-root/6.jpg)
+![](6.jpg)
 
 > 在弹出的窗口中再次选择从电脑中浏览，之后在弹出的窗口中直接点击「下一步」。
 
-![](/asset/posts/2014-12-21-nexus-root/7.jpg)
+![](7.jpg)
 
 > 下一步窗口中选择`Have Disk...` 打开`Install From Disk` 窗口。选择「浏览」定位到之前解压的位置，选中`Nexus5Root\usb_driver\android_winusb.inf` 进行安装。
 
-![](/asset/posts/2014-12-21-nexus-root/8.jpg)
+![](8.jpg)
 
 > 接下来选择`Android ADB Interface` 再点击「下一步」开始安装。
 
-![](/asset/posts/2014-12-21-nexus-root/9.jpg)
+![](9.jpg)
 
 到此，驱动安装完成！
 
@@ -95,11 +95,11 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 - 还是在之前解压的文件夹下，按住左键在空白处右击，在出来的菜单中选择「在此处打开命令行」
 
-![](/asset/posts/2014-12-21-nexus-root/10.png)
+![](10.png)
 
 - 输入`adb devices` 查看设备连接状态。第一次可能会需要在手机上弹出的确认窗口中点击一下确认。正常情况下命令行里会返回已经识别到的机器。
 
-![](/asset/posts/2014-12-21-nexus-root/11.jpg)
+![](11.jpg)
 
 - 输入`adb backup -apk -all -f backup.ab` 进行资料备份。此时到手机上点击确定开始进行备份。
 
@@ -170,7 +170,7 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 到[谷歌官网](https://developers.google.com/android/nexus/images)下载适配机型的img系统镜像文件。这里我们选择最新的[Nexus5 Android 5.0.1](https://dl.google.com/dl/android/aosp/hammerhead-lrx22c-factory-0f9eda1b.tgz)
 
-![](/asset/posts/2014-12-21-nexus-root/2.jpg)
+![](2.jpg)
 
 ### 解压写入
 

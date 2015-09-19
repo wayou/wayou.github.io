@@ -11,6 +11,15 @@ body {
 a:hover{
 	text-decoration: none;
 }
+
+/*enable boxshadow on bootstrap material button group*/
+.btn-default:not(.btn-link):hover, .btn:not(.btn-link):hover{
+	box-shadow: 0 3px 6px rgba(0,0,0,.2),0 3px 6px rgba(0,0,0,.28)!important;
+}
+/*.btn-group .btn:hover{
+	box-shadow: 0 3px 6px rgba(0,0,0,.2),0 3px 6px rgba(0,0,0,.28)!important;
+}*/
+
 /*fix blockquote font size for bs*/
 blockquote{
 	font-size: initial;
