@@ -6,8 +6,8 @@ body {
   background-color: #fff;
   font-family:'Microsoft YaHei',Tahoma,'PT Serif',Georgia,Times,'Times New Roman',Serif;
   text-shadow: 1px 1px 2px rgba(50,50,50,0.15);
-  font-size: 1.5rem;
 }
+
 a:hover{
 	text-decoration: none;
 }
