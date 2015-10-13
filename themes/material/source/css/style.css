@@ -1,6 +1,6 @@
 ::selection {
   background-color: transparent;
-  color: #4281F3;
+  color: teal;
 }
 body {
   background-color: #fff;
@@ -12,6 +12,10 @@ a:hover{
 	text-decoration: none;
 }
 
+/*fix icon size*/
+[class^=mdi-], [class*=mdi-]{
+	font: normal normal normal 1em 'Material-Design-Icons';
+}
 /*enable boxshadow on bootstrap material button group*/
 .btn-default:not(.btn-link):hover, .btn:not(.btn-link):hover{
 	box-shadow: 0 3px 6px rgba(0,0,0,.2),0 3px 6px rgba(0,0,0,.28)!important;
