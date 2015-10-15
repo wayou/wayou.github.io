@@ -38,6 +38,9 @@ $(function() {
     }
   });
 
+	//  enable ripple on buttons
+	$.material.ripples();
+
   //this is adapted from http://css-tricks.com/moving-highlight/
   function menuHighlight() {
     var originalBG = $(".nav li").css("background-color"),
