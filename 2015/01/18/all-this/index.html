@@ -1,4 +1,4 @@
-	<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <html>
 <head>
   <meta charset="utf-8">
@@ -14,10 +14,10 @@
 以下内容我希望广大同行们能够了解。全是掏箱底的干货，其中大部分占用了我很多时间才掌握。">
   
   
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 
-  <meta property="og:title" content="详解this"/>
-  <meta property="og:site_name" content="刘哇勇的部落格"/>
+  <meta property="og:title" content="详解this">
+  <meta property="og:site_name" content="刘哇勇的部落格">
 
   
   
@@ -76,8 +76,7 @@
   <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
-</head>
-
+</head></html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -121,24 +120,21 @@
         </div>
     </div>
 </nav>
-
-	  <div class="container" >
+	  <div class="container">
 	    <div class="row">
-	<div class="col-md-8">
-	  <!-- index -->
-	  
-			<h1>详解this</h1>
-			
-			<div>
-				<i class="fa fa-clock-o"></i>
-				<span class="post-time">2015-01-18 20:47:24</span>
-			</div>
-			
-	  
+	<div class="col-md-9">
 
 		<div class="content">
 			<!-- index -->
-		  
+		   
+
+			  		<h1>详解this</h1>
+					
+					<div>
+						<span class="post-time">2015-01-18 20:47:24</span>
+					</div>	
+					
+
 					<p><code>this</code> 虐我千百遍，看完此文效立见！不得不说，这篇文章的总结很地道很全面，适合收藏之用。</p>
 <blockquote>
 <p>原文：<a href="http://bjorn.tipling.com/all-this" target="_blank" rel="external">all this</a></p>
@@ -146,7 +142,7 @@
 <p>习惯了高级语言的你或许觉得JavaScript中的<code>this</code>跟Java这些面向对象语言相似，保存了实体属性的一些值。其实不然。将它视作<a href="http://harrypotter.wikia.com/wiki/Boggart" target="_blank" rel="external">幻影魔神</a>比较恰当，手提一个装满未知符文的<a href="http://harrypotter.wikia.com/wiki/Undetectable_Extension_Charm" target="_blank" rel="external">灵龛</a>。</p>
 <p>以下内容我希望广大同行们能够了解。全是掏箱底的干货，其中大部分占用了我很多时间才掌握。</p>
 <a id="more"></a>
-<h2 id="全局this">全局<code>this</code></h2><p>浏览器宿主的全局环境中，<code>this</code>指的是<code>window</code>对象。</p>
+<h2 id="u5168_u5C40this"><a href="#u5168_u5C40this" class="headerlink" title="全局this"></a>全局<code>this</code></h2><p>浏览器宿主的全局环境中，<code>this</code>指的是<code>window</code>对象。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span> === <span class="built_in">window</span>); <span class="comment">//true</span></span><br><span class="line"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/hL9emz4m/" target="_blank" rel="external">示例</a></p>
 <p>浏览器中在全局环境下，使用<code>var</code>声明变量其实就是赋值给<code>this</code>或<code>window</code>。</p>
@@ -172,7 +168,7 @@
 <blockquote>
 <p>译注：简单来说，Node脚本中<code>global</code>和<code>this</code>是区别对待的，而Node命令行中，两者可等效为同一对象。</p>
 </blockquote>
-<h2 id="函数或方法里的this">函数或方法里的<code>this</code></h2><p>除了DOM的事件回调或者提供了执行上下文（后面会提到）的情况，函数正常被调用（不带<code>new</code>）时，里面的<code>this</code>指向的是全局作用域。</p>
+<h2 id="u51FD_u6570_u6216_u65B9_u6CD5_u91CC_u7684this"><a href="#u51FD_u6570_u6216_u65B9_u6CD5_u91CC_u7684this" class="headerlink" title="函数或方法里的this"></a>函数或方法里的<code>this</code></h2><p>除了DOM的事件回调或者提供了执行上下文（后面会提到）的情况，函数正常被调用（不带<code>new</code>）时，里面的<code>this</code>指向的是全局作用域。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><br><span class="line">    foo = <span class="string">"bar"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">testThis</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">this</span>.foo = <span class="string">"foo"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo); <span class="comment">//logs "bar"</span></span><br><span class="line">    testThis();</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo); <span class="comment">//logs "foo"</span></span><br><span class="line"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/4/" target="_blank" rel="external">示例</a></p>
 <figure class="highlight js"><figcaption><span>test.js</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">foo = <span class="string">"bar"</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">testThis</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.foo = <span class="string">"foo"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(global.foo);</span><br><span class="line">testThis();</span><br><span class="line"><span class="built_in">console</span>.log(global.foo);</span><br></pre></td></tr></table></figure>
@@ -184,7 +180,7 @@
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><br><span class="line">    foo = <span class="string">"bar"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">testThis</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">this</span>.foo = <span class="string">"foo"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo); <span class="comment">//logs "bar"</span></span><br><span class="line">    <span class="keyword">new</span> testThis();</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo); <span class="comment">//logs "bar"</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">new</span> testThis().foo); <span class="comment">//logs "foo"</span></span><br><span class="line"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/6/" target="_blank" rel="external">示例</a></p>
 <p>通常我将这个新的上下文称作实例。</p>
-<h2 id="原型中的this">原型中的<code>this</code></h2><p>函数创建后其实以一个函数对象的形式存在着。既然是对象，则自动获得了一个叫做<code>prototype</code>的属性，可以自由地对这个属性进行赋值。当配合<code>new</code>关键字来调用一个函数创建实例后，此刻便能直接访问到原型身上的值。</p>
+<h2 id="u539F_u578B_u4E2D_u7684this"><a href="#u539F_u578B_u4E2D_u7684this" class="headerlink" title="原型中的this"></a>原型中的<code>this</code></h2><p>函数创建后其实以一个函数对象的形式存在着。既然是对象，则自动获得了一个叫做<code>prototype</code>的属性，可以自由地对这个属性进行赋值。当配合<code>new</code>关键字来调用一个函数创建实例后，此刻便能直接访问到原型身上的值。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Thing</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Thing.prototype.foo = <span class="string">"bar"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> thing = <span class="keyword">new</span> Thing(); <span class="comment">//logs "bar"</span></span><br><span class="line"><span class="built_in">console</span>.log(thing.foo);  <span class="comment">//logs "bar"</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/8/" target="_blank" rel="external">示例</a></p>
 <p>当通过<code>new</code>的方式创建了多个实例后，他们会共用一个原型。比如，每个实例的<code>this.foo</code>都返回相同的值，直到<code>this.foo</code>被重写。</p>
@@ -248,7 +244,7 @@
 <p>正因为<code>Object.create</code>没有调用构造函数，这在当你想实现一个继承时是非常有用的，随后你可能想要重写构造函数。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Thing1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.foo = <span class="string">"foo"</span>;</span><br><span class="line">&#125;</span><br><span class="line">Thing1.prototype.foo = <span class="string">"bar"</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Thing2</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.logFoo(); <span class="comment">//logs "bar"</span></span><br><span class="line">    Thing1.apply(<span class="keyword">this</span>);</span><br><span class="line">    <span class="keyword">this</span>.logFoo(); <span class="comment">//logs "foo"</span></span><br><span class="line">&#125;</span><br><span class="line">Thing2.prototype = <span class="built_in">Object</span>.create(Thing1.prototype);</span><br><span class="line">Thing2.prototype.logFoo = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> thing = <span class="keyword">new</span> Thing2();</span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/32/" target="_blank" rel="external">示例</a></p>
-<h2 id="对象中的this">对象中的<code>this</code></h2><p>可以在对象的任何方法中使用<code>this</code>来访问该对象的属性。这与用<code>new</code>得到的实例是不一样的。</p>
+<h2 id="u5BF9_u8C61_u4E2D_u7684this"><a href="#u5BF9_u8C61_u4E2D_u7684this" class="headerlink" title="对象中的this"></a>对象中的<code>this</code></h2><p>可以在对象的任何方法中使用<code>this</code>来访问该对象的属性。这与用<code>new</code>得到的实例是不一样的。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    foo: <span class="string">"bar"</span>,</span><br><span class="line">    logFoo: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">obj.logFoo(); <span class="comment">//logs "bar"</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/33/" target="_blank" rel="external">示例</a></p>
 <p>注意这里并没有使用<code>new</code>，也没有用<code>Object.create</code>，更没有函数的调用来创建对象。也可以将函数绑定到对象，就好像这个对象是一个实例一样。</p>
@@ -260,47 +256,48 @@
 <p>也可以不通过<code>this</code>，直接访问对象的属性。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    foo: <span class="string">"bar"</span>,</span><br><span class="line">    deeper: &#123;</span><br><span class="line">        logFoo: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(obj.foo);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">obj.deeper.logFoo(); <span class="comment">//logs "bar"</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/36/" target="_blank" rel="external">示例</a></p>
-<h2 id="DOM_事件回调中的this">DOM 事件回调中的<code>this</code></h2><p>在DOM事件的处理函数中，<code>this</code>指代的是被绑定该事件的DOM元素。</p>
+<h2 id="DOM__u4E8B_u4EF6_u56DE_u8C03_u4E2D_u7684this"><a href="#DOM__u4E8B_u4EF6_u56DE_u8C03_u4E2D_u7684this" class="headerlink" title="DOM 事件回调中的this"></a>DOM 事件回调中的<code>this</code></h2><p>在DOM事件的处理函数中，<code>this</code>指代的是被绑定该事件的DOM元素。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Listener</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">"foo"</span>).addEventListener(<span class="string">"click"</span>,</span><br><span class="line">       <span class="keyword">this</span>.handleClick);</span><br><span class="line">&#125;</span><br><span class="line">Listener.prototype.handleClick = <span class="function"><span class="keyword">function</span> (<span class="params">event</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">//logs "&lt;div id="foo"&gt;&lt;/div&gt;"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> listener = <span class="keyword">new</span> Listener();</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">"foo"</span>).click();</span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/37/" target="_blank" rel="external">示例</a></p>
 <p>…除非你通过<code>bind</code>人为改变了事件处理器的执行上下文。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Listener</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">"foo"</span>).addEventListener(<span class="string">"click"</span>,</span><br><span class="line">        <span class="keyword">this</span>.handleClick.bind(<span class="keyword">this</span>));</span><br><span class="line">&#125;</span><br><span class="line">Listener.prototype.handleClick = <span class="function"><span class="keyword">function</span> (<span class="params">event</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">//logs Listener &#123;handleClick: function&#125;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> listener = <span class="keyword">new</span> Listener();</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">"foo"</span>).click();</span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/38/" target="_blank" rel="external">示例</a></p>
-<h2 id="HTML中的this">HTML中的<code>this</code></h2><p>HTML标签的属性中是可能写JS的，这种情况下<code>this</code>指代该HTML元素。</p>
+<h2 id="HTML_u4E2D_u7684this"><a href="#HTML_u4E2D_u7684this" class="headerlink" title="HTML中的this"></a>HTML中的<code>this</code></h2><p>HTML标签的属性中是可能写JS的，这种情况下<code>this</code>指代该HTML元素。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"foo"</span> <span class="attribute">onclick</span>=<span class="value">"console.log(this);"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">"foo"</span>).click(); <span class="comment">//logs &lt;div id="foo"...</span></span><br><span class="line"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/40/" target="_blank" rel="external">示例</a></p>
-<h2 id="重写this">重写<code>this</code></h2><p>无法重写<code>this</code>，因为它是一个关键字。</p>
+<h2 id="u91CD_u5199this"><a href="#u91CD_u5199this" class="headerlink" title="重写this"></a>重写<code>this</code></h2><p>无法重写<code>this</code>，因为它是一个关键字。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> <span class="keyword">this</span> = &#123;&#125;;  <span class="comment">// Uncaught SyntaxError: Unexpected token this</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/41/" target="_blank" rel="external">示例</a></p>
-<h2 id="eval中的this"><code>eval</code>中的<code>this</code></h2><p><code>eval</code> 中也可以正确获取当前的 <code>this</code>。</p>
+<h2 id="eval_u4E2D_u7684this"><a href="#eval_u4E2D_u7684this" class="headerlink" title="eval中的this"></a><code>eval</code>中的<code>this</code></h2><p><code>eval</code> 中也可以正确获取当前的 <code>this</code>。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Thing</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line">Thing.prototype.foo = <span class="string">"bar"</span>;</span><br><span class="line">Thing.prototype.logFoo = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">eval</span>(<span class="string">"console.log(this.foo)"</span>); <span class="comment">//logs "bar"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> thing = <span class="keyword">new</span> Thing();</span><br><span class="line">thing.logFoo();</span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/43/" target="_blank" rel="external">示例</a></p>
 <p>这里存在安全隐患。最好的办法就是避免使用<code>eval</code>。</p>
 <p>使用<code>Function</code>关键字创建的函数也可以获取<code>this</code>：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Thing</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line">Thing.prototype.foo = <span class="string">"bar"</span>;</span><br><span class="line">Thing.prototype.logFoo = <span class="keyword">new</span> <span class="built_in">Function</span>(<span class="string">"console.log(this.foo);"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> thing = <span class="keyword">new</span> Thing();</span><br><span class="line">thing.logFoo(); <span class="comment">//logs "bar"</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/44/" target="_blank" rel="external">示例</a></p>
-<h2 id="使用with时的this">使用<code>with</code>时的<code>this</code></h2><p>使用<code>with</code>可以将<code>this</code>人为添加到当前执行环境中而不需要显示地引用<code>this</code>。</p>
+<h2 id="u4F7F_u7528with_u65F6_u7684this"><a href="#u4F7F_u7528with_u65F6_u7684this" class="headerlink" title="使用with时的this"></a>使用<code>with</code>时的<code>this</code></h2><p>使用<code>with</code>可以将<code>this</code>人为添加到当前执行环境中而不需要显示地引用<code>this</code>。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Thing</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line">Thing.prototype.foo = <span class="string">"bar"</span>;</span><br><span class="line">Thing.prototype.logFoo = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">with</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(foo);</span><br><span class="line">        foo = <span class="string">"foo"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> thing = <span class="keyword">new</span> Thing();</span><br><span class="line">thing.logFoo(); <span class="comment">// logs "bar"</span></span><br><span class="line"><span class="built_in">console</span>.log(thing.foo); <span class="comment">// logs "foo"</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/45/" target="_blank" rel="external">示例</a></p>
 <p>正如很多人认为的那样，使用<code>with</code>是不好的，因为会产生歧义。</p>
-<h2 id="jQuery中的this">jQuery中的<code>this</code></h2><p>一如HTML DOM元素的事件回调，jQuery库中大多地方的<code>this</code>也是指代的DOM元素。页面上的事件回调和一些便利的静态方法比如<code>$.each</code> 都是这样的。</p>
+<h2 id="jQuery_u4E2D_u7684this"><a href="#jQuery_u4E2D_u7684this" class="headerlink" title="jQuery中的this"></a>jQuery中的<code>this</code></h2><p>一如HTML DOM元素的事件回调，jQuery库中大多地方的<code>this</code>也是指代的DOM元素。页面上的事件回调和一些便利的静态方法比如<code>$.each</code> 都是这样的。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"foo bar1"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"foo bar2"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><br><span class="line">$(<span class="string">".foo"</span>).each(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">//logs &lt;div class="foo...</span></span><br><span class="line">&#125;);</span><br><span class="line">$(<span class="string">".foo"</span>).on(<span class="string">"click"</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">//logs &lt;div class="foo...</span></span><br><span class="line">&#125;);</span><br><span class="line">$(<span class="string">".foo"</span>).each(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.click();</span><br><span class="line">&#125;);</span><br><span class="line"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/47/" target="_blank" rel="external">示例</a></p>
-<h2 id="传递_this">传递 <code>this</code></h2><p>如果你用过<a href="http://underscorejs.org/" target="_blank" rel="external">underscore.js</a>或者<a href="http://lodash.com/" target="_blank" rel="external">lo-dash</a>你便知道，这两个库中很多方法你可以传递一个参数来显示指定执行的上下文。比如<code>_.each</code>。自ECMAScript 5 标准后，一些原生的JS方法也允许传递上下文，比如<code>forEach</code>。事实上，上文提到的<code>bind</code>，<code>apply</code>还有<code>call</code> 已经给我们手动指定函数执行上下文的能力了。</p>
+<h2 id="u4F20_u9012_this"><a href="#u4F20_u9012_this" class="headerlink" title="传递 this"></a>传递 <code>this</code></h2><p>如果你用过<a href="http://underscorejs.org/" target="_blank" rel="external">underscore.js</a>或者<a href="http://lodash.com/" target="_blank" rel="external">lo-dash</a>你便知道，这两个库中很多方法你可以传递一个参数来显示指定执行的上下文。比如<code>_.each</code>。自ECMAScript 5 标准后，一些原生的JS方法也允许传递上下文，比如<code>forEach</code>。事实上，上文提到的<code>bind</code>，<code>apply</code>还有<code>call</code> 已经给我们手动指定函数执行上下文的能力了。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Thing</span>(<span class="params">type</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.type = type;</span><br><span class="line">&#125;</span><br><span class="line">Thing.prototype.log = <span class="function"><span class="keyword">function</span> (<span class="params">thing</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.type, thing);</span><br><span class="line">&#125;</span><br><span class="line">Thing.prototype.logThings = <span class="function"><span class="keyword">function</span> (<span class="params">arr</span>) </span>&#123;</span><br><span class="line">   arr.forEach(<span class="keyword">this</span>.log, <span class="keyword">this</span>); <span class="comment">// logs "fruit apples..."</span></span><br><span class="line">   _.each(arr, <span class="keyword">this</span>.log, <span class="keyword">this</span>); <span class="comment">//logs "fruit apples..."</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> thing = <span class="keyword">new</span> Thing(<span class="string">"fruit"</span>);</span><br><span class="line">thing.logThings([<span class="string">"apples"</span>, <span class="string">"oranges"</span>, <span class="string">"strawberries"</span>, <span class="string">"bananas"</span>]);</span><br></pre></td></tr></table></figure>
 <p><a href="http://jsfiddle.net/btipling/25xkmho7/50/" target="_blank" rel="external">示例</a></p>
 <p>这样可以使得代码简洁些，不用层层嵌套<code>bind</code>，也不用不断地缓存<code>this</code>。</p>
 <p>一些编程语言上手很简单，比如<a href="http://golang.org/" target="_blank" rel="external">Go语言手册</a>可以被快速读完。然后你差不多就掌握这门语言了，只是在实战时会有些小的问题或陷阱在等着你。</p>
 <p>而JavaScript不是这样的。手册难读。非常多缺陷在里面，以至于人们抽离出了<code>它好的部分</code>（<a href="http://www.amazon.com/JavaScript-Good-Parts-Douglas-Crockford/dp/0596517742" target="_blank" rel="external">The Good Parts</a>）。最好的文档可能是<a href="https://developer.mozilla.org/en-US/" target="_blank" rel="external">MDN</a>上的了。所以我建议你看看他上面关于<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this" target="_blank" rel="external"><code>this</code></a>的介绍，并且始终在搜索JS相关问题时加上”mdn” 来获得最好的文档资料。静态代码检查也是个不错的工具，比如<a href="http://www.jshint.com/" target="_blank" rel="external">jshint</a>。</p>
 <p>欢迎勘误及讨论，我的推特@bjorntipling。</p>
-
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
 	  
 
-		
+		<div class="comment-section">
+  
   
    <!-- 多说评论框 start -->
     <div class="ds-thread" data-thread-key="_posts/2015-01-18-all-this.md" data-title="详解this" data-url="http://wayou.github.io/2015/01/18/all-this/"></div>
@@ -321,28 +318,24 @@
   
 
 
+</div>
 	</div>
-	<div class="col-md-4">
+	<div class="col-md-3">
 		
-			<div id="toc" ></div>
+			<div id="toc"></div>
 		
 	</div>
 
 </div>
-
-
-			<footer>
-				
-
-<p>
+		<footer>
+			<p>
   由 <a href="https://hexo.io">hexo</a> 强力驱动 | 搭载 <a href="https://github.com/wayou/hexo-theme-material">material</a> 主题
 </p>
 <p>
   &copy; 2015 <a href="http://wayou.github.io"> Wayou Liu </a>
 </p>
 <a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
-
-			</footer>
+		</footer>
 	  </div>
 
 		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
@@ -362,4 +355,3 @@
 		<script src="/js/main.js"></script>
 
 	</body>
-</html>
