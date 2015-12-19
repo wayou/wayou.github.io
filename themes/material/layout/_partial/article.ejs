@@ -1,46 +1,47 @@
 <div class="row">
-	<div class="col-md-8">
-	  <!-- index -->
-	  <% if( pageType == 'index') {%>
-	  <!-- archives -->
-	  <% } else if( pageType == 'archives') {%>
-			<h1><%= __('archives') %></h1>
-	  <!-- post -->
-	  <% } else if( pageType == 'post') {%>
-			<h1><%= page.title %></h1>
-			<% if (page.date) { %>
-			<div>
-				<i class="fa fa-clock-o"></i>
-				<span class="post-time"><%= page.date.format(config.date_format+' '+config.time_format) %></span>
-			</div>
-			<% } %>
-	  <% } %>
+	<div class="col-md-9">
 
 		<div class="content">
 			<!-- index -->
-		  <% if( pageType == 'index') {%>
+		   <% if( pageType == 'index') {%>
 				<% page.posts.each(function(post){ %>
-            <div class="index-item-wrapper">
-              <h3>
-                <a class="post-title" href="<%= url_for(post.path) %>"><%= post.title %></a>
-              </h3>
-							<span class="post-time"><%= date(post.date) %></span>
-              <div class="excerpt"><%- post.excerpt %></div>
-              <% if (post.excerpt){ %>
-                  <a class="btn btn-default" href="<%- url_for(post.path) %>"> MORE... </a>
-              <% } %>
-            </div>
+		            <div class="index-item-wrapper">
+		              <h3>
+		                <a class="post-title" href="<%= url_for(post.path) %>"><%= post.title %></a>
+		              </h3>
+									<span class="post-time"><%= date(post.date) %></span>
+		              <div class="excerpt"><%- post.excerpt %></div>
+		              <% if (post.excerpt){ %>
+		                  <a class="btn btn-default" href="<%- url_for(post.path) %>"> MORE... </a>
+		              <% } %>
+		            </div>
 				<% }) %>
 				<!-- archives -->
 			  <% } else if( pageType == 'archives') {%>
+			  	<h1><%= __('archives') %></h1>
 		  		<% page.posts.each(function(post){ %>
-              <p class="archive-item">
-								<a href="<%= url_for(post.path) %>" class="archive-title"><%= post.title %></a><span class="archive post-time"><%= date(post.date) %></span>
-							</p>
+	              <p class="archive-item">
+						<a href="<%= url_for(post.path) %>" class="archive-title"><%= post.title %></a><span class="archive post-time"><%= date(post.date) %></span>
+					</p>
 			  	<% }) %>
 			  <!-- post -->
 			  <% } else if( pageType == 'post') {%>
+
+			  		<h1><%= page.title %></h1>
+					<% if (page.date) { %>
+					<div>
+						<span class="post-time"><%= page.date.format(config.date_format+' '+config.time_format) %></span>
+					</div>	
+					<% } %>
+
 					<%- page.content %>
+			  <!-- about -->
+			  <% } else if( pageType == 'about') {%>
+			  		<h1><%= page.title %></h1>
+					<%- page.content %>
+			   <!-- others, like 404 or sth. -->
+			   <% } else  {%>
+					查无此页
 			  <% } %>
 		</div>
 
@@ -62,11 +63,11 @@
 
 		<%- partial('comment', {page: page}) %>
 	</div>
-	<div class="col-md-4">
+	<div class="col-md-3">
 		<% if (page.toc) { %>
 			<div id="toc" ></div>
 		<% } else{%>
-			<% if (theme.widgets.length) { %>
+			<% if (theme.widgets.length && pageType != 'about') { %>
 				<div id="sidebar">
 	 			<% theme.widgets.forEach(function(widget){ %>
 	 					<%- partial('../_widget/' + widget) %>
