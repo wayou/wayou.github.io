@@ -126,14 +126,15 @@
 			<!-- index -->
 		   
 
-			  		<h1>延迟求值-如何让Lo-Dash再提速x100?</h1>
+			  		<h2>延迟求值-如何让Lo-Dash再提速x100?</h2>
 					
 					<div>
 						<span class="post-time">2014-11-08 15:29:27</span>
 					</div>	
 					
 
-					<blockquote>
+					<div class="article-content">
+						<blockquote>
 <p>「注释」作者在本文里没有说明这么一个事实：<br>目前的版本<code>Lo-Dash v2.4.1</code>并没有引入延迟求值的特性，<code>Lo-Dash 3.0.0-pre</code>中部分方法进行了引入，比如<code>filter()</code>,<code>map()</code>,<code>reverse()</code>。</p>
 <p>原文：<a href="http://filimanjaro.com/blog/2014/introducing-lazy-evaluation" target="_blank" rel="external">How to Speed Up Lo-Dash ×100? Introducing Lazy Evaluation</a></p>
 </blockquote>
@@ -163,6 +164,8 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wallet = _(assets).filter(ownedBy(<span class="string">'me'</span>))</span><br><span class="line">                      .pluck(<span class="string">'value'</span>)</span><br><span class="line">                      .reduce(sum);</span><br><span class="line"></span><br><span class="line">$json.get(<span class="string">"/new/assets"</span>).success(<span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">    assets.push.apply(assets, data); <span class="comment">// 更新数据源</span></span><br><span class="line">    wallet.value(); <span class="comment">// 返回的结果是最新的</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p>而且这种机制在某些情况下也会提高执行效果。我们可以老早发送一个请求获取数据，然后指定一个精确的时间来执行。</p>
 <h2 id="u540E_u8BB0"><a href="#u540E_u8BB0" class="headerlink" title="后记"></a>后记</h2><p>延迟求值并且不算什么新技术。在一些库中已经在使用了，比如<a href="http://en.wikipedia.org/wiki/Language_Integrated_Query" target="_blank" rel="external">LINQ</a>,<a href="http://danieltao.com/lazy.js/" target="_blank" rel="external">Lazy.js</a>还有其他等等。那么问题来了，<code>Lo-Dash</code>存在的意义是啥？我想就是你仍然可以使用你熟悉的<code>Underscore</code> 接口但享受一个更高效的底层实现，不需要额外的学习成本，代码上面也不会有大的变动，只需稍加修改。</p>
+					</div>
+
 			  <!-- about -->
 			  
 		</div>

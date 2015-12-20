@@ -124,14 +124,15 @@
 			<!-- index -->
 		   
 
-			  		<h1>Angular条件路由</h1>
+			  		<h2>Angular条件路由</h2>
 					
 					<div>
 						<span class="post-time">2015-03-08 11:43:04</span>
 					</div>	
 					
 
-					<p>对于Web程序通常会有这样的需求：针对不同的情况，我们希望用户进入站点后打开不同的页面。<br>写一下Web程序的时候，会有这样的需求：根据用户的类型，将用户导向不同的页面。<br>譬如，对于非注册用户，打开站点后导向到注册页面;<br>或者，以之前做的一个项目为例，对于普通用户，打开培训页面，而培训合格的用户，我们希望默认打开管理页面。</p>
+					<div class="article-content">
+						<p>对于Web程序通常会有这样的需求：针对不同的情况，我们希望用户进入站点后打开不同的页面。<br>写一下Web程序的时候，会有这样的需求：根据用户的类型，将用户导向不同的页面。<br>譬如，对于非注册用户，打开站点后导向到注册页面;<br>或者，以之前做的一个项目为例，对于普通用户，打开培训页面，而培训合格的用户，我们希望默认打开管理页面。</p>
 <p>这样的路由控制当然可以由后端来做。</p>
 <a id="more"></a>
 <p>当使用了Angular这样的前端框架时，路由由前端控制并且是事先配好的（当然，这种情况下也不是说后端就不能控制路由了）。<br>一个典型的angular示例如下面代码所示：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> app = angular.module(<span class="string">'myApp'</span>, []);</span><br><span class="line"></span><br><span class="line">app.config([<span class="string">'$routeProvider'</span>,</span><br><span class="line">    <span class="function"><span class="keyword">function</span>(<span class="params">$routeProvider</span>) </span>&#123;</span><br><span class="line">        $routeProvider.</span><br><span class="line">        <span class="comment">//培训页面</span></span><br><span class="line">        when(<span class="string">'/home'</span>, &#123;</span><br><span class="line">            templateUrl: <span class="string">'views/home.html'</span>,</span><br><span class="line">            controller: <span class="string">'HomeCtrl'</span></span><br><span class="line">        &#125;).</span><br><span class="line">        <span class="comment">//管理</span></span><br><span class="line">        when(<span class="string">'/auth'</span>, &#123;</span><br><span class="line">            templateUrl: <span class="string">'views/auth.html'</span>,</span><br><span class="line">            controller: <span class="string">'AuthCtrl'</span></span><br><span class="line">        &#125;).</span><br><span class="line">        otherwise(&#123;</span><br><span class="line">            redirectTo: <span class="string">'/'</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">]);</span><br></pre></td></tr></table></figure></p>
@@ -143,6 +144,8 @@
 <h2 id="u53C2_u8003_u53CA_u5F15_u7528"><a href="#u53C2_u8003_u53CA_u5F15_u7528" class="headerlink" title="参考及引用"></a>参考及引用</h2><ul>
 <li><a href="https://docs.angularjs.org/guide/module" target="_blank" rel="external">Angular Modeule Run Blocks</a></li>
 </ul>
+					</div>
+
 			  <!-- about -->
 			  
 		</div>

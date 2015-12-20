@@ -125,14 +125,15 @@
 			<!-- index -->
 		   
 
-			  		<h1>JavaScript的基准测试-不服跑个分？</h1>
+			  		<h2>JavaScript的基准测试-不服跑个分？</h2>
 					
 					<div>
 						<span class="post-time">2014-11-26 19:54:36</span>
 					</div>	
 					
 
-					<blockquote>
+					<div class="article-content">
+						<blockquote>
 <p>原文：<a href="https://mathiasbynens.be/notes/javascript-benchmarking" target="_blank" rel="external">Bulletproof JavaScript benchmarks</a></p>
 </blockquote>
 <p>做JavaScript的基准测试并没有想的那么简单。即使不考虑浏览器差异所带来的影响，也有很多难点——或者说陷阱需要面对。</p>
@@ -177,6 +178,8 @@
 <h3 id="u8DE8_u6D4F_u89C8_u5668_u7684_u6D4B_u8BD5"><a href="#u8DE8_u6D4F_u89C8_u5668_u7684_u6D4B_u8BD5" class="headerlink" title="跨浏览器的测试"></a>跨浏览器的测试</h3><p>如果你想在不同浏览器中进行测试且想得到较可靠的结果，一定要在真实的浏览器中测试。不要依赖于IE自带的兼容模式，此模式跟他<a href="http://jsperf.com/join-concat#comments" target="_blank" rel="external">所模拟的版本是存在实质性差异</a>的。</p>
 <p>还有就是除了跟大多其他浏览器一样会限制脚本的时间，IE(8及以下)还限制了代码的指令数不能超过5百万。事实上以现在CPU的吞吐能力，这样的数量级处理起来只是半秒钟的事情。如果你配置确实过硬，跑起来倒也没什么只是IE会给出一个<code>Script Warning</code>的警告，这种情况下你可以通过修改注册表来增大这个数量限制。幸运的是微软还提供了一个<a href="http://go.microsoft.com/?linkid=9729250" target="_blank" rel="external">修复助手的程序</a>，你只需要运行即可，比修改注册表方便多了。更可喜的是，IE9以上，这个逗逼的限制被移除了。</p>
 <h2 id="u603B_u7ED3"><a href="#u603B_u7ED3" class="headerlink" title="总结"></a>总结</h2><p>无论你只是跑了一些测试，或者写一些用例，抑或正在自己写一个基准测试库，关于JavaScript基准测试的奥义远比你看到得要多（译注：就是水很深，并不是跑个分那么简单）。Benchmark.js和jsPerf<a href="https://github.com/bestiejs/benchmark.js/commits/master" target="_blank" rel="external">每周都有更新</a>，包含bug修复，新功能添加和一些提升准确率的技巧。但愿主流浏览器也能够为此做些努力吧…</p>
+					</div>
+
 			  <!-- about -->
 			  
 		</div>

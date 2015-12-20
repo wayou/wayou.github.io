@@ -123,14 +123,15 @@
 			<!-- index -->
 		   
 
-			  		<h1>关于请求被挂起页面加载缓慢问题的追查（01/13更）</h1>
+			  		<h2>关于请求被挂起页面加载缓慢问题的追查（01/13更）</h2>
 					
 					<div>
 						<span class="post-time">2014-12-31 20:38:22</span>
 					</div>	
 					
 
-					<p>本文前戏较多，务实的同学可以直接跳到结论。</p>
+					<div class="article-content">
+						<p>本文前戏较多，务实的同学可以直接跳到结论。</p>
 <a id="more"></a>
 <p>由「<a href="http://movie.douban.com/subject/4876722/" target="_blank" rel="external">钢的琴</a>」网友脑洞大开延伸出了吉的他二的胡琵的琶，以及后来许嵩的「<a href="http://music.douban.com/subject/6033105/" target="_blank" rel="external">苏格拉没有底</a>」，是否可以再拓展一下，得到哥本不爱吃哈根，哈根爱达斯等剧情乱入的关系。</p>
 <p>上面跟本文要讨论的主题有什么关系？</p>
@@ -139,7 +140,7 @@
 <p>最致命的是：偶发！你不能准确知道它抽风的时间点，无法在想要追查问题的时候必现它。<br>这只是一方面，另外，慢的可能实在太多了，那么问题来了，是前端导致的还是后端的问题？</p>
 <p>对慢的定义也有待商榷，多久算慢？如果这个页面加载大量数据耗时增加那我认为这是正常的。但这个时限超过了一个合理的自然值，就变得不那么正常了，比如四五十秒，一分多钟。</p>
 <p>最奇葩的是，如此久的耗时居然不会报超时错误，而是拿到正确返回后将页面呈现了出来！</p>
-<h2 id="u80FD_u7684_u539F_u56E0"><a href="#u80FD_u7684_u539F_u56E0" class="headerlink" title="能的原因"></a>能的原因</h2><h3 id="u521D_u6B65_u731C_u6D4B"><a href="#u521D_u6B65_u731C_u6D4B" class="headerlink" title="初步猜测"></a>初步猜测</h3><p>初步的猜测可能是后端迟迟未返回造成浏览器处于等待状态。这个猜测是很合乎逻辑的，至少能够很合理地解释Chrome Dev Tool 网络面板中我们看到的状态<code>pending</code>。<br><img src="pending.jpg" alt=""></p>
+<h2 id="u53EF_u80FD_u7684_u539F_u56E0"><a href="#u53EF_u80FD_u7684_u539F_u56E0" class="headerlink" title="可能的原因"></a>可能的原因</h2><h3 id="u521D_u6B65_u731C_u6D4B"><a href="#u521D_u6B65_u731C_u6D4B" class="headerlink" title="初步猜测"></a>初步猜测</h3><p>初步的猜测可能是后端迟迟未返回造成浏览器处于等待状态。这个猜测是很合乎逻辑的，至少能够很合理地解释Chrome Dev Tool 网络面板中我们看到的状态<code>pending</code>。<br><img src="pending.jpg" alt=""></p>
 <p>但我们不能停留在猜测阶段，要用事实说话，数据才不会骗人。这也正是本文将要展开的。</p>
 <p>下面是另外一些被提出来的可能性。</p>
 <h3 id="Angular"><a href="#Angular" class="headerlink" title="Angular"></a>Angular</h3><p>Angular首当其冲。为什么，因为这个问题出现在后台MIS系统中，且这些系统多用Angular开发。</p>
@@ -409,6 +410,8 @@
 <p>01/13日更新：参见上面进一步解读日志文件部分。</p>
 </blockquote>
 <h2 id="u53C2_u8003_u53CA_u5F15_u7528"><a href="#u53C2_u8003_u53CA_u5F15_u7528" class="headerlink" title="参考及引用"></a>参考及引用</h2><p>#1 <a href="http://stackoverflow.com/questions/27513994/chrome-stalls-when-making-multiple-requests-to-same-resource" target="_blank" rel="external">Chrome stalls when making multiple requests to same resource?</a><br>#2 <a href="http://stackoverflow.com/questions/5585918/what-does-pending-mean-for-request-in-chrome-developer-window" target="_blank" rel="external">What does “pending” mean for request in Chrome Developer Window?</a><br>#3 <a href="https://developer.chrome.com/devtools/docs/network#resource-network-timing" target="_blank" rel="external">Evaluating network performance / Resource network timing</a><br>#4 <a href="https://www.google.com/search?q=Provisional+headers+are+shown&amp;gws_rd=ssl" target="_blank" rel="external">Provisional headers are shown</a><br>#5 <a href="http://stackoverflow.com/questions/21177387/caution-provisional-headers-are-shown-in-chrome-debugger" target="_blank" rel="external">“CAUTION: provisional headers are shown” in Chrome debugger</a><br>#6 <a href="http://segmentfault.com/q/1010000000364871" target="_blank" rel="external">Chrome 里的请求报错 “CAUTION: Provisional headers are shown” 是什么意思?</a><br>#7 <a href="https://codereview.chromium.org/345643003" target="_blank" rel="external">Issue 345643003: Http cache: Implement a timeout for the cache lock</a><br>#8 <a href="https://code.google.com/p/chromium/issues/detail?id=46104" target="_blank" rel="external">Issue 46104:   Pages can get blocked in “Waiting for Cache” for a very long time</a><br>#9 <a href="http://dev.chromium.org/for-testers/providing-network-details" target="_blank" rel="external">Providing Network Details for bug reports</a><br>#10 <a href="http://div.io/topic/609?page=1#2050" target="_blank" rel="external">从FE的角度上再看输入url后都发生了什么</a><br>#11 <a href="https://code.google.com/p/chromium/codesearch#chromium/src/net/http/http_stream_parser.cc&amp;q=ERR_CONNECTION_RESET&amp;sq=package:chromium&amp;dr=C&amp;l=77" target="_blank" rel="external">ERR_CONNECTION_RESET 的Chromium 源码</a><br>#12 <a href="http://www.chromium.org/developers/design-documents/network-stack#TOC-HttpStreamFactory" target="_blank" rel="external">Chromium Network Stack</a><br>#13 <a href="http://blogs.technet.com/b/networking/archive/2009/08/12/where-do-resets-come-from-no-the-stork-does-not-bring-them.aspx" target="_blank" rel="external">Where do resets come from? (No, the stork does not bring them.)</a><br>#14 <a href="https://code.google.com/p/chromium/issues/detail?id=447463#c1" target="_blank" rel="external">Issue 447463: Chrome-network: Long delay before RST message on stale sockets results in slow page loads)</a></p>
+					</div>
+
 			  <!-- about -->
 			  
 		</div>
