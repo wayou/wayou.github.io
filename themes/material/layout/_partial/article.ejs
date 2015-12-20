@@ -18,7 +18,7 @@
 				<% }) %>
 				<!-- archives -->
 			  <% } else if( pageType == 'archives') {%>
-			  	<h1><%= __('archives') %></h1>
+			  	<h2><%= __('archives') %></h2>
 		  		<% page.posts.each(function(post){ %>
 	              <p class="archive-item">
 						<a href="<%= url_for(post.path) %>" class="archive-title"><%= post.title %></a><span class="archive post-time"><%= date(post.date) %></span>
@@ -27,17 +27,20 @@
 			  <!-- post -->
 			  <% } else if( pageType == 'post') {%>
 
-			  		<h1><%= page.title %></h1>
+			  		<h2><%= page.title %></h2>
 					<% if (page.date) { %>
 					<div>
 						<span class="post-time"><%= page.date.format(config.date_format+' '+config.time_format) %></span>
 					</div>	
 					<% } %>
 
-					<%- page.content %>
+					<div class="article-content">
+						<%- page.content %>
+					</div>
+
 			  <!-- about -->
 			  <% } else if( pageType == 'about') {%>
-			  		<h1><%= page.title %></h1>
+			  		<h2><%= page.title %></h2>
 					<%- page.content %>
 			   <!-- others, like 404 or sth. -->
 			   <% } else  {%>

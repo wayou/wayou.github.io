@@ -2,7 +2,7 @@ $(function() {
   var $toc = $("#toc");
   if (!!$toc.length && screen.width > 992 && $('.content').find('h2').length != 0) {
     $("#toc").tocify({
-      context: '.content',
+      context: '.article-content',
       theme: 'bootstrap3',
       selectors: 'h2,h3,h4'
     });
