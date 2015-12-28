@@ -4,7 +4,6 @@
 	<% }else {%>
 	<div class="col-md-9 center-content">
 	<%}%>
-
 		<div class="content">
 			<!-- index -->
 		   <% if( pageType == 'index') {%>
@@ -13,7 +12,7 @@
 		              <h3>
 		                <a class="post-title" href="<%= url_for(post.path) %>"><%= post.title %></a>
 		              </h3>
-									<span class="post-time"><%= date(post.date) %></span>
+					  <span class="post-time"><%= date(post.date) %></span>
 		              <div class="excerpt"><%- post.excerpt %></div>
 		              <% if (post.excerpt){ %>
 		                  <a class="btn btn-default" href="<%- url_for(post.path) %>"> MORE... </a>
