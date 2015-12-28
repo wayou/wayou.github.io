@@ -105,7 +105,9 @@
 </nav>
 	  <div class="container">
 	    <div class="row">
+	
 	<div class="col-md-9">
+	
 
 		<div class="content">
 			<!-- index -->
@@ -126,7 +128,7 @@
 <p>Google死忠入手一台Nexus是必需的事情。Nexus6 刚出，特别赞，但被尺寸吓到了，机身跟6 plus差不离。觉得这样的尺寸无法接受，遂入手Nexus5。我不算太能折腾，所以不想去刷机什么的。但问题来了，Android 5 棒棒糖太吸引人，Material Design 简直美Cry。</p>
 <p>对于Google死忠来说，这样的诱惑是难以抵挡的。于是咬咬牙，升！</p>
 <p>Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。鉴于国内特殊情况，要完成顺利的升级你得懂得科学上网，而且是让手机科学上网。</p>
-<p><img src="1.png" alt=""></p>
+<p><img src="/1.png" alt=""></p>
 <p>科学上网只是第一步，保证你手机可以下载到更新，值得提及的是升级过程似乎只能一步一步来，4.4.3 到4.4.4，然后4.4.4 到 5.0， 最后才是5.0.1。</p>
 <p>如果手机之前ROOT过，OTA有可能不会那么自动，更新包下载完成重启时可能进入安装界面，于是不知道怎么操作，也没搜到相关资料，只能手动刷了。</p>
 <p>当然，如果你没有VPN，不能科学上网，你的唯一选择就只有手动刷了。</p>
@@ -140,12 +142,12 @@
 <p>Settings-&gt;About Phone</p>
 </blockquote>
 <p>进入「关于手机」界面，下拉到底部，连续点击<code>Build number</code> 直到出现提示说还剩多少次点击便可开启开发者选项，再继续，最后会提示你开启成功。</p>
-<p><img src="3.jpg" alt=""></p>
+<p><img src="/3.jpg" alt=""></p>
 <blockquote>
 <p>图片来自<a href="http://www.cnet.com/how-to/how-to-easily-root-an-android-device/" target="_blank" rel="external">How to easily root an Android device</a></p>
 </blockquote>
 <p>然后返回到上一级，会多出一个菜单 <code>Developer options</code>,点击进入。选中<code>USB debugging</code>。</p>
-<p><img src="4.png" alt=""></p>
+<p><img src="/4.png" alt=""></p>
 <h4 id="u9A71_u52A8_u5B89_u88C5"><a href="#u9A71_u52A8_u5B89_u88C5" class="headerlink" title="驱动安装"></a>驱动安装</h4><p>首先需要在电脑上安装识别手机的驱动。这里以Window为例。将手机用数据线连接到电脑。前面已经开启了USB调试选项，连接后，手机出现提示是否允许调试，选中同意。</p>
 <ul>
 <li><p>下载上面提到的<a href="http://downloadandroidrom.com/file/Nexus5/root/Nexus5Root.zip" target="_blank" rel="external">root工具</a>后解压。</p>
@@ -153,34 +155,34 @@
 <li><p>进入Windows的设备管理器（控制面板-&gt;设备管理器）, 此时我们的手机应该是未识别的设备，有黄色图标。</p>
 </li>
 </ul>
-<p><img src="5.jpg" alt=""></p>
+<p><img src="/5.jpg" alt=""></p>
 <blockquote>
 <p>双击该设备打开属性面板，然后选择「更新驱动」，在弹出的窗口中选择从本地电脑中选择驱动。</p>
 </blockquote>
-<p><img src="6.jpg" alt=""></p>
+<p><img src="/6.jpg" alt=""></p>
 <blockquote>
 <p>在弹出的窗口中再次选择从电脑中浏览，之后在弹出的窗口中直接点击「下一步」。</p>
 </blockquote>
-<p><img src="7.jpg" alt=""></p>
+<p><img src="/7.jpg" alt=""></p>
 <blockquote>
 <p>下一步窗口中选择<code>Have Disk...</code> 打开<code>Install From Disk</code> 窗口。选择「浏览」定位到之前解压的位置，选中<code>Nexus5Root\usb_driver\android_winusb.inf</code> 进行安装。</p>
 </blockquote>
-<p><img src="8.jpg" alt=""></p>
+<p><img src="/8.jpg" alt=""></p>
 <blockquote>
 <p>接下来选择<code>Android ADB Interface</code> 再点击「下一步」开始安装。</p>
 </blockquote>
-<p><img src="9.jpg" alt=""></p>
+<p><img src="/9.jpg" alt=""></p>
 <p>到此，驱动安装完成！</p>
 <h4 id="u8D44_u6599_u5907_u4EFD"><a href="#u8D44_u6599_u5907_u4EFD" class="headerlink" title="资料备份"></a>资料备份</h4><p>如果你是新手机，没啥重要数据，或者通讯录什么的都云端备份了，这一步就可以省了。如果你想保存手机上的APP信息什么的，那就过一下此步骤吧。</p>
 <p>注意这个时候你的手机应该是开机状态且用数据线连接到电脑了。</p>
 <ul>
 <li>还是在之前解压的文件夹下，按住左键在空白处右击，在出来的菜单中选择「在此处打开命令行」</li>
 </ul>
-<p><img src="10.png" alt=""></p>
+<p><img src="/10.png" alt=""></p>
 <ul>
 <li>输入<code>adb devices</code> 查看设备连接状态。第一次可能会需要在手机上弹出的确认窗口中点击一下确认。正常情况下命令行里会返回已经识别到的机器。</li>
 </ul>
-<p><img src="11.jpg" alt=""></p>
+<p><img src="/11.jpg" alt=""></p>
 <ul>
 <li>输入<code>adb backup -apk -all -f backup.ab</code> 进行资料备份。此时到手机上点击确定开始进行备份。</li>
 </ul>
@@ -234,7 +236,7 @@
 <p>所以如果你之前尝试过升级不成功的话可以试试上面步骤先ROOT一下。并且对于喜欢折腾的发烧友们来说，手机不ROOT就无法DIY，各种摄手摄脚啊。</p>
 <p>下面开始刷5.0.1系统。</p>
 <h3 id="u4E0B_u8F7D_u8C37_u6B4C_u539F_u5382_u7CFB_u7EDF_u955C_u50CF"><a href="#u4E0B_u8F7D_u8C37_u6B4C_u539F_u5382_u7CFB_u7EDF_u955C_u50CF" class="headerlink" title="下载谷歌原厂系统镜像"></a>下载谷歌原厂系统镜像</h3><p>到<a href="https://developers.google.com/android/nexus/images" target="_blank" rel="external">谷歌官网</a>下载适配机型的img系统镜像文件。这里我们选择最新的<a href="https://dl.google.com/dl/android/aosp/hammerhead-lrx22c-factory-0f9eda1b.tgz" target="_blank" rel="external">Nexus5 Android 5.0.1</a></p>
-<p><img src="2.jpg" alt=""></p>
+<p><img src="/2.jpg" alt=""></p>
 <h3 id="u89E3_u538B_u5199_u5165"><a href="#u89E3_u538B_u5199_u5165" class="headerlink" title="解压写入"></a>解压写入</h3><p>此时你的手机连接到电脑并且开始的开发者调试模式。</p>
 <p>将下载的文件解压。我的建议是将解压出来的文件与上面的root工具放一起，这样方便执行<code>adb</code> 命令时好找文件。</p>
 <p>还是上面那个命令行工具，执行<code>adb reboot bootloader</code> 重启手机进入启动界面。</p>
@@ -308,11 +310,12 @@
 
 </div>
 	</div>
-	<div class="col-md-3">
-		
+
+	
+		<div class="col-md-3">
 			<div id="toc"></div>
-		
-	</div>
+		</div>
+	
 
 </div>
 		<footer>

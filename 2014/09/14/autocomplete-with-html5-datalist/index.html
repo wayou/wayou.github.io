@@ -106,7 +106,9 @@
 </nav>
 	  <div class="container">
 	    <div class="row">
+	
 	<div class="col-md-9">
+	
 
 		<div class="content">
 			<!-- index -->
@@ -124,13 +126,13 @@
 <p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
 <a id="more"></a>
 <h2 id="datalist__u6807_u7B7E"><a href="#datalist__u6807_u7B7E" class="headerlink" title="datalist 标签"></a>datalist 标签</h2><p>具体来说，页面上的<code>input</code>还是原来的<code>input</code>，只是在它的下面定义一下新的<code>datalist</code>在其中填充触发提示的文本,同时在该<code>input</code>元素上指定<code>list</code>属性指向这个<code>list</code>。一个大概的例子大概是像下面这样：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">你最喜欢的浏览器是： <span class="tag">&lt;<span class="title">input</span> <span class="attribute">list</span>=<span class="value">"browsers"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">datalist</span> <span class="attribute">id</span>=<span class="value">"browsers"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Internet Explorer"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Firefox"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Chrome"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Opera"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">option</span> <span class="attribute">value</span>=<span class="value">"Safari"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">datalist</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>最后出来的效果又差不多是这样的：<br><img src="datalist1.gif" alt="HTML5 datalist demo"></p>
+<p>最后出来的效果又差不多是这样的：<br><img src="/datalist1.gif" alt="HTML5 datalist demo"></p>
 <p>在线查看效果请点击<a href="http://sandbox.runjs.cn/show/lvgpes2k" target="_blank" rel="external">这里</a></p>
 <p>没什么特别之处，简单得发指~</p>
 <p>但相信大家在看了效果后跟我一样，发现了一个不足之处，在<code>input</code>右边会有向下的箭头，这让它看起来就像一个<code>dropdown</code> 或者<code>select</code> 「下拉框」，解决办法是多加两句CSS代码来将它隐藏，但此方法只是针对<code>webkit</code>内核的浏览器进行的优化：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">input</span><span class="pseudo">::-webkit-calendar-picker-indicator</span> <span class="rules">&#123;</span><br><span class="line">    <span class="rule"><span class="attribute">display</span>:<span class="value"> none</span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">-webkit-appearance</span>:<span class="value"> none</span></span>;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
-<p>这样之后出来的效果差不多成了这样：<br><img src="datalist2.gif" alt="HTML5 datalist 去掉箭头的版本"></p>
-<h2 id="u6D4F_u89C8_u5668_u517C_u5BB9_u6027"><a href="#u6D4F_u89C8_u5668_u517C_u5BB9_u6027" class="headerlink" title="浏览器兼容性"></a>浏览器兼容性</h2><p>下面的数据来自<a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">caniuse</a>。<br><img src="caniuse_datalist.jpg" alt="Datalist 元素兼容性"><br>可以看出，遥遥领先的依然是风采依旧的Chrome，对该元素的支持全线飘绿；<br>同时Firefox也是毫不示弱，紧随版本帝之后;<br>而其他浏览器情况则各不相同，正所谓<strong>性</strong>福的人都相似，不幸的人各有不幸。<br>Opera在边缘浏览器中表现强劲，绿得很耀眼；<br>值得注意的是，在这场不算较量的较量中，苹果太子Safari则是黑马般拿到了垫底的位置，全线飘红。这直接一举打破IE在主流浏览器的各种评测中常年垫底的记录。<br>而IE虽然摆脱了末位的阴影，但即使是最新的IE11也只是对<code>Datalist</code>元素进行了部分支持，所以要与各强劲对手比肩而受到前端开发者的青睐还有些工作要做。但留给IE翻盘的时间已经不多了，正如留给中国队的时间一样~</p>
+<p>这样之后出来的效果差不多成了这样：<br><img src="/datalist2.gif" alt="HTML5 datalist 去掉箭头的版本"></p>
+<h2 id="u6D4F_u89C8_u5668_u517C_u5BB9_u6027"><a href="#u6D4F_u89C8_u5668_u517C_u5BB9_u6027" class="headerlink" title="浏览器兼容性"></a>浏览器兼容性</h2><p>下面的数据来自<a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">caniuse</a>。<br><img src="/caniuse_datalist.jpg" alt="Datalist 元素兼容性"><br>可以看出，遥遥领先的依然是风采依旧的Chrome，对该元素的支持全线飘绿；<br>同时Firefox也是毫不示弱，紧随版本帝之后;<br>而其他浏览器情况则各不相同，正所谓<strong>性</strong>福的人都相似，不幸的人各有不幸。<br>Opera在边缘浏览器中表现强劲，绿得很耀眼；<br>值得注意的是，在这场不算较量的较量中，苹果太子Safari则是黑马般拿到了垫底的位置，全线飘红。这直接一举打破IE在主流浏览器的各种评测中常年垫底的记录。<br>而IE虽然摆脱了末位的阴影，但即使是最新的IE11也只是对<code>Datalist</code>元素进行了部分支持，所以要与各强劲对手比肩而受到前端开发者的青睐还有些工作要做。但留给IE翻盘的时间已经不多了，正如留给中国队的时间一样~</p>
 <h2 id="u53C2_u8003_u53CA_u5F15_u7528"><a href="#u53C2_u8003_u53CA_u5F15_u7528" class="headerlink" title="参考及引用"></a>参考及引用</h2><ul>
 <li><a href="http://caniuse.com/#feat=datalist" target="_blank" rel="external">Can I Use Datalist element</a></li>
 <li><a href="http://www.codelator.com/blog/2014/sep/how-to-create-autocomplete-textbox-using-datalist-in-html5.html" target="_blank" rel="external">How to create Autocomplete Textbox using Datalist in HTML5</a></li>
@@ -168,11 +170,12 @@
 
 </div>
 	</div>
-	<div class="col-md-3">
-		
+
+	
+		<div class="col-md-3">
 			<div id="toc"></div>
-		
-	</div>
+		</div>
+	
 
 </div>
 		<footer>

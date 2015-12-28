@@ -107,7 +107,9 @@
 </nav>
 	  <div class="container">
 	    <div class="row">
+	
 	<div class="col-md-9">
+	
 
 		<div class="content">
 			<!-- index -->
@@ -127,7 +129,7 @@
 <p>想要快速上手HTML5 Canvas小游戏开发？下面通过一个例子来进行手把手教学。（如果你怀疑我的资历， <a href="http://www.wizardslizard.com/" target="_blank" rel="external">A Wizard’s Lizard</a>这个游戏的半数以上开发是由我完成的）</p>
 <a id="more"></a>
 <p>我们直接来看源码里的<a href="https://github.com/lostdecade/simple_canvas_game/blob/master/js/game.js" target="_blank" rel="external">game.js</a>,当然你也可以<a href="http://www.lostdecadegames.com/demos/simple_canvas_game/" target="_blank" rel="external">在线体验</a>一下游戏先。</p>
-<h2 id="u6E38_u620F_u622A_u56FE"><a href="#u6E38_u620F_u622A_u56FE" class="headerlink" title="游戏截图"></a>游戏截图</h2><p><img src="screenshot.jpg" alt="游戏截图"></p>
+<h2 id="u6E38_u620F_u622A_u56FE"><a href="#u6E38_u620F_u622A_u56FE" class="headerlink" title="游戏截图"></a>游戏截图</h2><p><img src="/screenshot.jpg" alt="游戏截图"></p>
 <h2 id="u521B_u5EFA_u753B_u5E03"><a href="#u521B_u5EFA_u753B_u5E03" class="headerlink" title="创建画布"></a>创建画布</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Create the canvas</span></span><br><span class="line"><span class="keyword">var</span> canvas = <span class="built_in">document</span>.createElement(<span class="string">"canvas"</span>);</span><br><span class="line"><span class="keyword">var</span> ctx = canvas.getContext(<span class="string">"2d"</span>);</span><br><span class="line">canvas.width = <span class="number">512</span>;</span><br><span class="line">canvas.height = <span class="number">480</span>;</span><br><span class="line"><span class="built_in">document</span>.body.appendChild(canvas);</span><br></pre></td></tr></table></figure>
 <p>首先我们需要创建一张<a href="https://developer.mozilla.org/en/canvas_tutorial" target="_blank" rel="external">画布</a>作为游戏的舞台。这里通过JS代码而不是直接在HTML里写一个<code>&lt;canvas&gt;</code>元素目的是要说明代码创建也是很方便的。有了画布后就可以获得它的上下文来进行绘图了。然后我们还设置了画布大小，最后将其添加到页面上。</p>
 <h2 id="u51C6_u5907_u56FE_u7247"><a href="#u51C6_u5907_u56FE_u7247" class="headerlink" title="准备图片"></a>准备图片</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 背景图片</span></span><br><span class="line"><span class="keyword">var</span> bgReady = <span class="literal">false</span>;</span><br><span class="line"><span class="keyword">var</span> bgImage = <span class="keyword">new</span> Image();</span><br><span class="line">bgImage.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    bgReady = <span class="literal">true</span>;</span><br><span class="line">&#125;;</span><br><span class="line">bgImage.src = <span class="string">"images/background.png"</span>;</span><br></pre></td></tr></table></figure>
@@ -189,11 +191,12 @@
 
 </div>
 	</div>
-	<div class="col-md-3">
-		
+
+	
+		<div class="col-md-3">
 			<div id="toc"></div>
-		
-	</div>
+		</div>
+	
 
 </div>
 		<footer>
