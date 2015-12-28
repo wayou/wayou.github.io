@@ -1,5 +1,9 @@
 <div class="row">
+	<% if (page.toc || (theme.widgets.length && pageType == 'index')) { %>
 	<div class="col-md-9">
+	<% }else {%>
+	<div class="col-md-9 center-content">
+	<%}%>
 
 		<div class="content">
 			<!-- index -->
@@ -66,18 +70,19 @@
 
 		<%- partial('comment', {page: page}) %>
 	</div>
-	<div class="col-md-3">
-		<% if (page.toc) { %>
+
+	<% if (theme.widgets.length && pageType == 'index') { %>
+		<div class="col-md-3">
+			<div id="sidebar">
+		</div>
+			<% theme.widgets.forEach(function(widget){ %>
+					<%- partial('../_widget/' + widget) %>
+				<% }); %>
+			</div>
+	<% } else if(page.toc){ %>
+		<div class="col-md-3">
 			<div id="toc" ></div>
-		<% } else{%>
-			<% if (theme.widgets.length && pageType != 'about') { %>
-				<div id="sidebar">
-	 			<% theme.widgets.forEach(function(widget){ %>
-	 					<%- partial('../_widget/' + widget) %>
-	 				<% }); %>
-	 			</div>
-			<% } %>
-		<% } %>
-	</div>
+		</div>
+	<% } %>
 
 </div>
