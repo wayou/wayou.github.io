@@ -8,6 +8,8 @@ tags:
 - icon
 ---
 
+有朋友反映替换icon后程序无法启动，请ST3来实验。
+
 [sublime text](http://www.sublimetext.com/3)很赞，windows上最接近mac逼格的轻量编辑器，对于我这样比较喜欢格调的人来说，简直不二之选啊。
 
 
