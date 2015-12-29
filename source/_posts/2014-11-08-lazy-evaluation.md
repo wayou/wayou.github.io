@@ -7,8 +7,8 @@ tags:
 - 性能
 ---
 
-> 「注释」作者在本文里没有说明这么一个事实：
-目前的版本`Lo-Dash v2.4.1`并没有引入延迟求值的特性，`Lo-Dash 3.0.0-pre `中部分方法进行了引入，比如`filter()`,`map()`,`reverse()`。
+*作者在本文里没有说明这么一个事实：
+目前的版本`Lo-Dash v2.4.1`并没有引入延迟求值的特性，`Lo-Dash 3.0.0-pre `中部分方法进行了引入，比如`filter()`,`map()`,`reverse()`。*
 
 > 原文：[How to Speed Up Lo-Dash ×100? Introducing Lazy Evaluation](http://filimanjaro.com/blog/2014/introducing-lazy-evaluation)
 
