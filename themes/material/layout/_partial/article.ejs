@@ -14,9 +14,9 @@
 		              </h3>
 					  <span class="post-time"><%= date(post.date) %></span>
 		              <div class="excerpt"><%- post.excerpt %></div>
-		              <% if (post.excerpt){ %>
+		             <!--  <% if (post.excerpt){ %>
 		                  <a class="btn btn-default" href="<%- url_for(post.path) %>"> MORE... </a>
-		              <% } %>
+		              <% } %> -->
 		            </div>
 				<% }) %>
 				<!-- archives -->
@@ -30,7 +30,7 @@
 			  <!-- post -->
 			  <% } else if( pageType == 'post') {%>
 
-			  		<h2><%= page.title %></h2>
+			  		<h1><%= page.title %></h1>
 					<% if (page.date) { %>
 					<div>
 						<span class="post-time"><%= page.date.format(config.date_format+' '+config.time_format) %></span>

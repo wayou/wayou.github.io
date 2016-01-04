@@ -66,6 +66,10 @@ blockquote{
 	border-left: 2px solid;
 }
 
+.index-item-wrapper{
+  margin:50px auto;
+}
+
 @media (min-width: 1200px){
   .container {
     width: 970px;

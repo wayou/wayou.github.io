@@ -8,18 +8,20 @@ $(function() {
     });
 
     //sticky the toc
-    var $window = $(window),
-      $stickyEl = $('#toc'),
-      elTop = $stickyEl.offset().top;
-    //for page refresh, we can right position the toc
-    $stickyEl.toggleClass('sticky-scroll', elTop > 155);
+    $(window).scroll(stickyToc);
+    stickyToc();
 
-    //listen the window scroll
-    $window.scroll(function() {
-      elTop = $stickyEl.offset().top;
-      $stickyEl.toggleClass('sticky-scroll', elTop > 155);
-    });
+  }
 
+  //http://stackoverflow.com/questions/9613594/scroll-event-firing-too-many-times-i-only-want-it-to-fire-a-maximum-of-say-on
+  function stickyToc(){
+    var window_top = $(window).scrollTop();
+    var div_top = $('#toc').offset().top;
+    if (window_top > 50) {
+        $('#toc').addClass('sticky-scroll');
+    } else {
+        $('#toc').removeClass('sticky-scroll');
+    }
   }
 
 	// image view

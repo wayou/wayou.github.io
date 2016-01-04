@@ -198,7 +198,7 @@ Angular ：怪我咯。
 
 以下是一次问题请求的响应头：
 
-```text
+```bash
 HTTP/1.1 200 OK
 Date: Wed, 31 Dec 2014 11:47:21 GMT
 Content-Type: application/json; charset=UTF-8
@@ -306,7 +306,7 @@ Chrome Dev Tools 网络面板截图：
 
 下面不妨把日志文件贴出来先：
 
-```text
+```bash
 193486: URL_REQUEST
 http://qa.tieba.baidu.com/release/getReleaseHistory?projectId=fum1.0.593
 Start Time: 2015-01-02 17:51:05.323
@@ -424,7 +424,7 @@ t=42742 [st=42741] -REQUEST_ALIVE
 
 以下随便摘取一次正常请求的日志，如下：
 
-```text
+```bash
 384462: URL_REQUEST
 http://qa.tieba.baidu.com/release/getReleaseHistory?projectId=fum1.0.593
 Start Time: 2015-01-03 20:23:54.698
@@ -511,7 +511,7 @@ t=1728 [st=172] -REQUEST_ALIVE
 
 该事件的名称已经自我解读，意思是解析读取的响应头。但问题是紧接着下面报错了，
 
-```text
+```bash
 --> net_error = -101 (ERR_CONNECTION_RESET)
 ```
 读取响应头时发生了链接重置的错误，有理由认为本次链接是不成功的，没拿到正确的响应头，于是解析不成功。时间都花在了这里，足足21秒之久，两个21秒造就了上面看到的`Stalled`了42秒之久。
