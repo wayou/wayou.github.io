@@ -1,0 +1,24 @@
+/*sliding bottom border https://www.google.com/chromebook/*/
+
+.nav-indicator {
+    -webkit-animation-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+    background: #fff;
+    bottom: 0;
+    height: 2px;
+    opacity: 0;
+    position: absolute;
+    -webkit-transform-origin: 0;
+    transform-origin: 0;
+    -webkit-transform: scaleX(0.001);
+    transform: scaleX(0.001);
+    width: 100px
+}
+
+
+.animate-indicator {
+    opacity: 1;
+    transition: -webkit-transform .2s;
+    transition: transform .2s
+}
+/*sliding border end*/

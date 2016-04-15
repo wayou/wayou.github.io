@@ -1,0 +1,31 @@
+<style type="text/css">
+    /*customize theme configurations*/
+   body{
+   		background-color: <%= theme.themeConfig.bodyBgColor%>;
+   }
+   /*link color*/
+   a{
+   		color: <%= theme.themeConfig.linkColor%>;
+   }
+   /*menu color*/
+   nav a,.menu-wrapper a{
+   		color: <%= theme.themeConfig.menuFontColor%>;
+   }
+   .material-hamburger span{
+   		background: <%= theme.themeConfig.menuFontColor%>;
+   }
+   /*full screen overlay menu backgroudn color*/
+    .nav-wrapper,.nav-toggle-icon:before{
+        background-color:<%= theme.themeConfig.themeColor%>;
+    }
+    article{
+    	color: <%= theme.themeConfig.contentFontColor%>;
+    }
+    .main, article{
+    	background: <%= theme.themeConfig.contentBgColor%>;
+    }
+    /*code block left border*/
+    pre, .highlight, .gist,figure.highlight{
+      /*border-left: 4px solid <%= theme.themeConfig.blockLeftBorder%>;*/
+    }
+</style>

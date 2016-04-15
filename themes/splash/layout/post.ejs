@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="main">
+        <div class="cover"></div>
+        <article>
+            <h1>
+                <%= page.title%>
+            </h1>
+            <hr/>
+                <%- page.content%>
+        </article>
+        <% if (page.total > 1){ %>
+        <div class="pagination">
+            <%- paginator({
+              prev_text: "« "+__('prev'),
+              next_text: __('next')+" »"
+            }) %>
+        </div>
+        <% } %>
+
+       <% if (page.prev || page.next){ %>
+        <div class="pager">
+          <% if (page.prev){ %>
+            <a class="post-prev pager-item" href="<%- url_for(page.prev.path) %>" >
+              <strong class="article-nav-caption"><%= __('newer') %></strong>
+              <p class="post-nav-title"><%= page.prev.title %></p>
+            </a>
+          <% } %>
+          <% if (page.next){ %>
+            <a class="post-next pager-item" href="<%- url_for(page.next.path) %>">
+              <strong class="article-nav-caption"><%= __('older') %></strong>
+              <p class="post-nav-title"><%= page.next.title %></p>
+            </a>
+          <% } %>
+        </div>
+        <% } %>
+
+         <!-- comments -->
+        <%- partial('partials/comments') %>
+
+    </div>
+    <%if(theme.sidebar&&page.toc){%>
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    <%}%>
+</div>

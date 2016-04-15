@@ -5,7 +5,7 @@
 language: node_js
 branches:
   only:
-  - source
+  - dev
 before_install:
 - npm install hexo-cli -g
 install:

@@ -1,0 +1,21 @@
+<footer>
+    <p>
+        由
+        <a href="http://hexo.io/" target="_blank">
+            Hexo
+        </a>
+        强力驱动，搭载
+        <a href="#">
+            gstyle
+        </a>
+        主题
+    </p>
+    <p>
+        &copy; <%= date(new Date(), 'YYYY') %> <%= config.author || config.title %>
+    </p>
+</footer>
+<%- js('lib/jquery') %>
+<%- js('lib/waves') %>
+<%- js('lib/jquery-ui') %>
+<%- js('lib/jquery.tocify.min') %>
+<%- js('js/main') %>

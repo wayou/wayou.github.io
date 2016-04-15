@@ -1,0 +1,34 @@
+<div class="nav-wrapper" style="background-color:<%= theme.themeColor%>">
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="<%- url_for() %>" id="logo">
+                    <%= config.title %>
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    <% for (var i in theme.menu){ %>
+                    <li class="">
+                        <a class="wave" href="<%- url_for(theme.menu[i]) %>">
+                            <%-  __(i) %>
+                        </a>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>

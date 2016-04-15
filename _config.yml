@@ -3,7 +3,8 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 刘哇勇的部落格
+# title: 刘哇勇的部落格
+title: angular
 subtitle:
 description:
 author: Wayou Liu
@@ -39,7 +40,7 @@ relative_link: false
 future: true
 highlight:
   enable: true
-  line_number: true
+  line_number: false
   auto_detect: true
   tab_replace:
 
@@ -57,31 +58,41 @@ time_format: HH:mm:ss
 
 # Pagination
 ## Set per_page to 0 to disable pagination
-per_page: 20
+per_page: 5
 pagination_dir: page
 
 # Extensions
 ## Plugins: http://hexo.io/plugins/
 
-## disqus_shortname: wayou
-duoshuo_shortname: wayouliu
-
 # deploy minify
+html_minifier:
+  enable: false
+  exclude: 
 
-clean_css:
-  exclude:
-    - polymer/*.css
+css_minifier:
+  enable: false
+  exclude: 
+    - '*.min.css'
 
-uglify:
+js_minifier:
+  enable: false
   mangle: true
   output:
   compress:
-  exclude:
-    - polymer/*.js
-    - node_modules/*.js
+  exclude: 
+    - '*.min.js'
 
-# html_minifier:
-#   exclude:
+image_minifier:
+  enable: false
+  interlaced: false
+  multipass: false
+  optimizationLevel: 1
+  pngquant: false
+  progressive: false
+
+autoprefixer:
+  exclude:
+    - '*.min.js'
 
 ## dev
 browsersync:
@@ -92,8 +103,9 @@ feed:
   path: atom.xml
   limit: 20
 
-## Themes: http://hexo.io/themes/
-theme: material
+## themes: http://hexo.io/themes/
+theme: splash
+# theme: landscape
 
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
