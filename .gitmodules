@@ -1,0 +1,3 @@
+[submodule "themes/gstyle"]
+	path = themes/gstyle
+	url = https://github.com/wayou/hexo-theme-gstyle.git
