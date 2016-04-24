@@ -1,6 +1,5 @@
 title: md sample
 toc: true
-cover: cover.jpg
 categories: 译文
 date: 2015-01-18 20:47:24
 tags:
