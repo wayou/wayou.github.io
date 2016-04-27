@@ -103,7 +103,7 @@ feed:
   limit: 20
 
 ## themes: http://hexo.io/themes/
-#theme: gstyle
+theme: gstyle
 # theme: landscape
 
 # Deployment
