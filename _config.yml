@@ -87,7 +87,7 @@ js_minifier:
     - '*.min.js'
 
 image_minifier:
-  enable: true
+  enable: false 
 
 autoprefixer:
   exclude:
