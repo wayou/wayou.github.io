@@ -1,7 +1,7 @@
 title: {{ title }}
 date: {{ date }}
 toc: true
-cover: 
+cover: cover.jpg
 categories: 
 tags:
 ---

@@ -103,6 +103,11 @@ feed:
   path: atom.xml
   limit: 20
 
+marked:
+  gfm: true
+  breaks: false
+  tables: true
+
 ## themes: http://hexo.io/themes/
 theme: gstyle
 # theme: landscape
