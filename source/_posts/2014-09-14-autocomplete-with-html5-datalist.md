@@ -2,11 +2,11 @@ title: 利用HTML5 的Datalist 元素实现输入提示
 categories: 技术
 toc: true
 date: 2014-09-14 14:23:54
+categories: 技术
 tags:
 - HTML5
 - Datalist
 - Autocomplete
-- 前端
 ---
 
 HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。

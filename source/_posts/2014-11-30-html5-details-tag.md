@@ -1,9 +1,9 @@
 title: HTML5 `<details>` 标签
 toc: true
-categories: 技术
 date: 2014-11-30 12:54:43
+categories: 技术
 tags:
-- html5
+- THML5
 ---
 
 HTML5 中新增的`<details>`标签允许用户创建一个可展开折叠的元件，让一段文字或标题包含一些隐藏的信息。

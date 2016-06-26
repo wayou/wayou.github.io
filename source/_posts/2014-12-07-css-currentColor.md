@@ -1,7 +1,7 @@
 title: CSS currentColor 变量的使用
 toc: true
-categories: 技术
 date: 2014-12-07 12:56:22
+categories: 技术
 tags:
 - CSS
 ---

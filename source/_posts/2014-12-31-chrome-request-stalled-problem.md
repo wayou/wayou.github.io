@@ -1,7 +1,7 @@
 title: 关于请求被挂起页面加载缓慢问题的追查（01/13更）
 toc: true
-categories: 技术
 date: 2014-12-31 20:38:22
+categories: 技术
 tags:
 - Chrome
 - 网络请求

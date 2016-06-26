@@ -1,11 +1,11 @@
 title: Chrome 控制台不完全指南
 categories: 技术
 date: 2014-09-10 21:20:04
+categories: 技术
 tags:
 - chrome
 - console
 - dev-tools
-- 浏览器
 ---
 
 Chrome的开发者工具已经强大到没朋友的地步了，特别是其功能丰富界面友好的console，使用得当可以有如下功效：

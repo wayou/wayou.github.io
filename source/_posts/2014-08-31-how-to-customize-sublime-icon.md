@@ -1,11 +1,10 @@
 title: 自定义Sublime Text的图标
 categories: 未分类
 date: 2014-08-31 11:56:00
+categories: 技术
 tags:
-- 技巧
 - sublimetext
 - 自定义
-- icon
 ---
 
 有朋友反映替换icon后程序无法启动，请ST3来实验。

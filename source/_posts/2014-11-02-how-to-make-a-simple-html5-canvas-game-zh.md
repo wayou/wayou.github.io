@@ -1,12 +1,11 @@
 title: 如何开发一个简单的HTML5 Canvas 小游戏
 toc: true
-categories: 技术
 date: 2014-11-02 13:14:34
+categories: 技术
 tags:
 - HTML5
 - Canvas
 - 游戏
-- 前端
 ---
 
 > 原文：[How to make a simple HTML5 Canvas game](http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/)

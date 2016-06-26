@@ -1,7 +1,10 @@
 title: gbk批量转utf8
 toc: true
 date: 2016-01-01 15:47:33
+categories: 技术
 tags:
+- 编码
+- bash
 ---
 
 windows世界与非windows世界对文本默认编码的差异，导致文件在对方平台解压和打开后乱码。
