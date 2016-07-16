@@ -1,7 +1,6 @@
 title: 自定义Sublime Text的图标
-categories: 未分类
 date: 2014-08-31 11:56:00
-categories: 技术
+categories: 其他
 tags:
 - sublimetext
 - 自定义

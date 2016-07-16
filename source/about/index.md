@@ -6,5 +6,5 @@ layout: about
 
 lets talk if u wanna :)
 
-![be happy like the friends in happy tree](happy-tree-friends.jpg)
+![happy tree friends 是一个理想国的一群有爱小朋友](happy-tree-friends.jpg)
 
