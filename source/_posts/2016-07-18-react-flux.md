@@ -35,7 +35,7 @@ tags:
 > 
 > --- [Redux Doc 1.3-Prior Art](http://redux.js.org/docs/introduction/PriorArt.html)
 
-对于它是否是 Flux 的一种实现还有争论，但了解 Flux 对于我们搞清楚时下前沿技术，保持技术人员的先进性，使用 Redux，也是有帮助的。
+对于它是否是 Flux 的一种实现还有争论，但了解 Flux 对于我们搞清楚时下前沿技术，保持技术人员的先进性，使用 Redux，也是有帮助的。但老实说，Flux 早在2014就出现在公众视野了，到现在已算不得有多新。
 
 ## Flux 与 React
 
