@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "hexo": {
-    "version": "3.2.0"
+    "version": "3.2.2"
   },
   "dependencies": {
     "hexo": "^3.1.0",
-    "hexo-all-minifier": "0.0.12",
+    "hexo-all-minifier": "0.0.14",
     "hexo-autoprefixer": "^1.0.0",
     "hexo-browsersync": "^0.1.1",
     "hexo-deployer-git": "0.0.4",
