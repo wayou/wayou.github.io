@@ -38,7 +38,7 @@ post_asset_folder: true
 relative_link: false
 future: true
 highlight:
-  enable: true
+  enable: false
   line_number: false
   auto_detect: true
   tab_replace:
@@ -62,6 +62,10 @@ pagination_dir: page
 
 # Extensions
 ## Plugins: http://hexo.io/plugins/
+
+prism_plugin:
+  mode: 'preprocess'
+  theme: 'default'
 
 # add caption for iamges
 image_caption:
@@ -105,7 +109,7 @@ feed:
 
 marked:
   gfm: true
-  breaks: false
+  breaks: true
   tables: true
 
 ## themes: http://hexo.io/themes/

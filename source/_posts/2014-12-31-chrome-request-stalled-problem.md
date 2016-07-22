@@ -546,7 +546,8 @@ t=1728 [st=172] -REQUEST_ALIVE
 
 `http_stream_parser.cc`文件中，`ERR_CONNECTION_RESET`仅出现一次。这给我们定位带来了极大的便利。
 
-```cpp [chromium]//src/net/base/net_errors_win.cc https://code.google.com/p/chromium/codesearch#chromium/src/net/http/http_stream_parser.cc&q=ERR_CONNECTION_RESET&sq=package:chromium&dr=C http_stream_parser.cc
+[[chromium]//src/net/base/net_errors_win.cc](https://code.google.com/p/chromium/codesearch#chromium/src/net/http/http_stream_parser.cc&q=ERR_CONNECTION_RESET&sq=package:chromium&dr=C)
+```cpp
 // Returns true if |error_code| is an error for which we give the server a
 // chance to send a body containing error information, if the error was received
 // while trying to upload a request body.
@@ -569,7 +570,8 @@ bool ShouldTryReadingOnUploadError(int error_code) {
 
 分别点击进行查看。
 
-```cpp 459行DoSendHeadersComplete方法里进行了调用
+459行DoSendHeadersComplete方法里进行了调用
+``` cpp
 int HttpStreamParser::DoSendHeadersComplete(int result) {
   if (result < 0) {
     // In the unlikely case that the headers and body were merged, all the
@@ -583,11 +585,13 @@ int HttpStreamParser::DoSendHeadersComplete(int result) {
     }
     return result;
   }
+ }
 ```
+
 > 虽然不太可能，但也不排除头部和请求体合并的情况，当所有头部发送完毕，请求体不一定，此时`result`便是需要稍后处理的一种错误，这里暂且先返回`OK`。
 
-
-```cpp 516行另一个DoSendBodyComplete方法里进行了调用
+516行另一个DoSendBodyComplete方法里进行了调用
+```cpp 
 int HttpStreamParser::DoSendBodyComplete(int result) {
   if (result < 0) {
     // If |result| is an error that this should try reading after, stash the
@@ -598,6 +602,7 @@ int HttpStreamParser::DoSendBodyComplete(int result) {
     }
     return result;
   }
+}
 ```
 
 > 跟上面类似，如果`result`出错，稍后处理，先返回正常
@@ -612,8 +617,9 @@ int HttpStreamParser::DoSendBodyComplete(int result) {
 
 ```cpp
 // A connection was reset (corresponding to a TCP RST).
-NET_ERROR(CONNECTION_RESET, -101)
+NET_ERROR(CONNECTION_RESET, -101);
 ```
+
 从括号中的进一步解释可以知道，它代表TCP连接重置。
 
 ## TCP

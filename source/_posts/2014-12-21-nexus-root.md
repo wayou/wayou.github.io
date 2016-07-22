@@ -211,9 +211,9 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 - 执行`fastboot reboot-bootloader` 重启
 - 再依次执行
 ```bash
-    fastboot flash recovery recovery.img
-    fastboot flash boot boot.img
-    fastboot flash system system.img
+fastboot flash recovery recovery.img
+fastboot flash boot boot.img
+fastboot flash system system.img
 ```
 
 - 如果是Nexus9 完成上面的步骤后需要执行 `fastboot flash vendor vendor.img`, **注意：此步骤仅Nexus9需要**

@@ -71,7 +71,8 @@ Flux 的理念里，包含三个重要组成部分。Actions，Dispatcher 和 St
 
 是的，Action 就是一个普通的 JS 对象，里面包含了这次动作所携带的新数据。约定Action 对象里包含一个唯一标识该动作的字段（一般用常量表示），这样在 Store 接收到该 Action 时可以用来判断是否需要处理该 Action。
 
-```js 代码来自官方 TODO 示例里面TodoActions.js https://github.com/facebook/flux/blob/master/examples/flux-todomvc/js/actions/TodoActions.js#L20-L25 TodoActions.js
+[代码来自官方 TODO 示例里面TodoActions.js](https://github.com/facebook/flux/blob/master/examples/flux-todomvc/js/actions/TodoActions.js#L20-L25)
+```js
 ...
 /**
  * @param  {string} text
@@ -103,7 +104,8 @@ Action 只是个普通对象，只有将它发送到 Dispathcer 才会发光发�
 
 Store 在向 Dispatcher 注册回调时，会得到一个返回值，这个值是该回调在 Dispatcher 中的索引值，能够唯一标识该回调。
 
-```js 代码来自 Flux 官方文档
+代码来自 Flux 官方文档
+```js 
 PrependedTextStore.dispatchToken = Dispatcher.register(function (payload) {
   // ...
 });
@@ -111,7 +113,8 @@ PrependedTextStore.dispatchToken = Dispatcher.register(function (payload) {
 
 拿到这个索引值，我们便可以在`waitFor`方法中指定需要等待的操作了。
 
-```js 代码来自 Flux 官方文档
+代码来自 Flux 官方文档
+```js 
 case 'TODO_CREATE':
   Dispatcher.waitFor([
     PrependedTextStore.dispatchToken,
