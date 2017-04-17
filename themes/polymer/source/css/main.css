@@ -1,0 +1,116 @@
+/**
+* taken from polymer layout template nav+cards
+* http://polymerelements.github.io/app-layout-templates/
+*/
+
+body {
+    background: #fafafa;
+    font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333;
+}
+
+paper-material {
+    max-width: 900px;
+}
+
+.markdown-body {
+    margin: 0 auto;
+    padding: 30px;
+}
+
+/*pagination*/
+.pagination-wrapper {
+    text-align: center;
+}
+
+.pagination-item {
+    width: 30%;
+}
+
+.pagination-current {
+    width: 50px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+a {
+    color: #1a0dab;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #609;
+}
+
+a.post-title {
+    font-size: 24px;
+    /*line-height: 40px;*/
+}
+
+.article-more-link {
+    float: right;
+}
+
+.pagination-btn {
+    background: #fff;
+    /*color: #fff;*/
+}
+
+.post-time {
+    float: right;
+    white-space: nowrap;
+    font-size: 16px;
+    font-weight: normal;
+    color: #757575;
+    position: relative;
+}
+
+.index.post-time {
+    top: 5px;
+}
+
+.archive-item {
+    width: 100%;
+}
+
+.index-item-wrapper{
+    width: 100%;
+}
+.index-item-wrapper .markdown-body{
+    overflow: inherit;
+    padding: 0;
+}
+
+/*code highlight*/
+figure.highlight {
+    margin: auto;
+    padding: 5px;
+}
+/*fix for code highlight when introduced the github markdown style*/
+.markdown-body table tr{
+    background-color:transparent;
+    border-top:none;
+}
+.markdown-body .highlight {
+   margin-top: 16px; 
+}
+.markdown-body table th, .markdown-body table td{
+    border: none;
+}
+.markdown-body .highlight pre, .markdown-body pre{
+    background-color: transparent;
+    padding: 0;
+}
+.markdown-body p, .markdown-body blockquote, .markdown-body ul, .markdown-body ol, .markdown-body dl, .markdown-body table, .markdown-body pre{
+    margin-bottom: 0;
+}
+
+footer {
+    text-align: center;
+    margin: 50px auto;
+    font-size: 12px;
+}
+
+footer a, footer a:visited {
+    color: #777;
+}

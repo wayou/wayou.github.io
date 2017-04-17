@@ -1,0 +1,18 @@
+<div drawer>
+	<!-- Drawer Toolbar -->
+	<paper-toolbar id="drawerToolbar">
+	  <span class="paper-font-title"> <%= config.title %> </span>
+	</paper-toolbar>
+
+	<!-- Drawer Content -->
+	<paper-menu class="list" attr-for-selected="data-route"  on-iron-select="onMenuSelect">
+
+	  <% theme.menu.forEach(function(m){ %>
+	    <a href="<%- url_for(m.url) %>">
+	        <iron-icon icon="<%= m.icon %>"></iron-icon>
+	        <span><%= m.title %></span>
+	    </a>
+	  <% }) %>
+	 
+	</paper-menu>
+</div>
