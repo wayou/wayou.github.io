@@ -1,16 +1,1 @@
-.post-info,.post-info a {
-    color: #757575;
-    margin-bottom: 10px;
-}
-
-.post-info .material-icons {
-    font-size: 16px;
-    line-height: 24px;
-    vertical-align: bottom;
-}
-
-.post-date,.post-categories,.post-tags {
-    display: inline-block;
-    margin-right: 10px;
-}
-
+.post-info,.post-info a{color:#757575;margin-bottom:10px}.post-info .material-icons{font-size:16px;line-height:24px;vertical-align:bottom}.post-categories,.post-date,.post-tags{display:inline-block;margin-right:10px}
