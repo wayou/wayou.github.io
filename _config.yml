@@ -71,16 +71,16 @@ image_caption:
 
 # deploy minify
 html_minifier:
-  enable: false
+  enable: true
   exclude:
 
 css_minifier:
-  enable: false
+  enable: true
   exclude:
     - '*.min.css'
 
 js_minifier:
-  enable: false
+  enable: true
   mangle: true
   output:
   compress:
