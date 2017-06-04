@@ -1,0 +1,77 @@
+/*todo: theme based on the material color pallete 
+https://material.io/color/#!/?view.left=0&view.right=0
+https://material.io/guidelines/style/color.html#color-color-palette
+currently using the indigo pallete*/
+
+
+/*layout*/
+
+.container {
+    height: auto;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.col-sidebar {
+    width: 296px;
+    float: right;
+    display: none;
+    /*background: #ddd;*/
+}
+
+.col-main {
+    max-width: 694px;
+    float: none;
+    margin: 0 auto;
+    width: auto;
+    overflow: hidden;
+    padding: 10px;
+    /*background: #f5f5f5;*/
+}
+
+@media screen and (min-width: 997px) {
+    .col-sidebar {
+        display: block;
+    }
+}
+
+
+/*layout end*/
+
+
+/*post title*/
+
+.title-list .title-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.title-list .title-item .post-title {
+    padding-right: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.title-list .title-item .post-date {
+    white-space: nowrap;
+}
+
+
+/*post title end*/
+
+
+/*post abstract*/
+
+.post-abstract {
+    min-height: 69px;
+    -webkit-line-clamp: 3;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+}
+
+
+/*post abstract end*/
