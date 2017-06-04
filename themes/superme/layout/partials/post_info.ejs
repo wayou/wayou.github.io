@@ -1,0 +1,25 @@
+<section class="post-info">
+    <div class="post-date">
+        <i class="material-icons md-dark">watch_later</i>
+        <%- moment(page.date, 'YYYYMMDD').locale(config.language).fromNow() %>
+    </div>
+    <% if (page.categories && page.categories.length){ %>          
+        <div class="post-categories">
+        <i class="material-icons md-dark">folder</i>
+        <%- list_categories(page.categories, {
+            show_count: false,
+            style: 'none',
+            separator: ' '
+        }) %>
+        </div>
+    <% } %>
+    <% if (page.tags && page.tags.length){ %>
+    <div class="post-tags">
+    <i class="material-icons md-dark">local_offer</i>
+    <%- list_tags(page.tags, {
+        show_count: false,
+        style: 'none'
+    }) %>
+    </div>
+    <% } %>
+</section>

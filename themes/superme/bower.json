@@ -1,0 +1,9 @@
+{
+  "name": "splash",
+  "version": "0.0.0",
+  "description": "splash hexo theme",
+  "private": true,
+  "dependencies": {
+    "flex-grid": "^1.0.5"
+  }
+}

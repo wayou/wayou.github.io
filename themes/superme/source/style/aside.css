@@ -1,0 +1,117 @@
+aside, .caution, .dogfood, .key-point, .key-term, .note, .objective, .special, .success, .warning {
+    display: block;
+    font-size: 14px;
+    margin: 16px 0;
+    padding: 12px 24px 12px 60px
+}
+
+aside::before, .caution::before, .dogfood::before, .key-point::before, .key-term::before, .note::before, .objective::before, .special::before, .success::before, .warning::before {
+    float: left;
+    font: normal normal normal 24px/1 'Material Icons';
+    font-feature-settings: 'liga';
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    word-wrap: normal;
+    margin-left: -36px
+}
+
+aside:link, aside:visited, .caution:link, .caution:visited, .dogfood:link, .dogfood:visited, .key-point:link, .key-point:visited, .key-term:link, .key-term:visited, .note:link, .note:visited, .objective:link, .objective:visited, .special:link, .special:visited, .success:link, .success:visited, .warning:link, .warning:visited {
+    text-decoration: underline
+}
+
+aside a:focus, .caution a:focus, .dogfood a:focus, .key-point a:focus, .key-term a:focus, .note a:focus, .objective a:focus, .special a:focus, .success a:focus, .warning a:focus {
+    background: rgba(255, 255, 255, .7);
+    border-radius: 2px;
+    margin: -4px;
+    padding: 4px;
+    text-decoration: none
+}
+
+aside pre, .caution pre, .dogfood pre, .key-point pre, .key-term pre, .note pre, .objective pre, .special pre, .success pre, .warning pre {
+    background: rgba(255, 255, 255, .75)
+}
+
+aside code, aside var, .caution code, .dogfood code, .key-point code, .key-term code, .note code, .objective code, .special code, .success code, .warning code {
+    font-weight: 700;
+    padding: 0
+}
+
+aside, aside code, aside var, aside:link, aside:visited, .note, .note code, .note:link, .note:visited, .special, .special code, .special:link, .special:visited {
+    background: #e1f5fe;
+    color: #0288d1
+}
+
+aside::before, .note::before, .special::before {
+    color: #039be5;
+    content: 'star'
+}
+
+.caution, .caution code, .caution:link, .caution:visited {
+    background: #fff3e0;
+    color: #dd2c00
+}
+
+.caution::before {
+    color: #ff6e40;
+    content: 'error'
+}
+
+.dogfood, .dogfood code, .dogfood:link, .dogfood:visited {
+    background: #eceff1;
+    color: #546e7a
+}
+
+.dogfood::before {
+    color: #78909c;
+    content: 'pets'
+}
+
+.key-point, .key-point code, .key-point:link, .key-point:visited {
+    background: #e8eaf6;
+    color: #3f51b5
+}
+
+.key-point::before {
+    color: #536dfe;
+    content: 'lightbulb_outline'
+}
+
+.key-term, .key-term code, .key-term:link, .key-term:visited {
+    background: #f3e5f5;
+    color: #9c27b0
+}
+
+.key-term::before {
+    color: #d500f9;
+    content: 'font_download'
+}
+
+.objective, .objective code, .objective:link, .objective:visited, .success, .success code, .success:link, .success:visited {
+    background: #e0f2f1;
+    color: #00897b
+}
+
+.objective::before {
+    color: #00bfa5;
+    content: 'school'
+}
+
+.success::before {
+    color: #00bfa5;
+    content: 'check_circle'
+}
+
+.warning, .warning code, .warning:link, .warning:visited, #embedded-explorer .com-google-api-explorer-client-history-EmbeddedHistoryItemView_HistoryItemUiBinderImpl_GenCss_style-error, #embedded-explorer .com-google-api-explorer-client-history-EmbeddedHistoryItemView_HistoryItemUiBinderImpl_GenCss_style-error:link, #embedded-explorer .com-google-api-explorer-client-history-EmbeddedHistoryItemView_HistoryItemUiBinderImpl_GenCss_style-error:visited {
+    background: #fbe9e7;
+    color: #d50000
+}
+
+.warning::before, #embedded-explorer .com-google-api-explorer-client-history-EmbeddedHistoryItemView_HistoryItemUiBinderImpl_GenCss_style-error .gwt-Label::before {
+    color: #ff1744;
+    content: 'warning'
+}
+
+.devsite-no-page-title>aside:first-child, .devsite-no-page-title>.caution:first-child, .devsite-no-page-title>.dogfood:first-child, .devsite-no-page-title>.key-point:first-child, .devsite-no-page-title>.key-term:first-child, .devsite-no-page-title>.note:first-child, .devsite-no-page-title>.objective:first-child, .devsite-no-page-title>.special:first-child, .devsite-no-page-title>.success:first-child, .devsite-no-page-title>.warning:first-child {
+    clear: right
+}

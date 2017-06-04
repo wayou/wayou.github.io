@@ -1,0 +1,29 @@
+<article class="title-list">
+    <%if(title){%>
+        <h3>
+            <%if(is_category()){%>
+            <i class="material-icons md-dark">folder</i>
+            <%} else if(is_archive()){%>
+            <i class="material-icons md-dark">archive</i>
+            <%} else if(is_tag()){%>
+            <i class="material-icons md-dark">local_offer</i>
+            <%}%>
+            <%=title%>
+        </h3>
+    <%}%>
+    <% page.posts.each(function(article) { %>
+        <div class="title-item">
+            <a class="post-title" href="<%=url_for(article.path)%>">
+                <%=article.title || __('no-title')%>
+            </a>
+            <section class="post-info">
+                <span class="post-date">
+                    <i class="material-icons md-dark">watch_later</i>
+                    <!--<%=date(article.date)%>-->
+                    <%- moment(article.date, 'YYYYMMDD').locale(config.language).fromNow() %>
+                </span>
+            </section>
+        </div>
+    <% }) %>
+</article>
+<%-partial('partials/pagination')%>

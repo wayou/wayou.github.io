@@ -1,0 +1,43 @@
+<head>
+  <title>
+  <%
+  var title = page.title;
+  
+  if (is_archive()){
+  title = __('archive_a');
+  
+  if (is_month()){
+   title += ': ' + page.year + '/' + page.month;
+  } else if (is_year()){
+   title += ': ' + page.year;
+  }
+  } else if (is_category()){
+  title = __('category') + ': ' + page.category;
+  } else if (is_tag()){
+  title = __('tag') + ': ' + page.tag;
+  }
+  %>
+  </title>
+  <meta charset="UTF-8">
+  
+  <% if (theme.rss){ %>
+  <link href="<%- theme.rss %>" rel="alternate" title="<%= config.title %>" type="application/atom+xml"/>
+  <% } %>
+  <% if (theme.favicon){ %>
+  <link href="<%- theme.favicon %>" rel="icon"/>
+  <% } %>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Wayou Liu">
+  <meta name="description" content="share thoughts on web developing">
+  <meta name="keywords" content="frontend,dev,software,web,react,js,css,html,javascript,china,chinese,github,angularjs">
+  <link href="<%- url_for('img/logo.png') %>" rel="shortcut icon"/>
+  <%- css('style/icon.css') %> 
+  <%- css('style/util.css') %>
+  <%- css('style/typograph.css') %>
+  <%- css('style/header.css') %>
+  <%- css('style/aside.css') %>
+  <%- css('style/post.css') %> 
+  <%- css('style/pager.css') %> 
+  <%- css('style/footer.css') %> 
+  <%- css('style/style.css') %>        
+</head>

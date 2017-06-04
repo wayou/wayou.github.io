@@ -1,0 +1,30 @@
+# main menu navigation
+menu:
+  home: /
+  archives: /archives
+  about: /about
+  rss: /atom.xml
+
+# Miscelaneous
+favicon: /favicon.ico
+logo: /logo.png
+
+widgets:
+  # - category
+  # - tag
+  # - tagcloud
+  # - archive
+  - recent_posts
+  - links
+links:
+  - title: "GitHub"
+    url: http://www.github.com/wayou
+    intro: "码农之家"
+  - title: "微博"
+    url: http://www.weibo.com/liuwayong
+    intro: "twitter的本地化版本"
+
+disqus_shortname: wayou
+#site statistic
+google_analytics: 
+

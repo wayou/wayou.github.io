@@ -1,0 +1,18 @@
+<div class="container clearfix">
+  <div class="col col-main">
+      <article>
+            <h1>
+                <%=page.title%> 
+            </h1>
+            <section class="post-info">
+                <div class="post-date">
+                    <i class="material-icons md-dark">watch_later</i>
+                    <%- moment(page.date, 'YYYYMMDD').locale(config.language).fromNow() %>
+                </div>
+            </section>
+            <%-page.content%>
+        </article>
+        <%- partial('partials/comments') %>
+  </div>
+</div>
+

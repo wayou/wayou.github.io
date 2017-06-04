@@ -1,0 +1,24 @@
+<header>
+  <div class="header-wrap clearfix">
+      <a class="logo-wrap" href="<%- url_for() %>">          
+        <img class="logo" src="<%- theme.logo %>" alt="">
+        <span class="site-name"><%= config.title %></span>          
+      </a>
+      <div class="menu-wrap">
+          <div class="header-burger" onclick="this.parentNode.parentNode.classList.toggle('open')">
+              <div></div>
+          </div>
+      </div>
+      <nav class="header-nav">
+          <ul>
+           <% for (var i in theme.menu){ %>
+              <li class="nav-item">
+                  <a class="nav-link" href="<%- url_for(theme.menu[i]) %>">
+                      <%- __(i) %>
+                  </a>
+              </li>
+           <% } %>   
+          </ul>
+      </nav>
+  </div>
+</header>
