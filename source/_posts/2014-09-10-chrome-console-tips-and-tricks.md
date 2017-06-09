@@ -14,7 +14,7 @@ Chrome的开发者工具已经强大到没朋友的地步了，特别是其功�
 <!-- more -->
 
 console.log
----
+
 大家都会用log，但鲜有人很好地利用`console.error` , `console.warn` 等将输出到控制台的信息进行分类整理。
 他们功能区别不大，意义在于将输出到控制台的信息进行归类，或者说让它们更语义化。
 各个所代表的语义如下：
@@ -109,7 +109,7 @@ console.log('%c你好','color:red;','小明','你知道小红被妈妈打了么'
 
 
 console.assert
----
+
 当你想代码满足某些条件时才输出信息到控制台，那么你大可不必写`if`或者三元表达式来达到目的，`cosole.assert`便是这样场景下一种很好的工具，它会先对传入的表达式进行断言，只有表达式为假时才输出相应信息到控制台。
 ```js
 var isDebug=false;
@@ -123,7 +123,7 @@ console.assert(isDebug,'开发中的log信息。。。');
 
 
 console.count
----
+
 除了条件输出的场景，还有常见的场景是计数。
 当你想统计某段代码执行了多少次时也大可不必自己去写相关逻辑，内置的`console.count`可以很地胜任这样的任务。
 ```js
@@ -141,7 +141,7 @@ foo();
 
 
 console.dir
----
+
 将DOM结点以JavaScript对象的形式输出到控制台
 而`console.log`是直接将该DOM结点以DOM树的结构进行输出，与在元素审查时看到的结构是一致的。不同的展现形式，同样的优雅，各种体位任君选择反正就是方便与体贴。
 
@@ -156,7 +156,7 @@ console.log(document.body);
 
 
 console.time & console.timeEnd
----
+
 输出一些调试信息是控制台最常用的功能，当然，它的功能远不止于此。当做一些性能测试时，同样可以在这里很方便地进行。
 比如需要考量一段代码执行的耗时情况时，可以用`console.time`与 `console.timeEnd`来做此事。
 
@@ -193,7 +193,7 @@ console.log(new Date().getTime()-start);
 
 
 console.profile & console.timeLime
----
+
 当想要查看CPU使用相关的信息时，可以使用`console.profile`配合 `console.profileEnd`来完成这个需求。
 这一功能可以通过UI界面来完成，Chrome 开发者工具里面有个tab便是`Profile`。
 
@@ -204,14 +204,14 @@ console.profile & console.timeLime
 
 
 console.trace
----
+
 堆栈跟踪相关的调试可以使用`console.trace`。这个同样可以通过UI界面完成。当代码被打断点后，可以在`Call Stack`面板中查看相关堆栈信息。
 
 
 上面介绍的都是挂在`window.console`这个对象下面的方法，统称为[Console API](https://developer.chrome.com/devtools/docs/console-api)，接下来的这些方法确切地说应该叫命令，是Chrome内置提供，在控制台中使用的，他们统称为[Command Line API](https://developer.chrome.com/devtools/docs/commandline-api)。
 
 $
----
+
 似乎美刀总是被程序员及各种编程语言所青睐「你看看PHP代码就知道PHPer有多爱钱了」，在Chrome的控制台里，$用处还真是蛮多且方便的。
 `$_`命令返回最近一次表达式执行的结果，功能跟按向上的方向键再回车是一样的，但它可以做为一个变量使用在你接下来的表达式中：
 ```js
@@ -247,7 +247,7 @@ $$('div')
 
 
 copy
----
+
 通过此命令可以将在控制台获取到的内容复制到剪贴板。
 ```js
 copy(document.body)
@@ -261,7 +261,7 @@ copy(document.body)
 But现实是残酷的，如之前所述的，这里的控制台命令只能在控制台中环境中执行，因为他不依附于任何全局变量比如`window`，所以其实在JS代码里是访问不了这个`copy`方法的，所以从代码层面来调用复制功能也就无从谈起。但愿有天浏览器会提供相应的JS实现吧~
 
 keys & values
----
+
 这是一对基友。前者返回传入对象所有属性名组成的数据，后者返回所有属性值组成的数组。具体请看下面的例子：
 ```js
 var tboy={name:'wayou',gender:'unknown',hobby:'opposite to the gender'};
@@ -273,7 +273,7 @@ values(tboy);
 
 
 monitor & unmonitor
----
+
 monitor(function)，它接收一个函数名作为参数，比如`function a`,每次`a`被执行了，都会在控制台输出一条信息，里面包含了函数的名称`a`及执行时所传入的参数。
 
 而unmonitor(function)便是用来停止这一监听。
@@ -291,7 +291,7 @@ sayHello('wayou');
 
 
 debug & undebug
----
+
 debug同样也是接收一个函数名作为参数。当该函数执行时自动断下来以供调试，类似于在该函数的入口处打了个断点，可以通过debugger来做到，同时也可以通过在Chrome开发者工具里找到相应源码然后手动打断点。
 而`undebug` 则是解除该断点。
 
@@ -299,7 +299,7 @@ debug同样也是接收一个函数名作为参数。当该函数执行时自动
 
 
 ## 参考及引用
----
+
 * [Styled console logging in the Chrome DevTools (Canary)](https://plus.google.com/+AddyOsmani/posts/TanDFKEN9Kn)
 * [Chrome Console API](https://developer.chrome.com/devtools/docs/console-api)
 * [Chrome Console Command Line API](https://developer.chrome.com/devtools/docs/commandline-api)
