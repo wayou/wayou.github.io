@@ -12,8 +12,8 @@
       <nav class="header-nav">
           <ul>
            <% for (var i in theme.menu){ %>
-              <li class="nav-item">
-                  <a class="nav-link ink" href="<%- url_for(theme.menu[i]) %>">
+              <li class="nav-item ink">
+                  <a class="nav-link" href="<%- url_for(theme.menu[i]) %>">
                       <%- __(i) %>
                   </a>
               </li>
