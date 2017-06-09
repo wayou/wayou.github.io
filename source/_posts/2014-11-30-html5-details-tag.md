@@ -1,4 +1,4 @@
-title: HTML5 `<details>` 标签
+title: HTML5 details 标签
 toc: true
 date: 2014-11-30 12:54:43
 categories: 技术

@@ -162,6 +162,3 @@ Happy coding :)
 
 - [Overview from Flux Official Doc](https://facebook.github.io/flux/docs/overview.html)
 - [Getting To Know Flux, the React.js Architecture](https://scotch.io/tutorials/getting-to-know-flux-the-react-js-architecture)
-
-
-

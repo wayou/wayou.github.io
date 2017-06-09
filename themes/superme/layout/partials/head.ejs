@@ -19,7 +19,6 @@
   %>
   </title>
   <meta charset="UTF-8">
-  
   <% if (theme.rss){ %>
   <link href="<%- theme.rss %>" rel="alternate" title="<%= config.title %>" type="application/atom+xml"/>
   <% } %>
@@ -31,13 +30,7 @@
   <meta name="description" content="share thoughts on web developing">
   <meta name="keywords" content="frontend,dev,software,web,react,js,css,html,javascript,china,chinese,github,angularjs">
   <link href="<%- url_for('img/logo.png') %>" rel="shortcut icon"/>
-  <%- css('style/icon.css') %> 
-  <%- css('style/util.css') %>
-  <%- css('style/typograph.css') %>
-  <%- css('style/header.css') %>
-  <%- css('style/aside.css') %>
-  <%- css('style/post.css') %> 
-  <%- css('style/pager.css') %> 
-  <%- css('style/footer.css') %> 
+  <%- css('lib/waves/waves.css') %>
+  <%- css('lib/tocbot/tocbot.css') %>
   <%- css('style/style.css') %>        
 </head>

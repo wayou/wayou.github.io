@@ -1,10 +1,10 @@
 <div class="container clearfix">
-  <div class="col col-sidebar"></div>
+  <div class="col col-sidebar">
+    <div class="js-toc"></div>
+  </div>
   <div class="col col-main">
     <article>
-      <h1>
-        <%= page.title %>
-      </h1>
+      <h1><%= page.title %></h1>
       <%- partial('partials/post_info',{page: page}) %>
       <section class="post-content">
         <%-page.content%>
@@ -15,17 +15,17 @@
     <% if (page.prev || page.next){ %>
       <div class="pager">
         <% if (page.prev){ %>
-          <a class="post-prev pager-item" href="<%- url_for(page.prev.path) %>">
-        <strong class="article-nav-caption"><%= __('newer') %></strong>
-        <p class="post-nav-title"><%= page.prev.title %></p>
-      </a>
-          <% } %>
-            <% if (page.next){ %>
-              <a class="post-next pager-item" href="<%- url_for(page.next.path) %>">
-        <strong class="article-nav-caption"><%= __('older') %></strong>
-        <p class="post-nav-title"><%= page.next.title %></p>
-      </a>
-              <% } %>
+            <a class="post-prev pager-item" href="<%- url_for(page.prev.path) %>">
+              <strong class="article-nav-caption"><%= __('newer') %></strong>
+              <p class="post-nav-title"><%= page.prev.title %></p>
+            </a>
+        <% } %>
+        <% if (page.next){ %>
+            <a class="post-next pager-item" href="<%- url_for(page.next.path) %>">
+              <strong class="article-nav-caption"><%= __('older') %></strong>
+              <p class="post-nav-title"><%= page.next.title %></p>
+            </a>
+        <% } %>
       </div>
     <% } %>
 

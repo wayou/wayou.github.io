@@ -12,7 +12,7 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://wayou.js.org/
+url: https://wayou.github.io
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -41,7 +41,7 @@ highlight:
   enable: false
 
 # Category & Tag
-default_category: uncategorized
+default_category: misc
 category_map:
 tag_map:
 
@@ -63,6 +63,7 @@ pagination_dir: page
 prism_plugin:
   mode: 'preprocess'
   theme: 'duotone-sea'
+  # theme: 'atom-dark'
 
 # add caption for iamges
 image_caption:
@@ -108,6 +109,9 @@ marked:
   gfm: true
   breaks: true
   tables: true
+
+server:
+  compress: true # false will cause chinese garblsh problem
 
 ## themes: http://hexo.io/themes/
 theme: superme
