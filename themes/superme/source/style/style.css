@@ -131,6 +131,8 @@ kbd {
     height: 0;
     visibility: hidden
 }
+
+
 /*=====misc end =====*/
 
 
@@ -219,7 +221,9 @@ kbd {
 
 /*=====icon end=====*/
 
+
 /*=====typograph=====*/
+
 h1 {
     font: 300 34px/40px Roboto, sans-serif;
     letter-spacing: -.01em;
@@ -264,7 +268,9 @@ h1+h1, h1+h2, h1+h3, h1+h4, h1+h5, h1+h6, h2+h1, h2+h2, h2+h3, h2+h4, h2+h5, h2+
     }
 }
 
+
 /*=====typograph end=====*/
+
 
 /*=====aside=====*/
 
@@ -422,18 +428,22 @@ aside::before, .note::before, .special::before {
 
 /*=====layout end=====*/
 
+
 /*=====header=====*/
+
+
 /*TODO: scroll menu when overflow*/
+
 header {
     width: 100%;
     line-height: 48px;
     background-color: #3367d6;
-/*         box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28); */
+    /*         box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28); */
 }
 
-header a:focus,header a:active {
+header a:focus, header a:active {
     text-decoration: none;
-    background-color: rgba(0,0,0,.1 );
+    background-color: rgba(0, 0, 0, .1);
 }
 
 header .header-wrap {
@@ -445,10 +455,11 @@ header .logo-wrap {
     display: inline-block;
     padding-right: 20px;
     line-height: 48px;
+    vertical-align: top;
 }
 
 header .logo-wrap .site-name {
-        color: #fff;
+    color: #fff;
 }
 
 header .logo-wrap .logo {
@@ -461,7 +472,7 @@ header .menu-wrap {
     background: #3367d6;
 }
 
-header .menu-wrap.open {    
+header .menu-wrap.open {
     width: 100%;
 }
 
@@ -472,7 +483,6 @@ header .header-nav {
 }
 
 header .header-nav ul, header .header-nav li {
-    height: 48px;
     padding: 0;
     margin: 0;
 }
@@ -489,7 +499,7 @@ header nav .nav-item {
 
 header nav .nav-link {
     display: block;
-        color: #e8eaf6;
+    color: #e8eaf6;
     font-weight: 400;
     text-transform: none;
     /*     border-bottom: 2px solid transparent; */
@@ -508,7 +518,7 @@ header nav .nav-item.active .nav-link {
 }
 
 header nav .nav-item:hover .nav-link {
-        color: #fff;
+    color: #fff;
 }
 
 header .header-burger {
@@ -519,8 +529,8 @@ header .header-burger {
 }
 
 header .header-burger div {
-        background: #fff;
-/*     background: #3367d6; */
+    background: #fff;
+    /*     background: #3367d6; */
     height: 2px;
     margin: 10px 0 0;
     transition: background 0.3s;
@@ -528,8 +538,8 @@ header .header-burger div {
 }
 
 header .header-burger div:before, header .header-burger div:after {
-        background: #fff;
-/*     background: #3367d6; */
+    background: #fff;
+    /*background: #3367d6; */
     content: '';
     display: block;
     height: 2px;
@@ -563,27 +573,26 @@ header .open .header-burger div:after {
     header .menu-wrap {
         display: none;
     }
-
     header .header-nav {
         padding: initial;
         display: block;
         float: right;
     }
-
     header .header-burger {
         display: none;
     }
-
     header nav .nav-item {
         display: inline-block;
+        vertical-align: top;
     }
-
     header nav .nav-item .nav-link {
         display: inline-block;
     }
 }
 
+
 /*=====header end=====*/
+
 
 /*=====post=====*/
 
