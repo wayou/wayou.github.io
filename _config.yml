@@ -63,7 +63,6 @@ pagination_dir: page
 prism_plugin:
   mode: 'preprocess'
   theme: 'duotone-sea'
-  # theme: 'atom-dark'
 
 # add caption for iamges
 image_caption:
@@ -107,7 +106,7 @@ feed:
 
 marked:
   gfm: true
-  breaks: true
+  breaks: false
   tables: true
 
 server:

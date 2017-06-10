@@ -1,6 +1,10 @@
 <div class="container clearfix">
   <div class="col col-sidebar">
-    <div class="js-toc"></div>
+    <% if(page.toc != false) {%>
+      <!--placeholder-->
+      <p></p>
+      <div class="js-toc"></div>
+    <%}%>
   </div>
   <div class="col col-main">
     <article>
@@ -9,7 +13,6 @@
       <section class="post-content">
         <%-page.content%>
       </section>
-      
     </article>
 
     <% if (page.prev || page.next){ %>

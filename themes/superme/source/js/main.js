@@ -1,12 +1,11 @@
 
 tocbot.init({
-    tocSelector: '.js-toc',
-    contentSelector: '.col-main',
-    headingSelector: 'h2, h3',
+    tocSelector: ".js-toc",
+    contentSelector: ".post-content",
+    headingSelector: "h2, h3, h4",
+    positionFixedSelector: ".js-toc",
+    headingsOffset: 500,
 });
 
-//.pager-item a.page-number .ink
-Waves.attach('.pager-item');
-Waves.attach('a.page-number');
-Waves.attach('.ink');
+Waves.attach('.pager-item,a.page-number,.ink');
 Waves.init();

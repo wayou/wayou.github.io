@@ -109,7 +109,9 @@ blockquote {
     background: #f7f7f7;
     margin: 16px 0;
     padding: 8px;
-    quotes: none
+    quotes: none;
+    font-size: 14px;
+    color: #757575;
 }
 
 kbd {
@@ -410,6 +412,10 @@ aside::before, .note::before, .special::before {
     display: none;
 }
 
+.col-sidebar .js-toc li{
+    list-style: none;
+}
+
 .col-main {
     max-width: 694px;
     float: none;
@@ -656,6 +662,12 @@ header .open .header-burger div:after {
 
 /*post info end*/
 
+.post-content .image-caption{
+    font-size: 14px;
+    color: #757575;
+    display: block;
+    text-align: center;
+}
 
 /*=====post end=====*/
 
