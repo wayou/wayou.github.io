@@ -1,13 +1,15 @@
 <header>
   <div class="header-wrap clearfix">
-      <a class="logo-wrap ink" href="<%- url_for() %>">          
-        <img class="logo" src="<%- theme.logo %>" alt="">
-        <span class="site-name"><%= config.title %></span>          
-      </a>
-      <div class="menu-wrap">
-          <div class="header-burger" onclick="this.parentNode.parentNode.classList.toggle('open')">
-              <div></div>
-          </div>
+      <div class="header-content">
+          <a class="logo-wrap ink" href="<%- url_for() %>">          
+            <img class="logo" src="<%- theme.logo %>" alt="">
+            <span class="site-name"><%= config.title %></span>          
+        </a>
+        <div class="menu-wrap">
+            <div class="header-burger" onclick="document.body.classList.toggle('open')">
+                <div></div>
+            </div>
+        </div>
       </div>
       <nav class="header-nav">
           <ul>

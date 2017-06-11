@@ -13,6 +13,10 @@ html, body {
     text-size-adjust: 100%
 }
 
+body.open {
+    overflow: hidden;
+}
+
 img, video {
     border: 0;
     max-width: 100%;
@@ -156,6 +160,7 @@ kbd {
     -webkit-box-orient: vertical;
 }
 
+
 /*=====misc end =====*/
 
 
@@ -166,6 +171,7 @@ kbd {
 
 
 /*https://material.io/icons/*/
+
 
 /*@font-face {
     font-family: 'Material Icons';
@@ -488,14 +494,24 @@ header .menu-wrap {
     background: #3367d6;
 }
 
-header .menu-wrap.open {
-    width: 100%;
+header .header-content {
+    z-index: 2;
+    background: #3367d6;
+    position: relative;
 }
 
 header .header-nav {
-    display: none;
     box-sizing: border-box;
     padding: 40px 20px;
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: -100%;
+    width: 100%;
+    transition: all 0.3s ease-in-out 0s, visibility 0s linear 0.3s, z-index 0s linear 0.01s;
+    background: #3367d6;
+    height: 100%;
+    z-index: 0;
 }
 
 header .header-nav ul, header .header-nav li {
@@ -503,8 +519,13 @@ header .header-nav ul, header .header-nav li {
     margin: 0;
 }
 
-header .header-wrap.open .header-nav {
+.open header .header-wrap .header-nav {
     display: block;
+    top: 47px;
+    visibility: visible;
+    opacity: 1;
+    z-index: 1;
+    transition-delay: 0s, 0s, 0.3s;
 }
 
 header nav .nav-item {
@@ -573,15 +594,15 @@ header .header-burger div:after {
     transform-origin: 6px -1px;
 }
 
-header .open .header-burger div {
+.open header .header-burger div {
     background: transparent !important
 }
 
-header .open .header-burger div:before {
+.open header .header-burger div:before {
     transform: rotate3d(0, 0, 1, 45deg)
 }
 
-header .open .header-burger div:after {
+.open header .header-burger div:after {
     transform: rotate3d(0, 0, 1, -45deg)
 }
 
@@ -623,7 +644,7 @@ header .open .header-burger div:after {
     list-style: none;
 }
 
-.is-active-link::before{
+.is-active-link::before {
     background-color: #3367d6;
 }
 
@@ -655,9 +676,7 @@ header .open .header-burger div:after {
 
 /*post abstract*/
 
-.post-abstract {
-    
-}
+.post-abstract {}
 
 
 /*post abstract end*/
@@ -718,8 +737,7 @@ header .open .header-burger div:after {
     margin-left: auto
 }
 
-.pager .post-nav-title {
-}
+.pager .post-nav-title {}
 
 .pagination .page-number {
     -webkit-box-flex: 1;
