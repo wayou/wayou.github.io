@@ -610,10 +610,17 @@ header .header-burger div:after {
     header .menu-wrap {
         display: none;
     }
+    header .header-content{
+        display: inline-block;
+    }
     header .header-nav {
         padding: initial;
         display: block;
         float: right;
+        visibility: visible;
+        opacity: 1;
+        position: static;
+        width: auto;
     }
     header .header-burger {
         display: none;
