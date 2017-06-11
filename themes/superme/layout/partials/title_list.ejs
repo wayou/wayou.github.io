@@ -13,7 +13,7 @@
     <%}%>
     <% page.posts.each(function(article) { %>
         <div class="title-item">
-            <a class="post-title" href="<%=url_for(article.path)%>">
+            <a class="post-title truncate-text" href="<%=url_for(article.path)%>">
                 <%=article.title || __('no-title')%>
             </a>
             <section class="post-info">

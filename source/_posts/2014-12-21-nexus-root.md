@@ -35,7 +35,7 @@ Nexus5 自带Android 4.4.3其实可以接收OTA自动升级到最新版本的。
 
 你可以看[此视频教程](http://v.youku.com/v_show/id_XODUzNDIyOTc2.html)（从Youtube 扒到优酷的），也可以跟随下面的步骤，多体位任君选择。
 
-<iframe height=498 width=510 src="http://player.youku.com/embed/XODUzNDIyOTc2" frameborder=0 allowfullscreen></iframe>
+<iframe height=498 width="100%" src="http://player.youku.com/embed/XODUzNDIyOTc2" frameborder=0 allowfullscreen></iframe>
 
 ### 准备
 

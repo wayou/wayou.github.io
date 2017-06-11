@@ -12,7 +12,7 @@ logo: /logo.png
 widgets:
   # - category
   # - tag
-  # - tagcloud
+  - tagcloud
   # - archive
   - recent_posts
   - links

@@ -7,13 +7,13 @@
     <% page.posts.each(function(post, i){ %>
       <article>
         <a href="<%- url_for(post.path) %>" >
-          <h1 class="post-title">
+          <h3 class="post-title">
             <span><%=post.title || __('no-title')%></span>
-          </h1>
+          </h3>
         </a>
         <%- partial('partials/post_info',{page: post}) %>
 
-        <section class="post-abstract">
+        <section class="post-abstract truncate-text-4">
           <%if(post.excerpt){%>
             <%- strip_html(post.excerpt) %>
           <%}else{%>

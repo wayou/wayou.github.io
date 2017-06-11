@@ -6,5 +6,3 @@ layout: about
 
 lets talk if u wanna :)
 
-![happy tree friends 是一个理想国的一群有爱小朋友](happy-tree-friends.jpg)
-
