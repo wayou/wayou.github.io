@@ -1,0 +1,1 @@
+JsObject.UpdateList={str:"",save:function(s,t,e,a,i){var l={};l["keyid"]=t;l["keyval"]=e;l["sqlkey"]=a;l["sqlval"]=i;l["datas"]=this.str;$.ajax({type:"post",url:s,dataType:"json",data:l,async:false,success:function(s){alert(s.message)}})},changeInput:function(s,t){var e=JsObject.JqGridBuilder.getRowInfo("list",s);var a=this.str.split(",");for(var i=0;i

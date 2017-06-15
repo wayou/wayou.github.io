@@ -1,0 +1,1 @@
+JsObject.Security={result:{},resource:function(){return JsObject.Ajax.load("security!getUserResource.action",{},"html")},string2array:function(){var e=JsObject.Security.result.resourceStrs;return e.split(",")},filterResource:function(e){var r=false;var t=JsObject.Security.string2array();for(var s=0;s
