@@ -1,1 +1,0 @@
-JsObject.JGridButton={entity:{name:"",url:"",resourceFilter:"",customEvent:function(t){}},init:function(t,n,e,i){var r=JsObject.jsonClone(this.entity);r.name=t;r.url=t;r.resourceFilter=e;r.customEvent=i;return r},buildEntityArray:function(t,n,e,i,r){r.push(this.init(t,n,e,i));return this}};

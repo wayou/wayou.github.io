@@ -1,1 +1,0 @@
-JsObject.OpenUtils={openObjList:[],openMethods:function(src,title,height,width){var h=height;var w=width;if(height==undefined&&width==undefined||height==""&&width==""){h="500";w="1000"}var openObj=window.open(src,title,JsObject.OpenUtils.gainOpenPageCss(h,w));var parentObj="parent.openObjList";for(var i=0;i
