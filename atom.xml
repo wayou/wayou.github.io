@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://wayou.github.io/"/>
-  <updated>2017-06-17T03:23:53.704Z</updated>
+  <updated>2017-06-17T03:46:42.218Z</updated>
   <id>https://wayou.github.io/</id>
   
   <author>
@@ -20,10 +20,10 @@
     <link href="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/"/>
     <id>https://wayou.github.io/2017/06/17/storage-in-priavate-mode/</id>
     <published>2017-06-17T00:28:42.000Z</published>
-    <updated>2017-06-17T03:23:53.704Z</updated>
+    <updated>2017-06-17T03:46:42.218Z</updated>
     
     <content type="html"><![CDATA[<p>现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。
-<img src="/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg" alt="虽然标题暗标要讨论的是 Safari，但配图我喜欢这个 Chrome "><span class="image-caption">虽然标题暗标要讨论的是 Safari，但配图我喜欢这个 Chrome </span>
+<img src="/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg" alt="虽然标题暗示要讨论的是 Safari，但配图我喜欢这个 Chrome "><span class="image-caption">虽然标题暗示要讨论的是 Safari，但配图我喜欢这个 Chrome </span>
 <a id="more"></a></p>
 <p>这种模式下浏览网页踏雪无痕，雁过不留声。具体来说，与正常模式的区别是浏览器不会保存历史记录，没有页面缓存，所有本地数据也都是临时的，页面关闭后无法还原。譬如本文下面要讲到的 <code>localStorage</code>。</p>
 <aside class="caution">
@@ -32,8 +32,8 @@
 </aside>  
 
 <pre class=" language-bash"><code class="language-bash">--------- LOG ---------
-00:00:01 - 一位不具名用户在零点零一分进行了访问
-00:00:02 - 一位不愿透露姓名的用户在零点零二分打开了你丢弃在服务器 <span class="token variable"><span class="token variable">`</span>社会科学/东方艺术鉴赏/东瀛国浮世绘<span class="token variable">`</span></span> 中的资源 <span class="token variable"><span class="token variable">`</span>ae2bx86.jpg<span class="token variable">`</span></span>
+00:01:00 - 一位不具名用户在零点零一分进行了访问
+00:02:00 - 一位不愿透露姓名的用户在零点零二分打开了你丢弃在服务器 <span class="token variable"><span class="token variable">`</span>社会科学/东方艺术鉴赏/东瀛国浮世绘<span class="token variable">`</span></span> 中的资源 <span class="token variable"><span class="token variable">`</span>ae2bx86.jpg<span class="token variable">`</span></span>
 </code></pre>
 <p>从功能上来说，普通用户大概鲜有人知道这一功能（产品情怀就这样被用户无视，PM 们默默泪目），而开发者则利用其干净的特点来开发调试，排除程序之外的因素导致 bug 的可能。</p>
 <p>因为所有本地数据都是临时的，那么问题来了，如果网页代码中还使用了诸如 <code>localStorage</code> 的本地存储，还能生效吗？</p>
@@ -78,19 +78,19 @@
 <img src="/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png" alt="iOS Chrome 隐私模式获取值"><span class="image-caption">iOS Chrome 隐私模式获取值</span></p>
 </li>
 </ul>
-<p>这表明在 iOS 上，不仅是 Safari 在隐私模式中不能使用 localStorage, Chrome 也不行也不行。这不禁让人怀疑跟系统平台的策略有关。</p>
+<p>这表明在 iOS 上，不仅是 Safari 在隐私模式中不能使用 <code>localStorage</code>, Chrome 也不行也不行。这不禁让人怀疑跟系统平台的策略有关。</p>
 <p>博主是谷粉，很早就入手了 Nexus。本着严谨的做事态度，那肯定也得拿来测试一下丫。而安卓机上的测试则让人无法接受。</p>
 <ul>
 <li><p>安卓 Chrome 隐私模式下设置值
-<img src="/2017/06/17/storage-in-priavate-mode/android-chrome-get.png" alt="安卓 Chrome 隐私模式下设置值"><span class="image-caption">安卓 Chrome 隐私模式下设置值</span></p>
+<img src="/2017/06/17/storage-in-priavate-mode/android-chrome-set.png" alt="安卓 Chrome 隐私模式下设置值"><span class="image-caption">安卓 Chrome 隐私模式下设置值</span></p>
 </li>
 <li><p>安卓 Chrome 隐私模式下获取值
 <img src="/2017/06/17/storage-in-priavate-mode/android-chrome-get.png" alt="安卓 Chrome 隐私模式下获取值"><span class="image-caption">安卓 Chrome 隐私模式下获取值</span></p>
 </li>
 </ul>
-<p>是的，安卓上面并没有表现出假装支持 <code>localStorage</code>，而是真正的支持，能存能取，能取能用！两次证实了上面的怀疑，这种假装的支持应该是 iOS 的设计哲学。</p>
+<p>是的，安卓上面并没有表现出假装支持 <code>localStorage</code>，而是真正的支持，能存能取，能取能用！再次证实了上面的怀疑，这种假装的支持应该是 iOS 的设计哲学。</p>
 <p>回过头来想，隐私模式主要的功能不就是让用户的数据不被追踪吗，如果能够存取数据的话，反而没那么隐私了。从这点来说，<code>localStorage</code> 设置不成功倒也考量了些许人文情怀在里面。</p>
-<p>问题想当于回到了开发者手中，我们在开发过程中使用 <code>loaclStorage</code> 就需要对这种情况进行兼容，以譬如 js 报错后影响整个页面的功能。</p>
+<p>问题想当于回到了开发者手中，我们在开发过程中使用 <code>loaclStorage</code> 就需要对这种情况进行兼容，以避免 js 报错后影响整个页面的功能。</p>
 <p>下面是兼容代码示例：</p>
 <pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">isLocalStorageSupport</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">try</span> <span class="token punctuation">{</span>
@@ -111,7 +111,7 @@
     <summary type="html">
     
       &lt;p&gt;现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。
-&lt;img src=&quot;chrome-incognito.jpg&quot; alt=&quot;虽然标题暗标要讨论的是 Safari，但配图我喜欢这个 Chrome &quot;&gt;
+&lt;img src=&quot;chrome-incognito.jpg&quot; alt=&quot;虽然标题暗示要讨论的是 Safari，但配图我喜欢这个 Chrome &quot;&gt;
     
     </summary>
     
@@ -127,7 +127,7 @@
     <link href="https://wayou.github.io/2017/06/16/import-data-into-google-sheets-from-web-page/"/>
     <id>https://wayou.github.io/2017/06/16/import-data-into-google-sheets-from-web-page/</id>
     <published>2017-06-16T08:20:01.000Z</published>
-    <updated>2017-06-17T03:23:53.692Z</updated>
+    <updated>2017-06-17T03:46:42.202Z</updated>
     
     <content type="html"><![CDATA[<p>数据没有用，我们需要的是数据所反映出来的东西。增长率，排名，占比等。而这些结果是通过分析数据得到的。
 从网上搜集到数据后，导入到表格程序中便可以进行方便地分析处理了。下面介绍将网页中的表格数据导入到 Google Sheet 中的操作。
@@ -185,7 +185,7 @@
     <link href="https://wayou.github.io/2016/07/18/react-flux/"/>
     <id>https://wayou.github.io/2016/07/18/react-flux/</id>
     <published>2016-07-18T14:11:48.000Z</published>
-    <updated>2017-06-17T03:23:53.688Z</updated>
+    <updated>2017-06-17T03:46:42.202Z</updated>
     
     <content type="html"><![CDATA[<p>话说当时做 APP 时，三月不知肉味，再次将眼光投放前端，有种天上一天，地下一年的感觉。</p>
 <a id="more"></a>
@@ -299,7 +299,7 @@ create<span class="token punctuation">:</span> <span class="token keyword">funct
     <link href="https://wayou.github.io/2016/07/07/css-nth/"/>
     <id>https://wayou.github.io/2016/07/07/css-nth/</id>
     <published>2016-07-07T20:56:30.000Z</published>
-    <updated>2017-06-17T03:23:53.688Z</updated>
+    <updated>2017-06-17T03:46:42.202Z</updated>
     
     <content type="html"><![CDATA[<p>考察下面的 HTML 代码片段：</p>
 <a id="more"></a>
@@ -514,7 +514,7 @@ create<span class="token punctuation">:</span> <span class="token keyword">funct
     <link href="https://wayou.github.io/2016/06/26/mail-dev/"/>
     <id>https://wayou.github.io/2016/06/26/mail-dev/</id>
     <published>2016-06-26T10:13:22.000Z</published>
-    <updated>2017-06-17T03:23:53.684Z</updated>
+    <updated>2017-06-17T03:46:42.198Z</updated>
     
     <content type="html"><![CDATA[<p>如果前端的产品开发是技术的炫耀，那么邮件模板的开发能让人一下子回到解放前。总结下来邮件模板的开发就是<code>table</code>及<code>table</code>的嵌套，注意没有拼接。</p>
 <a id="more"></a>
@@ -718,7 +718,7 @@ create<span class="token punctuation">:</span> <span class="token keyword">funct
     <link href="https://wayou.github.io/2016/01/01/batch-convert-text-encoding-from-gbk-2-utf8/"/>
     <id>https://wayou.github.io/2016/01/01/batch-convert-text-encoding-from-gbk-2-utf8/</id>
     <published>2016-01-01T15:47:33.000Z</published>
-    <updated>2017-06-17T03:23:53.684Z</updated>
+    <updated>2017-06-17T03:46:42.198Z</updated>
     
     <content type="html"><![CDATA[<p>windows世界与非windows世界对文本默认编码的差异，导致文件在对方平台解压和打开后乱码。</p>
 <a id="more"></a>
@@ -791,7 +791,7 @@ create<span class="token punctuation">:</span> <span class="token keyword">funct
     <link href="https://wayou.github.io/2015/03/08/redirect-before-routing-in-angular/"/>
     <id>https://wayou.github.io/2015/03/08/redirect-before-routing-in-angular/</id>
     <published>2015-03-08T11:43:04.000Z</published>
-    <updated>2017-06-17T03:23:53.684Z</updated>
+    <updated>2017-06-17T03:46:42.198Z</updated>
     
     <content type="html"><![CDATA[<p>对于Web程序通常会有这样的需求：针对不同的情况，我们希望用户进入站点后打开不同的页面。
 写一下Web程序的时候，会有这样的需求：根据用户的类型，将用户导向不同的页面。
@@ -891,7 +891,7 @@ app<span class="token punctuation">.</span><span class="token function">config</
     <link href="https://wayou.github.io/2015/01/18/all-this/"/>
     <id>https://wayou.github.io/2015/01/18/all-this/</id>
     <published>2015-01-18T20:47:24.000Z</published>
-    <updated>2017-06-17T03:23:53.684Z</updated>
+    <updated>2017-06-17T03:46:42.198Z</updated>
     
     <content type="html"><![CDATA[<p><code>this</code> 虐我千百遍，看完此文效立见！不得不说，这篇文章的总结很地道很全面，适合收藏之用。</p>
 <blockquote>
@@ -1571,7 +1571,7 @@ thing<span class="token punctuation">.</span><span class="token function">logThi
     <link href="https://wayou.github.io/2014/12/31/chrome-request-stalled-problem/"/>
     <id>https://wayou.github.io/2014/12/31/chrome-request-stalled-problem/</id>
     <published>2014-12-31T20:38:22.000Z</published>
-    <updated>2017-06-17T03:23:53.676Z</updated>
+    <updated>2017-06-17T03:46:42.190Z</updated>
     
     <content type="html"><![CDATA[<p>本文前戏较多，务实的同学可以直接跳到结论。</p>
 <a id="more"></a>
@@ -2118,7 +2118,7 @@ t=1728 [st=172] -REQUEST_ALIVE
     <link href="https://wayou.github.io/2014/12/21/nexus-root/"/>
     <id>https://wayou.github.io/2014/12/21/nexus-root/</id>
     <published>2014-12-21T11:17:10.000Z</published>
-    <updated>2017-06-17T03:23:53.672Z</updated>
+    <updated>2017-06-17T03:46:42.182Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>刷机有风险，root需谨慎！
@@ -2306,7 +2306,7 @@ following steps below on your own risk&lt;/p&gt;
     <link href="https://wayou.github.io/2014/12/07/css-currentColor/"/>
     <id>https://wayou.github.io/2014/12/07/css-currentColor/</id>
     <published>2014-12-07T12:56:22.000Z</published>
-    <updated>2017-06-17T03:23:53.632Z</updated>
+    <updated>2017-06-17T03:46:42.146Z</updated>
     
     <content type="html"><![CDATA[<p>CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是<code>crrentColor</code>变量（或者说是CSS关键字，但我觉得称为变量好理解些）。</p>
 <a id="more"></a>
@@ -2487,7 +2487,7 @@ following steps below on your own risk&lt;/p&gt;
     <link href="https://wayou.github.io/2014/11/30/html5-details-tag/"/>
     <id>https://wayou.github.io/2014/11/30/html5-details-tag/</id>
     <published>2014-11-30T12:54:43.000Z</published>
-    <updated>2017-06-17T03:23:53.632Z</updated>
+    <updated>2017-06-17T03:46:42.146Z</updated>
     
     <content type="html"><![CDATA[<p>HTML5 中新增的<code>&lt;details&gt;</code>标签允许用户创建一个可展开折叠的元件，让一段文字或标题包含一些隐藏的信息。</p>
 <a id="more"></a>
@@ -2563,7 +2563,7 @@ following steps below on your own risk&lt;/p&gt;
     <link href="https://wayou.github.io/2014/11/26/javascript-benchmarking/"/>
     <id>https://wayou.github.io/2014/11/26/javascript-benchmarking/</id>
     <published>2014-11-26T19:54:36.000Z</published>
-    <updated>2017-06-17T03:23:53.632Z</updated>
+    <updated>2017-06-17T03:46:42.146Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>原文：<a href="https://mathiasbynens.be/notes/javascript-benchmarking" target="_blank" rel="external">Bulletproof JavaScript benchmarks</a></p>
@@ -2704,7 +2704,7 @@ hz <span class="token operator">=</span> <span class="token punctuation">(</span
     <link href="https://wayou.github.io/2014/11/08/lazy-evaluation/"/>
     <id>https://wayou.github.io/2014/11/08/lazy-evaluation/</id>
     <published>2014-11-08T15:29:27.000Z</published>
-    <updated>2017-06-17T03:23:53.624Z</updated>
+    <updated>2017-06-17T03:46:42.138Z</updated>
     
     <content type="html"><![CDATA[<p><em>作者在本文里没有说明这么一个事实：
 目前的版本<code>Lo-Dash v2.4.1</code>并没有引入延迟求值的特性，<code>Lo-Dash 3.0.0-pre</code>中部分方法进行了引入，比如<code>filter()</code>,<code>map()</code>,<code>reverse()</code>。</em></p>
@@ -2814,7 +2814,7 @@ $json<span class="token punctuation">.</span><span class="token keyword">get</sp
     <link href="https://wayou.github.io/2014/11/02/how-to-make-a-simple-html5-canvas-game-zh/"/>
     <id>https://wayou.github.io/2014/11/02/how-to-make-a-simple-html5-canvas-game-zh/</id>
     <published>2014-11-02T13:14:34.000Z</published>
-    <updated>2017-06-17T03:23:53.624Z</updated>
+    <updated>2017-06-17T03:46:42.138Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>原文：<a href="http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/" target="_blank" rel="external">How to make a simple HTML5 Canvas game</a></p>
@@ -2988,7 +2988,7 @@ requestAnimationFrame <span class="token operator">=</span> w<span class="token 
     <link href="https://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/"/>
     <id>https://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/</id>
     <published>2014-09-14T14:23:54.000Z</published>
-    <updated>2017-06-17T03:23:53.624Z</updated>
+    <updated>2017-06-17T03:46:42.138Z</updated>
     
     <content type="html"><![CDATA[<p>HTML5有无限可能，总是在释出一些新鲜实用的功能，让原生的web环境更加炫酷。</p>
 <p>今天看到<code>datalist</code> 这个元素，可以用来预先定义一个输入框的潜在选项，也就是我们在平时项目中经常用jQuery插件或者自己写JS来实现的<code>autocomplete</code>「自动补全，但似乎自动提示更贴切一些」功能。</p>
@@ -3052,7 +3052,7 @@ Opera在边缘浏览器中表现强劲，绿得很耀眼；
     <link href="https://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/"/>
     <id>https://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/</id>
     <published>2014-09-10T21:20:04.000Z</published>
-    <updated>2017-06-17T03:23:53.620Z</updated>
+    <updated>2017-06-17T03:46:42.130Z</updated>
     
     <content type="html"><![CDATA[<p>Chrome的开发者工具已经强大到没朋友的地步了，特别是其功能丰富界面友好的console，使用得当可以有如下功效：</p>
 <ul>
@@ -3252,7 +3252,7 @@ But现实是残酷的，如之前所述的，这里的控制台命令只能在�
     <link href="https://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/"/>
     <id>https://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/</id>
     <published>2014-08-31T11:56:00.000Z</published>
-    <updated>2017-06-17T03:23:53.616Z</updated>
+    <updated>2017-06-17T03:46:42.130Z</updated>
     
     <content type="html"><![CDATA[<p>有朋友反映替换icon后程序无法启动，请ST3来实验。</p>
 <p><a href="http://www.sublimetext.com/3" target="_blank" rel="external">sublime text</a>很赞，windows上最接近mac逼格的轻量编辑器，对于我这样比较喜欢格调的人来说，简直不二之选啊。</p>

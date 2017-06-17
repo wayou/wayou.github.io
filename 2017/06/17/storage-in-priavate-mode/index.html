@@ -67,10 +67,6 @@
     <div class="container clearfix">
   <div class="col col-sidebar">
     
-      <!--placeholder-->
-      <p></p>
-      <div class="toc js-toc"></div>
-    
   </div>
   <div class="col col-main">
     <article>
@@ -90,7 +86,7 @@
 </section>
       <section class="post-content">
         <p>现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。
-<img src="/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg" alt="虽然标题暗标要讨论的是 Safari，但配图我喜欢这个 Chrome "><span class="image-caption">虽然标题暗标要讨论的是 Safari，但配图我喜欢这个 Chrome </span>
+<img src="/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg" alt="虽然标题暗示要讨论的是 Safari，但配图我喜欢这个 Chrome "><span class="image-caption">虽然标题暗示要讨论的是 Safari，但配图我喜欢这个 Chrome </span>
 <a id="more"></a></p>
 <p>这种模式下浏览网页踏雪无痕，雁过不留声。具体来说，与正常模式的区别是浏览器不会保存历史记录，没有页面缓存，所有本地数据也都是临时的，页面关闭后无法还原。譬如本文下面要讲到的 <code>localStorage</code>。</p>
 <aside class="caution">
@@ -99,8 +95,8 @@
 </aside>  
 
 <pre class=" language-bash"><code class="language-bash">--------- LOG ---------
-00:00:01 - 一位不具名用户在零点零一分进行了访问
-00:00:02 - 一位不愿透露姓名的用户在零点零二分打开了你丢弃在服务器 <span class="token variable"><span class="token variable">`</span>社会科学/东方艺术鉴赏/东瀛国浮世绘<span class="token variable">`</span></span> 中的资源 <span class="token variable"><span class="token variable">`</span>ae2bx86.jpg<span class="token variable">`</span></span>
+00:01:00 - 一位不具名用户在零点零一分进行了访问
+00:02:00 - 一位不愿透露姓名的用户在零点零二分打开了你丢弃在服务器 <span class="token variable"><span class="token variable">`</span>社会科学/东方艺术鉴赏/东瀛国浮世绘<span class="token variable">`</span></span> 中的资源 <span class="token variable"><span class="token variable">`</span>ae2bx86.jpg<span class="token variable">`</span></span>
 </code></pre>
 <p>从功能上来说，普通用户大概鲜有人知道这一功能（产品情怀就这样被用户无视，PM 们默默泪目），而开发者则利用其干净的特点来开发调试，排除程序之外的因素导致 bug 的可能。</p>
 <p>因为所有本地数据都是临时的，那么问题来了，如果网页代码中还使用了诸如 <code>localStorage</code> 的本地存储，还能生效吗？</p>
@@ -145,19 +141,19 @@
 <img src="/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png" alt="iOS Chrome 隐私模式获取值"><span class="image-caption">iOS Chrome 隐私模式获取值</span></p>
 </li>
 </ul>
-<p>这表明在 iOS 上，不仅是 Safari 在隐私模式中不能使用 localStorage, Chrome 也不行也不行。这不禁让人怀疑跟系统平台的策略有关。</p>
+<p>这表明在 iOS 上，不仅是 Safari 在隐私模式中不能使用 <code>localStorage</code>, Chrome 也不行也不行。这不禁让人怀疑跟系统平台的策略有关。</p>
 <p>博主是谷粉，很早就入手了 Nexus。本着严谨的做事态度，那肯定也得拿来测试一下丫。而安卓机上的测试则让人无法接受。</p>
 <ul>
 <li><p>安卓 Chrome 隐私模式下设置值
-<img src="/2017/06/17/storage-in-priavate-mode/android-chrome-get.png" alt="安卓 Chrome 隐私模式下设置值"><span class="image-caption">安卓 Chrome 隐私模式下设置值</span></p>
+<img src="/2017/06/17/storage-in-priavate-mode/android-chrome-set.png" alt="安卓 Chrome 隐私模式下设置值"><span class="image-caption">安卓 Chrome 隐私模式下设置值</span></p>
 </li>
 <li><p>安卓 Chrome 隐私模式下获取值
 <img src="/2017/06/17/storage-in-priavate-mode/android-chrome-get.png" alt="安卓 Chrome 隐私模式下获取值"><span class="image-caption">安卓 Chrome 隐私模式下获取值</span></p>
 </li>
 </ul>
-<p>是的，安卓上面并没有表现出假装支持 <code>localStorage</code>，而是真正的支持，能存能取，能取能用！两次证实了上面的怀疑，这种假装的支持应该是 iOS 的设计哲学。</p>
+<p>是的，安卓上面并没有表现出假装支持 <code>localStorage</code>，而是真正的支持，能存能取，能取能用！再次证实了上面的怀疑，这种假装的支持应该是 iOS 的设计哲学。</p>
 <p>回过头来想，隐私模式主要的功能不就是让用户的数据不被追踪吗，如果能够存取数据的话，反而没那么隐私了。从这点来说，<code>localStorage</code> 设置不成功倒也考量了些许人文情怀在里面。</p>
-<p>问题想当于回到了开发者手中，我们在开发过程中使用 <code>loaclStorage</code> 就需要对这种情况进行兼容，以譬如 js 报错后影响整个页面的功能。</p>
+<p>问题想当于回到了开发者手中，我们在开发过程中使用 <code>loaclStorage</code> 就需要对这种情况进行兼容，以避免 js 报错后影响整个页面的功能。</p>
 <p>下面是兼容代码示例：</p>
 <pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">isLocalStorageSupport</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">try</span> <span class="token punctuation">{</span>
