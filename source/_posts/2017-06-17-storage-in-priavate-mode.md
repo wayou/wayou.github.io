@@ -1,7 +1,7 @@
 title: Safari Private 模式下 localStorage 的问题
 toc: false
 date: 2017-06-17 00:28:42
-categories:
+categories: 前端
 tags:
 - safari
 - localStorage
@@ -64,26 +64,32 @@ QUOTA_EXCEEDED_ERR:DOM Exception 22:An attempt was made to add something to stor
 
 下面是测试结果：
 
-- iOS Safari 隐私模式设置值
+iOS Safari 隐私模式设置值
+
 ![iOS Safari 隐私模式设置值](ios-safari-set.png)
 
-- iOS Safari 隐私模式获取值
+iOS Safari 隐私模式获取值
+
 ![iOS Safari 隐私模式获取值](ios-safari-get.png)
 
-- iOS Chrome 隐私模式设置值
+iOS Chrome 隐私模式设置值
+
 ![iOS Chrome 隐私模式设置值](ios-chrome-get.png)
 
-- iOS Chrome 隐私模式获取值
+iOS Chrome 隐私模式获取值
+
 ![iOS Chrome 隐私模式获取值](ios-chrome-get.png)
 
 这表明在 iOS 上，不仅是 Safari 在隐私模式中不能使用 `localStorage`, Chrome 也不行也不行。这不禁让人怀疑跟系统平台的策略有关。
 
 博主是谷粉，很早就入手了 Nexus。本着严谨的做事态度，那肯定也得拿来测试一下丫。而安卓机上的测试则让人无法接受。
 
-- 安卓 Chrome 隐私模式下设置值
+安卓 Chrome 隐私模式下设置值
+
 ![安卓 Chrome 隐私模式下设置值](android-chrome-set.png)
 
-- 安卓 Chrome 隐私模式下获取值
+安卓 Chrome 隐私模式下获取值
+
 ![安卓 Chrome 隐私模式下获取值](android-chrome-get.png)
 
 是的，安卓上面并没有表现出假装支持 `localStorage`，而是真正的支持，能存能取，能取能用！再次证实了上面的怀疑，这种假装的支持应该是 iOS 的设计哲学。

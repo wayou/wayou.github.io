@@ -1,7 +1,7 @@
 title: Angular条件路由
 toc: false
 date: 2015-03-08 11:43:04
-categories: 技术
+categories: 前端
 tags:
 - anular
 ---

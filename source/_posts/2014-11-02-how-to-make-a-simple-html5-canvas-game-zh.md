@@ -1,7 +1,7 @@
 title: 如何开发一个简单的HTML5 Canvas 小游戏
 toc: true
 date: 2014-11-02 13:14:34
-categories: 技术
+categories: 前端
 tags:
 - HTML5
 - Canvas

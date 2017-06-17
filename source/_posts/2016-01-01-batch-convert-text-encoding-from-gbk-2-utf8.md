@@ -1,7 +1,7 @@
 title: GBK批量转UTF8
 toc: true
 date: 2016-01-01 15:47:33
-categories: 技术
+categories: 编程
 tags:
 - 编码
 - bash

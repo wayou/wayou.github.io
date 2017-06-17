@@ -1,7 +1,7 @@
 title: Nexus 5 刷机及ROOT
 toc: true
 date: 2014-12-21 11:17:10
-categories: 杂项
+categories: 手机
 tags:
 - nexus
 - android

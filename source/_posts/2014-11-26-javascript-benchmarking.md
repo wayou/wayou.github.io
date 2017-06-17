@@ -1,7 +1,7 @@
 title: JavaScript的基准测试-不服跑个分？
 toc: true
 date: 2014-11-26 19:54:36
-categories: 技术
+categories: JavaScript
 tags:
 - javascript
 - 性能

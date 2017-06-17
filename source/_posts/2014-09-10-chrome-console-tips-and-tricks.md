@@ -1,6 +1,6 @@
 title: Chrome 控制台不完全指南
 date: 2014-09-10 21:20:04
-categories: 技术
+categories: 前端
 tags:
 - chrome
 - console

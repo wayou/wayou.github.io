@@ -124,11 +124,16 @@ kbd {
     border-radius: 3px;
 }
 
-p > code {
-    font: 500 90%/1 Roboto Mono, monospace;
+code{
+    font: 500 90%/1 Roboto Mono,monospace;
     word-break: break-word;
-    background: #f7f7f7;
+    background: #eff0f1;
     color: #37474f;
+    padding: 1px 4px;
+}
+
+pre code{
+    background: inherit; 
 }
 
 .clearfix:after {
@@ -174,7 +179,7 @@ p > code {
 /*https://material.io/icons/*/
 
 
-/*@font-face {
+@font-face {
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
@@ -199,7 +204,7 @@ p > code {
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: 'liga';
-}*/
+}
 
 .material-icons.md-18 {
     font-size: 18px;
@@ -721,8 +726,13 @@ header .header-burger div:after {
 .post-content img, .post-content video {
     border: 0;
     max-width: 100%;
-    max-height: 100%;
-    margin: 15px 0;
+    max-height: 100vh;
+    margin: 15px auto;
+}
+
+.post-content img{
+    cursor: pointer;
+    display: block;
 }
 
 pre[class*="language-"]{

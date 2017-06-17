@@ -74,20 +74,19 @@ image_caption:
   class_name:
 
 # deploy minify
+all_minifier: false
+
 html_minifier:
   enable: true
-  # enable: false
   exclude:
 
 css_minifier:
   enable: true
-  # enable: false
   exclude:
     - '*.min.css'
 
 js_minifier:
   enable: true
-  # enable: false
   mangle: true
   output:
   compress:
@@ -99,7 +98,9 @@ image_minifier:
 
 autoprefixer:
   exclude:
-    - '*.min.js'
+    - '*.min.css'
+  browsers:
+    - 'last 2 versions'
 
 ## dev
 browsersync:

@@ -2,8 +2,7 @@ title: 给自己的 Redux 普及读本
 toc: true
 cover: cover.jpg
 date: 2016-07-24 15:49:43
-categories:
-- 技术
+categories: 前端
 tags:
 - raect
 - redux

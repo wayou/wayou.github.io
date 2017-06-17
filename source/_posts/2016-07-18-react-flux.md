@@ -2,8 +2,7 @@ title: 给自己的Flux普及读本
 toc: true
 cover: cover.jpg
 date: 2016-07-18 14:11:48
-categories:
-- 技术
+categories: 前端
 tags:
 - reactjs
 - flux

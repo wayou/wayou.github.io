@@ -1,7 +1,7 @@
 title: 利用HTML5 的Datalist 元素实现输入提示
 toc: true
 date: 2014-09-14 14:23:54
-categories: 技术
+categories: HTML
 tags:
 - HTML5
 - Datalist
