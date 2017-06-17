@@ -26,8 +26,9 @@
   <% } %>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Wayou Liu">
-  <meta name="description" content="share thoughts on web developing">
-  <meta name="keywords" content="frontend,dev,software,web,react,js,css,html,javascript,china,chinese,github,angularjs">
+  
+  <%- autoCanonical(config, page) %>
+  <%- open_graph({twitter_id: theme.twitter, google_plus: theme.google_plus, fb_admins: theme.fb_admins, fb_app_id: theme.fb_app_id}) %>
   <link href="<%- url_for('img/logo.png') %>" rel="shortcut icon"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">

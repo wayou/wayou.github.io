@@ -8,6 +8,7 @@
   "dependencies": {
     "hexo": "^3.1.0",
     "hexo-all-minifier": "0.1.1",
+    "hexo-auto-canonical": "^0.1.0",
     "hexo-autoprefixer": "^1.0.0",
     "hexo-browsersync": "^0.2.0",
     "hexo-deployer-git": "0.3.0",
@@ -16,6 +17,7 @@
     "hexo-generator-category": "^0.1.2",
     "hexo-generator-feed": "^1.0.2",
     "hexo-generator-index": "^0.2.1",
+    "hexo-generator-seo-friendly-sitemap": "0.0.21",
     "hexo-generator-tag": "^0.2.0",
     "hexo-image-caption": "^0.1.1",
     "hexo-prism-plugin": "^2.1.2",

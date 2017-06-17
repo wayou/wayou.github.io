@@ -4,8 +4,8 @@
 
 # Site
 title: 刘哇勇的部落格
-subtitle:
-description:
+subtitle: 程序员小刘是个有理想的青年
+description: 刘哇勇的部落格，分享前端知识，记录生活点滴
 author: Wayou Liu
 language: zh-cn
 timezone:
@@ -60,6 +60,9 @@ pagination_dir: page
 # Extensions
 ## Plugins: http://hexo.io/plugins/
 
+sitemap:
+  path: sitemap.xml
+
 prism_plugin:
   mode: 'preprocess'
   # theme: 'duotone-sea'
@@ -72,19 +75,19 @@ image_caption:
 
 # deploy minify
 html_minifier:
-  # enable: true
-  enable: false
+  enable: true
+  # enable: false
   exclude:
 
 css_minifier:
+  enable: true
   # enable: false
-  enable: false
   exclude:
     - '*.min.css'
 
 js_minifier:
-  # enable: true
-  enable: false
+  enable: true
+  # enable: false
   mangle: true
   output:
   compress:
@@ -92,7 +95,7 @@ js_minifier:
     - '*.min.js'
 
 image_minifier:
-  enable: false
+  enable: true
 
 autoprefixer:
   exclude:
