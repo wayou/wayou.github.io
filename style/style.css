@@ -738,8 +738,8 @@ header .header-burger div:after {
     margin: 15px 0;
 }
 
-pre[class*="language-"] pre[class*="language-"]{
-    border-radius: 0;
+pre[class*="language-"]{
+    border-radius: 0!important;
 }
 
 /*=====post end=====*/
