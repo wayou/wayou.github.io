@@ -1,15 +1,153 @@
-<!DOCTYPE html><head><title>Safari Private 模式下 localStorage 的问题 | 刘哇勇的部落格</title><meta charset="UTF-8"><link href="/favicon.ico" rel="icon"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Wayou Liu"><link rel="canonical" href="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/"><meta name="description" content="现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。"><meta name="keywords" content="safari,localStorage"><meta property="og:type" content="article"><meta property="og:title" content="Safari Private 模式下 localStorage 的问题"><meta property="og:url" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/index.html"><meta property="og:site_name" content="刘哇勇的部落格"><meta property="og:description" content="现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。"><meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg"><meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/ios-safari-set.png"><meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/ios-safari-get.png"><meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png"><meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png"><meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/android-chrome-set.png"><meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/android-chrome-get.png"><meta property="og:updated_time" content="2017-06-17T11:02:33.048Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Safari Private 模式下 localStorage 的问题"><meta name="twitter:description" content="现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。"><meta name="twitter:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg"><meta name="twitter:creator" content="@liuwayong"><link rel="publisher" href="+WayouLiu"><meta property="fb:admins" content="liuwayong"><meta property="fb:app_id" content="liuwayong"><link href="/img/logo.png" rel="shortcut icon"><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"><link rel="stylesheet" href="/lib/waves/waves.css"><link rel="stylesheet" href="/lib/tocbot/tocbot.css"><link rel="stylesheet" href="/style/style.css"><script>if(new Date().getTimezoneOffset()/60 == -8) /*disable for china */ return;
+<!DOCTYPE html>
+  <head>
+  
+  <title>Safari Private 模式下 localStorage 的问题 | 刘哇勇的部落格</title>
+  <meta charset="UTF-8">
+  
+  
+  <link href="/favicon.ico" rel="icon"/>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Wayou Liu">
+  
+  <link rel="canonical" href="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/"/>
+  <meta name="description" content="现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。">
+<meta name="keywords" content="safari,localStorage">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Safari Private 模式下 localStorage 的问题">
+<meta property="og:url" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/index.html">
+<meta property="og:site_name" content="刘哇勇的部落格">
+<meta property="og:description" content="现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。">
+<meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg">
+<meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/ios-safari-set.png">
+<meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/ios-safari-get.png">
+<meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png">
+<meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png">
+<meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/android-chrome-set.png">
+<meta property="og:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/android-chrome-get.png">
+<meta property="og:updated_time" content="2017-06-17T13:10:56.062Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Safari Private 模式下 localStorage 的问题">
+<meta name="twitter:description" content="现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。">
+<meta name="twitter:image" content="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg">
+<meta name="twitter:creator" content="@liuwayong">
+<link rel="publisher" href="+WayouLiu">
+<meta property="fb:admins" content="liuwayong">
+<meta property="fb:app_id" content="liuwayong">
+  <link href="/img/logo.png" rel="shortcut icon"/>
+  <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">-->
+  <link rel="stylesheet" href="/lib/waves/waves.css">
+  <link rel="stylesheet" href="/lib/tocbot/tocbot.css">
+  <link rel="stylesheet" href="/style/style.css">        
+  
+<!-- Google analyse -->
+<script>
+  // if(new Date().getTimezoneOffset()/60 == -8) /*disable for china */ return;
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
   ga('create', 'UA-46794744-6', 'auto');
-  ga('send', 'pageview');</script><link rel="stylesheet" href="/css/prism-atom-dark.css" type="text/css"></head><body><header><div class="header-wrap clearfix"><div class="header-content"><a class="logo-wrap ink" href="/"><img class="logo" src="/logo.png" alt=""> <span class="site-name">刘哇勇的部落格</span></a><div class="menu-wrap"><div class="header-burger" onclick='document.body.classList.toggle("open")'><div></div></div></div></div><nav class="header-nav"><ul><li class="nav-item ink"><a class="nav-link" href="/">首页</a></li><li class="nav-item ink"><a class="nav-link" href="/archives">归档</a></li><li class="nav-item ink"><a class="nav-link" href="/about">关于</a></li><li class="nav-item ink"><a class="nav-link" href="/atom.xml">订阅</a></li></ul></nav></div></header><div class="container clearfix"><div class="col col-sidebar"></div><div class="col col-main"><article><h1>Safari Private 模式下 localStorage 的问题</h1><section class="post-info"><div class="post-date"><i class="material-icons md-dark">watch_later</i> 11 小时前</div><div class="post-tags"><i class="material-icons md-dark">local_offer</i> <a class="tag-link" href="/tags/localStorage/">localStorage</a>, <a class="tag-link" href="/tags/safari/">safari</a></div></section><section class="post-content"><p>现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。 <img src="/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg" alt="虽然标题暗示要讨论的是 Safari，但配图我喜欢这个 Chrome "><span class="image-caption">虽然标题暗示要讨论的是 Safari，但配图我喜欢这个 Chrome </span><a id="more"></a></p><p>这种模式下浏览网页踏雪无痕，雁过不留声。具体来说，与正常模式的区别是浏览器不会保存历史记录，没有页面缓存，所有本地数据也都是临时的，页面关闭后无法还原。譬如本文下面要讲到的 <code>localStorage</code>。</p><aside class="caution">并不是说这种模式下绝对安全，服务器仍然对用户的浏览是有感知的。所以 IP 什么的依然可以追踪。 这世界并不如我们天真设想般烂漫。</aside><pre class="language-bash"><code class="language-bash">--------- LOG ---------
+  ga('send', 'pageview');
+
+</script>
+
+<link rel="stylesheet" href="/css/prism-atom-dark.css" type="text/css"></head>
+  <body>
+    <header>
+  <div class="header-wrap clearfix">
+      <div class="header-content">
+          <a class="logo-wrap ink" href="/">          
+            <img class="logo" src="/logo.png" alt="">
+            <span class="site-name">刘哇勇的部落格</span>          
+        </a>
+        <div class="menu-wrap">
+            <div class="header-burger" onclick="document.body.classList.toggle('open')">
+                <div></div>
+            </div>
+        </div>
+      </div>
+      <nav class="header-nav">
+          <ul>
+           
+              <li class="nav-item ink">
+                  <a class="nav-link" href="/">
+                      首页
+                  </a>
+              </li>
+           
+              <li class="nav-item ink">
+                  <a class="nav-link" href="/archives">
+                      归档
+                  </a>
+              </li>
+           
+              <li class="nav-item ink">
+                  <a class="nav-link" href="/about">
+                      关于
+                  </a>
+              </li>
+           
+              <li class="nav-item ink">
+                  <a class="nav-link" href="/atom.xml">
+                      订阅
+                  </a>
+              </li>
+              
+          </ul>
+      </nav>
+  </div>
+</header>
+        
+    <div class="container clearfix">
+  <div class="col col-sidebar">
+    
+  </div>
+  <div class="col col-main">
+    <article>
+      <h1>Safari Private 模式下 localStorage 的问题</h1>
+      <section class="post-info">
+    <div class="post-date">
+        <i class="material-icons md-dark">watch_later</i>
+        13 小时前
+    </div>
+              
+        <div class="post-categories">
+        <i class="material-icons md-dark">folder</i>
+        <a class="category-link" href="/categories/前端/">前端</a>
+        </div>
+    
+    
+    <div class="post-tags">
+    <i class="material-icons md-dark">local_offer</i>
+    <a class="tag-link" href="/tags/localStorage/">localStorage</a>, <a class="tag-link" href="/tags/safari/">safari</a>
+    </div>
+    
+</section>
+      <section class="post-content">
+        <p>现如今好多浏览器都有「隐身模式」，Safari 管这叫「Private Browing」，国内各种牌子的套壳浏览器叫「无痕浏览」。私以为从命名上来说，倒是国内更中文一些。
+<img src="/2017/06/17/storage-in-priavate-mode/chrome-incognito.jpg" alt="虽然标题暗示要讨论的是 Safari，但配图我喜欢这个 Chrome "><span class="image-caption">虽然标题暗示要讨论的是 Safari，但配图我喜欢这个 Chrome </span>
+<a id="more"></a></p>
+<p>这种模式下浏览网页踏雪无痕，雁过不留声。具体来说，与正常模式的区别是浏览器不会保存历史记录，没有页面缓存，所有本地数据也都是临时的，页面关闭后无法还原。譬如本文下面要讲到的 <code>localStorage</code>。</p>
+<aside class="caution">
+并不是说这种模式下绝对安全，服务器仍然对用户的浏览是有感知的。所以 IP 什么的依然可以追踪。
+这世界并不如我们天真设想般烂漫。
+</aside>  
+
+<pre class=" language-bash"><code class="language-bash">--------- LOG ---------
 00:01:00 - 一位不具名用户在零点零一分进行了访问
 00:02:00 - 一位不愿透露姓名的用户在零点零二分打开了你丢弃在服务器 <span class="token variable"><span class="token variable">`</span>社会科学/东方艺术鉴赏/东瀛国浮世绘<span class="token variable">`</span></span> 中的资源 <span class="token variable"><span class="token variable">`</span>ae2bx86.jpg<span class="token variable">`</span></span>
-</code></pre><p>从功能上来说，普通用户大概鲜有人知道这一功能（产品情怀就这样被用户无视，PM 们默默泪目），而开发者则利用其干净的特点来开发调试，排除程序之外的因素导致 bug 的可能。</p><p>因为所有本地数据都是临时的，那么问题来了，如果网页代码中还使用了诸如 <code>localStorage</code> 的本地存储，还能生效吗？</p><p>答案是肯定的，但只针对本次访问。这个肯定只限于桌面浏览器。 而手机端则不然。</p><p>iOS 上 Safari private 模式下浏览器假装支持 <code>localStorage</code>，并在全局 <code>window</code> 上暴露了该方法。但是当你在调用 <code>localStorage.setItem</code> 进行保存的时候就会报 <code>QUOTA_EXCEEDED_ERR</code> 错。</p><pre class="language-js"><code class="language-js">QUOTA_EXCEEDED_ERR<span class="token punctuation">:</span>DOM Exception <span class="token number">22</span><span class="token punctuation">:</span>An attempt was made to add something to storage<span class="token operator">...</span>
-</code></pre><p>考察下面的测试代码：</p><pre class="language-js"><code class="language-js"><span class="token operator">&lt;</span>button <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"setValue"</span><span class="token operator">></span>SET<span class="token operator">&lt;</span><span class="token operator">/</span>button<span class="token operator">></span>
+</code></pre>
+<p>从功能上来说，普通用户大概鲜有人知道这一功能（产品情怀就这样被用户无视，PM 们默默泪目），而开发者则利用其干净的特点来开发调试，排除程序之外的因素导致 bug 的可能。</p>
+<p>因为所有本地数据都是临时的，那么问题来了，如果网页代码中还使用了诸如 <code>localStorage</code> 的本地存储，还能生效吗？</p>
+<p>答案是肯定的，但只针对本次访问。这个肯定只限于桌面浏览器。 而手机端则不然。</p>
+<p>iOS 上 Safari private 模式下浏览器假装支持 <code>localStorage</code>，并在全局 <code>window</code> 上暴露了该方法。但是当你在调用 <code>localStorage.setItem</code> 进行保存的时候就会报 <code>QUOTA_EXCEEDED_ERR</code> 错。</p>
+<pre class=" language-js"><code class="language-js">QUOTA_EXCEEDED_ERR<span class="token punctuation">:</span>DOM Exception <span class="token number">22</span><span class="token punctuation">:</span>An attempt was made to add something to storage<span class="token operator">...</span>
+</code></pre>
+<p>考察下面的测试代码：</p>
+<pre class=" language-js"><code class="language-js"><span class="token operator">&lt;</span>button <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"setValue"</span><span class="token operator">></span>SET<span class="token operator">&lt;</span><span class="token operator">/</span>button<span class="token operator">></span>
 <span class="token operator">&lt;</span>hr<span class="token operator">></span>
 <span class="token operator">&lt;</span>button <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"getValue"</span><span class="token operator">></span>GET<span class="token operator">&lt;</span><span class="token operator">/</span>button<span class="token operator">></span>
 <span class="token operator">&lt;</span>script<span class="token operator">></span>
@@ -28,7 +166,28 @@
         <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'got '</span><span class="token operator">+</span>content<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
 <span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span>
-</code></pre><p>我在页面放了两个按钮，一个用于向浏览器保存值，一个用于获取。</p><p>下面是测试结果：</p><ul><li><p>iOS Safari 隐私模式设置值 <img src="/2017/06/17/storage-in-priavate-mode/ios-safari-set.png" alt="iOS Safari 隐私模式设置值"><span class="image-caption">iOS Safari 隐私模式设置值</span></p></li><li><p>iOS Safari 隐私模式获取值 <img src="/2017/06/17/storage-in-priavate-mode/ios-safari-get.png" alt="iOS Safari 隐私模式获取值"><span class="image-caption">iOS Safari 隐私模式获取值</span></p></li><li><p>iOS Chrome 隐私模式设置值 <img src="/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png" alt="iOS Chrome 隐私模式设置值"><span class="image-caption">iOS Chrome 隐私模式设置值</span></p></li><li><p>iOS Chrome 隐私模式获取值 <img src="/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png" alt="iOS Chrome 隐私模式获取值"><span class="image-caption">iOS Chrome 隐私模式获取值</span></p></li></ul><p>这表明在 iOS 上，不仅是 Safari 在隐私模式中不能使用 <code>localStorage</code>, Chrome 也不行也不行。这不禁让人怀疑跟系统平台的策略有关。</p><p>博主是谷粉，很早就入手了 Nexus。本着严谨的做事态度，那肯定也得拿来测试一下丫。而安卓机上的测试则让人无法接受。</p><ul><li><p>安卓 Chrome 隐私模式下设置值 <img src="/2017/06/17/storage-in-priavate-mode/android-chrome-set.png" alt="安卓 Chrome 隐私模式下设置值"><span class="image-caption">安卓 Chrome 隐私模式下设置值</span></p></li><li><p>安卓 Chrome 隐私模式下获取值 <img src="/2017/06/17/storage-in-priavate-mode/android-chrome-get.png" alt="安卓 Chrome 隐私模式下获取值"><span class="image-caption">安卓 Chrome 隐私模式下获取值</span></p></li></ul><p>是的，安卓上面并没有表现出假装支持 <code>localStorage</code>，而是真正的支持，能存能取，能取能用！再次证实了上面的怀疑，这种假装的支持应该是 iOS 的设计哲学。</p><p>回过头来想，隐私模式主要的功能不就是让用户的数据不被追踪吗，如果能够存取数据的话，反而没那么隐私了。从这点来说，<code>localStorage</code> 设置不成功倒也考量了些许人文情怀在里面。</p><p>问题想当于回到了开发者手中，我们在开发过程中使用 <code>loaclStorage</code> 就需要对这种情况进行兼容，以避免 js 报错后影响整个页面的功能。</p><p>下面是兼容代码示例：</p><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">isLocalStorageSupport</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+</code></pre>
+<p>我在页面放了两个按钮，一个用于向浏览器保存值，一个用于获取。</p>
+<p>下面是测试结果：</p>
+<p>iOS Safari 隐私模式设置值</p>
+<p><img src="/2017/06/17/storage-in-priavate-mode/ios-safari-set.png" alt="iOS Safari 隐私模式设置值"><span class="image-caption">iOS Safari 隐私模式设置值</span></p>
+<p>iOS Safari 隐私模式获取值</p>
+<p><img src="/2017/06/17/storage-in-priavate-mode/ios-safari-get.png" alt="iOS Safari 隐私模式获取值"><span class="image-caption">iOS Safari 隐私模式获取值</span></p>
+<p>iOS Chrome 隐私模式设置值</p>
+<p><img src="/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png" alt="iOS Chrome 隐私模式设置值"><span class="image-caption">iOS Chrome 隐私模式设置值</span></p>
+<p>iOS Chrome 隐私模式获取值</p>
+<p><img src="/2017/06/17/storage-in-priavate-mode/ios-chrome-get.png" alt="iOS Chrome 隐私模式获取值"><span class="image-caption">iOS Chrome 隐私模式获取值</span></p>
+<p>这表明在 iOS 上，不仅是 Safari 在隐私模式中不能使用 <code>localStorage</code>, Chrome 也不行也不行。这不禁让人怀疑跟系统平台的策略有关。</p>
+<p>博主是谷粉，很早就入手了 Nexus。本着严谨的做事态度，那肯定也得拿来测试一下丫。而安卓机上的测试则让人无法接受。</p>
+<p>安卓 Chrome 隐私模式下设置值</p>
+<p><img src="/2017/06/17/storage-in-priavate-mode/android-chrome-set.png" alt="安卓 Chrome 隐私模式下设置值"><span class="image-caption">安卓 Chrome 隐私模式下设置值</span></p>
+<p>安卓 Chrome 隐私模式下获取值</p>
+<p><img src="/2017/06/17/storage-in-priavate-mode/android-chrome-get.png" alt="安卓 Chrome 隐私模式下获取值"><span class="image-caption">安卓 Chrome 隐私模式下获取值</span></p>
+<p>是的，安卓上面并没有表现出假装支持 <code>localStorage</code>，而是真正的支持，能存能取，能取能用！再次证实了上面的怀疑，这种假装的支持应该是 iOS 的设计哲学。</p>
+<p>回过头来想，隐私模式主要的功能不就是让用户的数据不被追踪吗，如果能够存取数据的话，反而没那么隐私了。从这点来说，<code>localStorage</code> 设置不成功倒也考量了些许人文情怀在里面。</p>
+<p>问题想当于回到了开发者手中，我们在开发过程中使用 <code>loaclStorage</code> 就需要对这种情况进行兼容，以避免 js 报错后影响整个页面的功能。</p>
+<p>下面是兼容代码示例：</p>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">isLocalStorageSupport</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">try</span> <span class="token punctuation">{</span>
         <span class="token keyword">var</span> isSupport <span class="token operator">=</span> <span class="token string">'localStorage'</span> <span class="token keyword">in</span> window <span class="token operator">&amp;&amp;</span> window<span class="token punctuation">[</span><span class="token string">'localStorage'</span><span class="token punctuation">]</span> <span class="token operator">!==</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
         <span class="token keyword">if</span> <span class="token punctuation">(</span>isSupport<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -40,4 +199,60 @@
         <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-</code></pre><p>为此，我们可以考虑提取一个辅助类来封装 <code>localStorage</code>，这样就可以随时随地放心使用。</p></section></article><div class="pager"><a class="post-next pager-item" href="/2017/06/16/import-data-into-google-sheets-from-web-page/"><strong class="article-nav-caption">下一篇</strong><p class="post-nav-title truncate-text">导入网页数据到 Google Sheet</p></a></div><div class="comment-section"><div id="disqus_thread"></div><script>var disqus_config=function(){this.page.url="https://wayou.github.io/2017/06/17/storage-in-priavate-mode/",this.page.identifier="_posts/2017-06-17-storage-in-priavate-mode.md"};!function(){var t=document,e=t.createElement("script");e.src="//wayou.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script></div></div></div><footer class="footer"><p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a title="under developing..." href="javascript:;">末名</a>主题</p><p>&copy; 2017 Wayou Liu</p></footer><script src="/lib/waves/waves.js"></script><script src="/lib/tocbot/tocbot.js"></script><script src="/js/main.js"></script></body>
+</code></pre>
+<p>为此，我们可以考虑提取一个辅助类来封装 <code>localStorage</code>，这样就可以随时随地放心使用。</p>
+
+      </section>
+    </article>
+
+    
+      <div class="pager">
+        
+            <a class="post-prev pager-item" href="/2017/06/17/alias-for-document-querySelector/">
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title truncate-text">正确地缩写 document.querySelector</p>
+            </a>
+        
+        
+            <a class="post-next pager-item" href="/2017/06/16/import-data-into-google-sheets-from-web-page/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title truncate-text">导入网页数据到 Google Sheet</p>
+            </a>
+        
+      </div>
+    
+
+    <!-- comments -->
+    <div class="comment-section">
+  
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function () {
+            this.page.url = 'https://wayou.github.io/2017/06/17/storage-in-priavate-mode/'; 
+            this.page.identifier = '_posts/2017-06-17-storage-in-priavate-mode.md';
+        };
+        (function() {  
+            var d = document, s = d.createElement('script');
+            s.src = '//wayou.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+  
+</div>
+
+
+  </div>
+</div>
+    <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a title="under developing..." href="javascript:;">末名</a>主题</p>
+    <p>
+        &copy; 2017 Wayou Liu
+    </p>
+</footer>
+<script src="/lib/waves/waves.js"></script>
+<script src="/lib/tocbot/tocbot.js"></script>
+<script src="/js/main.js"></script>
+
+  </body>
+</html>

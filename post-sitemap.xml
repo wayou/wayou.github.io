@@ -8,23 +8,15 @@
 
     <url>
         <loc>https://wayou.github.io/2017/06/17/storage-in-priavate-mode/</loc>
-        <lastmod>2017-06-17T11:02:33.048Z</lastmod>
+        <lastmod>2017-06-17T13:10:56.062Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
     </url>
 
     <url>
-        <loc>https://wayou.github.io/2016/07/07/css-nth/</loc>
-        <lastmod>2017-06-17T11:02:33.032Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://wayou.github.io/2016/07/18/react-flux/</loc>
-        <lastmod>2017-06-17T11:02:33.032Z</lastmod>
+        <loc>https://wayou.github.io/2017/06/17/alias-for-document-querySelector/</loc>
+        <lastmod>2017-06-17T13:10:56.058Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -32,7 +24,23 @@
 
     <url>
         <loc>https://wayou.github.io/2017/06/16/import-data-into-google-sheets-from-web-page/</loc>
-        <lastmod>2017-06-17T11:02:33.032Z</lastmod>
+        <lastmod>2017-06-17T13:10:56.046Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://wayou.github.io/2016/07/07/css-nth/</loc>
+        <lastmod>2017-06-17T13:10:56.042Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://wayou.github.io/2016/07/18/react-flux/</loc>
+        <lastmod>2017-06-17T13:10:56.042Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -40,7 +48,7 @@
 
     <url>
         <loc>https://wayou.github.io/2015/01/18/all-this/</loc>
-        <lastmod>2017-06-17T11:02:33.028Z</lastmod>
+        <lastmod>2017-06-17T13:10:56.038Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -48,7 +56,7 @@
 
     <url>
         <loc>https://wayou.github.io/2015/03/08/redirect-before-routing-in-angular/</loc>
-        <lastmod>2017-06-17T11:02:33.028Z</lastmod>
+        <lastmod>2017-06-17T13:10:56.038Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -56,7 +64,7 @@
 
     <url>
         <loc>https://wayou.github.io/2016/01/01/batch-convert-text-encoding-from-gbk-2-utf8/</loc>
-        <lastmod>2017-06-17T11:02:33.028Z</lastmod>
+        <lastmod>2017-06-17T13:10:56.038Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -64,7 +72,7 @@
 
     <url>
         <loc>https://wayou.github.io/2016/06/26/mail-dev/</loc>
-        <lastmod>2017-06-17T11:02:33.028Z</lastmod>
+        <lastmod>2017-06-17T13:10:56.038Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -72,7 +80,7 @@
 
     <url>
         <loc>https://wayou.github.io/2014/12/31/chrome-request-stalled-problem/</loc>
-        <lastmod>2017-06-17T11:02:33.020Z</lastmod>
+        <lastmod>2017-06-17T13:10:56.030Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -80,7 +88,7 @@
 
     <url>
         <loc>https://wayou.github.io/2014/12/21/nexus-root/</loc>
-        <lastmod>2017-06-17T11:02:33.012Z</lastmod>
+        <lastmod>2017-06-17T13:10:56.026Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -88,7 +96,7 @@
 
     <url>
         <loc>https://wayou.github.io/2014/11/26/javascript-benchmarking/</loc>
-        <lastmod>2017-06-17T11:02:32.976Z</lastmod>
+        <lastmod>2017-06-17T13:10:55.986Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -96,7 +104,7 @@
 
     <url>
         <loc>https://wayou.github.io/2014/11/30/html5-details-tag/</loc>
-        <lastmod>2017-06-17T11:02:32.976Z</lastmod>
+        <lastmod>2017-06-17T13:10:55.986Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -104,15 +112,7 @@
 
     <url>
         <loc>https://wayou.github.io/2014/12/07/css-currentColor/</loc>
-        <lastmod>2017-06-17T11:02:32.976Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/</loc>
-        <lastmod>2017-06-17T11:02:32.968Z</lastmod>
+        <lastmod>2017-06-17T13:10:55.986Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -120,7 +120,7 @@
 
     <url>
         <loc>https://wayou.github.io/2014/11/02/how-to-make-a-simple-html5-canvas-game-zh/</loc>
-        <lastmod>2017-06-17T11:02:32.968Z</lastmod>
+        <lastmod>2017-06-17T13:10:55.978Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -128,7 +128,15 @@
 
     <url>
         <loc>https://wayou.github.io/2014/11/08/lazy-evaluation/</loc>
-        <lastmod>2017-06-17T11:02:32.968Z</lastmod>
+        <lastmod>2017-06-17T13:10:55.978Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://wayou.github.io/2014/09/14/autocomplete-with-html5-datalist/</loc>
+        <lastmod>2017-06-17T13:10:55.974Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -136,7 +144,7 @@
 
     <url>
         <loc>https://wayou.github.io/2014/09/10/chrome-console-tips-and-tricks/</loc>
-        <lastmod>2017-06-17T11:02:32.964Z</lastmod>
+        <lastmod>2017-06-17T13:10:55.970Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -144,7 +152,7 @@
 
     <url>
         <loc>https://wayou.github.io/2014/08/31/how-to-customize-sublime-icon/</loc>
-        <lastmod>2017-06-17T11:02:32.960Z</lastmod>
+        <lastmod>2017-06-17T13:10:55.966Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
