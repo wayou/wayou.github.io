@@ -1,4 +1,104 @@
-<!DOCTYPE html><head><title>HTML5 details 标签 | 刘哇勇的部落格</title><meta charset="UTF-8"><link href="/favicon.ico" rel="icon"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Wayou Liu"><meta name="description" content="share thoughts on web developing"><meta name="keywords" content="frontend,dev,software,web,react,js,css,html,javascript,china,chinese,github,angularjs"><link href="/img/logo.png" rel="shortcut icon"><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"><link rel="stylesheet" href="/lib/waves/waves.css"><link rel="stylesheet" href="/lib/tocbot/tocbot.css"><link rel="stylesheet" href="/style/style.css"><link rel="stylesheet" href="/css/prism-atom-dark.css" type="text/css"></head><body><header><div class="header-wrap clearfix"><div class="header-content"><a class="logo-wrap ink" href="/"><img class="logo" src="/logo.png" alt=""> <span class="site-name">刘哇勇的部落格</span></a><div class="menu-wrap"><div class="header-burger" onclick='document.body.classList.toggle("open")'><div></div></div></div></div><nav class="header-nav"><ul><li class="nav-item ink"><a class="nav-link" href="/">首页</a></li><li class="nav-item ink"><a class="nav-link" href="/archives">归档</a></li><li class="nav-item ink"><a class="nav-link" href="/about">关于</a></li><li class="nav-item ink"><a class="nav-link" href="/atom.xml">订阅</a></li></ul></nav></div></header><div class="container clearfix"><div class="col col-sidebar"><p></p><div class="toc js-toc"></div></div><div class="col col-main"><article><h1>HTML5 details 标签</h1><section class="post-info"><div class="post-date"><i class="material-icons md-dark">watch_later</i> 3 年前</div><div class="post-categories"><i class="material-icons md-dark">folder</i> <a class="category-link" href="/categories/技术/">技术</a></div><div class="post-tags"><i class="material-icons md-dark">local_offer</i> <a class="tag-link" href="/tags/THML5/">THML5</a></div></section><section class="post-content"><p>HTML5 中新增的<code>&lt;details&gt;</code>标签允许用户创建一个可展开折叠的元件，让一段文字或标题包含一些隐藏的信息。</p><a id="more"></a><h2 id="用法"><a href="/2014/11/30/html5-details-tag/#用法" class="headerlink" title="用法"></a>用法</h2><p>一般情况下，<code>details</code>用来对显示在页面的内容做进一步骤解释。其展现出来的效果和jQuery手风琴插件差不多。</p><p>其大致写法如下：</p><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>details</span><span class="token punctuation">></span></span>
+<!DOCTYPE html>
+  <head>
+  
+  <title>HTML5 details 标签 | 刘哇勇的部落格</title>
+  <meta charset="UTF-8">
+  
+  
+  <link href="/favicon.ico" rel="icon"/>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Wayou Liu">
+  <meta name="description" content="share thoughts on web developing">
+  <meta name="keywords" content="frontend,dev,software,web,react,js,css,html,javascript,china,chinese,github,angularjs">
+  <link href="/img/logo.png" rel="shortcut icon"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+  <link rel="stylesheet" href="/lib/waves/waves.css">
+  <link rel="stylesheet" href="/lib/tocbot/tocbot.css">
+  <link rel="stylesheet" href="/style/style.css">        
+<link rel="stylesheet" href="/css/prism-atom-dark.css" type="text/css"></head>
+  <body>
+    <header>
+  <div class="header-wrap clearfix">
+      <div class="header-content">
+          <a class="logo-wrap ink" href="/">          
+            <img class="logo" src="/logo.png" alt="">
+            <span class="site-name">刘哇勇的部落格</span>          
+        </a>
+        <div class="menu-wrap">
+            <div class="header-burger" onclick="document.body.classList.toggle('open')">
+                <div></div>
+            </div>
+        </div>
+      </div>
+      <nav class="header-nav">
+          <ul>
+           
+              <li class="nav-item ink">
+                  <a class="nav-link" href="/">
+                      首页
+                  </a>
+              </li>
+           
+              <li class="nav-item ink">
+                  <a class="nav-link" href="/archives">
+                      归档
+                  </a>
+              </li>
+           
+              <li class="nav-item ink">
+                  <a class="nav-link" href="/about">
+                      关于
+                  </a>
+              </li>
+           
+              <li class="nav-item ink">
+                  <a class="nav-link" href="/atom.xml">
+                      订阅
+                  </a>
+              </li>
+              
+          </ul>
+      </nav>
+  </div>
+</header>
+        
+    <div class="container clearfix">
+  <div class="col col-sidebar">
+    
+      <!--placeholder-->
+      <p></p>
+      <div class="toc js-toc"></div>
+    
+  </div>
+  <div class="col col-main">
+    <article>
+      <h1>HTML5 details 标签</h1>
+      <section class="post-info">
+    <div class="post-date">
+        <i class="material-icons md-dark">watch_later</i>
+        3 年前
+    </div>
+              
+        <div class="post-categories">
+        <i class="material-icons md-dark">folder</i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+        </div>
+    
+    
+    <div class="post-tags">
+    <i class="material-icons md-dark">local_offer</i>
+    <a class="tag-link" href="/tags/THML5/">THML5</a>
+    </div>
+    
+</section>
+      <section class="post-content">
+        <p>HTML5 中新增的<code>&lt;details&gt;</code>标签允许用户创建一个可展开折叠的元件，让一段文字或标题包含一些隐藏的信息。</p>
+<a id="more"></a>
+<h2 id="用法"><a href="/2014/11/30/html5-details-tag/#用法" class="headerlink" title="用法"></a>用法</h2><p>一般情况下，<code>details</code>用来对显示在页面的内容做进一步骤解释。其展现出来的效果和jQuery手风琴插件差不多。</p>
+<p>其大致写法如下：</p>
+<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>details</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>summary</span><span class="token punctuation">></span></span>Google Nexus 6<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>summary</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>商品详情：<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dl</span><span class="token punctuation">></span></span>
@@ -12,7 +112,13 @@
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dd</span><span class="token punctuation">></span></span>Qualcomm® Snapdragon™ 805 processor<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dd</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dl</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>details</span><span class="token punctuation">></span></span>
-</code></pre><p>首先是<code>&lt;details&gt;</code>标签，里面接着是标题<code>&lt;summary&gt;</code>，这里面的内容一般简短，具有总结性，会展示在页面。接着可以跟任意类型的HTML元素作为详情内容，这些内容需要在点击<code>&lt;summary&gt;</code>才会呈现。</p><p>上面代码呈现出来的效果会是下面这样的：</p><p><img src="/2014/11/30/html5-details-tag/html5_details_tag.gif" alt="html5 details tag"><span class="image-caption">html5 details tag</span></p><p>最开始详情是隐藏的，当点击时都会展现。</p><h3 id="open-属性"><a href="/2014/11/30/html5-details-tag/#open-属性" class="headerlink" title="open 属性"></a>open 属性</h3><p>当然，你也可以通过给<code>&lt;details&gt;</code>标签设置<code>open</code>属性让它默认为展开状态。</p><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>details</span> <span class="token attr-name">open</span><span class="token punctuation">></span></span>
+</code></pre>
+<p>首先是<code>&lt;details&gt;</code>标签，里面接着是标题<code>&lt;summary&gt;</code>，这里面的内容一般简短，具有总结性，会展示在页面。接着可以跟任意类型的HTML元素作为详情内容，这些内容需要在点击<code>&lt;summary&gt;</code>才会呈现。</p>
+<p>上面代码呈现出来的效果会是下面这样的：</p>
+<p><img src="/2014/11/30/html5-details-tag/html5_details_tag.gif" alt="html5 details tag"><span class="image-caption">html5 details tag</span></p>
+<p>最开始详情是隐藏的，当点击时都会展现。</p>
+<h3 id="open-属性"><a href="/2014/11/30/html5-details-tag/#open-属性" class="headerlink" title="open 属性"></a>open 属性</h3><p>当然，你也可以通过给<code>&lt;details&gt;</code>标签设置<code>open</code>属性让它默认为展开状态。</p>
+<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>details</span> <span class="token attr-name">open</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>summary</span><span class="token punctuation">></span></span>Google Nexus 6<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>summary</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>商品详情：<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dl</span><span class="token punctuation">></span></span>
@@ -26,5 +132,74 @@
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dd</span><span class="token punctuation">></span></span>Qualcomm® Snapdragon™ 805 processor<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dd</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dl</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>details</span><span class="token punctuation">></span></span>
-</code></pre><p>此时默认会把详情展开，而点击标题后会折叠起来。</p><h2 id="示例"><a href="/2014/11/30/html5-details-tag/#示例" class="headerlink" title="示例"></a>示例</h2><p>示例如上面那样，预览在线版本可<a href="http://sandbox.runjs.cn/show/hjotymth" target="_blank" rel="external">点击此处</a>。</p><h2 id="浏览器兼容性"><a href="/2014/11/30/html5-details-tag/#浏览器兼容性" class="headerlink" title="浏览器兼容性"></a>浏览器兼容性</h2><p>由于是HTML5新标签，浏览器支持情况不是很理想。从来自<a href="http://caniuse.com/#feat=details" target="_blank" rel="external">caniuse</a>的数据来看，目前仅Chrome, Safari 8+ 和Opera 26+支持此标签。</p><p>可喜的是，如果你在caniuse开启了「显示来自UC浏览器的结果」 选项的话，会发现，国产的UC浏览器也支持了此标签。</p><p><img src="/2014/11/30/html5-details-tag/browser_compatability.jpg" alt="can i use details tag"><span class="image-caption">can i use details tag</span></p><h2 id="Polyfill"><a href="/2014/11/30/html5-details-tag/#Polyfill" class="headerlink" title="Polyfill"></a>Polyfill</h2><p>既然支持情况如此不理解，那么使用垫片（polyfill）就很有必要了。</p><p>垫片就是在那些不支持此特性的浏览器上使用JavaScript来手动模拟，看起来好像是浏览器支持了一样。</p><p><a href="http://www.smashingmagazine.com/author/maksim-chemerisuk/?rel=author" target="_blank" rel="external">chemerisuk</a>给出了他的一个实现，源码在<a href="https://github.com/chemerisuk/better-
-[details-polyfill" target="_blank" rel="external">GitHub上</a>，具体的实现思路也写成了博文发到了<a href="http://www.smashingmagazine.com/2014/11/28/complete-polyfill-html5-details-element/" target="_blank" rel="external">Smashing Magazine</a>，用法可参见GitHub。</p><h2 id="参考及引用"><a href="/2014/11/30/html5-details-tag/#参考及引用" class="headerlink" title="参考及引用"></a>参考及引用</h2><ul><li><a href="http://www.w3schools.com/tags/tag_details.asp" target="_blank" rel="external">HTML &lt;details&gt; Tag</a></li><li><a href="http://www.w3schools.com/tags/tag_dt.asp" target="_blank" rel="external">HTML &lt;dt&gt; Tag</a></li><li><a href="http://www.smashingmagazine.com/2014/11/28/complete-polyfill-html5-details-element/" target="_blank" rel="external">Making A Complete Polyfill For The HTML5 Details Element</a></li><li><a href="https://github.com/chemerisuk/better-details-polyfill" target="_blank" rel="external">better-details-polyfill</a></li></ul></section></article><div class="pager"><a class="post-prev pager-item" href="/2014/12/07/css-currentColor/"><strong class="article-nav-caption">上一篇</strong><p class="post-nav-title truncate-text">CSS currentColor 变量的使用</p></a><a class="post-next pager-item" href="/2014/11/26/javascript-benchmarking/"><strong class="article-nav-caption">下一篇</strong><p class="post-nav-title truncate-text">JavaScript的基准测试-不服跑个分？</p></a></div><div class="comment-section"><div id="disqus_thread"></div><script>var disqus_config=function(){this.page.url="https://wayou.github.io/2014/11/30/html5-details-tag/",this.page.identifier="_posts/2014-11-30-html5-details-tag.md"};!function(){var t=document,e=t.createElement("script");e.src="//wayou.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script></div></div></div><footer class="footer"><p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a title="under developing..." href="javascript:;">末名</a>主题</p><p>&copy; 2017 Wayou Liu</p></footer><script src="/lib/waves/waves.js"></script><script src="/lib/tocbot/tocbot.js"></script><script src="/js/main.js"></script></body>
+</code></pre>
+<p>此时默认会把详情展开，而点击标题后会折叠起来。</p>
+<h2 id="示例"><a href="/2014/11/30/html5-details-tag/#示例" class="headerlink" title="示例"></a>示例</h2><p>示例如上面那样，预览在线版本可<a href="http://sandbox.runjs.cn/show/hjotymth" target="_blank" rel="external">点击此处</a>。</p>
+<h2 id="浏览器兼容性"><a href="/2014/11/30/html5-details-tag/#浏览器兼容性" class="headerlink" title="浏览器兼容性"></a>浏览器兼容性</h2><p>由于是HTML5新标签，浏览器支持情况不是很理想。从来自<a href="http://caniuse.com/#feat=details" target="_blank" rel="external">caniuse</a>的数据来看，目前仅Chrome, Safari 8+ 和Opera 26+支持此标签。</p>
+<p>可喜的是，如果你在caniuse开启了「显示来自UC浏览器的结果」 选项的话，会发现，国产的UC浏览器也支持了此标签。</p>
+<p><img src="/2014/11/30/html5-details-tag/browser_compatability.jpg" alt="can i use details tag"><span class="image-caption">can i use details tag</span></p>
+<h2 id="Polyfill"><a href="/2014/11/30/html5-details-tag/#Polyfill" class="headerlink" title="Polyfill"></a>Polyfill</h2><p>既然支持情况如此不理解，那么使用垫片（polyfill）就很有必要了。</p>
+<p>垫片就是在那些不支持此特性的浏览器上使用JavaScript来手动模拟，看起来好像是浏览器支持了一样。</p>
+<p><a href="http://www.smashingmagazine.com/author/maksim-chemerisuk/?rel=author" target="_blank" rel="external">chemerisuk</a>给出了他的一个实现，源码在<a href="https://github.com/chemerisuk/better-
+[details-polyfill" target="_blank" rel="external">GitHub上</a>，具体的实现思路也写成了博文发到了<a href="http://www.smashingmagazine.com/2014/11/28/complete-polyfill-html5-details-element/" target="_blank" rel="external">Smashing Magazine</a>，用法可参见GitHub。</p>
+<h2 id="参考及引用"><a href="/2014/11/30/html5-details-tag/#参考及引用" class="headerlink" title="参考及引用"></a>参考及引用</h2><ul>
+<li><a href="http://www.w3schools.com/tags/tag_details.asp" target="_blank" rel="external">HTML &lt;details&gt; Tag</a></li>
+<li><a href="http://www.w3schools.com/tags/tag_dt.asp" target="_blank" rel="external">HTML &lt;dt&gt; Tag</a></li>
+<li><a href="http://www.smashingmagazine.com/2014/11/28/complete-polyfill-html5-details-element/" target="_blank" rel="external">Making A Complete Polyfill For The HTML5 Details Element</a></li>
+<li><a href="https://github.com/chemerisuk/better-details-polyfill" target="_blank" rel="external">better-details-polyfill</a></li>
+</ul>
+
+      </section>
+    </article>
+
+    
+      <div class="pager">
+        
+            <a class="post-prev pager-item" href="/2014/12/07/css-currentColor/">
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title truncate-text">CSS currentColor 变量的使用</p>
+            </a>
+        
+        
+            <a class="post-next pager-item" href="/2014/11/26/javascript-benchmarking/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title truncate-text">JavaScript的基准测试-不服跑个分？</p>
+            </a>
+        
+      </div>
+    
+
+    <!-- comments -->
+    <div class="comment-section">
+  
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function () {
+            this.page.url = 'https://wayou.github.io/2014/11/30/html5-details-tag/'; 
+            this.page.identifier = '_posts/2014-11-30-html5-details-tag.md';
+        };
+        (function() {  
+            var d = document, s = d.createElement('script');
+            s.src = '//wayou.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+  
+</div>
+
+
+  </div>
+</div>
+    <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a title="under developing..." href="javascript:;">末名</a>主题</p>
+    <p>
+        &copy; 2017 Wayou Liu
+    </p>
+</footer>
+<script src="/lib/waves/waves.js"></script>
+<script src="/lib/tocbot/tocbot.js"></script>
+<script src="/js/main.js"></script>
+
+  </body>
+</html>
