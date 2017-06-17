@@ -17,19 +17,13 @@ body.open {
     overflow: hidden;
 }
 
-img, video {
-    border: 0;
-    max-width: 100%;
-    max-height: 100%;
+body, div, dl, dd, form, img, input, figure, menu {
+    margin: 0;
+    padding: 0
 }
 
 img {
     vertical-align: middle;
-}
-
-body, div, dl, dd, form, img, input, figure, menu {
-    margin: 0;
-    padding: 0
 }
 
 iframe {
@@ -130,13 +124,11 @@ kbd {
     border-radius: 3px;
 }
 
-code{
-    font: 500 90%/1 Roboto Mono,monospace;
+p > code {
+    font: 500 90%/1 Roboto Mono, monospace;
     word-break: break-word;
     background: #f7f7f7;
     color: #37474f;
-    font: 400 100%/1 Roboto Mono,monospace;
-    padding: 1px 4px
 }
 
 .clearfix:after {
@@ -619,7 +611,7 @@ header .header-burger div:after {
     header .menu-wrap {
         display: none;
     }
-    header .header-content{
+    header .header-content {
         display: inline-block;
     }
     header .header-nav {
@@ -726,6 +718,16 @@ header .header-burger div:after {
     text-align: center;
 }
 
+.post-content img, .post-content video {
+    border: 0;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 15px 0;
+}
+
+pre[class*="language-"] pre[class*="language-"]{
+    border-radius: 0;
+}
 
 /*=====post end=====*/
 

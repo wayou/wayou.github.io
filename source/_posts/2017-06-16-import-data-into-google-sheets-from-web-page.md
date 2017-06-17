@@ -22,11 +22,11 @@ tags:
 ![importHTML 公式](2.jpg)
 
 该公式需要三个入参，分别是：
-- url 导入数据的网页地址
-- query 指定数据的类型，是页面中的列表（ul,ol）还是表格（table）
-- index 指定需要导入的索引，如果页面中不止一个数据源，则可以通过这个来指明导入第几个
+- `url` 导入数据的网页地址
+- `query` 指定数据的类型，是页面中的列表（ul,ol）还是表格（table）
+- `index` 指定需要导入的索引，如果页面中不止一个数据源，则可以通过这个来指明导入第几个
 
-我们以 [List of countries by GDP](https://en.wikipedia.org/wiki/List_of_countries_by_population_(United_Nations)) 这个来自 Wikipedia 的国家 GDP 排名页面为列，将其中的表格数据进行导入。
+我们以 [List of countries by GDP](https://en.wikipedia.org/wiki/List_of_countries_by_population_(United_Nations)这个来自 Wikipedia 的国家 GDP 排名页面为列，将其中的表格数据进行导入。
 
 ![来自 Wikipedia 的国家 GDP 排名](3.jpg)
 
