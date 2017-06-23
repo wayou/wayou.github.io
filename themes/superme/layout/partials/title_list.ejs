@@ -20,7 +20,7 @@
                 <span class="post-date">
                     <i class="material-icons md-dark">watch_later</i>
                     <!--<%=date(article.date)%>-->
-                    <%- moment(article.date, 'YYYYMMDD').locale(config.language).fromNow() %>
+                    <%- date(article.date, 'YYYY-MM-DD HH:MM:SS')%>
                 </span>
             </section>
         </div>

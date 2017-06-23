@@ -735,6 +735,10 @@ header .header-burger div:after {
     display: block;
 }
 
+.post-content a{
+    word-wrap: break-word;
+}
+
 pre[class*="language-"]{
     border-radius: 0!important;
 }

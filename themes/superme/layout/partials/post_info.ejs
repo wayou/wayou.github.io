@@ -1,7 +1,7 @@
 <section class="post-info">
     <div class="post-date">
         <i class="material-icons md-dark">watch_later</i>
-        <%- moment(page.date, 'YYYYMMDD').locale(config.language).fromNow() %>
+        <%- date(page.date, 'YYYY-MM-DD HH:MM:SS')%>
     </div>
     <% if (page.categories && page.categories.length){ %>          
         <div class="post-categories">
