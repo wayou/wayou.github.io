@@ -1,173 +1,14 @@
-<!DOCTYPE html>
-  <head>
-  
-  <title>CSS currentColor 变量的使用 | 刘哇勇的部落格</title>
-  <meta charset="UTF-8">
-  
-  
-  <link href="/favicon.ico" rel="icon"/>
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="Wayou Liu">
-  
-  <link rel="canonical" href="https://wayou.github.io/2014/12/07/css-currentColor/"/>
-  <meta name="description" content="CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是crrentColor变量（或者说是CSS关键字，但我觉得称为变量好理解些）。">
-<meta name="keywords" content="CSS">
-<meta property="og:type" content="article">
-<meta property="og:title" content="CSS currentColor 变量的使用">
-<meta property="og:url" content="https://wayou.github.io/2014/12/07/css-currentColor/index.html">
-<meta property="og:site_name" content="刘哇勇的部落格">
-<meta property="og:description" content="CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是crrentColor变量（或者说是CSS关键字，但我觉得称为变量好理解些）。">
-<meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/situation2.jpg">
-<meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/situation3.jpg">
-<meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/btn_with_svg_st.jpg">
-<meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/before.gif">
-<meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/after.gif">
-<meta property="og:updated_time" content="2017-06-23T16:37:56.391Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CSS currentColor 变量的使用">
-<meta name="twitter:description" content="CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是crrentColor变量（或者说是CSS关键字，但我觉得称为变量好理解些）。">
-<meta name="twitter:image" content="https://wayou.github.io/2014/12/07/css-currentColor/situation2.jpg">
-<meta name="twitter:creator" content="@liuwayong">
-<link rel="publisher" href="+WayouLiu">
-<meta property="fb:admins" content="liuwayong">
-<meta property="fb:app_id" content="liuwayong">
-  <link href="/img/logo.png" rel="shortcut icon"/>
-  <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">-->
-  <link rel="stylesheet" href="/lib/waves/waves.css">
-  <link rel="stylesheet" href="/lib/tocbot/tocbot.css">
-  <link rel="stylesheet" href="/style/style.css">        
-  
-<!-- Google analyse -->
-<script>
-  // if(new Date().getTimezoneOffset()/60 == -8) /*disable for china */ return;
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-46794744-6', 'auto');
-  ga('send', 'pageview');
-
-</script>
-
-<link rel="stylesheet" href="/css/prism-atom-dark.css" type="text/css"></head>
-  <body>
-    <header>
-  <div class="header-wrap clearfix">
-      <div class="header-content">
-          <a class="logo-wrap ink" href="/">          
-            <img class="logo" src="/logo.png" alt="">
-            <span class="site-name">刘哇勇的部落格</span>          
-        </a>
-        <div class="menu-wrap">
-            <div class="header-burger" onclick="document.body.classList.toggle('open')">
-                <div></div>
-            </div>
-        </div>
-      </div>
-      <nav class="header-nav">
-          <ul>
-           
-              <li class="nav-item ink">
-                  <a class="nav-link" href="/">
-                      首页
-                  </a>
-              </li>
-           
-              <li class="nav-item ink">
-                  <a class="nav-link" href="/archives">
-                      归档
-                  </a>
-              </li>
-           
-              <li class="nav-item ink">
-                  <a class="nav-link" href="/about">
-                      关于
-                  </a>
-              </li>
-           
-              <li class="nav-item ink">
-                  <a class="nav-link" href="/atom.xml">
-                      订阅
-                  </a>
-              </li>
-              
-          </ul>
-      </nav>
-  </div>
-</header>
-        
-    <div class="container clearfix">
-  <div class="col col-sidebar">
-    
-      <!--placeholder-->
-      <p></p>
-      <div class="toc js-toc"></div>
-    
-  </div>
-  <div class="col col-main">
-    <article>
-      <h1>CSS currentColor 变量的使用</h1>
-      <section class="post-info">
-    <div class="post-date">
-        <i class="material-icons md-dark">watch_later</i>
-        2014-12-07 12:12:00
-    </div>
-              
-        <div class="post-categories">
-        <i class="material-icons md-dark">folder</i>
-        <a class="category-link" href="/categories/CSS/">CSS</a>
-        </div>
-    
-    
-    <div class="post-tags">
-    <i class="material-icons md-dark">local_offer</i>
-    <a class="tag-link" href="/tags/CSS/">CSS</a>
-    </div>
-    
-</section>
-      <section class="post-content">
-        <p>CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是<code>crrentColor</code>变量（或者说是CSS关键字，但我觉得称为变量好理解些）。</p>
-<a id="more"></a>
-<h2 id="初识"><a href="/2014/12/07/css-currentColor/#初识" class="headerlink" title="初识"></a>初识</h2><p>它是何物？具有怎样的功效？它从哪里来？带着这些疑问我们继续。</p>
-<p>下面是来自<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentColor_keyword" target="_blank" rel="external">MDN的解释</a>：</p>
-<blockquote>
-<p><code>currentColor</code>代表了当前元素被应用上的<code>color</code>颜色值。 使用它可以将当前这个颜色值应用到其他属性上，或者嵌套元素的其他属性上。</p>
-</blockquote>
-<p>你这可以这么理解，CSS里你可以在任何需要写颜色的地方使用<code>currentColor</code>这个变量，这个变量的值是当前元素的<code>color</code>值。如果当前元素没有在CSS里显示地指定一个<code>color</code>值，那它的颜色值就遵从CSS规则，从父级元素继承而来。</p>
-<p>到此似乎解决了上面三个哲学式的提问，但依然有些模糊。程序员之间的交流，还是上码才好。</p>
-<ul>
-<li>场景1</li>
-</ul>
-<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>约么？<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
-</code></pre>
-<pre class=" language-css"><code class="language-css"><span class="token selector">p</span><span class="token punctuation">{</span>
+<!DOCTYPE html><head><title>CSS currentColor 变量的使用 | 刘哇勇的部落格</title><meta charset="UTF-8"><link href="/favicon.ico" rel="icon"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Wayou Liu"><link rel="canonical" href="https://wayou.github.io/2014/12/07/css-currentColor/"><meta name="description" content="CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是crrentColor变量（或者说是CSS关键字，但我觉得称为变量好理解些）。"><meta name="keywords" content="CSS"><meta property="og:type" content="article"><meta property="og:title" content="CSS currentColor 变量的使用"><meta property="og:url" content="https://wayou.github.io/2014/12/07/css-currentColor/index.html"><meta property="og:site_name" content="刘哇勇的部落格"><meta property="og:description" content="CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是crrentColor变量（或者说是CSS关键字，但我觉得称为变量好理解些）。"><meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/situation2.jpg"><meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/situation3.jpg"><meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/btn_with_svg_st.jpg"><meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/before.gif"><meta property="og:image" content="https://wayou.github.io/2014/12/07/css-currentColor/after.gif"><meta property="og:updated_time" content="2017-06-23T16:46:40.375Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="CSS currentColor 变量的使用"><meta name="twitter:description" content="CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是crrentColor变量（或者说是CSS关键字，但我觉得称为变量好理解些）。"><meta name="twitter:image" content="https://wayou.github.io/2014/12/07/css-currentColor/situation2.jpg"><meta name="twitter:creator" content="@liuwayong"><link rel="publisher" href="+WayouLiu"><meta property="fb:admins" content="liuwayong"><meta property="fb:app_id" content="liuwayong"><link href="/img/logo.png" rel="shortcut icon"><link rel="stylesheet" href="/lib/waves/waves.css"><link rel="stylesheet" href="/lib/tocbot/tocbot.css"><link rel="stylesheet" href="/style/style.css"><script>!function(e,a,t,n,c,o,s){e.GoogleAnalyticsObject=c,e[c]=e[c]||function(){(e[c].q=e[c].q||[]).push(arguments)},e[c].l=1*new Date,o=a.createElement(t),s=a.getElementsByTagName(t)[0],o.async=1,o.src="//www.google-analytics.com/analytics.js",s.parentNode.insertBefore(o,s)}(window,document,"script",0,"ga"),ga("create","UA-46794744-6","auto"),ga("send","pageview")</script><link rel="stylesheet" href="/css/prism-atom-dark.css" type="text/css"></head><body><header><div class="header-wrap clearfix"><div class="header-content"><a class="logo-wrap ink" href="/"><img class="logo" src="/logo.png" alt=""> <span class="site-name">刘哇勇的部落格</span></a><div class="menu-wrap"><div class="header-burger" onclick='document.body.classList.toggle("open")'><div></div></div></div></div><nav class="header-nav"><ul><li class="nav-item ink"><a class="nav-link" href="/">首页</a></li><li class="nav-item ink"><a class="nav-link" href="/archives">归档</a></li><li class="nav-item ink"><a class="nav-link" href="/about">关于</a></li><li class="nav-item ink"><a class="nav-link" href="/atom.xml">订阅</a></li></ul></nav></div></header><div class="container clearfix"><div class="col col-sidebar"><p></p><div class="toc js-toc"></div></div><div class="col col-main"><article><h1>CSS currentColor 变量的使用</h1><section class="post-info"><div class="post-date"><i class="material-icons md-dark">watch_later</i> 2014-12-07 12:12:00</div><div class="post-categories"><i class="material-icons md-dark">folder</i> <a class="category-link" href="/categories/CSS/">CSS</a></div><div class="post-tags"><i class="material-icons md-dark">local_offer</i> <a class="tag-link" href="/tags/CSS/">CSS</a></div></section><section class="post-content"><p>CSS中存在一个神秘的变量，少有人知自然也不怎么为人所用。它就是<code>crrentColor</code>变量（或者说是CSS关键字，但我觉得称为变量好理解些）。</p><a id="more"></a><h2 id="初识"><a href="/2014/12/07/css-currentColor/#初识" class="headerlink" title="初识"></a>初识</h2><p>它是何物？具有怎样的功效？它从哪里来？带着这些疑问我们继续。</p><p>下面是来自<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentColor_keyword" target="_blank" rel="external">MDN的解释</a>：</p><blockquote><p><code>currentColor</code>代表了当前元素被应用上的<code>color</code>颜色值。 使用它可以将当前这个颜色值应用到其他属性上，或者嵌套元素的其他属性上。</p></blockquote><p>你这可以这么理解，CSS里你可以在任何需要写颜色的地方使用<code>currentColor</code>这个变量，这个变量的值是当前元素的<code>color</code>值。如果当前元素没有在CSS里显示地指定一个<code>color</code>值，那它的颜色值就遵从CSS规则，从父级元素继承而来。</p><p>到此似乎解决了上面三个哲学式的提问，但依然有些模糊。程序员之间的交流，还是上码才好。</p><ul><li>场景1</li></ul><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>约么？<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
+</code></pre><pre class="language-css"><code class="language-css"><span class="token selector">p</span><span class="token punctuation">{</span>
     <span class="token property">color</span><span class="token punctuation">:</span> red<span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-</code></pre>
-<p>此时，<code>&lt;p&gt;</code>标签<code>currentColor</code>的值为<code>red</code>。</p>
-<p><br></p>
-<ul>
-<li>场景2</li>
-</ul>
-<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+</code></pre><p>此时，<code>&lt;p&gt;</code>标签<code>currentColor</code>的值为<code>red</code>。</p><p><br></p><ul><li>场景2</li></ul><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>约么？<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-</code></pre>
-<pre class=" language-css"><code class="language-css"><span class="token selector"><span class="token class">.container</span></span><span class="token punctuation">{</span>
+</code></pre><pre class="language-css"><code class="language-css"><span class="token selector"><span class="token class">.container</span></span><span class="token punctuation">{</span>
     <span class="token property">color</span><span class="token punctuation">:</span> <span class="token hexcode">#00ff00</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-</code></pre>
-<p>现在，我们没有给<code>&lt;p&gt;</code>标签指定颜色，它的<code>color</code>从父级容器也就是<code>class</code>为<code>container</code>的<code>div</code>继承而来，换句话说此时<code>p</code>标签的<code>color</code>为<code>#00ff00</code>，<code>currentColor</code>又是直接去取元素的<code>color</code>值，所以此时<code>p</code>标签的<code>currentColor</code>值也为<code>#00ff00</code>。</p>
-<p><img src="/2014/12/07/css-currentColor/situation2.jpg" alt="situation2"><span class="image-caption">situation2</span></p>
-<ul>
-<li>场景3</li>
-</ul>
-<p>如果父级元素也没有写<code>color</code>呢？其实这里都还是CSS规则的范畴，跟本文的主角关系不太大。但本着不啰嗦会死的原则，就展开了讲。</p>
-<p>如果父级元素也没有指定颜色，那它的父级元素就会从父级的父级去继承，直到文档的根结点<code>html</code>标签都还没显示指定一个颜色呢，就应用上浏览器默认的颜色呗~</p>
-<pre class=" language-html"><code class="language-html"><span class="token doctype">&lt;!doctype html></span>
+</code></pre><p>现在，我们没有给<code>&lt;p&gt;</code>标签指定颜色，它的<code>color</code>从父级容器也就是<code>class</code>为<code>container</code>的<code>div</code>继承而来，换句话说此时<code>p</code>标签的<code>color</code>为<code>#00ff00</code>，<code>currentColor</code>又是直接去取元素的<code>color</code>值，所以此时<code>p</code>标签的<code>currentColor</code>值也为<code>#00ff00</code>。</p><p><img src="/2014/12/07/css-currentColor/situation2.jpg" alt="situation2"><span class="image-caption">situation2</span></p><ul><li>场景3</li></ul><p>如果父级元素也没有写<code>color</code>呢？其实这里都还是CSS规则的范畴，跟本文的主角关系不太大。但本着不啰嗦会死的原则，就展开了讲。</p><p>如果父级元素也没有指定颜色，那它的父级元素就会从父级的父级去继承，直到文档的根结点<code>html</code>标签都还没显示指定一个颜色呢，就应用上浏览器默认的颜色呗~</p><pre class="language-html"><code class="language-html"><span class="token doctype">&lt;!doctype html></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>我来组成头部<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
@@ -177,49 +18,24 @@
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>footer</span><span class="token punctuation">></span></span>战神金钢，宇宙的保护神！<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>footer</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span>
-</code></pre>
-<pre class=" language-css"><code class="language-css"><span class="token comment" spellcheck="true">/**
+</code></pre><pre class="language-css"><code class="language-css"><span class="token comment" spellcheck="true">/**
  * 无CSS
  */</span>
-</code></pre>
-<p><img src="/2014/12/07/css-currentColor/situation3.jpg" alt="situation3"><span class="image-caption">situation3</span></p>
-<p>那，这个时候的黑色其实是浏览器默认给的。此时<code>p</code>标签的<code>currentColor</code>自然也跟<code>color</code>值一样，为黑色，纯黑的<code>#000</code>。</p>
-<h2 id="如何用？"><a href="/2014/12/07/css-currentColor/#如何用？" class="headerlink" title="如何用？"></a>如何用？</h2><p>了解它是怎样的物品后，下面问题来了，如何用？有额外的<code>buff</code>效果么，耗蓝多么，CD时间长么。。。</p>
-<p>前面说道，它就是一个CSS变量，存储了颜色值，这个值来自当前元素的<code>color</code>CSS属性。当你需要为该元素其他属性指定颜色的时候，它就可以登上舞台了。</p>
-<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+</code></pre><p><img src="/2014/12/07/css-currentColor/situation3.jpg" alt="situation3"><span class="image-caption">situation3</span></p><p>那，这个时候的黑色其实是浏览器默认给的。此时<code>p</code>标签的<code>currentColor</code>自然也跟<code>color</code>值一样，为黑色，纯黑的<code>#000</code>。</p><h2 id="如何用？"><a href="/2014/12/07/css-currentColor/#如何用？" class="headerlink" title="如何用？"></a>如何用？</h2><p>了解它是怎样的物品后，下面问题来了，如何用？有额外的<code>buff</code>效果么，耗蓝多么，CD时间长么。。。</p><p>前面说道，它就是一个CSS变量，存储了颜色值，这个值来自当前元素的<code>color</code>CSS属性。当你需要为该元素其他属性指定颜色的时候，它就可以登上舞台了。</p><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
     好好说话，有话好好说
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-</code></pre>
-<pre class=" language-css"><code class="language-css"><span class="token selector"><span class="token class">.container</span></span><span class="token punctuation">{</span>
+</code></pre><pre class="language-css"><code class="language-css"><span class="token selector"><span class="token class">.container</span></span><span class="token punctuation">{</span>
     <span class="token property">color</span><span class="token punctuation">:</span> <span class="token hexcode">#3CAADB</span><span class="token punctuation">;</span>
     <span class="token property">border</span><span class="token punctuation">:</span> <span class="token number">4</span>px solid currentColor<span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-</code></pre>
-<p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="wkwhomt3" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p>
-<p>这里我们第一次领略了<code>currentColor</code>的奇效。在指定边框颜色的时候，我们直接使用<code>currentColor</code>变量，而没有写一个传统的颜色值。</p>
-<p>你似乎也知道了该如何用了。不只是<code>border</code>，其他能够使用颜色的地方，比如<code>background</code>，<code>box-shadow</code>等等。</p>
-<h2 id="带你装逼带你飞"><a href="/2014/12/07/css-currentColor/#带你装逼带你飞" class="headerlink" title="带你装逼带你飞"></a>带你装逼带你飞</h2><p>新技能就是如此炫酷。大开脑洞任性地去使用吧！</p>
-<h3 id="与渐变混搭"><a href="/2014/12/07/css-currentColor/#与渐变混搭" class="headerlink" title="与渐变混搭"></a>与渐变混搭</h3><p>你可能无法想象到的是，除了可以将<code>currentColor</code>用到普通需要颜色的场景，它同样可以被用在渐变中。</p>
-<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+</code></pre><p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="wkwhomt3" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p><p>这里我们第一次领略了<code>currentColor</code>的奇效。在指定边框颜色的时候，我们直接使用<code>currentColor</code>变量，而没有写一个传统的颜色值。</p><p>你似乎也知道了该如何用了。不只是<code>border</code>，其他能够使用颜色的地方，比如<code>background</code>，<code>box-shadow</code>等等。</p><h2 id="带你装逼带你飞"><a href="/2014/12/07/css-currentColor/#带你装逼带你飞" class="headerlink" title="带你装逼带你飞"></a>带你装逼带你飞</h2><p>新技能就是如此炫酷。大开脑洞任性地去使用吧！</p><h3 id="与渐变混搭"><a href="/2014/12/07/css-currentColor/#与渐变混搭" class="headerlink" title="与渐变混搭"></a>与渐变混搭</h3><p>你可能无法想象到的是，除了可以将<code>currentColor</code>用到普通需要颜色的场景，它同样可以被用在渐变中。</p><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-</code></pre>
-<pre class=" language-css"><code class="language-css"><span class="token selector"><span class="token class">.container</span></span><span class="token punctuation">{</span>
+</code></pre><pre class="language-css"><code class="language-css"><span class="token selector"><span class="token class">.container</span></span><span class="token punctuation">{</span>
   <span class="token property">height</span><span class="token punctuation">:</span><span class="token number">200</span>px<span class="token punctuation">;</span>
   <span class="token property">color</span><span class="token punctuation">:</span> <span class="token hexcode">#3CAADB</span><span class="token punctuation">;</span>
   <span class="token property">background-image</span><span class="token punctuation">:</span> <span class="token function">linear-gradient</span><span class="token punctuation">(</span>to right, <span class="token hexcode">#fff</span>, currentColor <span class="token number">100%</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-</code></pre>
-<p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="igvks1h5" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p>
-<p>甚至也可用于填充svg，下面会有相应示例。</p>
-<h3 id="与CSS动画结合"><a href="/2014/12/07/css-currentColor/#与CSS动画结合" class="headerlink" title="与CSS动画结合"></a>与CSS动画结合</h3><p>当与CSS <code>animation</code>结合，可以得到更加有创意的效果，比如<a href="http://codepen.io/scottkellum/pen/Fhxql" target="_blank" rel="external">这个来自codepen的示例</a></p>
-<p></p><p data-height="268" data-theme-id="2997" data-slug-hash="Fhxql" data-default-tab="result" data-user="scottkellum" class="codepen">See the Pen <a href="http://codepen.io/scottkellum/pen/Fhxql/" target="_blank" rel="external">currentColor</a> by Scott Kellum (<a href="http://codepen.io/scottkellum" target="_blank" rel="external">@scottkellum</a>) on <a href="http://codepen.io" target="_blank" rel="external">CodePen</a>.</p><p></p>
-<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
-
-<h3 id="更加简洁的CSS"><a href="/2014/12/07/css-currentColor/#更加简洁的CSS" class="headerlink" title="更加简洁的CSS"></a>更加简洁的CSS</h3><p>其实，新技能不只是装逼那么单纯，合理的使用<code>currentColor</code> 变量会让你的CSS代码变得简洁。这才是我们想要达到的目的。以炫技为目的技能是没有生产意义的。</p>
-<p>看下面这个例子（这个示例灵感来自<a href="http://osvaldas.info/keeping-css-short-with-currentcolor" target="_blank" rel="external">这里</a>）</p>
-<p><img src="/2014/12/07/css-currentColor/btn_with_svg_st.jpg" alt="btn_with_svg_st"><span class="image-caption">btn_with_svg_st</span></p>
-<p>我们在按钮中使用了一个svg图标。你是一个负责任的FE，所以，对这个按钮的各种状态<code>:focus</code>，<code>:hover</code>，<code>:active</code>都作了样式上的处理。同时，为了让图标也跟着保持一致的姿态变更，需要把对<code>&lt;a&gt;</code>标签的样式处理同样就到到<code>&lt;svg&gt;</code>标签上。于是你的CSS代码看起来就是下面这样的了。</p>
-<pre class=" language-css"><code class="language-css"><span class="token comment" spellcheck="true">/*a 标签*/</span>
+</code></pre><p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="igvks1h5" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p><p>甚至也可用于填充svg，下面会有相应示例。</p><h3 id="与CSS动画结合"><a href="/2014/12/07/css-currentColor/#与CSS动画结合" class="headerlink" title="与CSS动画结合"></a>与CSS动画结合</h3><p>当与CSS <code>animation</code>结合，可以得到更加有创意的效果，比如<a href="http://codepen.io/scottkellum/pen/Fhxql" target="_blank" rel="external">这个来自codepen的示例</a></p><p></p><p data-height="268" data-theme-id="2997" data-slug-hash="Fhxql" data-default-tab="result" data-user="scottkellum" class="codepen">See the Pen <a href="http://codepen.io/scottkellum/pen/Fhxql/" target="_blank" rel="external">currentColor</a> by Scott Kellum (<a href="http://codepen.io/scottkellum" target="_blank" rel="external">@scottkellum</a>) on <a href="http://codepen.io" target="_blank" rel="external">CodePen</a>.</p><p></p><script async src="//assets.codepen.io/assets/embed/ei.js"></script><h3 id="更加简洁的CSS"><a href="/2014/12/07/css-currentColor/#更加简洁的CSS" class="headerlink" title="更加简洁的CSS"></a>更加简洁的CSS</h3><p>其实，新技能不只是装逼那么单纯，合理的使用<code>currentColor</code> 变量会让你的CSS代码变得简洁。这才是我们想要达到的目的。以炫技为目的技能是没有生产意义的。</p><p>看下面这个例子（这个示例灵感来自<a href="http://osvaldas.info/keeping-css-short-with-currentcolor" target="_blank" rel="external">这里</a>）</p><p><img src="/2014/12/07/css-currentColor/btn_with_svg_st.jpg" alt="btn_with_svg_st"><span class="image-caption">btn_with_svg_st</span></p><p>我们在按钮中使用了一个svg图标。你是一个负责任的FE，所以，对这个按钮的各种状态<code>:focus</code>，<code>:hover</code>，<code>:active</code>都作了样式上的处理。同时，为了让图标也跟着保持一致的姿态变更，需要把对<code>&lt;a&gt;</code>标签的样式处理同样就到到<code>&lt;svg&gt;</code>标签上。于是你的CSS代码看起来就是下面这样的了。</p><pre class="language-css"><code class="language-css"><span class="token comment" spellcheck="true">/*a 标签*/</span>
 <span class="token selector"><span class="token class">.button</span> </span><span class="token punctuation">{</span>
     <span class="token property">color</span><span class="token punctuation">:</span> <span class="token hexcode">#117B6F</span><span class="token punctuation">;</span>
     <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token number">1.2</span>em<span class="token punctuation">;</span>
@@ -243,10 +59,7 @@
 <span class="token selector"><span class="token class">.button</span><span class="token pseudo-class">:active</span> svg </span><span class="token punctuation">{</span>
     <span class="token property">fill</span><span class="token punctuation">:</span> <span class="token hexcode">#02D7BB</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-</code></pre>
-<p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="smxdd6mn" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p>
-<p>你也发现了，代码有点冗余。接下来，我们用<code>currentColor</code>来将它简化一下。于是成了下面这样：</p>
-<pre class=" language-css"><code class="language-css"><span class="token comment" spellcheck="true">/*a 标签*/</span>
+</code></pre><p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="smxdd6mn" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p><p>你也发现了，代码有点冗余。接下来，我们用<code>currentColor</code>来将它简化一下。于是成了下面这样：</p><pre class="language-css"><code class="language-css"><span class="token comment" spellcheck="true">/*a 标签*/</span>
 <span class="token selector"><span class="token class">.button</span> </span><span class="token punctuation">{</span>
     <span class="token property">color</span><span class="token punctuation">:</span> <span class="token hexcode">#117B6F</span><span class="token punctuation">;</span>
     <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token number">1.2</span>em<span class="token punctuation">;</span>
@@ -264,82 +77,4 @@
     <span class="token property">width</span><span class="token punctuation">:</span> <span class="token number">17</span>px<span class="token punctuation">;</span>
     <span class="token property">fill</span><span class="token punctuation">:</span> currentColor<span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-</code></pre>
-<p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="oxuuu1ex" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p>
-<h3 id="更好维护的CSS"><a href="/2014/12/07/css-currentColor/#更好维护的CSS" class="headerlink" title="更好维护的CSS"></a>更好维护的CSS</h3><p>仔细想想不难发现，当使用<code>currentColor</code>后，我们的CSS也变得更加好维护了。</p>
-<p>还拿上面的按钮示例来说，优化之前不但代码冗余，而且哪天PM来劲了说这颜色饱看，给换个其他色。于是你得把<code>&lt;a&gt;</code>标签和<code>&lt;svg&gt;</code>一起换了。</p>
-<p>但优化后就不一样了，因为<code>&lt;svg&gt;</code>使用的填充是<code>currentColor</code>，你只需要改变<code>&lt;a&gt;</code>标签的颜色，它也就跟着变了。真正做到了牵一发而不动全身。这不正是众码友们毕生所追求的理想编程境界么。</p>
-<h2 id="浏览器兼容性"><a href="/2014/12/07/css-currentColor/#浏览器兼容性" class="headerlink" title="浏览器兼容性"></a>浏览器兼容性</h2><p>一提到浏览器兼容性，FE同学们或许就不敢那么任性了。之前你可能是这样的：</p>
-<p><img src="/2014/12/07/css-currentColor/before.gif" alt="before"><span class="image-caption">before</span></p>
-<p>当听到IE传来的噩耗，你可能是这样的：</p>
-<p><img src="/2014/12/07/css-currentColor/after.gif" alt="after"><span class="image-caption">after</span></p>
-<p>经查，<a href="http://caniuse.com/#search=currentcolor" target="_blank" rel="external">can i use</a> 没有关于它的数据。</p>
-<p>经测，</p>
-<ul>
-<li>本机Win7搭载的IE8不支持</li>
-<li>本机安装的火狐31发来战报表示支持</li>
-<li>Chrome，你猜？</li>
-<li>本机Safari 5.1.7也表示支持</li>
-<li>本机Opera 26 同样表示支持</li>
-</ul>
-<p>根据<a href="http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor" target="_blank" rel="external">这篇文章</a>的描述，它是可以很好地工作在在所有现代浏览器和IE9+上的，甚至是各浏览器对应的移动版本。所以，在IE不是主要客户对象的情况下，还是可以放心使用的。</p>
-<h2 id="参考"><a href="/2014/12/07/css-currentColor/#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><a href="http://css-tricks.com/currentcolor/" target="_blank" rel="external">css-tricks currentColor</a></li>
-<li><a href="http://osvaldas.info/keeping-css-short-with-currentcolor" target="_blank" rel="external">Keeping CSS short with currentColor</a></li>
-<li><a href="http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor" target="_blank" rel="external">The First CSS Variable: currentColor</a></li>
-</ul>
-
-      </section>
-    </article>
-
-    
-      <div class="pager">
-        
-            <a class="post-prev pager-item" href="/2014/12/21/nexus-root/">
-              <strong class="article-nav-caption">上一篇</strong>
-              <p class="post-nav-title truncate-text">Nexus 5 刷机及ROOT</p>
-            </a>
-        
-        
-            <a class="post-next pager-item" href="/2014/11/30/html5-details-tag/">
-              <strong class="article-nav-caption">下一篇</strong>
-              <p class="post-nav-title truncate-text">HTML5 details 标签</p>
-            </a>
-        
-      </div>
-    
-
-    <!-- comments -->
-    <div class="comment-section">
-  
-    <div id="disqus_thread"></div>
-    <script>
-        var disqus_config = function () {
-            this.page.url = 'https://wayou.github.io/2014/12/07/css-currentColor/'; 
-            this.page.identifier = '_posts/2014-12-07-css-currentColor.md';
-        };
-        (function() {  
-            var d = document, s = d.createElement('script');
-            s.src = '//wayou.disqus.com/embed.js';
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-        })();
-    </script>
-  
-</div>
-
-
-  </div>
-</div>
-    <footer class="footer">
-    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a title="under developing..." href="javascript:;">末名</a>主题</p>
-    <p>
-        &copy; 2017 Wayou Liu
-    </p>
-</footer>
-<script src="/lib/waves/waves.js"></script>
-<script src="/lib/tocbot/tocbot.js"></script>
-<script src="/js/main.js"></script>
-
-  </body>
-</html>
+</code></pre><p><pre class="_cssdeck_embed" data-pane="output" data-user="wayou" data-href="oxuuu1ex" data-version="0"></pre><script async src="http://cssdeck.com/assets/js/embed.js"></script></p><h3 id="更好维护的CSS"><a href="/2014/12/07/css-currentColor/#更好维护的CSS" class="headerlink" title="更好维护的CSS"></a>更好维护的CSS</h3><p>仔细想想不难发现，当使用<code>currentColor</code>后，我们的CSS也变得更加好维护了。</p><p>还拿上面的按钮示例来说，优化之前不但代码冗余，而且哪天PM来劲了说这颜色饱看，给换个其他色。于是你得把<code>&lt;a&gt;</code>标签和<code>&lt;svg&gt;</code>一起换了。</p><p>但优化后就不一样了，因为<code>&lt;svg&gt;</code>使用的填充是<code>currentColor</code>，你只需要改变<code>&lt;a&gt;</code>标签的颜色，它也就跟着变了。真正做到了牵一发而不动全身。这不正是众码友们毕生所追求的理想编程境界么。</p><h2 id="浏览器兼容性"><a href="/2014/12/07/css-currentColor/#浏览器兼容性" class="headerlink" title="浏览器兼容性"></a>浏览器兼容性</h2><p>一提到浏览器兼容性，FE同学们或许就不敢那么任性了。之前你可能是这样的：</p><p><img src="/2014/12/07/css-currentColor/before.gif" alt="before"><span class="image-caption">before</span></p><p>当听到IE传来的噩耗，你可能是这样的：</p><p><img src="/2014/12/07/css-currentColor/after.gif" alt="after"><span class="image-caption">after</span></p><p>经查，<a href="http://caniuse.com/#search=currentcolor" target="_blank" rel="external">can i use</a> 没有关于它的数据。</p><p>经测，</p><ul><li>本机Win7搭载的IE8不支持</li><li>本机安装的火狐31发来战报表示支持</li><li>Chrome，你猜？</li><li>本机Safari 5.1.7也表示支持</li><li>本机Opera 26 同样表示支持</li></ul><p>根据<a href="http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor" target="_blank" rel="external">这篇文章</a>的描述，它是可以很好地工作在在所有现代浏览器和IE9+上的，甚至是各浏览器对应的移动版本。所以，在IE不是主要客户对象的情况下，还是可以放心使用的。</p><h2 id="参考"><a href="/2014/12/07/css-currentColor/#参考" class="headerlink" title="参考"></a>参考</h2><ul><li><a href="http://css-tricks.com/currentcolor/" target="_blank" rel="external">css-tricks currentColor</a></li><li><a href="http://osvaldas.info/keeping-css-short-with-currentcolor" target="_blank" rel="external">Keeping CSS short with currentColor</a></li><li><a href="http://demosthenes.info/blog/908/The-First-CSS-Variable-currentColor" target="_blank" rel="external">The First CSS Variable: currentColor</a></li></ul></section></article><div class="pager"><a class="post-prev pager-item" href="/2014/12/21/nexus-root/"><strong class="article-nav-caption">上一篇</strong><p class="post-nav-title truncate-text">Nexus 5 刷机及ROOT</p></a><a class="post-next pager-item" href="/2014/11/30/html5-details-tag/"><strong class="article-nav-caption">下一篇</strong><p class="post-nav-title truncate-text">HTML5 details 标签</p></a></div><div class="comment-section"><div id="disqus_thread"></div><script>var disqus_config=function(){this.page.url="https://wayou.github.io/2014/12/07/css-currentColor/",this.page.identifier="_posts/2014-12-07-css-currentColor.md"};!function(){var t=document,e=t.createElement("script");e.src="//wayou.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script></div></div></div><footer class="footer"><p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a title="under developing..." href="javascript:;">末名</a>主题</p><p>&copy; 2017 Wayou Liu</p></footer><script src="/lib/waves/waves.js"></script><script src="/lib/tocbot/tocbot.js"></script><script src="/js/main.js"></script></body>
