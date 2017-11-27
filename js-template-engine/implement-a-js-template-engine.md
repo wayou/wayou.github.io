@@ -428,6 +428,10 @@ document.getElementById('app').innerHTML = compile('#tpl_books')(data);
 
 _支持逻辑表达式的版本_
 
+### Show me the code!
+
+本文中代码可以[这里得到](https://github.com/wayou/wayou.github.io/tree/master/js-template-engine/src)。
+
 ### 相关资源
 
 - [JavaScript Micro-Templating](https://johnresig.com/blog/javascript-micro-templating/)
