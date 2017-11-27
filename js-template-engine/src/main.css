@@ -1,0 +1,15 @@
+.book {
+    margin-bottom: 15px;
+}
+p {
+    margin: 0;
+}
+p.desc {
+    color: #757575;
+}
+.price {
+    background: green;
+    color: #fff;
+    padding: 0 4px;
+    border-radius: 2px;
+}
