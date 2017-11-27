@@ -276,7 +276,7 @@ function compile(selector) {
     var tplStr = document.querySelector(selector).innerHTML;
     tplStr = tplStr
         .replace(/[\r\n\t]/g, '') //去掉换行，否则在 return 时会报错
-        .replace(/([\"\'])/g, '\\$1') //去掉换行，否则在 return 时会报错
+        .replace(/([\"\'])/g, '\\$1') //将模板中的引号转义以防止在后面拼接字符串时出错
         .replace(/<%=(.*?)%>/g, (match, p1) => {
             return (
                 '"+' + //将非变量部分用字符串包裹
@@ -376,7 +376,7 @@ function compile(selector) {
 
     tplStr
         .replace(/[\r\n\t]/g, '') //去掉换行，否则在 return 时会报错
-        .replace(/([\"\'])/g, '\\$1') //去掉换行，否则在 return 时会报错
+        .replace(/([\"\'])/g, '\\$1') //将模板中的引号转义以防止在后面拼接字符串时出错
         .split(delimiter)
         .map(fragment => {
             if (displayDelimiter.test(fragment)) {
