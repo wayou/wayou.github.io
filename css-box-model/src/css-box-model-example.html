@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML>
+  <HEAD>
+    <TITLE>Examples of margins, padding, and borders</TITLE>
+    <STYLE type="text/css">
+      UL { 
+        background: yellow; 
+        margin: 12px 12px 12px 12px;
+        padding: 3px 3px 3px 3px;
+                                     /* No borders set */
+      }
+      LI { 
+        color: white;                /* text color is white */ 
+        background: blue;            /* Content, padding will be blue */
+        margin: 12px 12px 12px 12px;
+        padding: 12px 0px 12px 12px; /* Note 0px padding right */
+        list-style: none             /* no glyphs before a list item */
+                                     /* No borders set */
+      }
+      LI.withborder {
+        border-style: dashed;
+        border-width: medium;        /* sets border width on all sides */
+        border-color: lime;
+      }
+    </STYLE>
+  </HEAD>
+  <BODY>
+    <UL>
+      <LI>First element of list
+      <LI class="withborder">Second element of list is
+           a bit longer to illustrate wrapping.
+    </UL>
+  </BODY>
+</HTML>

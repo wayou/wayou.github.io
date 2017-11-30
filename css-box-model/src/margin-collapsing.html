@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .box {
+            margin: 10px;
+            border: 1px solid;
+        }
+
+        .a {
+            background: #777;
+        }
+
+        .b {
+            background: #999;
+        }
+
+        .c {
+            background: #bbb;
+        }
+
+        .d {
+            background: #ddd;
+        }
+
+        .e {
+            background: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box a">
+        <div class="box b">
+            <div class="box c">
+                <div class="box d">
+                    <div class="box e">
+                        这里嵌套的 div 元素，每个都有 10px 的外边距，且都有不同的背景色，他们垂直方向的外边距会因为 margin collapsing 而塌缩成一个，水平方向的外边距则不会。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>
