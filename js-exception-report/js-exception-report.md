@@ -141,7 +141,7 @@ _try catch 中打印错误_
 
 #### 这一段其实无关紧要
 
-因为最后两个参数是后面加的，有理由相信，在很老很老很老的 Chrome 版本中，也是不支持全部5个参数的。来自Ben Vinegar的这篇文章(https://blog.sentry.io/2016/01/04/client-javascript-reporting-window-onerror.html)指出 Chrome 46 开始支持全部5个参数的。
+因为最后两个参数是后面加的，有理由相信，在很老很老很老的 Chrome 版本中，也是不支持全部5个参数的。来自Ben Vinegar的[这篇文章](https://blog.sentry.io/2016/01/04/client-javascript-reporting-window-onerror.html)指出 Chrome 46 开始支持全部5个参数的。
 
 ![](https://raw.githubusercontent.com/wayou/wayou.github.io/master/js-exception-report/assets/chrome-onerr-compatability.png)
 
@@ -260,7 +260,8 @@ Happy trouble shotting :)
 * [CORS settings attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes)
 * [can I catch exception of Iframe in parent window of Iframe](https://stackoverflow.com/questions/6327128/can-i-catch-exception-of-iframe-in-parent-window-of-iframe)
 
-*后记*
+
+**后记**
 
 后续可以开垦的点：
 
