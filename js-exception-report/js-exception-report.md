@@ -6,7 +6,7 @@
 window.onerror = function(messageOrEvent, source, lineno, colno, error) { ... }
 ```
 
-* message: error message (string or event object). Available as event (sic!) in HTML onerror="" handler and also as an event object when dispatching an Event to window in which case the other arguments will not be supplied (as opposed to ErrorEvent which does cause the full range of arguments to be supplied to window.onerror whereas the single error event object is supplied to window.addEventListener('error') handlers) .
+* message: 错误信息，在 HTML 中的 `onerror` 属性中设置的回调可以传递事件
 * source: 出错文件的 url
 * lineno: 出错位置的行数
 * colno: 出错时的列数
