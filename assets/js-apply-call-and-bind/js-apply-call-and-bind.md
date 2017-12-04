@@ -37,7 +37,7 @@ f(1)
 f('hello','world')
 ```
 
-![函数体中类数组的 `arguments` 变量](https://raw.githubusercontent.com/wayou/wayou.github.io/master/js-apply-call-and-bind/assets/array-like-arguments.png)
+![函数体中类数组的 `arguments` 变量](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-apply-call-and-bind/assets/array-like-arguments.png)
 
 _函数体中类数组的 `arguments` 变量_
 
@@ -93,7 +93,7 @@ var $ = document.querSelector.bind(document);//现在可以愉快地使用 `$` �
 $('body');
 ```
 
-![alias 原生方法](https://raw.githubusercontent.com/wayou/wayou.github.io/master/js-apply-call-and-bind/assets/alias-native-method.png)
+![alias 原生方法](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-apply-call-and-bind/assets/alias-native-method.png)
 
 _alias 原生方法_
 

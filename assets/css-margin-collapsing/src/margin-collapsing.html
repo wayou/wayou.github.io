@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>illustrate margin collapsing</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .box {
+            background: #eee;
+            margin: 10px;
+        }
+
+        .m {
+            width: 50px;
+            height: 50px;
+        }
+
+        .l {
+            width: 100px;
+            height: 100px;
+        }
+
+        .xl {
+            width: 100%;
+            height: 150px;
+        }
+
+        .yellow {
+            background: yellow;
+        }
+
+        .red {
+            background: red;
+        }
+
+        .green {
+            background: green;
+        }
+
+        .blue {
+            background: blue;
+        }
+
+        .inline {
+            display: inline-block;
+        }
+
+        .float {
+            float: left;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        .clear{
+            clear: both;
+        }
+
+        .example-4{
+            margin: 20px;
+        }
+        .example-4 .box{
+            margin: 0;
+        }
+
+        .empty{
+            height: 0;
+        }
+
+        .-margin-5{
+            margin: -5px;
+        }
+        .-margin-15{
+            margin: -15px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <section>
+        <h3>W3C列举的情况</h3>
+        <div class="example example-0">
+            <div class="box m red"></div>
+            <div class="box m empty yellow clear"></div>
+        </div>
+        <hr>
+    </section>
+    <section>
+        <h3>毗邻的兄妹元素-垂直方向</h3>
+        <div class="example example-1">
+            <div class="box m yellow"></div>
+            <div class="box m red"></div>
+        </div>
+        <h3>毗邻的兄妹元素-水平方向</h3>
+        <div class="example example-2">
+            <div class="box inline m yellow"></div>
+            <div class="box inline m red"></div>
+        </div>
+        <h3>毗邻的兄妹元素-垂直方向-后者带浮动清除</h3>
+        <div class="example example-3">
+            <div class="box xl float yellow"></div>
+            <div class="box xl float red"></div>
+        </div>
+        <h3>有清除浮动</h3>
+        <div class="example example-3">
+            <div class="box xl yellow"></div>q
+            <div class="box xl red clear"></div>
+        </div>
+        <hr>
+    </section>
+    <section>
+        <h3>父容器与首末子元素间</h3>
+        <div class="example example-4">
+            <div class="box m inline yellow"></div>
+            <div class="box m inline red"></div>
+            <div class="box m inline blue"></div>
+        </div>
+        <hr>
+    </section>
+    <section>
+        <h3>空元素</h3>
+        <div class="example example-5">
+            <div class="box m inline empty">
+                <div class="empty"></div>
+            </div>
+        </div>
+        <hr>
+    </section>
+    <section>
+        <h3>两个负数 margin 合并后的结果</h3>
+        <div class="example example-6">
+            <div class="box m red -margin-5">
+            </div>
+            <div class="box m yellow -margin-15">
+            </div>
+        </div>
+        <hr>
+    </section>
+</body>
+
+</html>
