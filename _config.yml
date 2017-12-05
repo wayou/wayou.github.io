@@ -1,1 +1,1 @@
-exclude: assets
+exclude: *.md
