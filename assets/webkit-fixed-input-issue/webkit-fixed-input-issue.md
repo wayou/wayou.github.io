@@ -41,6 +41,9 @@ overflow: hidden;
 
 方式二是比较快且感动较少的，需要注意弹窗关闭时记得取恢复 `body`的滚动。
 
+
+### 相关资源
+
 - the reported webkit bug: https://bugs.webkit.org/show_bug.cgi?id=176896
 
 - related article https://hackernoon.com/how-to-fix-the-ios-11-input-element-in-fixed-modals-bug-aaf66c7ba3f8
