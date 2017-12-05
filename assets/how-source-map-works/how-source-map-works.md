@@ -1,6 +1,6 @@
 ## js srouce map 的原理
 
-线上产品代码一般是编译过的，前端的编辑过程包括不限于
+线上产品代码一般是编译过的，前端的编译处理过程包括不限于
 
 * 从其他语言转到 JavaScript，譬如 CoffeScript, ES6/7，TypeScript
 * 代码压缩，譬如使用 UglifyJS 减小文件大小
@@ -78,14 +78,14 @@ python3 -m http.server
 * 在浏览器中开启 source map 
 `source map` 在浏览器中默认是关闭的，这样就不会影响正常用户。当我们开启后，浏览器就根据压缩代码中指定的 source map 地址去请求 map 资源。
 
-![在浏览器中开启 source map](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-box-model/assets/enable-source-map-in-chrome-devtool.png)
+![在浏览器中开启 source map](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/enable-source-map-in-chrome-devtool.png)
 
 _在浏览器中开启 source map_
 
 
 最后，就可以访问 `http://localhost:8000/` 来测试我们的代码了。
 
-![在压缩过的代码中打断点](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-box-model/assets/debugger-in-output.png)
+![在压缩过的代码中打断点](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/debugger-in-output.png)
 
 _在压缩过的代码中打断点_
 
@@ -95,7 +95,7 @@ _在压缩过的代码中打断点_
 
 刷新页面后，我们发现，断点正确定位到了 `log.js` 中正确的位置。
 
-![代码的还原](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-box-model/assets/source-retrive.png)
+![代码的还原](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/source-retrive.png)
 
 _代码的还原_
 
@@ -128,21 +128,21 @@ _代码的还原_
 一个简单的文本转换输出，其中 `Yoda` 可以理解为一个转换器。将上面的的输入与输出列成表格可以得出这个转换后输入与输出的对应关系。
 
 |输出位置 | 输入 | 在输入中的位置 | 字符 |
-|---|---|---|---|---|
-|行 1, 列 0	|Yoda_input.txt	|行 1, 列 5	|t|
-|行 1, 列 1	|Yoda_input.txt	|行 1, 列 6	|h|
-|行 1, 列 2	|Yoda_input.txt	|行 1, 列 7	|e|
-|行 1, 列 4	|Yoda_input.txt	|行 1, 列 9	|f|
-|行 1, 列 5	|Yoda_input.txt	|行 1, 列 10	|o|
-|行 1, 列 6	|Yoda_input.txt	|行 1, 列 11	|r|
-|行 1, 列 7	|Yoda_input.txt	|行 1, 列 12	|c|
-|行 1, 列 8	|Yoda_input.txt	|行 1, 列 13	|e|
-|行 1, 列 10	|Yoda_input.txt	|行 1, 列 0	|f|
-|行 1, 列 11	|Yoda_input.txt	|行 1, 列 1	|e|
-|行 1, 列 12	|Yoda_input.txt	|行 1, 列 2	|e|
-|行 1, 列 13	|Yoda_input.txt	|行 1, 列 3	|l|
+|---|---|---|---|
+|行 1, 列 0	|Yoda_input.txt	|行 1, 列 5|t|
+|行 1, 列 1	|Yoda_input.txt	|行 1, 列 6|h|
+|行 1, 列 2	|Yoda_input.txt	|行 1, 列 7|e|
+|行 1, 列 4	|Yoda_input.txt	|行 1, 列 9|f|
+|行 1, 列 5	|Yoda_input.txt	|行 1, 列 10|o|
+|行 1, 列 6	|Yoda_input.txt	|行 1, 列 11|r|
+|行 1, 列 7	|Yoda_input.txt	|行 1, 列 12|c|
+|行 1, 列 8	|Yoda_input.txt	|行 1, 列 13|e|
+|行 1, 列 10	|Yoda_input.txt	|行 1, 列 0|f|
+|行 1, 列 11	|Yoda_input.txt	|行 1, 列 1|e|
+|行 1, 列 12	|Yoda_input.txt	|行 1, 列 2|e|
+|行 1, 列 13	|Yoda_input.txt	|行 1, 列 3|l|
 
-这里之所以将输入文件也作为映射的必需值，它可以告诉我们从哪里去找源文件。并且，在代码合并时，生成输出文件的源文件不止一个，记录下每处代码来自哪个文件，在还原时也很重要。
+这里之所以将输入文件也作为映射的必需值，它可以告诉我们从哪里去找源文件。并且，在代码合并时，生成输出文件的源文件不止一个，记录下每处代码来自哪个文件，在还原时也很重要。
 
 上面可以直观看出，生成文件中 (1,0) 位置的字符对应源文件中 (1,5)位置的字符,...
 将上面的表格整理记录成一个映射编码看起来会是这样的：
@@ -248,7 +248,7 @@ mappings (31 字符): 0|0|1|5|0, 4|0|1|4|1, 6|0|1|-9|1;
 
 ### VLQ （Variable Length Quantities）
 
-进一步的优化则需要引入一个新的概念了，VLQ[Variable-length quantity](https://en.wikipedia.org/wiki/Variable-length_quantity)。
+进一步的优化则需要引入一个新的概念了，[VLQ(Variable-length quantity)](https://en.wikipedia.org/wiki/Variable-length_quantity)。
 
 #### VLQ 以数字的方式呈现
 
@@ -272,7 +272,12 @@ mappings (31 字符): 0|0|1|5|0, 4|0|1|4|1, 6|0|1|-9|1;
 
 我们使用下划线来标识一个数字后跟有其他数字：
 
-<p>1<span style="text-decoration: underline">2</span>3<span style="text-decoration: underline">45</span>67</p>
+<!-- github 不支持写样式 -->
+<!-- <p>1<span style="text-decoration: underline">2</span>3<span style="text-decoration: underline">45</span>67</p> -->
+
+![下划线标识数字未结束](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/numbers-indicates-by-underline.png)
+
+_下划线标识数字未结束_
 
 所以解读规则为：
 
@@ -325,7 +330,7 @@ _第一个字节组(四位作为值)_
 |111110	| 未结束的15 |
 |111111 | 未结束的-15 |
 
-* -0 没有实际意义，但技术上它是存在的
+\* -0 没有实际意义，但技术上它是存在的
 
 任意数字中，第一个字节组中已经标明了该数字的正负，所以后续的字节组中无需再标识，于是可以多出一位来作表示值。
 
@@ -398,7 +403,7 @@ _未结束的字节组(五位作为值)_
 000010 101110 000001 110000 011100 001110
 ```
 
-![Base64 编码表](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-box-model/assets/base64-map.png)
+![Base64 编码表](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/base64-map.png)
 
 _base64 编码表_
 
@@ -412,7 +417,7 @@ CuBwcO
 
 通过上面讨论的方法，回到开始的示例中，前面我们已经得到的编码为
 
-```json
+```js
 sources: ['Yoda_input.txt']
 names: ['the','force','feel']
 mappings (31 字符): 0|0|1|5|0, 4|0|1|4|1, 6|0|1|-9|1;
@@ -450,7 +455,7 @@ mappings (18 字符): AACKA, IACIC, MACTC;
 
 而真实的 srouce map 如我们文章开头那个示例一样，是一个 json 文件，所以最后我们得到的一分像模像样的 source map 为：
 
-```json
+```js
 {
     "version": 3,
     "file": "Yoda_output.txt",
@@ -465,9 +470,7 @@ mappings (18 字符): AACKA, IACIC, MACTC;
 上面的例子中，每一片段的编码由五位组成。真实场景中，有些情况下某些字段其实不必要，这时就可以将其省略。当然，这里给出的这个例子看不出来。
 
 省略其中某些字段后，一个编码片段就不一定是5位了，他的长度有可能为1，4或者5。
-5 fields: Output column, input file name index, input line, input column, name index
-4 fields: Output column, input file name index, input line, input column
-1 field: Output column
+
 * 5 - 包含全部五个部分：输出文件中的列号，输入文件索引，输入文件中的行号，输入文件中的列号，符号索引
 * 4 - 输出文件中的列号，输入文件索引，输入文件中的行号，输入文件中的列号
 * 1 - 输出文件中的列号
