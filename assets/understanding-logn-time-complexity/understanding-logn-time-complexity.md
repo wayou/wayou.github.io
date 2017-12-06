@@ -23,7 +23,7 @@ _选中正中间的元素作为分界线_
 
 * 将目标与中间元素进行比较，因为13小于16，所以我们保留前半部分继续寻找。 
 
-![保留前半部分](keep-half.png)
+![保留前半部分](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/keep-half.png)
 
 _保留前半部分_
 
