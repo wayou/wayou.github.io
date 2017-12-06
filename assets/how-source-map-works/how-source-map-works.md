@@ -2,9 +2,11 @@
 
 线上产品代码一般是编译过的，前端的编译处理过程包括不限于
 
-* 从其他语言转到 JavaScript，譬如 CoffeScript, ES6/7，TypeScript
-* 代码压缩，譬如使用 UglifyJS 减小文件大小
-* 代码合并，譬如分散在多个模块中的代码将其合并打包输出成一个文件
+* 转译器/Transpilers (Babel, Traceur)
+* 编译器/Compilers (Closure Compiler, TypeScript, CoffeeScript, Dart)
+* 压缩/Minifiers (UglifyJS)
+
+这里提及的都是可生成source map 的操作。
 
 经过这一系列骚气的操作后，发布到线上的代码已经面目全非，对带宽友好了，但对开发者调试并不友好。于是就有了 source map。顾名思义，他是源码的映射，可以将压缩后的代码再对应回未压缩的源码。使得我们在调试线上产品时，就好像在调试开发环境的代码。
 
@@ -111,12 +113,6 @@ _代码的还原_
 输入 ⇒ 处理转换（uglify） ⇒ 输出（js）
 ```
 上面，输出无疑就是需要发布到产品线上的浏览器能运行的代码。这里只讨论 js，所以输出是 js 代码，当然，其实source map 也可以运用于其他资源比如 LESS/SASS 等编译到的 CSS。
-
-现在主流带source map 的处理包括以下这些：
-
-* 转译器/Transpilers (Babel, Traceur)
-* 编译器/Compilers (Closure Compiler, TypeScript, CoffeeScript, Dart)
-* 压缩/Minifiers (UglifyJS)
 
 而 source map 的功能是帮助我们在拿到输出后还原回输入。如果我们自己来实现，应该怎么做。
 
