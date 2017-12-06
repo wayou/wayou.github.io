@@ -1,4 +1,4 @@
-## js srouce map 的原理
+## source map 的原理探究
 
 线上产品代码一般是编译过的，前端的编译处理过程包括不限于
 
@@ -268,8 +268,7 @@ mappings (31 字符): 0|0|1|5|0, 4|0|1|4|1, 6|0|1|-9|1;
 
 我们使用下划线来标识一个数字后跟有其他数字：
 
-<!-- github 不支持写样式 -->
-<!-- <p>1<span style="text-decoration: underline">2</span>3<span style="text-decoration: underline">45</span>67</p> -->
+<!-- <p>1<u>2</u>3<u>45</u>67</p> -->
 
 ![下划线标识数字未结束](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/numbers-indicates-by-underline.png)
 
