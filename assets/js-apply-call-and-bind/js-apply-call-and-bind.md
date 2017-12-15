@@ -134,4 +134,5 @@ _alias 原生方法_
 * [Function.prototype.call()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
 * [Function.prototype.bind()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind)
 * [Javascript call() & apply() vs bind()?](https://stackoverflow.com/questions/15455009/javascript-call-apply-vs-bind)
+* [Beginner - Explicit this Binding JavaScript](https://stackoverflow.com/questions/37487497/beginner-explicit-this-binding-javascript)
 

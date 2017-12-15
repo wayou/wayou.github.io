@@ -484,3 +484,9 @@ mappings (18 字符): AACKA, IACIC, MACTC;
 * [Source Maps under the hood – VLQ, Base64 and Yoda](https://blogs.msdn.microsoft.com/davidni/2016/03/14/source-maps-under-the-hood-vlq-base64-and-yoda/)
 * [Introduction to JavaScript Source Maps](https://www.thecssninja.com/javascript/source-mapping)
 * [BASE64 VLQ 编码规则](http://blog.allenm.me/2012/12/base64-vlq-encoding/)
+
+
+### 后续
+
+- source map 的保护
+
