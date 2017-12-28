@@ -34,7 +34,7 @@
 
 这样说来，就和中学数学的公式可以联系起来了。
 
-![排列组合公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-exception-report/assets/formula.png)
+![排列组合公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-permutation-and-combination/assets/formula.png)
 
 __排列组合公式__
 
