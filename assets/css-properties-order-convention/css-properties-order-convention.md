@@ -214,6 +214,7 @@ CSS 属性本来就没有一个标准规定先写谁后写谁，怎样写都能�
 
 ### 相关资源
 
+- [Poll Results: How do you order your CSS properties?](https://css-tricks.com/poll-results-how-do-you-order-your-css-properties/)
 - [“Outside In” — Ordering CSS Properties by Importance](https://webdesign.tutsplus.com/articles/outside-in-ordering-css-properties-by-importance--cms-21685)
 - [Conventional Order of CSS properties](https://stackoverflow.com/questions/4878655/conventional-order-of-css-properties)
 - [CSScomb](http://csscomb.com/)
