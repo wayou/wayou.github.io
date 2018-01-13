@@ -1,4 +1,4 @@
-## CSS 属性的排序
+## CSS 属性排序千千万，我只爱那一种
 
 不知道有多少人思考过将 CSS 属性排序的问题。反正在我书写网页的无数个日子里，是有想过这个问题的。
 
@@ -18,8 +18,7 @@
 感受下最后这种排序方式：
 
 ```css
-.button
-{
+.button {
     box-shadow: inset .25em .25em .5em rgba(0, 0, 0, .3), .5em .5em 0 #444;
     font-family: Avenir, Helvetica, Arial, sans-serif;
     border: .25em solid #196e76;
@@ -32,7 +31,6 @@
     font-size: 3em;
     color: #fff;
 }
-
 ```
 
 
@@ -241,7 +239,7 @@ el {
 
 比如 `width` 和`height` 谁先谁后？或许在确定了整体排序规则后，同一分组内的排序就没那么重要了。
 
-所以，用工具解决就不用那么纠结。
+所以，用工具解决就不用那么纠结。CSS 属性排序千千万，我只爱那一种，那一种，用工具解决的那一种。
 
 
 ### 工具
