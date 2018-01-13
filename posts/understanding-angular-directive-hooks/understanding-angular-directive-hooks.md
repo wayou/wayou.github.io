@@ -50,7 +50,7 @@ myModule.directive('directiveName', function factory(injectables) {
 
 平时只注重使用，也没细看。现在根据三者执行的顺序，来仔细认识一下他们，以看看三者的区别。
 
-![从 Stackoverflow 扒来的神图展示了 Angular 启动时都发生了些什么](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-angular-directive-hooks/assets/angular-bootstrap-steps.png)
+![从 Stackoverflow 扒来的神图展示了 Angular 启动时都发生了些什么](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-angular-directive-hooks/assets/angular-bootstrap-steps.png)
 
 _从 Stackoverflow 扒来的神图展示了 Angular 启动时都发生了些什么_
 
@@ -63,7 +63,7 @@ _从 Stackoverflow 扒来的神图展示了 Angular 启动时都发生了些什�
 
 DOM 模板被加载后则开始了编译。遍历所有节点，找出 directive 然后调用每个 directive 的 `cmopile` 方法。这里使用的 DOM 模板代码为原始的 DOM 模板。
 
-![Angular directive compile 阶段](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-angular-directive-hooks/assets/compile-phase.png)
+![Angular directive compile 阶段](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-angular-directive-hooks/assets/compile-phase.png)
 
 _Angular directive compile 阶段_
 
@@ -76,7 +76,7 @@ _Angular directive compile 阶段_
 
 实例化的 DOM 除了从原始 DOM 直接编译而来，还有的是通过 `ngRepeat` 等在代码中动态生成的。无论哪种形式而来，一旦 DOM 被渲染到页面，则开始的 link 阶段的工作。
 
-![Angular directive link 阶段](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-angular-directive-hooks/assets/link-phase.png)
+![Angular directive link 阶段](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-angular-directive-hooks/assets/link-phase.png)
 
 _Angular directive link 阶段_
 

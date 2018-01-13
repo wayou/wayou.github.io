@@ -9,62 +9,62 @@
 
 假设我们要从如下一个已经排好序长度为16的数列中找到指定的数字13：
 
-![一个长度为16已经排好序的数列](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/a-sorted-array-of-16-elements.png)
+![一个长度为16已经排好序的数列](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/a-sorted-array-of-16-elements.png)
 
 _一个长度为16已经排好序的数列_
 
 
 * 找到中间元素，这里也就是元素16所处的位置，它中间为分界线将整个数列均分。
 
-![选中正中间的元素作为分界线](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/select-mid-as-pivot.png)
+![选中正中间的元素作为分界线](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/select-mid-as-pivot.png)
 
 _选中正中间的元素作为分界线_
 
 
 * 将目标与中间元素进行比较，因为13小于16，所以我们保留前半部分继续寻找。 
 
-![保留前半部分](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/keep-half.png)
+![保留前半部分](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/keep-half.png)
 
 _保留前半部分_
 
 
 * 重复上面的步骤，找到中间元素 8，因为13比8大，所以保留8后面的这部分
 
-![重复上面的步骤](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/repeat-steps.png)
+![重复上面的步骤](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/repeat-steps.png)
 
 _重复上面的步骤_
 
 
 * 继续上面的步骤，直到没有剩余的元素便找到我们的目标了。
 
-![直到找到目标](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/till-find-result.png)
+![直到找到目标](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/till-find-result.png)
 
 _直到找到目标_
 
 上面的步骤，第一次操作都将总数减小到原来的一半。我们从16个元素中找一个目标时二分了4次，`16*(1/2)*(1/2)*(1/2)*(1/2)` 总结成公式：
 
-![16个元素中二分的公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/simplify-formula.png)
+![16个元素中二分的公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/simplify-formula.png)
 
 _16个元素中二分的公式_
 
 
 推而广之，从 n 个元素中查找，需要多少次呢，还不知道，假设需要 k次。那么用上面的公式则可以表示为：
 
-![从 n 个元素中查找的公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/general-formula.png)
+![从 n 个元素中查找的公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/general-formula.png)
 
 _从 n 个元素中查找的公式_
 
 
 去掉幂的括号则变成了：
 
-![去掉公式中幂的括号](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/separating-the-power.png)
+![去掉公式中幂的括号](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/separating-the-power.png)
 
 _去掉公式中幂的括号_
 
 
 最后我们去掉分母，得到了一个简洁的公式：
 
-![简洁的公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/common-formula.png)
+![简洁的公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/common-formula.png)
 
 _简洁的公式_
 
@@ -76,7 +76,7 @@ _简洁的公式_
 
 所以对上面公式两边取对数便得到了 k 的值，
 
-![对数公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/understanding-logn-time-complexity/assets/log-formula.png)
+![对数公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/log-formula.png)
 
 _对数公式_
 

@@ -80,14 +80,14 @@ python3 -m http.server
 * 在浏览器中开启 source map 
 `source map` 在浏览器中默认是关闭的，这样就不会影响正常用户。当我们开启后，浏览器就根据压缩代码中指定的 source map 地址去请求 map 资源。
 
-![在浏览器中开启 source map](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/enable-source-map-in-chrome-devtool.png)
+![在浏览器中开启 source map](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/how-source-map-works/assets/enable-source-map-in-chrome-devtool.png)
 
 _在浏览器中开启 source map_
 
 
 最后，就可以访问 `http://localhost:8000/` 来测试我们的代码了。
 
-![在压缩过的代码中打断点](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/debugger-in-output.png)
+![在压缩过的代码中打断点](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/how-source-map-works/assets/debugger-in-output.png)
 
 _在压缩过的代码中打断点_
 
@@ -97,7 +97,7 @@ _在压缩过的代码中打断点_
 
 刷新页面后，我们发现，断点正确定位到了 `log.js` 中正确的位置。
 
-![代码的还原](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/source-retrive.png)
+![代码的还原](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/how-source-map-works/assets/source-retrive.png)
 
 _代码的还原_
 
@@ -394,7 +394,7 @@ _未结束的字节组(五位作为值)_
 000010 101110 000001 110000 011100 001110
 ```
 
-![Base64 编码表](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/how-source-map-works/assets/base64-map.png)
+![Base64 编码表](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/how-source-map-works/assets/base64-map.png)
 
 _base64 编码表_
 

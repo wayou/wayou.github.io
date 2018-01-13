@@ -5,7 +5,7 @@
 
 网页中 emoji 表情与文字的混排，正在来说没问题，但当你使用扩展屏幕的时候，并且扩展屏分辨率不够的情况下，会出现表情与文字重叠的情况。
 
-![](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/emoji-overlap-issue.jpg)
+![](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/emoji-overlap-issue.jpg)
 
 算问题，也不算问题，毕竟正常使用没问题。
 
@@ -16,11 +16,11 @@
 为了证明这不是我们代码的问题，我们拿其他网站来试一试，譬如对于排版有卓越追求的Medium，我随便找了篇 [文章](https://medium.com/@nodejs/fireside-chat-with-node-js-foundation-chairperson-todd-moore-vp-of-open-technology-at-ibm-cfb5a337a4fa
 )，流利地插入了一把金钥匙🔑外带两个笑脸。
 
-![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/extend-display.png)
+![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/extend-display.png)
 *主显示器*
 
 
-![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/normal-display.png)
+![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/normal-display.png)
 *扩展显示器*
 
 
@@ -42,29 +42,29 @@ data:text/html, <html contenteditable>
 
 chrome 中：
 
-![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/chrome-plain-html-normal-display.png)
+![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/chrome-plain-html-normal-display.png)
 *主显示器*
 
-![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/chrome-plain-html-extend-display.png)
+![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/chrome-plain-html-extend-display.png)
 *扩展显示器*
 
 问题依旧，but，到这里我想到一点。不防多走一步，其他浏览器里面也试试。
 
 Safari 下：
 
-![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/safari-plain-html-normal-display.png)
+![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/safari-plain-html-normal-display.png)
 *主显示器*
 
-![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/safari-plain-html-extend-display.png)
+![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/safari-plain-html-extend-display.png)
 *扩展显示器*
 
 
 firefox 下：
 
-![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/firefox-plain-html-normal-display.png)
+![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/firefox-plain-html-normal-display.png)
 *主显示器*
 
-![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/firefox-plain-html-extend-display.png)
+![主显示器](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/firefox-plain-html-extend-display.png)
 *扩展显示器*
 
 不对比不知道，一对比真有料！
@@ -104,7 +104,7 @@ $0.innerHTML = $0.textContent.replace(/(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddf
 })
 ```
 
-![抽取及处理文件中的表情](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/emoji-overlapping-issue/assets/emoji-abstract.png)
+![抽取及处理文件中的表情](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/emoji-abstract.png)
 *抽取及处理文件中的表情*
 
 ### 相关资源

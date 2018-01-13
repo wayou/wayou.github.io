@@ -346,7 +346,7 @@ CSS 属性本来就没有一个标来准规定先写谁后写谁，怎样写都�
 
 「你吃的苦会照亮你未来的路」，你的坚持，不会是白白的付出。
 
-![冰花男孩](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-properties-order-convention/assets/ice_boy.jpg)
+![冰花男孩](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-properties-order-convention/assets/ice_boy.jpg)
 
 
 ### 相关资源

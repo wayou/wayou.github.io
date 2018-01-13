@@ -6,7 +6,7 @@ iPhone 升级到 iOS11 后，发现个前端页面上的问题。
 
 点击查看复现 [demo](https://wayou.github.io/assets/webkit-fixed-input-issue/src/index.html) 
 
-示例录屏：[ScreenRecording.MP4](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/webkit-fixed-input-issue/assets/ScreenRecording.MP4)
+示例录屏：[ScreenRecording.MP4](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/webkit-fixed-input-issue/assets/ScreenRecording.MP4)
 
 这个问题很容易复现，特别是在产品中运用了大量弹窗式交互的情况下，会很普遍。
 
@@ -23,9 +23,9 @@ iPhone 升级到 iOS11 后，发现个前端页面上的问题。
 
 输入框所占的位置还是原来键盘未弹起时的位置。
 
-![](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/webkit-fixed-input-issue/assets/dom-element-position.png)
+![](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/webkit-fixed-input-issue/assets/dom-element-position.png)
 
-![](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/webkit-fixed-input-issue/assets/safari-inspect-element.png)
+![](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/webkit-fixed-input-issue/assets/safari-inspect-element.png)
 
 这就尴尬了。页面：我也很无奈啊~ 一般键盘相关的问题都很坑，安卓上也会有各种键盘相关的坑。
 

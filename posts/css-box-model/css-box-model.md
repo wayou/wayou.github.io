@@ -2,7 +2,7 @@
 
 编程中我们常讲万物皆对象，面向对象编程嘛。写 CSS 的时候，则万物皆矩形，元素即方块。
 
-![CSS 盒模型镇楼图](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-box-model/assets/boxdim.png)
+![CSS 盒模型镇楼图](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/boxdim.png)
 
 _CSS 盒模型镇楼图 - 图片来自 W3C_
 
@@ -87,13 +87,13 @@ _CSS 盒模型镇楼图 - 图片来自 W3C_
 
 然后下面是它给出的效果图：
 
-![CSS 盒模型示例](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-box-model/assets/boxdimeg.png)
+![CSS 盒模型示例](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/boxdimeg.png)
 
 _CSS 盒模型示意_
 
 我不想吐槽官方文档这个示例图了，显示严重偏色不说，`li` 之间的外边距塌缩（margin collapsing，这一概念后面会介绍）从图中硬是看不出来。
 
-![CSS 盒模型示例](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-box-model/assets/boxdimeg-fixed.png)
+![CSS 盒模型示例](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/boxdimeg-fixed.png)
 
 _CSS 盒模型示例_
 
@@ -179,7 +179,7 @@ margin-left: 2em;
 </html>
 ```
 
-![外边距的塌缩](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-box-model/assets/margin-collapsing.png)
+![外边距的塌缩](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/margin-collapsing.png)
 
 _外边距的塌缩_
 
@@ -192,7 +192,7 @@ _外边距的塌缩_
 }
 ```
 
-![使用边框修复外边距的塌缩](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/css-box-model/assets/margin-collapsing-fixed-with-border.png)
+![使用边框修复外边距的塌缩](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/margin-collapsing-fixed-with-border.png)
 
 _使用边框修复外边距的塌缩_
 

@@ -58,12 +58,12 @@ function printError(msg, source, line, col, error) {
 <button onclick="throwError()">点我手动抛出异常</button>
 ```
 
-![Chrome 中异常的捕获与打印](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-exception-report/assets/chrome-error-print.png)
+![Chrome 中异常的捕获与打印](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/chrome-error-print.png)
 
 _Chrome 中异常的捕获与打印_
 
 
-![Safari 中异常的捕获与打印](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-exception-report/assets/safari-error-print.png)
+![Safari 中异常的捕获与打印](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/safari-error-print.png)
 
 _Safari 中异常的捕获与打印_
 
@@ -90,7 +90,7 @@ Firefox 从 31 开始支持了完整的5个参数。
 * 小贴士 *
 > 过程中顺便发现了微软Edge[这个API Catalog页面](https://developer.microsoft.com/en-us/microsoft-edge/platform/catalog/?page=1&q=queryselector)可以查到主流浏览器对名前端特性的实现情况，数据比 caniuse 全，譬如 `window.onerror` 在 caniuse 上则没有。
 
-![MS Edge 浏览器对 `window.onerror` 第五个参数的实现情况](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-exception-report/assets/ms-edge-onerror-compatability.png)
+![MS Edge 浏览器对 `window.onerror` 第五个参数的实现情况](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/ms-edge-onerror-compatability.png)
 
 _MS Edge 浏览器对 `window.onerror` 第五个参数的实现情况_
 
@@ -132,7 +132,7 @@ function printError(error) {
 <button onclick="tryCatchError()">利用 try catch 捕获异常并打印错误堆栈</button>
 ```
 
-![try catch 中打印错误](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-exception-report/assets/try-catch-print.png)
+![try catch 中打印错误](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/try-catch-print.png)
 
 _try catch 中打印错误_
 
@@ -143,11 +143,11 @@ _try catch 中打印错误_
 
 因为最后两个参数是后面加的，有理由相信，在很老很老很老的 Chrome 版本中，也是不支持全部5个参数的。来自Ben Vinegar的[这篇文章](https://blog.sentry.io/2016/01/04/client-javascript-reporting-window-onerror.html)指出 Chrome 46 开始支持全部5个参数的。
 
-![](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-exception-report/assets/chrome-onerr-compatability.png)
+![](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/chrome-onerr-compatability.png)
 
 为此我们不妨找一个老版本来验一下。我去 [Chrome 的历史仓库中](https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html) 下到了 [Chromium 15](https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Mac/100293/) （Chrome 正式发布前的开发版）。
 
-![拥有历史厚重感的老版本 Chrome](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-exception-report/assets/chromium-15.png)
+![拥有历史厚重感的老版本 Chrome](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/chromium-15.png)
 
 _拥有历史厚重感的老版本 Chrome_
 
@@ -155,7 +155,7 @@ _拥有历史厚重感的老版本 Chrome_
 
 不过还好，它的功能依然完好，跑起来我们的示例代码来驾轻就熟。
 
-![老版本的 Chrome 果然是没有后两位参数的](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-exception-report/assets/chrome-15-without-last-2-arguments.png)
+![老版本的 Chrome 果然是没有后两位参数的](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/chrome-15-without-last-2-arguments.png)
 
 _老版本的 Chrome 果然是没有后两位参数的_
 
@@ -216,7 +216,7 @@ Access-Control-Allow-Origin: domain of your site
 
 目前来看，除了 Opera外，各主流浏览器都有支持此属性。
 
-![跨域脚本加载浏览器兼容性](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-exception-report/assets/cors-loading-browser-compatability.png)
+![跨域脚本加载浏览器兼容性](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/cors-loading-browser-compatability.png)
 
 _跨域脚本加载浏览器兼容性_
 

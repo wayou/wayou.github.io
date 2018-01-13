@@ -65,7 +65,7 @@ document.getElementById('app').innerHTML = compile('#tpl_profile', data);
 于是我们就得到了能够正常显示的文本，最后设置到页面即可。
 
 
-![第一次尝试的成果](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-template-engine/screenshots/1.png)
+![第一次尝试的成果](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-template-engine/screenshots/1.png)
 
 _第一次尝试的成果_
 
@@ -202,7 +202,7 @@ var data = {
 document.getElementById('app').innerHTML = compile('#tpl_simple')(data);
 ```
 
-![解决了变量多个层级访问的版本](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-template-engine/screenshots/2.png)
+![解决了变量多个层级访问的版本](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-template-engine/screenshots/2.png)
 
 _解决了变量多个层级访问的版本_
 
@@ -225,7 +225,7 @@ var data = {
 document.getElementById('app').innerHTML = compile('#tpl_simple_with_exp')(data);
 ```
 
-![带简单表达式的版本](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-template-engine/screenshots/3.png)
+![带简单表达式的版本](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-template-engine/screenshots/3.png)
 
 _带简单表达式的版本_
 
@@ -262,7 +262,7 @@ function compile(selector) {
 
 这个版本运行后 HTML 标签上的引号没问题，但表达式中的此号有报错，原因是我们转义时将整个模板里的引号都进行了转义，所以最终得到的字符串中，变量部分的引号是有问题的。
 
-![变量中引号的问题](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-template-engine/screenshots/4.png)
+![变量中引号的问题](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-template-engine/screenshots/4.png)
 
 _变量中引号的问题_
 
@@ -289,7 +289,7 @@ function compile(selector) {
 }
 ```
 
-![解决了引号问题的版本](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-template-engine/screenshots/5.png)
+![解决了引号问题的版本](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-template-engine/screenshots/5.png)
 
 _解决了引号问题的版本_
 
@@ -317,7 +317,7 @@ var data = {
 document.getElementById('app').innerHTML = compile('#tpl_profile2')(data);
 ```
 
-![增加的自我介绍](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-template-engine/screenshots/6.png)
+![增加的自我介绍](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-template-engine/screenshots/6.png)
 
 _增加的自我介绍_
 
@@ -329,12 +329,12 @@ _增加的自我介绍_
 ```html
 <script type="text/template" id="tpl_books">
     <h3>我的书单</h3>
-    <%for(var i=0;i< books.length;i++){%>
+    <% for(var i=0;i< books.length;i++){ %>
         <div class="book">
             <p class="title"><%=books[i].title%><span class="price">$<%=books[i].price%></span></p>
             <p class="desc"><%=books[i].desc%></p>
         </div>
-    <%}%>
+    <% } %>
 </script>
 ```
 
@@ -422,7 +422,7 @@ var data = {
 document.getElementById('app').innerHTML = compile('#tpl_books')(data);
 ```
 
-![支持逻辑表达式的版本](https://raw.githubusercontent.com/wayou/wayou.github.io/master/assets/js-template-engine/screenshots/7.png)
+![支持逻辑表达式的版本](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-template-engine/screenshots/7.png)
 
 _支持逻辑表达式的版本_
 
