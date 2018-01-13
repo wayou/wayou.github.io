@@ -329,12 +329,12 @@ _增加的自我介绍_
 ```html
 <script type="text/template" id="tpl_books">
     <h3>我的书单</h3>
-    <%=for(var i=0;i< books.length;i++){%>
+    <%for(var i=0;i< books.length;i++){%>
         <div class="book">
             <p class="title"><%=books[i].title%><span class="price">$<%=books[i].price%></span></p>
             <p class="desc"><%=books[i].desc%></p>
         </div>
-    <%=}%>
+    <%}%>
 </script>
 ```
 
