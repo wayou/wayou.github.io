@@ -13,7 +13,7 @@
 - 最后还有按一行代码长度来排序的占2%
 
 
-### 我怎么看排序
+### 坚持的意义
 
 我认为，让 CSS 属性保持一定的规律有一些好处：
 - 作为写程序的人，除了希望代码的输出具有确定性，即每写一行代码我知道我在写什么，我能预知到结果，还希望从代码风格上保持一致，这样在写同类似功能时，写出来的东西是有某种确定性的，代码会有种统一的风格在里面，同时阅读起来会很轻松
@@ -126,9 +126,9 @@ el {
 
 ### 按照重要性的排序/分组
 
-就我个人而言，倾向于将比较重要的常用的放在靠前位置，像元素的长宽`width` `height`这种，影响尺寸，也很直观，我认为是比较重要的属性。其次是`position` 这种规定了元素定位的属性，再然后是 `border` `color` 这种次要的外观属性等。在这排序的过程中，会自动将同类的属性进行分组。但其实要细说下来，同一类别中也不好区分哪条在前，哪条在后比较好，也就是说虽然内心有个大致的重要性分组，但某个分组内再进行排序的话，自己其实也没有个清晰的准则。比如 `width` 和`height` 谁先谁后？
 
-来自Guy Routledge的[这篇文章](https://webdesign.tutsplus.com/articles/outside-in-ordering-css-properties-by-importance--cms-21685)展示了他自己的一种按照重要性的排序规则，总结起来就是`outside in`，由外向内，从元素与外界的关系，是否会影响外部布局，到外边距，内边距等。
+来自Guy Routledge的[这篇文章](https://webdesign.tutsplus.com/articles/outside-in-ordering-css-properties-by-importance--cms-21685)展示了一种分组及按照重要性排序的方式，或者说基于此种方式下他自己的一种按照重要性的排序规则。
+总结起来就是`outside in`，由外向内，从元素与外界的关系，是否会影响外部布局，到外边距，内边距等。
 
 * 布局相关(position, float, clear, display)，因为元素的布局会对对相邻元素产生影响，自身甚至会脱离原来的文档流，所以比较重要
 * 盒模型相关(width, height, margin, padding)
@@ -201,6 +201,13 @@ el {
 
 这一规则大致与前面的盒模型规则类似。
 
+### 我眼中的排序规则
+
+就我个人而言，倾向于将比较重要的常用的放在靠前位置，像元素的长宽`width` `height`这种，影响尺寸，也很直观，我认为是比较重要的属性。其次是`position` 这种规定了元素定位的属性，再然后是 `border` `color` 这种次要的外观属性等。
+虽然在这排序的过程中，会自动将同类的属性进行分组。但其实要细说下来，同一类别中也不好区分哪条在前，哪条在后比较好，也就是说虽然内心有个大致的重要性分组，但某个分组内再进行排序的话，自己其实也没有个清晰的准则。比如 `width` 和`height` 谁先谁后？或许在确定了整体排序规则后，同一分组内的排序就没那么重要了。
+
+所以，能用工具解决就不用那么纠结。
+
 ### 工具
 
 CSS 属性本来就没有一个标准规定先写谁后写谁，怎样写都能工作，正是这样的情况导致你想找一种确定的书写方式的时候，面临选择的困难，每个人会有自己的偏好，这个很难达成统一的。
@@ -208,9 +215,95 @@ CSS 属性本来就没有一个标准规定先写谁后写谁，怎样写都能�
 在团队内，常见的会推 JS 的编码风格，甚至会推相应的工具来强制检查。却很少听到有为 CSS 来做这样的风格统一的。我觉得即使不为了考虑团队代码风格的一致性问题，从本文开始列的因素中来看，个人至少是需要养成一种属于自己风格的书写规范，或者选择一种规范来始终坚持。养成习惯后，写起CSS下笔如有神。
 
 如果觉得手工排序麻烦，那么也有相应的工作来自动格式化CSS 代码的。比如  [CSScomb
-](http://csscomb.com/)。相应的有编辑器插件，node cli 工具。同时 VSCode的应用市场也有[相应实现](https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-csscomb)可以选择安装，如果你同意他的这种格式化风格的话。
+](http://csscomb.com/)。相应的有编辑器插件，node cli 工具。同时 VSCode的应用市场也有[相应实现](https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-csscomb)可以选择安装。当然，该工具有自己的一套排序机制，但它主要还是对 CSS 的分组及格式化方面的支持，并没有使用上面的某种规则来排序。但使用它能够保证 CSS 属性按照一定顺序恒定输出。如果你同意他的这种格式化风格的话，使用这个插件会是比较省事的选择。
 
-港真，按照一定规则格式之后的CSS 代码会看起来舒心很多。
+通过他提供的在线工具我尝试了一个示例：
+
+* 格式化前 *
+```css
+.btn {
+  display: inline-block;
+  margin: 1em 0;
+  font-size: 3em;
+  padding: 1em 4em;
+  color: #fff;
+  box-shadow: inset 0.25em 0.25em 0.5em rgba(0, 0, 0, 0.3), 0.5em 0.5em 0 #444;
+  background: #196e76;
+  border: 0.25em solid #196e76;
+  text-decoration: none;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.btn2 {
+  border: 0.25em solid #196e76;
+  text-transform: uppercase;
+  padding: 1em 4em;
+  color: #fff;
+  box-shadow: inset 0.25em 0.25em 0.5em rgba(0, 0, 0, 0.3), 0.5em 0.5em 0 #444;
+  background: #196e76;
+  text-decoration: none;
+  font-size: 3em;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  text-align: center;
+}
+```
+* 格式化后 *
+
+```css
+.btn
+{
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-size: 3em;
+
+    display: inline-block;
+
+    margin: 1em 0;
+    padding: 1em 4em;
+
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    color: #fff;
+    border: .25em solid #196e76;
+    background: #196e76;
+    box-shadow: inset .25em .25em .5em rgba(0, 0, 0, .3), .5em .5em 0 #444;
+}
+
+.btn2
+{
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-size: 3em;
+
+    padding: 1em 4em;
+
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    color: #fff;
+    border: .25em solid #196e76;
+    background: #196e76;
+    box-shadow: inset .25em .25em .5em rgba(0, 0, 0, .3), .5em .5em 0 #444;
+}
+```
+
+该插件支持自定义样式无则，通过其提供的[在线工具](http://csscomb.com/config)可以方便地生成满足自己风格的规则。使用[VSCode 插件](https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-csscomb) 需要注意，需要在设置中指定一种格式化预设配置才能生效。
+
+```json
+{
+    "csscomb.preset": "csscomb" //其他规则或者自定义规则
+}
+```
+
+除了在编辑器中进行设置，还可以生成一个配置文件，放在项目根目录中，类似`.editorconfig`，这样项目中其他人可以共用同一份配置。
+
+### 结论
+
+港真，按照一定规则格式之后的CSS 代码会看起来舒心很多。选择一种风格，或者形成并保持自己的风格。程序人生路漫漫，代码风格常相伴。
+
 
 ### 相关资源
 
