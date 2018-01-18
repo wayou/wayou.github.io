@@ -6,7 +6,7 @@
 一般，项目中会配置 npm scripts 来跑一些任务，常规的线下开发编译任务，线上发版打包任务。所以 package.json 中的脚本配置大概会像这样子：
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "build": " webpack",
@@ -18,7 +18,7 @@ _package.json_
 现在需要在调用 webpack 时传递一个额外的语言参数，幸而通过 `--env` 这种句法可以轻松实现。
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "start": "webpack --env.lang=cn"
@@ -49,12 +49,12 @@ module.exports = (env, argv) => {
 我们能在 webpack 配置文本中接收到语言参数了，但这个参数是在 npm script 中写死的 `cn`，而我们需要编译不同的语言。
 
 
-### 多个 script 入口/ Resolution 1
+### 多个 script 入口
 
 好说嘛，最简单的方式，为每种语言写一句脚本入口不就行了。于是我们得到了第一种解决方案。
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "dev:cn": "webpack --env.lang=cn",
@@ -79,7 +79,7 @@ npm run dev:jp
 理想中的样子应该长这样：
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "dev": "webpack --env.lang=$lang",
@@ -103,7 +103,7 @@ _package.json_
 所以，我们可以考虑将变量放这里面（其实这里面的叫作配置项更确切，而不是变量）。
 
 _package.json_
-```json
+```js
 {
     "name": "myApp",
     "config":{
@@ -136,7 +136,7 @@ npm_package_version=1.0.0
 
 有两种方式。
 
-在 js 代码中可以通过 `process.env` 来获取。这里注意区分 `process.env` 中的 `env` 与前面 webpack 导出函数时的入参 `env`，它们不是一回事。 
+* 在 js 代码中可以通过 `process.env` 来获取。这里注意区分 `process.env` 中的 `env` 与前面 webpack 导出函数时的入参 `env`，它们不是一回事。 
 
 这里我们得到了第二种解决方案：
 
@@ -151,10 +151,10 @@ module.exports = {
 }
 ```
 
-在 package.json 的 scripts 脚本中则可以通过 bash 变量的形式来获取，于是很快我们解锁了第三种方案。
+* 在 package.json 的 scripts 脚本中则可以通过 bash 变量的形式来获取，于是很快我们解锁了第三种方案。
 
 _package.json_
-```json
+```js
 {
     "name": "myApp",
     "config":{
@@ -183,7 +183,7 @@ module.exports = (env, argv) => {
 针对  Windows 平台单独写一条脚本入口倒也是种解决方案。
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "dev": "webpack --env.lang=$npm_package_config_lang",
@@ -195,7 +195,7 @@ _package.json_
 但实在不优雅，所以 [cross-var](https://www.npmjs.com/package/cross-var) 就可以开始它的表演了。这种差异的处理就交给它吧。
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "dev": "cross-var webpack --env.lang=$npm_package_config_lang",
@@ -232,7 +232,7 @@ npm run <command> [-- <args>...]
 前面分析时得到了这样的脚本：
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "dev": "webpack --env.lang=$lang",
@@ -243,7 +243,7 @@ _package.json_
 既然呆会儿会拼接一部分东西到这个命令后面，那么我们把变动的语言参数部分抠掉，把位置留出来，于是成了：
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "dev": "webpack --env.lang=",
@@ -256,7 +256,7 @@ _package.json_
 所以我们改变一下策略，既然拼接到 scripts 后面的参数会被加一个空格，那好，我们将 `--env.lang=$lang` 这一部分整个拿出来。
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "dev": "webpack",
@@ -285,7 +285,7 @@ npm run dev -- --env.lang=cn --env.production
 
 所以你在 webpack 中获取到的参数为：
 
-```json
+```js
 {
     lang: 'cn',
     production: true
@@ -389,7 +389,7 @@ module.exports = env => {
 将常用的命令放入 `npm start` 中，同时在 webpack 配置文件中设置默认值，这样简单的 `npm start` 命令就可以满足平时大部分时间的开发所需，不用经常输入很多命令行参数。
 
 _package.json_
-```json
+```js
 {
     "scripts": {
         "start": "webpack --config webpack.dev.js",
