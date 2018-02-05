@@ -268,7 +268,7 @@ const Invoices = () => (
 
 更加详尽的关于 react-router v4 的东西推荐阅读[All About React Router 4](https://css-tricks.com/react-router-4/)（讲真我很奇怪这文章为什么发在了 css-tricks，黑人问号？） ，或者查看这个[在线 Demo](https://codepen.io/bradwestfall/project/editor/XWNWge)。
 
-不像硬气的 iOS 每次都**墙裂**建议**所有**用户升级（结果证明越升越慢），v4 beta 文档里关于「[Do I have to upgrade?](https://github.com/ReactTraining/react-router/tree/v4.0.0-beta.8#do-i-have-to-upgrade)」的回答是：
+不像硬气的 iOS 每次都**墙裂**建议**所有**用户升级（结果证明越升越慢），v4 beta 文档里关于「[Do I have to upgrade?](https://github.com/ReactTraining/react-router/tree/v4.0.0-beta.8#do-i-have-to-upgrade)」的回答显得特别务实：
 
 > No. Leave your package.json at v2/3 and move on with your life. We'll be merging bug fixes for v2/3 indefinitely.
 
