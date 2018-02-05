@@ -1,4 +1,4 @@
-## 从 react-router 中的动态路由说起
+## 心中无路由，处处皆自由-- react-router v4 动态路由
 
 react-router v4 的到来已经过了一些时日了，注意到官方文档中有篇介绍其新式设计哲学的[文章](https://reacttraining.com/react-router/web/guides/philosophy)。其中区分了传统静态路由（Static Routing）和新版中引入的动态路由（Dynamic Routing）。
 
