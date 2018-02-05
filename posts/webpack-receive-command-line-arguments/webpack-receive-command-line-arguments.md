@@ -9,7 +9,7 @@ _package.json_
 ```js
 {
     "scripts": {
-        "build": " webpack",
+        "build": "webpack",
         "start": "webpack --watch"
     }
 }
