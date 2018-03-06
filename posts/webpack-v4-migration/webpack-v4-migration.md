@@ -97,7 +97,7 @@ npm i -D html-webpack-plugin@webpack-contrib/html-webpack-plugin
 
 #### ts-loader
 
-非常给力的是 [ts-loader](https://github.com/TypeStrong/ts-loader) 在 webpack 新版发布后第一时间进行了更新适配。如果项目中在用 TypsScript，那可以将 ts-laoder 升级到最新的 [v4.0.0](https://github.com/TypeStrong/ts-loader/releases/tag/v4.0.0) 就可以正常编译了。 
+非常给力的是 [ts-loader](https://github.com/TypeStrong/ts-loader) 在 webpack 新版发布后第一时间进行了更新适配。如果项目中在用 TypsScript，那可以将 ts-loader 升级到最新的 [v4.0.0](https://github.com/TypeStrong/ts-loader/releases/tag/v4.0.0) 就可以正常编译了。 
 
 其实不止是 ts-loader， 官方 [webpack-contrib](https://github.com/webpack-contrib) 名下维护的库存不算，其他库的更新响应也很及时，给我的感觉是 webpack 凭借其积攒的实力做到现在的人气，能够振臂一呼，拥趸者众，也是实至名归。
 
