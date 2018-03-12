@@ -15,7 +15,7 @@
 
 讲道理，处理器（CPU）只认[机器码](https://en.wikipedia.org/wiki/Machine_code)。所谓机器码，即处理器能直接运行的二进制代码。所以高级语言出现前，要和处理器打交道，或者说让电脑做事情，就需要写[汇编](https://en.wikipedia.org/wiki/Assembly_language)（一种人类能看懂的机器码，这么理解）。
 
-__一个汇编的 hello world 示例__
+_一个汇编的 hello world 示例_
 ```asm
 section .text                   ;section declaration
 
@@ -35,7 +35,7 @@ _start:
 
                                 ;and exit
 
-  	mov     ebx,0               ;first syscall argument: exit code
+    mov     ebx,0               ;first syscall argument: exit code
     mov     eax,1               ;system call number (sys_exit)
     int     0x80                ;call kernel
 
@@ -47,7 +47,7 @@ len equ     $ - msg             ;length of our dear string
 
 是，机器能读懂了。但对人来说，不太友好。人有一点好，就是想尽办法让环境适合自己以使自己变得舒服。写这样的程序，显然不是很舒服。于是出现了[高级语言](https://en.wikipedia.org/wiki/High-level_programming_language)（相比汇编确实很高级，这样理解）。
 
-__javascript hello world 示例__
+_JavaScript hello world 示例_
 ```js
 console.log(`hello world!`)
 ```
