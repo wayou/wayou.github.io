@@ -1,13 +1,13 @@
 ## 编译了解一下
 
-踏步编程领域，你或多或少会听到「编译器」，「解释器」这类词汇。特别地，如果你是前端，一定是知道解释器的，因为像 JavaScript 脚本类语言一般都是解释执行的嘛，同是解释执行的还有前端同学经常会会写的 php。
+踏步编程领域，你或多或少会听到「编译器」，「解释器」这类词汇。特别地，如果你是前端，一定是知道解释器的，因为像 JavaScript 脚本类语言一般都是解释执行的嘛，同是解释执行的还有前端同学经常会写的 php。
 
 一般认为编译器输出优化后的代码运行较快，解释器边解释边运行代码速度较慢。但，世界总不那么简单，生活也不那么容易。
 
 ![人生总是那么痛苦吗？还是只有小时候是这样](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/compilers/assets/always_compilcate.jpeg)
 
-JIT ([Just-in-time compilation](https://en.wikipedia.org/wiki/Just-in-time_compilation))，一种结合了传统译编译 AOT（Ahead-of-time compilation
-(https://en.wikipedia.org/wiki/Ahead-of-time_compilation)）和解释器方式的编译，就不能简单归类为某种类型。
+[JIT/Just-in-time compilation](https://en.wikipedia.org/wiki/Just-in-time_compilation)，一种结合了传统译编译 [AOT/Ahead-of-time compilation](https://en.wikipedia.org/wiki/Ahead-of-time_compilation) 和解释器方式的编译，就不能简单归类为某种类型。
+
 实际运用中更是会将融合多种技术，以达到最佳的效果，着实让编译的工作复杂了起来，就像它从未简单过一样的复杂。比如 Chrome 及 Node 使用的 JS  引擎 V8。了解 V8 的工作流程前，还是需要将前面提到的编译概念了解一下先。
 
 
@@ -102,7 +102,7 @@ print
 
 对于一个熟稔 JS 的老司机来说，写出这样的程序来并不难。
 
-__interpreter.js__
+_interpreter.js_
 ```js
 'use strict';
 
@@ -316,7 +316,7 @@ console.log('hello world')
 
 这，便体现了AOT编译器在编译过程中可以大范围施展拳脚的地方。因为需要事先组装好整个目标程序，所以在最终编译完成时，编译器是知道整个程序长什么样的，所以能从全局对其进行优化。于是从 AOT 编译器上面，可以进化出调优的 AOT 编译器（Optimizing AOT Compiler）。
 
-__opt-compiler.js__
+_opt-compiler.js_
 ```js
 ...
 let program = ''
@@ -372,7 +372,7 @@ V8，这个 Chrome 及 Node 背后的神器。是它，让即使写得像屎一�
 - 重新得到的高效机器码会在程序运行过程中无缝替换进去。所以你的代码会边跑边优化。
 
 
-### 现在：编译器+解释器+调优编译器
+#### 现在：编译器+解释器+调优编译器
 
 根据这篇名为 [Launching Ignition and TurboFan](https://v8project.blogspot.tw/2017/05/launching-ignition-and-turbofan.html) 的官博介绍，
 2017 V8 引入了新的流程，回归到解释器，但引入点火器 Ignition 的概念。
