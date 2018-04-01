@@ -1570,7 +1570,7 @@ ouTube importer |	YouTubeImporter |	YoutubeImporter*
 **注释：一些英文词汇通过中横线连接的方式是有歧义的，比如 "nonempty" 和 "non-empty" 都是正确写法，所以方法名 `checkNonempty` `checkNonEmpty` 都算正确。**
 
 
-### 7.1 JSDoc
+### 7 JSDoc
 
 [JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler) 使用在了所有的类，字段以及方法上。
 
