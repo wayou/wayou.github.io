@@ -1,11 +1,11 @@
-## 一分有点过时的 JS 风格指南 - Google JavaScript Style Guide
+## 一份有点过时的 JS 风格指南 - Google JavaScript Style Guide
 
 
-GitHub 上有很多大厂的开源项目，是非常好的学习资源。无论是写码风格，还是程序设计，对于大厂子外野生的程序猿来说，都有很大借鉴意义。
+GitHub 上有很多大厂的开源项目，是非常好的学习资源。无论是写码风格，还是设计思想，对于码农中的芸芸众生来说，都有很大借鉴意义。
 
 特别地，如果你想要向这些优秀的开源项目贡献代码，学习并遵循其代码风格是必要的。譬如 Google 背景的项目 [angular/material2](https://github.com/angular/material2/blob/master/CONTRIBUTING.md#rules)，它要求遵循 [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)。
 
-其规范中不少已经过时，大部分还与 Google 自身的产品及开发工具相关联，不一定适合大众，并且好些规则感觉已经不适合于现在的前端，但了解人怎么玩的也不无裨益。逐翻录如下，以飨储君。
+其规范中不少已经过时，大部分还与 Google 自身的产品及开发工具相关联，不一定适合大众，并且好些规则感觉已经不适合于现在的前端，但了解人怎么玩的也不无裨益。逐翻录如下，以飨诸君。
 
 以下带 「注」的部分为笔记，联想《山海经注》中的「注」。
 
