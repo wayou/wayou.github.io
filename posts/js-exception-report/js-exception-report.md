@@ -246,7 +246,7 @@ document.getElementById("myiframe").contentWindow.onerror=function() {
 
 前面讨论了一下错误详细信息的获取，最终我们是想在客户端收集到这些信息，再加上 ua, 发生错误的时间，设备相关信息等上报到服务端。总之，能够获取到信息越全越好，方便我们后期定位处理问题。当然，这套体系，市面上是有现成库已经做了的，来自 GitHub的这个代码仓库[cheeaun/javascript-error-logging](https://github.com/cheeaun/javascript-error-logging)收集了前端异常监控相关的资源，从 [GitHub 这个专题页面](https://github.com/topics/error-monitoring)也能找到许多。上面的坑库里面也都会覆盖到。 
 
-Happy trouble shotting :)
+Happy troubleshooting :)
 
 
 ### 相关资料
