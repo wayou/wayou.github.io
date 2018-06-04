@@ -127,7 +127,7 @@ function mask(str) {
 
 因为最新的 Chrome Canary 中已经能自动提示 JavaScript 内置方法的参数了，如果记不住这些相似方法的签名也不用每次都查 MDN 了。
 
-![Chrome DevTools 中自动提示方法参数](auto-tip-for-native-method.png)
+![Chrome DevTools 中自动提示方法参数](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/mask-string/assets/auto-tip-for-native-method.png)
 
 
 ### 相关资料
