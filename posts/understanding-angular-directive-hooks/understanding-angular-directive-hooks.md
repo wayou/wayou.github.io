@@ -232,7 +232,7 @@ myApp.directive('log', function() {
 });
 ```
 
-在第一个阶段里都进行了日志输出，以查看其执行顺序。
+在每一个阶段里都进行了日志输出，以查看其执行顺序。
 
 对于单个 `directive` 而言，无疑很简单，通过最前端的图都可以猜到 `log` 的顺序。
 
@@ -283,7 +283,7 @@ parent (post-link)
 
 上面解释了各方法的顺序及作用。但并没有给出建议，写 directive 时用哪个比较合理。
 
-还是出自同一个来自 stackvoerflow 提问下的回答，[@Izhaki](https://stackoverflow.com/users/1179377/izhaki) 这位 Bro 的回答可以说是相当到位，分段落第个部分回答成一个答案。
+还是出自同一个来自 stackoverflow 提问下的回答，[@Izhaki](https://stackoverflow.com/users/1179377/izhaki) 这位 Bro 的回答可以说是相当到位，分段落第个部分回答成一个答案。
 
 #### compile
 
@@ -296,7 +296,7 @@ parent (post-link)
     <my-raw></my-raw>
 </tr>
 ```
-假如说我们希望操作 `my-raw` 的 DOM比如加个 `span` 进去。可以在 compile 中进行，然后让 `ng-repeat` 复制出许多克隆来，也可以在 `ng-repeat` 复制后（link 阶段），去操作每个复制出来的版本。
+假如说我们希望操作 `my-raw` 的 DOM 比如加个 `span` 进去。可以在 compile 中进行，然后让 `ng-repeat` 复制出许多克隆来，也可以在 `ng-repeat` 复制后（link 阶段），去操作每个复制出来的版本。
 
 在数据量大的情况下，前者性能会好一些。
 
@@ -314,7 +314,7 @@ parent (post-link)
 
 #### controller
 
-实例之后 controller 便开始执行。
+实例化之后 controller 便开始执行。
 
 在 controller 里，通常
 
