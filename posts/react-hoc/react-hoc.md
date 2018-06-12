@@ -103,6 +103,7 @@ HOC 并不改变原组件，而是在组件之上包装一层组件，所有可�
 
 以上述页面为例，我们可以定义一个 `loadDataAndCheckAuth` 方法来完成公共逻辑的抽象。
 
+_loadDataAndCheckAuth.js_
 ```js
 import React, { Component } from "react";
 import isAuthenticated from "./auth";
