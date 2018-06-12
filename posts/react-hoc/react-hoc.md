@@ -302,6 +302,10 @@ middlewareA(middlewareB(middlewareC(store.dispatch)))(action);
 
 对，Redux，它便是最经典的 HOC。
 
+### 示例代码
+
+示例代码可前往[这里](https://github.com/wayou/wayou.github.io/blob/master/posts/react-hoc/src/README.md)查看。
+
 
 ### 相关资源/References
 
