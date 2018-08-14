@@ -89,3 +89,88 @@ wx.downloadFile({
 ```
 
 因为小程序内对外部资源的使用的严格限制，这里使用 `wx.downloadFile` API 下载的图片地址需要添加到 `downloadFile 合法域名` 中。
+
+
+### #<span>3 `cover-view` 中文本样式的兼容性问题
+
+像 `<live-player>` 这种运行时是 native 元素的组件，其上要盖东西有严格限制，可操作的空间不多，样式操控起来也捉襟见肘。
+
+虽然官方文档说其只能嵌套 `<cover-view>` 和 `<cover-image>`，实测放入文本也是可以的。真机上发现视频上盖的文本在 iOS 与 安卓端样式上有差异。比如在视频上盖一个 「静音」标签。
+
+*mute_badge.wxml*
+```html
+<live-player>
+  <cover-view
+    class="mute-badge">
+    静音模式
+  </cover-view>
+</live-player>
+```
+
+*mute_badge.wxss*
+```diff
+.mute-badge {
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    vertical-align: top;
++    padding: 0px 4px;
+    font-size: 24rpx;
+    line-height: 48rpx;
+    height: 48rpx;
+    margin: 20rpx;
+}
+```
+因为想要文本与背景间有留白，所以左右给了 4px 间距。不给的话默认是紧贴着的。模拟器上没问题，真机测试问题便来了。
+
+iOS 左右依然无留白，安卓正常。审查元素后可发现，iOS 中 padding 部分是没有背景色的！
+
+![image](https://user-images.githubusercontent.com/3783096/44103313-708fa3d6-a01e-11e8-976c-46530fbe985d.png)
+
+这决定了如果想要文字左右有边距，得靠东西来填充，靠看不见的字符。当然空格键打的空格是不会起作用的，会被忽略掉，好在 `\b` 是可以起到填充作用的。所以文案前后加 `\b`。
+
+*mute_badge.js*
+```js
+data:{
+    text: `\b\b 静音模式 \b\b`
+}
+```
+
+*mute_badge.wxml*
+```html
+<live-player>
+  <cover-view
+    class="mute-badge">
+    {{text}}
+  </cover-view>
+</live-player>
+```
+
+这样 iOS 上是生效了。但安卓上出新问题了。因为 `\b` 在安卓上的表现是虽然会占空间，但不会撑开容器，所以容器还是文案那么宽，因为 `\b` 的加入，原来的文案便显示不下了，被挤掉了一部分。
+￼
+![image](https://user-images.githubusercontent.com/3783096/44103283-612a001c-a01e-11e8-8b9e-bfa5f5f53e11.png)
+
+
+如果想尝试文本外再包一层东西来写样式增加留白的话，会得到以下的结果：
+￼
+![image](https://user-images.githubusercontent.com/3783096/44103262-52f3aef8-a01e-11e8-8886-0f0dd04dac59.png)
+
+既然难两全，那就分开处理喽。
+
+```js
+data:{
+txt:’\b\b 静音模式 \b\b’
+},
+ready:function() {
+        try {
+            const systemInfo = wx.getSystemInfoSync();
+            if (systemInfo.platform === 'android') {
+                this.setData({
+                    txt: '静音模式',
+                });
+            }
+        } catch (error) {
+            //
+        }
+    }
+```
