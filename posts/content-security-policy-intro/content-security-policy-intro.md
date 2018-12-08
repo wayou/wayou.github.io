@@ -383,7 +383,7 @@ js 中好些地方是可以以字符串方式动态创建代码并执行，这�
 
 ```js
 setTimout(function(){
-	alert(1);
+  alert(1);
 }, 1000)
 ```
 
