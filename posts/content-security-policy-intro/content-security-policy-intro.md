@@ -166,7 +166,7 @@ Content-Security-Policy: <policy-directive>; <policy-directive>…
 * `upgrade-insecure-requests` 指导客户端将页面地址重写，HTTP 转 HTTPS。用于站点中有大量旧地址需要重定向的情形。
 * `worker-src` CSP Level 3 中的指令，规定可用于 worker, shared worker, 或 service worker 中的地址。
 
-> `child-src`  与 `frame-ancestors`  看起来比较像。前者规定的是页面中可加载哪些 iframe，后者规定谁可以以 iframe 加载本页。 比如来自不同站点的两个网页 A 与 B，B，B 中有 iframe 加载了 A。那么
+> `child-src`  与 `frame-ancestors`  看起来比较像。前者规定的是页面中可加载哪些 iframe，后者规定谁可以以 iframe 加载本页。 比如来自不同站点的两个网页 A 与 B，B 中有 iframe 加载了 A。那么
 > - A 的 `frame-ancestors` 需要包含 B
 > - B 的 `child-src` 需要包含 A 
 
