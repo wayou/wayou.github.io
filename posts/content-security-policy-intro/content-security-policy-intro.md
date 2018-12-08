@@ -311,7 +311,7 @@ alert(‘来自 test.js 的问候！’)
 <!DOCTYPE html>
 <html lang="en">
 <head>
-!    <meta http-equiv="Content-Security-Policy" content="default-src 'self' ‘unsave-inline’”>
+!    <meta http-equiv="Content-Security-Policy" content="default-src 'self' ‘unsafe-inline’”>
     <title>CSP Test</title>
     <style>
         body{
