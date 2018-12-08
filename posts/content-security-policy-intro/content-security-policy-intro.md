@@ -123,7 +123,7 @@ $ python -m SimpleHTTPServer 8000
 <html lang="en">
 <head>
 -     <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://unpkg.com">
-+     <meta http-equiv="Content-Security-Policy" content="script-src ‘none’>
++     <meta http-equiv="Content-Security-Policy" content="script-src ‘none’">
     <title>CSP Test</title>
 </head>
 <body>
