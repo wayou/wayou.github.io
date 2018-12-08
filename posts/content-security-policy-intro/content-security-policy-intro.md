@@ -192,7 +192,7 @@ script-src 'self' https://unpkg.com
 改成 `none` 之后表示页面不加载任何脚本，即使自己站点上的脚本都无法被加载执行。这里不妨试一下在 `csp_test.html` 旁边创建一个脚本文件 `test.js`:
 
 *test.js*
-```
+```js
 alert(‘来自 test.js 的问候！’)
 ```
 
