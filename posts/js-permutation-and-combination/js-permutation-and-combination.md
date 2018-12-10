@@ -93,7 +93,7 @@ permute([3]) = 3
 var permute = function (nums) {
     var result = [];
 
-    function process(input/*上一次处于后剩下的元素*/, prevResult/*上一次处理后的结果*/) {
+    function process(input/*上一次处理后剩下的元素*/, prevResult/*上一次处理后的结果*/) {
         var input = input.slice();
         if (input.length > 1) {
             for (var i = 0; i < input.length; i++) {
