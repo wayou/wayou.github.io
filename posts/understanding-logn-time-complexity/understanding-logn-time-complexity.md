@@ -41,7 +41,7 @@ _重复上面的步骤_
 
 _直到找到目标_
 
-上面的步骤，第一次操作都将总数减小到原来的一半。我们从16个元素中找一个目标时二分了4次，`16*(1/2)*(1/2)*(1/2)*(1/2)` 总结成公式：
+上面的步骤，每一次操作都将总数减小到原来的一半。我们从16个元素中找一个目标时二分了4次，`16*(1/2)*(1/2)*(1/2)*(1/2)` 总结成公式：
 
 ![16个元素中二分的公式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/simplify-formula.png)
 
