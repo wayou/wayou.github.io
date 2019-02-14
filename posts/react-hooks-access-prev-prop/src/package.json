@@ -2,6 +2,7 @@
   "name": "react-hooks",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://wayou.github.io/posts/react-hooks-access-prev-prop/src/build",
   "dependencies": {
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
