@@ -1,0 +1,23 @@
+<meta charset="utf-8" />
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<h1>微课音频预加载示例</h1>
+<div id="container"></div>
+<div id="duration"></div>
+<script>
+  var player = new Audio(
+    "https://github.com/wayou/selected/blob/gh-pages/content/songs/ai_la_la.mp3?raw=true"
+  );
+  player.preload = "metadata";
+  player.onloadedmetadata = () => {
+    duration.textContent = player.duration;
+  };
+  player.play();
+
+  document.addEventListener(
+    "WeixinJSBridgeReady",
+    function() {
+      player.play();
+    },
+    false
+  );
+</script>
