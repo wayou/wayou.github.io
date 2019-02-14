@@ -105,7 +105,7 @@ function App() {
 export default App;
 ```
 
-完整的代码可查看[这里](https://github.com/wayou/wayou.github.io/blob/master/posts/react-hooks-access-prev-prop/src/src/App.js)
+完整的代码可查看[这里](https://github.com/wayou/wayou.github.io/blob/master/posts/react-hooks-access-prev-prop/src/src/App.js)。
 
 ### 总结
 
