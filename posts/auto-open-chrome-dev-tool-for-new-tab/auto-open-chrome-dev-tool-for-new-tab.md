@@ -28,7 +28,7 @@ C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" -incognito -auto-op
 ```
 
 
-![自动为 Chrome 新开标签页打开 DevTool](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/auto-open-chrome-dev-tool-for-new-tab/assets/auto-open-chrome-dev-tool-for-new-tab.gif)
+![自动为 Chrome 新开标签页打开 DevTool](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/auto-open-chrome-dev-tool-for-new-tab/assets/auto_open_chrome_dev_tool_for_new_tab.gif)
 
 
 ### 相关资料
