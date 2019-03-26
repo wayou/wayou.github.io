@@ -5,7 +5,7 @@ node 调试相关
 
 为了防止后面出现混乱的各种书写，先来了解一下如何正确书写 node 的名称。
 
-下面使用来自的图片展示如何正确书写 node 名称。
+下面使用来自[@bitandbang 推文](https://twitter.com/bitandbang/status/1087359646367731719)中的图片展示如何正确书写 node 名称。
 
 ![node 名称的正确书写方式](https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/nodejs-debug/assets/node_the_right_way.jpg)
 _node 名称的正确书写方式_
