@@ -1,5 +1,3 @@
-- name: Deploy to GitHub Pages
-  uses: JamesIves/github-pages-deploy-action@3.5.9
 plugins:
   - jekyll-archives
 markdown: kramdown
