@@ -27,6 +27,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username: jekyll
 
+highlighter: rouge
 markdown: GFM
 # kramdown:
 #   input: GFM
@@ -37,6 +38,8 @@ markdown: GFM
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-paginate
+  - jekyll-seo-tag
   # - jekyll-paginate
   # - jekyll-sitemap
   # - jekyll-gist
