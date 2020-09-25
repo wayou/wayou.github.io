@@ -173,5 +173,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 .jekyll-cache
-
-sec.ts
+.DS_Store
