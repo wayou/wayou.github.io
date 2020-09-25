@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>koa-router 路由参数与前端路由的结合 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="koa-router 路由参数与前端路由的结合" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="koa-router 路由参数与前端路由的结合 koa-router 定制路由时支持通过冒号形式在 url 中指定参数，该参数会挂载到 context 上然后可通过 context.params.paramName 方便地获取。 考察下面的示例： var Koa = require(&quot;koa&quot;); var Router = require(&quot;koa-router&quot;); var app = new Koa(); var router = new Router(); router.get(&quot;/user/:id&quot;, async function(ctx, next) { const userId = ctx.params.id; ctx.body = `user id is:${userId}`; }); app.use(router.routes()).use(router.allowedMethods()); app.listen(3000); console.log(&quot;server started at http:localhost:3000&quot;); 启动服务后可看到页面中展示出了从 url 中获取到的 id 参数。 路由参数的获取展示 现在来考虑另一种情况，即路由中支持前端路由的情况。 即把现在的 url 由 /user/:id 的形式扩展成 /user/:id/foo/bar，这里 /foo/bar 部分可以是任何路由，作为前端处理的路由部分。 为了实现这样的前端路由部分，服务端路由的配置需要借助正则来进行， - router.get(&quot;/user/:id&quot;, async function(ctx, next) { + router.get([&quot;/user/:id&quot;, /\/user\/([\w|\d]+)\/.*/], async function(ctx, next) { const userId = ctx.params.id; ctx.body = `user id is:${userId}`; }); 这里将路由中 url 由单个字符串变成了数组形式，第一个还是原来的路由，这样正常的通过 /user/1 形式过来的页面能命中该路由。同时添加 /\/user\/([\w|\d]+)\/.*/ 部分，因为正则情况下不再支持路由中通过冒号进行参数的配置，所以这里 /user/ 后跟随的 id 也需要使用正则来替换掉。 但正则匹配下的路由就不能通过 context.params 来访问 url 上的参数了。不过好在可通过在正则中定义匹配组（Capturing Groups）的形式来定义参数，即其中 ([\w|\d]+) 括号包裹的部分，称为一个匹配组，一个匹配组是会自动被挂载到 context.params 上的，只是不像通过冒号定义的参数那样会有一个名字，这种形式的参数按照匹配到的顺序形成一个数组赋值到 context.params，所以访问第一个匹配组形成的参数可通过 context.params[0] 来获取。 于是上面的代码稍加修正后，就能够正确处理来自命名参数（通过冒号匹配）或正则参数形成的 query 参数了。 - router.get(&quot;/user/:id&quot;, async function(ctx, next) { + router.get([&quot;/user/:id&quot;, /\/user\/([\w|\d]+)\/.*/], async function(ctx, next) { - const userId = ctx.params.id; + const userId = ctx.params.id || ctx.params[0]; ctx.body = `user id is:${userId}`; }); 最后完整的代码会是这样： var Koa = require(&quot;koa&quot;); var Router = require(&quot;koa-router&quot;); var app = new Koa(); var router = new Router(); router.get([&quot;/user/:id&quot;, /\/user\/([\w|\d]+)\/.*/], async function(ctx, next) { const userId = ctx.params.id || ctx.params[0]; ctx.body = `user id is:${userId}`; }); app.use(router.routes()).use(router.allowedMethods()); app.listen(3000); console.log(&quot;server started at http:localhost:3000&quot;); 此时访问以下连接进行测试， http://localhost:3000/user/1 http://localhost:3000/user/2/foo http://localhost:3000/user/3/foo/bar 均能正确命中页面并成功获取到路由中的参数。 正则路由及路由参数的获取" />
+<meta property="og:description" content="koa-router 路由参数与前端路由的结合 koa-router 定制路由时支持通过冒号形式在 url 中指定参数，该参数会挂载到 context 上然后可通过 context.params.paramName 方便地获取。 考察下面的示例： var Koa = require(&quot;koa&quot;); var Router = require(&quot;koa-router&quot;); var app = new Koa(); var router = new Router(); router.get(&quot;/user/:id&quot;, async function(ctx, next) { const userId = ctx.params.id; ctx.body = `user id is:${userId}`; }); app.use(router.routes()).use(router.allowedMethods()); app.listen(3000); console.log(&quot;server started at http:localhost:3000&quot;); 启动服务后可看到页面中展示出了从 url 中获取到的 id 参数。 路由参数的获取展示 现在来考虑另一种情况，即路由中支持前端路由的情况。 即把现在的 url 由 /user/:id 的形式扩展成 /user/:id/foo/bar，这里 /foo/bar 部分可以是任何路由，作为前端处理的路由部分。 为了实现这样的前端路由部分，服务端路由的配置需要借助正则来进行， - router.get(&quot;/user/:id&quot;, async function(ctx, next) { + router.get([&quot;/user/:id&quot;, /\/user\/([\w|\d]+)\/.*/], async function(ctx, next) { const userId = ctx.params.id; ctx.body = `user id is:${userId}`; }); 这里将路由中 url 由单个字符串变成了数组形式，第一个还是原来的路由，这样正常的通过 /user/1 形式过来的页面能命中该路由。同时添加 /\/user\/([\w|\d]+)\/.*/ 部分，因为正则情况下不再支持路由中通过冒号进行参数的配置，所以这里 /user/ 后跟随的 id 也需要使用正则来替换掉。 但正则匹配下的路由就不能通过 context.params 来访问 url 上的参数了。不过好在可通过在正则中定义匹配组（Capturing Groups）的形式来定义参数，即其中 ([\w|\d]+) 括号包裹的部分，称为一个匹配组，一个匹配组是会自动被挂载到 context.params 上的，只是不像通过冒号定义的参数那样会有一个名字，这种形式的参数按照匹配到的顺序形成一个数组赋值到 context.params，所以访问第一个匹配组形成的参数可通过 context.params[0] 来获取。 于是上面的代码稍加修正后，就能够正确处理来自命名参数（通过冒号匹配）或正则参数形成的 query 参数了。 - router.get(&quot;/user/:id&quot;, async function(ctx, next) { + router.get([&quot;/user/:id&quot;, /\/user\/([\w|\d]+)\/.*/], async function(ctx, next) { - const userId = ctx.params.id; + const userId = ctx.params.id || ctx.params[0]; ctx.body = `user id is:${userId}`; }); 最后完整的代码会是这样： var Koa = require(&quot;koa&quot;); var Router = require(&quot;koa-router&quot;); var app = new Koa(); var router = new Router(); router.get([&quot;/user/:id&quot;, /\/user\/([\w|\d]+)\/.*/], async function(ctx, next) { const userId = ctx.params.id || ctx.params[0]; ctx.body = `user id is:${userId}`; }); app.use(router.routes()).use(router.allowedMethods()); app.listen(3000); console.log(&quot;server started at http:localhost:3000&quot;); 此时访问以下连接进行测试， http://localhost:3000/user/1 http://localhost:3000/user/2/foo http://localhost:3000/user/3/foo/bar 均能正确命中页面并成功获取到路由中的参数。 正则路由及路由参数的获取" />
+<link rel="canonical" href="http://localhost:4000/2019/05/19/koa-router-%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0%E4%B8%8E%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%BB%93%E5%90%88.html" />
+<meta property="og:url" content="http://localhost:4000/2019/05/19/koa-router-%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0%E4%B8%8E%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%BB%93%E5%90%88.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-19T22:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/05/19/koa-router-%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0%E4%B8%8E%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%BB%93%E5%90%88.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/05/19/koa-router-%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0%E4%B8%8E%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%BB%93%E5%90%88.html"},"description":"koa-router 路由参数与前端路由的结合 koa-router 定制路由时支持通过冒号形式在 url 中指定参数，该参数会挂载到 context 上然后可通过 context.params.paramName 方便地获取。 考察下面的示例： var Koa = require(&quot;koa&quot;); var Router = require(&quot;koa-router&quot;); var app = new Koa(); var router = new Router(); router.get(&quot;/user/:id&quot;, async function(ctx, next) { const userId = ctx.params.id; ctx.body = `user id is:${userId}`; }); app.use(router.routes()).use(router.allowedMethods()); app.listen(3000); console.log(&quot;server started at http:localhost:3000&quot;); 启动服务后可看到页面中展示出了从 url 中获取到的 id 参数。 路由参数的获取展示 现在来考虑另一种情况，即路由中支持前端路由的情况。 即把现在的 url 由 /user/:id 的形式扩展成 /user/:id/foo/bar，这里 /foo/bar 部分可以是任何路由，作为前端处理的路由部分。 为了实现这样的前端路由部分，服务端路由的配置需要借助正则来进行， - router.get(&quot;/user/:id&quot;, async function(ctx, next) { + router.get([&quot;/user/:id&quot;, /\\/user\\/([\\w|\\d]+)\\/.*/], async function(ctx, next) { const userId = ctx.params.id; ctx.body = `user id is:${userId}`; }); 这里将路由中 url 由单个字符串变成了数组形式，第一个还是原来的路由，这样正常的通过 /user/1 形式过来的页面能命中该路由。同时添加 /\\/user\\/([\\w|\\d]+)\\/.*/ 部分，因为正则情况下不再支持路由中通过冒号进行参数的配置，所以这里 /user/ 后跟随的 id 也需要使用正则来替换掉。 但正则匹配下的路由就不能通过 context.params 来访问 url 上的参数了。不过好在可通过在正则中定义匹配组（Capturing Groups）的形式来定义参数，即其中 ([\\w|\\d]+) 括号包裹的部分，称为一个匹配组，一个匹配组是会自动被挂载到 context.params 上的，只是不像通过冒号定义的参数那样会有一个名字，这种形式的参数按照匹配到的顺序形成一个数组赋值到 context.params，所以访问第一个匹配组形成的参数可通过 context.params[0] 来获取。 于是上面的代码稍加修正后，就能够正确处理来自命名参数（通过冒号匹配）或正则参数形成的 query 参数了。 - router.get(&quot;/user/:id&quot;, async function(ctx, next) { + router.get([&quot;/user/:id&quot;, /\\/user\\/([\\w|\\d]+)\\/.*/], async function(ctx, next) { - const userId = ctx.params.id; + const userId = ctx.params.id || ctx.params[0]; ctx.body = `user id is:${userId}`; }); 最后完整的代码会是这样： var Koa = require(&quot;koa&quot;); var Router = require(&quot;koa-router&quot;); var app = new Koa(); var router = new Router(); router.get([&quot;/user/:id&quot;, /\\/user\\/([\\w|\\d]+)\\/.*/], async function(ctx, next) { const userId = ctx.params.id || ctx.params[0]; ctx.body = `user id is:${userId}`; }); app.use(router.routes()).use(router.allowedMethods()); app.listen(3000); console.log(&quot;server started at http:localhost:3000&quot;); 此时访问以下连接进行测试， http://localhost:3000/user/1 http://localhost:3000/user/2/foo http://localhost:3000/user/3/foo/bar 均能正确命中页面并成功获取到路由中的参数。 正则路由及路由参数的获取","@type":"BlogPosting","headline":"koa-router 路由参数与前端路由的结合","dateModified":"2019-05-19T22:05:00+08:00","datePublished":"2019-05-19T22:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">koa-router 路由参数与前端路由的结合</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-19T22:05:00+08:00" itemprop="datePublished">May 19, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="koa-router-路由参数与前端路由的结合">koa-router 路由参数与前端路由的结合</h1>
+
+<p><a href="">koa-router</a> 定制路由时支持通过冒号形式在 url 中指定参数，该参数会挂载到 <code class="language-plaintext highlighter-rouge">context</code> 上然后可通过 <code class="language-plaintext highlighter-rouge">context.params.paramName</code> 方便地获取。</p>
+
+<p>考察下面的示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">Koa</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">koa</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">Router</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">koa-router</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Koa</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Router</span><span class="p">();</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">/user/:id</span><span class="dl">"</span><span class="p">,</span> <span class="k">async</span> <span class="kd">function</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">userId</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="s2">`user id is:</span><span class="p">${</span><span class="nx">userId</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">routes</span><span class="p">()).</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">allowedMethods</span><span class="p">());</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">server started at http:localhost:3000</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>启动服务后可看到页面中展示出了从 url 中获取到的 id 参数。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57971816-a2e5d400-79c5-11e9-8e74-16a0bccc1560.png" alt="路由参数的获取展示" /></p>
+<p align="center">路由参数的获取展示</p>
+
+<p>现在来考虑另一种情况，即路由中支持前端路由的情况。</p>
+
+<p>即把现在的 url 由 <code class="language-plaintext highlighter-rouge">/user/:id</code> 的形式扩展成 <code class="language-plaintext highlighter-rouge">/user/:id/foo/bar</code>，这里 <code class="language-plaintext highlighter-rouge">/foo/bar</code> 部分可以是任何路由，作为前端处理的路由部分。</p>
+
+<p>为了实现这样的前端路由部分，服务端路由的配置需要借助正则来进行，</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">- router.get("/user/:id", async function(ctx, next) {
+</span><span class="gi">+ router.get(["/user/:id", /\/user\/([\w|\d]+)\/.*/], async function(ctx, next) {
+</span>  const userId = ctx.params.id;
+  ctx.body = `user id is:${userId}`;
+<span class="err">});</span>
+</code></pre></div></div>
+
+<p>这里将路由中 url 由单个字符串变成了数组形式，第一个还是原来的路由，这样正常的通过 <code class="language-plaintext highlighter-rouge">/user/1</code> 形式过来的页面能命中该路由。同时添加 <code class="language-plaintext highlighter-rouge">/\/user\/([\w|\d]+)\/.*/</code> 部分，因为正则情况下不再支持路由中通过冒号进行参数的配置，所以这里 <code class="language-plaintext highlighter-rouge">/user/</code> 后跟随的 id 也需要使用正则来替换掉。</p>
+
+<p>但正则匹配下的路由就不能通过 <code class="language-plaintext highlighter-rouge">context.params</code> 来访问 url 上的参数了。不过好在可通过在正则中定义匹配组（Capturing Groups）的形式来定义参数，即其中 <code class="language-plaintext highlighter-rouge">([\w|\d]+)</code> 括号包裹的部分，称为一个匹配组，一个匹配组是会自动被挂载到 <code class="language-plaintext highlighter-rouge">context.params</code> 上的，只是不像通过冒号定义的参数那样会有一个名字，这种形式的参数按照匹配到的顺序形成一个数组赋值到 <code class="language-plaintext highlighter-rouge">context.params</code>，所以访问第一个匹配组形成的参数可通过 <code class="language-plaintext highlighter-rouge">context.params[0]</code> 来获取。</p>
+
+<p>于是上面的代码稍加修正后，就能够正确处理来自命名参数（通过冒号匹配）或正则参数形成的 query 参数了。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">- router.get("/user/:id", async function(ctx, next) {
+</span><span class="gi">+ router.get(["/user/:id", /\/user\/([\w|\d]+)\/.*/], async function(ctx, next) {
+</span><span class="gd">-  const userId = ctx.params.id;
+</span><span class="gi">+  const userId = ctx.params.id || ctx.params[0];
+</span>  ctx.body = `user id is:${userId}`;
+<span class="err">});</span>
+</code></pre></div></div>
+
+<p>最后完整的代码会是这样：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">Koa</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">koa</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">Router</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">koa-router</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Koa</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Router</span><span class="p">();</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="kd">get</span><span class="p">([</span><span class="dl">"</span><span class="s2">/user/:id</span><span class="dl">"</span><span class="p">,</span> <span class="sr">/</span><span class="se">\/</span><span class="sr">user</span><span class="se">\/([\w</span><span class="sr">|</span><span class="se">\d]</span><span class="sr">+</span><span class="se">)\/</span><span class="sr">.*/</span><span class="p">],</span> <span class="k">async</span> <span class="kd">function</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">userId</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span> <span class="o">||</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="s2">`user id is:</span><span class="p">${</span><span class="nx">userId</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">routes</span><span class="p">()).</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">allowedMethods</span><span class="p">());</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">server started at http:localhost:3000</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>此时访问以下连接进行测试，</p>
+
+<ul>
+  <li><a href="http://localhost:3000/user/1">http://localhost:3000/user/1</a></li>
+  <li><a href="http://localhost:3000/user/2/foo">http://localhost:3000/user/2/foo</a></li>
+  <li><a href="http://localhost:3000/user/3/foo/bar">http://localhost:3000/user/3/foo/bar</a></li>
+</ul>
+
+<p>均能正确命中页面并成功获取到路由中的参数。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57971813-9bbec600-79c5-11e9-9958-70a3a3065d66.gif" alt="正则路由及路由参数的获取" /></p>
+<p align="center">正则路由及路由参数的获取</p>
+
+
+  </div><a class="u-url" href="/2019/05/19/koa-router-%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0%E4%B8%8E%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%BB%93%E5%90%88.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

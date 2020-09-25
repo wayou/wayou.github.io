@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>TypeScript: type alias 与 interface | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="TypeScript: type alias 与 interface" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TypeScript: type alias 与 interface 官方文档中有关于两者对比的信息，隐藏在 TypeScript Handbook 中，见 Interfaces vs. Type Aliases 部分。 但因为这一部分很久没更新了，所以其中描述的内容不一定全对。 比如， 区别点之一：type alias 不会创建新的类型，体现在错误信息上。 One difference is, that interfaces create a new name that is used everywhere. Type aliases don’t create a new name — for instance, error messages won’t use the alias name. 不完全正确。直接通过 type 定义的初始类型，是会创建相应的类型名称的。 什么意思呢。就是说，不是使用 &amp;, | 等操作符创建的 union type 及 intersection type。 type Person = { name: string; age: number; }; // [x] Property &#39;age&#39; is missing in type &#39;{ name: string; }&#39; but required in type &#39;Person&#39;.ts(2741) const bob: Person = { name: &quot;bob&quot; }; 注意这里错误信息使用的是类型 Person 而不是对应的 plain object 对象。 区别点之二：type alias 不能被 extends 和 implements。 实际上在扩展和实现上二者已经没有区别，甚至可以混用，比如让一个 class 同时实现 interface 和 type alias 定义的类型。 type PointType = { x: number; y: number; }; interface PointInterface { a: number; b: number; } class Shape implements PointType, PointInterface { constructor(public a = 1, public b = 2, public x = 3, public y = 4) {} } 区别点之三：type alias 不能扩展和实现其他类型 不完全正确。因为通过正交操作符（intersection type） &amp; 可以达到 extends 的目的。 interface Person { name: string; } interface Job { title: string; } type EmployeeType = Person &amp; Job; class Employee implements EmployeeType { constructor(public name = &quot;Nobody&quot;, public title = &quot;Noone&quot;) {} } 上面可以看到，两者大部分情况下不用过多区分。 在使用了 union type 的时候，一些区别才开始显现。其实也算不得区别，因为只有 type alias 可通过 union type 定义。 当 type 包含 union type 时，该类型是不能被实现和扩展的。 interface Triangle { area: number; } interface Square { width: number; height: number; } type ShapeType = Triangle | Square; // [x] An interface can only extend an object type or intersection of object types with statically known members.ts(2312) interface MyShape extends ShapeType; class Shape implements ShapeType{ // [x] A class can only implement an object type or intersection of object types with statically known members.ts(2422) } 因为 union type 描述的是一个或者的状态，一个类不可能即是此类型也是另外种类型。interface 也不可能继承一个类型还不确定的类型。 类型合并 最明显的一点区别，是在进行类型合并（Declaration Merging）的时候，type alias 是不会被合并的，而同名的多个 interface 会合并成一个。 interface Person { name: string; } interface Person { age: number; } const person: Person = { name: &quot;Bob&quot;, age: 9 }; 对于 type alias，存在同名时直接报错。 type Person { // [x] Duplicate identifier &#39;Person&#39;.ts(2300) name: string; } type Person { // [x] Duplicate identifier &#39;Person&#39;.ts(2300) age: number; } 明白这点对于三方库的作者来说很重要。假如你写了个 npm 包，导出的是 type，则使用者无法通过简单定义同名类型来进行扩充。 所以，写库的时候，尽量使用 interface。 结论 官方推荐用 interface，其他无法满足需求的情况下用 type alias。 但其实，因为 union type 和 intersection type 是很常用的，所以避免不了大量使用 type alias 的场景，一些复杂类型也需要通过组装后形成 type alias 来使用。所以，如果想保持代码统一，可尽量选择使用 type alias。通过上面的对比，type alias 其实可函盖 interface 的大部分场景。 对于 React 组件中 props 及 state，使用 type alias，这样能够保证使用组件的地方不能随意在上面添加属性。如果有自定义需求，可通过 HOC （Higher-Order Components）二次封装。 编写三方库时使用 interface，其更加灵活自动的类型合并可应对未知的复杂使用场景。 相关资料 Interface vs Type alias in TypeScript 2.7 TypeScript Handbook TypeScript Constructor Assignment: public and private Keywords" />
+<meta property="og:description" content="TypeScript: type alias 与 interface 官方文档中有关于两者对比的信息，隐藏在 TypeScript Handbook 中，见 Interfaces vs. Type Aliases 部分。 但因为这一部分很久没更新了，所以其中描述的内容不一定全对。 比如， 区别点之一：type alias 不会创建新的类型，体现在错误信息上。 One difference is, that interfaces create a new name that is used everywhere. Type aliases don’t create a new name — for instance, error messages won’t use the alias name. 不完全正确。直接通过 type 定义的初始类型，是会创建相应的类型名称的。 什么意思呢。就是说，不是使用 &amp;, | 等操作符创建的 union type 及 intersection type。 type Person = { name: string; age: number; }; // [x] Property &#39;age&#39; is missing in type &#39;{ name: string; }&#39; but required in type &#39;Person&#39;.ts(2741) const bob: Person = { name: &quot;bob&quot; }; 注意这里错误信息使用的是类型 Person 而不是对应的 plain object 对象。 区别点之二：type alias 不能被 extends 和 implements。 实际上在扩展和实现上二者已经没有区别，甚至可以混用，比如让一个 class 同时实现 interface 和 type alias 定义的类型。 type PointType = { x: number; y: number; }; interface PointInterface { a: number; b: number; } class Shape implements PointType, PointInterface { constructor(public a = 1, public b = 2, public x = 3, public y = 4) {} } 区别点之三：type alias 不能扩展和实现其他类型 不完全正确。因为通过正交操作符（intersection type） &amp; 可以达到 extends 的目的。 interface Person { name: string; } interface Job { title: string; } type EmployeeType = Person &amp; Job; class Employee implements EmployeeType { constructor(public name = &quot;Nobody&quot;, public title = &quot;Noone&quot;) {} } 上面可以看到，两者大部分情况下不用过多区分。 在使用了 union type 的时候，一些区别才开始显现。其实也算不得区别，因为只有 type alias 可通过 union type 定义。 当 type 包含 union type 时，该类型是不能被实现和扩展的。 interface Triangle { area: number; } interface Square { width: number; height: number; } type ShapeType = Triangle | Square; // [x] An interface can only extend an object type or intersection of object types with statically known members.ts(2312) interface MyShape extends ShapeType; class Shape implements ShapeType{ // [x] A class can only implement an object type or intersection of object types with statically known members.ts(2422) } 因为 union type 描述的是一个或者的状态，一个类不可能即是此类型也是另外种类型。interface 也不可能继承一个类型还不确定的类型。 类型合并 最明显的一点区别，是在进行类型合并（Declaration Merging）的时候，type alias 是不会被合并的，而同名的多个 interface 会合并成一个。 interface Person { name: string; } interface Person { age: number; } const person: Person = { name: &quot;Bob&quot;, age: 9 }; 对于 type alias，存在同名时直接报错。 type Person { // [x] Duplicate identifier &#39;Person&#39;.ts(2300) name: string; } type Person { // [x] Duplicate identifier &#39;Person&#39;.ts(2300) age: number; } 明白这点对于三方库的作者来说很重要。假如你写了个 npm 包，导出的是 type，则使用者无法通过简单定义同名类型来进行扩充。 所以，写库的时候，尽量使用 interface。 结论 官方推荐用 interface，其他无法满足需求的情况下用 type alias。 但其实，因为 union type 和 intersection type 是很常用的，所以避免不了大量使用 type alias 的场景，一些复杂类型也需要通过组装后形成 type alias 来使用。所以，如果想保持代码统一，可尽量选择使用 type alias。通过上面的对比，type alias 其实可函盖 interface 的大部分场景。 对于 React 组件中 props 及 state，使用 type alias，这样能够保证使用组件的地方不能随意在上面添加属性。如果有自定义需求，可通过 HOC （Higher-Order Components）二次封装。 编写三方库时使用 interface，其更加灵活自动的类型合并可应对未知的复杂使用场景。 相关资料 Interface vs Type alias in TypeScript 2.7 TypeScript Handbook TypeScript Constructor Assignment: public and private Keywords" />
+<link rel="canonical" href="http://localhost:4000/2019/03/28/TypeScript-type-alias-%E4%B8%8E-interface.html" />
+<meta property="og:url" content="http://localhost:4000/2019/03/28/TypeScript-type-alias-%E4%B8%8E-interface.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-03-28T23:03:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/03/28/TypeScript-type-alias-%E4%B8%8E-interface.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/03/28/TypeScript-type-alias-%E4%B8%8E-interface.html"},"description":"TypeScript: type alias 与 interface 官方文档中有关于两者对比的信息，隐藏在 TypeScript Handbook 中，见 Interfaces vs. Type Aliases 部分。 但因为这一部分很久没更新了，所以其中描述的内容不一定全对。 比如， 区别点之一：type alias 不会创建新的类型，体现在错误信息上。 One difference is, that interfaces create a new name that is used everywhere. Type aliases don’t create a new name — for instance, error messages won’t use the alias name. 不完全正确。直接通过 type 定义的初始类型，是会创建相应的类型名称的。 什么意思呢。就是说，不是使用 &amp;, | 等操作符创建的 union type 及 intersection type。 type Person = { name: string; age: number; }; // [x] Property &#39;age&#39; is missing in type &#39;{ name: string; }&#39; but required in type &#39;Person&#39;.ts(2741) const bob: Person = { name: &quot;bob&quot; }; 注意这里错误信息使用的是类型 Person 而不是对应的 plain object 对象。 区别点之二：type alias 不能被 extends 和 implements。 实际上在扩展和实现上二者已经没有区别，甚至可以混用，比如让一个 class 同时实现 interface 和 type alias 定义的类型。 type PointType = { x: number; y: number; }; interface PointInterface { a: number; b: number; } class Shape implements PointType, PointInterface { constructor(public a = 1, public b = 2, public x = 3, public y = 4) {} } 区别点之三：type alias 不能扩展和实现其他类型 不完全正确。因为通过正交操作符（intersection type） &amp; 可以达到 extends 的目的。 interface Person { name: string; } interface Job { title: string; } type EmployeeType = Person &amp; Job; class Employee implements EmployeeType { constructor(public name = &quot;Nobody&quot;, public title = &quot;Noone&quot;) {} } 上面可以看到，两者大部分情况下不用过多区分。 在使用了 union type 的时候，一些区别才开始显现。其实也算不得区别，因为只有 type alias 可通过 union type 定义。 当 type 包含 union type 时，该类型是不能被实现和扩展的。 interface Triangle { area: number; } interface Square { width: number; height: number; } type ShapeType = Triangle | Square; // [x] An interface can only extend an object type or intersection of object types with statically known members.ts(2312) interface MyShape extends ShapeType; class Shape implements ShapeType{ // [x] A class can only implement an object type or intersection of object types with statically known members.ts(2422) } 因为 union type 描述的是一个或者的状态，一个类不可能即是此类型也是另外种类型。interface 也不可能继承一个类型还不确定的类型。 类型合并 最明显的一点区别，是在进行类型合并（Declaration Merging）的时候，type alias 是不会被合并的，而同名的多个 interface 会合并成一个。 interface Person { name: string; } interface Person { age: number; } const person: Person = { name: &quot;Bob&quot;, age: 9 }; 对于 type alias，存在同名时直接报错。 type Person { // [x] Duplicate identifier &#39;Person&#39;.ts(2300) name: string; } type Person { // [x] Duplicate identifier &#39;Person&#39;.ts(2300) age: number; } 明白这点对于三方库的作者来说很重要。假如你写了个 npm 包，导出的是 type，则使用者无法通过简单定义同名类型来进行扩充。 所以，写库的时候，尽量使用 interface。 结论 官方推荐用 interface，其他无法满足需求的情况下用 type alias。 但其实，因为 union type 和 intersection type 是很常用的，所以避免不了大量使用 type alias 的场景，一些复杂类型也需要通过组装后形成 type alias 来使用。所以，如果想保持代码统一，可尽量选择使用 type alias。通过上面的对比，type alias 其实可函盖 interface 的大部分场景。 对于 React 组件中 props 及 state，使用 type alias，这样能够保证使用组件的地方不能随意在上面添加属性。如果有自定义需求，可通过 HOC （Higher-Order Components）二次封装。 编写三方库时使用 interface，其更加灵活自动的类型合并可应对未知的复杂使用场景。 相关资料 Interface vs Type alias in TypeScript 2.7 TypeScript Handbook TypeScript Constructor Assignment: public and private Keywords","@type":"BlogPosting","headline":"TypeScript: type alias 与 interface","dateModified":"2019-03-28T23:03:00+08:00","datePublished":"2019-03-28T23:03:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">TypeScript: type alias 与 interface</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-03-28T23:03:00+08:00" itemprop="datePublished">Mar 28, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="typescript--type-alias-与-interface">TypeScript:  type alias 与 interface</h1>
+
+<p>官方文档中有关于两者对比的信息，隐藏在 TypeScript Handbook 中，见 <a href="https://www.typescriptlang.org/docs/handbook/advanced-types.html"><code class="language-plaintext highlighter-rouge">Interfaces vs. Type Aliases</code></a> 部分。</p>
+
+<p>但因为这一部分很久没更新了，所以其中描述的内容不一定全对。</p>
+
+<p>比如，</p>
+
+<h3 id="区别点之一type-alias-不会创建新的类型体现在错误信息上">区别点之一：type alias 不会创建新的类型，体现在错误信息上。</h3>
+
+<blockquote>
+  <p>One difference is, that interfaces create a new name that is used everywhere. Type aliases don’t create a new name — for instance, error messages won’t use the alias name.</p>
+</blockquote>
+
+<p>不完全正确。直接通过 type 定义的初始类型，是会创建相应的类型名称的。</p>
+
+<p>什么意思呢。就是说，不是使用 <code class="language-plaintext highlighter-rouge">&amp;</code>, <code class="language-plaintext highlighter-rouge">|</code> 等操作符创建的 union type 及 intersection type。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">Person</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// [x] Property 'age' is missing in type '{ name: string; }' but required in type 'Person'.ts(2741)</span>
+<span class="kd">const</span> <span class="nx">bob</span><span class="p">:</span> <span class="nx">Person</span> <span class="o">=</span> <span class="p">{</span> 
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">bob</span><span class="dl">"</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>注意这里错误信息使用的是类型 <code class="language-plaintext highlighter-rouge">Person</code> 而不是对应的 plain object 对象。</p>
+
+<h3 id="区别点之二type-alias-不能被-extends-和-implements">区别点之二：type alias 不能被 <code class="language-plaintext highlighter-rouge">extends</code> 和 <code class="language-plaintext highlighter-rouge">implements</code>。</h3>
+
+<p>实际上在扩展和实现上二者已经没有区别，甚至可以混用，比如让一个 class 同时实现 interface 和 type alias 定义的类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">PointType</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">x</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">y</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kr">interface</span> <span class="nx">PointInterface</span> <span class="p">{</span>
+  <span class="nl">a</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">b</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">Shape</span> <span class="kr">implements</span> <span class="nx">PointType</span><span class="p">,</span> <span class="nx">PointInterface</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="kr">public</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kr">public</span> <span class="nx">b</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="kr">public</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="kr">public</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="区别点之三type-alias-不能扩展和实现其他类型">区别点之三：type alias 不能扩展和实现其他类型</h3>
+
+<p>不完全正确。因为通过正交操作符（intersection type） <code class="language-plaintext highlighter-rouge">&amp;</code> 可以达到 <code class="language-plaintext highlighter-rouge">extends</code> 的目的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Job</span> <span class="p">{</span>
+  <span class="nl">title</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">type</span> <span class="nx">EmployeeType</span> <span class="o">=</span> <span class="nx">Person</span> <span class="o">&amp;</span> <span class="nx">Job</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nx">Employee</span> <span class="kr">implements</span> <span class="nx">EmployeeType</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="kr">public</span> <span class="nx">name</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Nobody</span><span class="dl">"</span><span class="p">,</span> <span class="kr">public</span> <span class="nx">title</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Noone</span><span class="dl">"</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>上面可以看到，两者大部分情况下不用过多区分。</p>
+
+<p>在使用了 union type 的时候，一些区别才开始显现。其实也算不得区别，因为只有 type alias 可通过 union type 定义。</p>
+
+<h3 id="当-type-包含-union-type-时该类型是不能被实现和扩展的">当 type 包含 union type 时，该类型是不能被实现和扩展的。</h3>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Triangle</span> <span class="p">{</span>
+  <span class="nl">area</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Square</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">type</span> <span class="nx">ShapeType</span> <span class="o">=</span> <span class="nx">Triangle</span> <span class="o">|</span> <span class="nx">Square</span><span class="p">;</span>
+
+<span class="c1">// [x] An interface can only extend an object type or intersection of object types with statically known members.ts(2312)</span>
+<span class="kr">interface</span> <span class="nx">MyShape</span> <span class="kd">extends</span> <span class="nx">ShapeType</span><span class="p">;</span> 
+
+
+<span class="kd">class</span> <span class="nx">Shape</span> <span class="kr">implements</span> <span class="nx">ShapeType</span><span class="p">{</span>
+<span class="c1">// [x] A class can only implement an object type or intersection of object types with statically known members.ts(2422)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>因为 union type 描述的是一个<strong>或者</strong>的状态，一个类不可能即是此类型也是另外种类型。interface 也不可能继承一个类型还不确定的类型。</p>
+
+<h3 id="类型合并">类型合并</h3>
+
+<p>最明显的一点区别，是在进行类型合并（<a href="https://www.typescriptlang.org/docs/handbook/declaration-merging.html">Declaration Merging</a>）的时候，type alias 是不会被合并的，而同名的多个 interface 会合并成一个。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">person</span><span class="p">:</span> <span class="nx">Person</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Bob</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">9</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>对于 type alias，存在同名时直接报错。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">Person</span> <span class="p">{</span>  <span class="c1">// [x] Duplicate identifier 'Person'.ts(2300)</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">type</span> <span class="nx">Person</span> <span class="p">{</span> <span class="c1">// [x] Duplicate identifier 'Person'.ts(2300)</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>明白这点对于三方库的作者来说很重要。假如你写了个 npm 包，导出的是 type，则使用者无法通过简单定义同名类型来进行扩充。</p>
+
+<p>所以，写库的时候，尽量使用 interface。</p>
+
+<h3 id="结论">结论</h3>
+
+<p>官方推荐用 interface，其他无法满足需求的情况下用 type alias。</p>
+
+<p>但其实，因为 union type 和 intersection type 是很常用的，所以避免不了大量使用 type alias 的场景，一些复杂类型也需要通过组装后形成 type alias 来使用。所以，如果想保持代码统一，可尽量选择使用 type alias。通过上面的对比，type alias 其实可函盖 interface 的大部分场景。</p>
+
+<p>对于 React 组件中 props 及 state，使用 type alias，这样能够保证使用组件的地方不能随意在上面添加属性。如果有自定义需求，可通过 HOC （Higher-Order Components）二次封装。</p>
+
+<p>编写三方库时使用 interface，其更加灵活自动的类型合并可应对未知的复杂使用场景。</p>
+
+<h3 id="相关资料">相关资料</h3>
+
+<ul>
+  <li><a href="https://medium.com/@martin_hotell/interface-vs-type-alias-in-typescript-2-7-2a8f1777af4c">Interface vs Type alias in TypeScript 2.7</a></li>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/advanced-types.html">TypeScript Handbook</a></li>
+  <li><a href="https://kendaleiv.com/typescript-constructor-assignment-public-and-private-keywords/">TypeScript Constructor Assignment: public and private Keywords</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/03/28/TypeScript-type-alias-%E4%B8%8E-interface.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

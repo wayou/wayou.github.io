@@ -1,0 +1,27 @@
+I"}<h1 id="npm-ci-与-install-的区别">npm ci 与 install 的区别</h1>
+
+<ul>
+  <li>要求必需有 <code class="language-plaintext highlighter-rouge">package-lock.json</code> 或 <code class="language-plaintext highlighter-rouge">npm-shrinkwrap.json</code> 文件存在</li>
+  <li>如果 lock 与 <code class="language-plaintext highlighter-rouge">package.json</code> 中版本不匹配，直接报错中断，而不是更新 lock 文件</li>
+  <li>npm ci 不能用来安装单个依赖，只能用来安装整个项目的依赖</li>
+  <li>npm ci 会检测如果 <code class="language-plaintext highlighter-rouge">node_modules</code> 已经存在，则先删除再进行安装操作</li>
+  <li>npm ci 会安装 <code class="language-plaintext highlighter-rouge">dependencies</code> 和 <code class="language-plaintext highlighter-rouge">devDependencies，</code>
+    <ul>
+      <li>和 npm install 一样，生产环境下，即通过 <code class="language-plaintext highlighter-rouge">-—production</code> 或通过 <code class="language-plaintext highlighter-rouge">NODE_ENV</code> 配置，则只会安装 dependencies</li>
+    </ul>
+  </li>
+  <li>不会更新 <code class="language-plaintext highlighter-rouge">package.json</code> 或 <code class="language-plaintext highlighter-rouge">package-lock.json</code> 文件，整个安装过程是锁死的</li>
+  <li>缓存  <code class="language-plaintext highlighter-rouge">npm ci --cache .npm</code></li>
+  <li>npm ci 时建议加上 <code class="language-plaintext highlighter-rouge">--quiet --no-progress</code> 关闭进度和其他无用 log，否则产生的日志会很大。</li>
+  <li>所以 ci 时推荐完整的命令为 <code class="language-plaintext highlighter-rouge">npm ci --cache .npm  --quiet --no-progress</code></li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://docs.npmjs.com/cli/ci.html">npm-ci</a></li>
+  <li><a href="https://stackoverflow.com/a/53325242/1553656">What is the difference between “npm install” and “npm ci”?</a></li>
+  <li><a href="https://stackoverflow.com/a/60355056/1553656">Is there a way to speedup npm ci using cache?</a></li>
+</ul>
+
+:ET

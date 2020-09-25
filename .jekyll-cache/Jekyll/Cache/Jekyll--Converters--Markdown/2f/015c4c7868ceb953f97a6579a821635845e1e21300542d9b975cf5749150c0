@@ -1,0 +1,123 @@
+I"�:<h1 id="objective-c-背景拉伸">Objective-C 背景拉伸</h1>
+
+<h2 id="背景拉伸的问题">背景拉伸的问题</h2>
+
+<p>考察如下添加按钮的代码：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">loadView</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">super</span> <span class="nf">loadView</span><span class="p">];</span>
+  <span class="n">UIButton</span> <span class="o">*</span><span class="n">myBtn</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIButton</span> <span class="nf">buttonWithType</span><span class="p">:</span><span class="n">UIButtonTypeCustom</span><span class="p">];</span>
+  <span class="p">[</span><span class="n">myBtn</span> <span class="nf">setContentEdgeInsets</span><span class="p">:</span><span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">)];</span>
+  <span class="p">[</span><span class="n">myBtn</span> <span class="nf">setTitle</span><span class="p">:</span><span class="s">@"click me"</span> <span class="nf">forState</span><span class="p">:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+  <span class="p">[</span><span class="n">myBtn</span> <span class="nf">setBackgroundImage</span><span class="p">:[</span><span class="n">UIImage</span> <span class="nf">imageNamed</span><span class="p">:</span><span class="s">@"purple_button"</span><span class="p">]</span>
+                   <span class="nl">forState:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+  <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nf">addSubview</span><span class="p">:</span><span class="n">myBtn</span><span class="p">];</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>得到的结果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70847855-5b182400-1ea4-11ea-8fe6-061c21d93580.png" alt="圆角被拉伸的效果" /></p>
+<p align="center">圆角被拉伸的效果</p>
+
+<p>这里图片作为背景时，默认被拉伸，造成了图片圆角的变形。</p>
+
+<h2 id="背景平铺">背景平铺</h2>
+
+<p>也有不变形的情况，使用图片创建 UIColor 作为背景。但此时背景图片是按原大小平铺开的，代码及效果如下：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">UIColor</span> <span class="o">*</span><span class="n">bgColor</span> <span class="o">=</span>
+    <span class="p">[</span><span class="n">UIColor</span> <span class="nf">colorWithPatternImage</span><span class="p">:[</span><span class="n">UIImage</span> <span class="nf">imageNamed</span><span class="p">:</span><span class="s">@"purple_button"</span><span class="p">]];</span>
+<span class="p">[</span><span class="n">myBtn</span> <span class="nf">setBackgroundColor</span><span class="p">:</span><span class="n">bgColor</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70847894-ca8e1380-1ea4-11ea-9e66-1f099ebf38b6.png" alt="平铺的背景" /></p>
+<p align="center">平铺的背景</p>
+
+<p>这种适用用来创建纯色背景，比如用一张 1X1 的图片。（为啥不直接使用 UIColor 的纯色？）</p>
+
+<h2 id="精准拉伸">精准拉伸</h2>
+
+<p>像开头的那种情况，其实只需要拉伸图片的中间部分，保持四个角落即可。</p>
+
+<p>原生 API 中确实也有相应的方法提供支持，那就是 <a href="https://developer.apple.com/documentation/uikit/uiimage/1624102-resizableimagewithcapinsets?language=objc"><code class="language-plaintext highlighter-rouge">resizableImageWithCapInsets:</code></a>。</p>
+
+<p>通过它可以指定图片四个角落的区域，这四个指定出来的区域在拉伸时不受影响。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70847904-eb566900-1ea4-11ea-9316-9d7c84d3cd20.png" alt="保留四个角的示意图" /></p>
+<p align="center">保留四个角的示意图</p>
+
+<p>所以修正后的圆角可以这样来实现：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">UIImage</span> <span class="o">*</span><span class="n">bgImage</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIImage</span> <span class="nf">imageNamed</span><span class="p">:</span><span class="s">@"purple_button"</span><span class="p">];</span>
+<span class="n">UIImage</span> <span class="o">*</span><span class="n">resizedImage</span> <span class="o">=</span>
+    <span class="p">[</span><span class="n">bgImage</span> <span class="nf">resizableImageWithCapInsets</span><span class="p">:</span><span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)];</span>
+<span class="p">[</span><span class="n">myBtn</span> <span class="nf">setBackgroundImage</span><span class="p">:</span><span class="n">resizedImage</span> <span class="nf">forState</span><span class="p">:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+</code></pre></div></div>
+<p>修正后的效果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70847913-07f2a100-1ea5-11ea-8255-68906e91a998.png" alt="修正后的圆角" /></p>
+<p align="center">修正后的圆角</p>
+
+<p>该方法比较常用的地方还有就是聊天窗口的背景，将聊天气泡四个角保护起来，内部任意拉伸，就可以展示任意聊天文本了。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70847917-1f318e80-1ea5-11ea-8352-c7b79eb996ba.png" alt="聊天气泡背景" /></p>
+<p align="center">聊天气泡背景</p>
+
+<h2 id="单个方向上的拉伸">单个方向上的拉伸</h2>
+
+<p>虽然 <a href="https://developer.apple.com/documentation/uikit/uiimage/1624102-resizableimagewithcapinsets?language=objc"><code class="language-plaintext highlighter-rouge">resizableImageWithCapInsets:</code></a> 很有用，但也只解决了部分场景。</p>
+
+<p>请看如下的 tab bar 展现：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70847921-37091280-1ea5-11ea-9b4a-745596e070ac.png" alt="带弧形的 tab bar 背景" /></p>
+<p align="center">带弧形的 tab bar 背景，图片来自 <a href="https://api.flutter.dev/flutter/material/Scaffold-class.html">flutter 文档</a></p>
+
+<p>因为横向宽度在不同屏幕下是不一样的，很自然地，这里的效果，我们只需要如下图片即可：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70847940-7fc0cb80-1ea5-11ea-869c-3c9172b3c354.png" alt="tab bar 背景" /></p>
+<p align="center">tab bar 背景</p>
+
+<p>仔细一想，这里的场景需要拉伸的是两边，而不是图片的中间。所以 <code class="language-plaintext highlighter-rouge">resizableImageWithCapInsets:</code> 在这里派不上用场，需要自行解决。</p>
+
+<p>我们可以在 UIImage 上扩展一个方法，来解决这里只拉伸两边的需求。</p>
+
+<p>以下实现来自 <a href="https://stackoverflow.com/a/15443581/1553656">StackOverflow Klass 的回答</a>：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">-</span> <span class="p">(</span><span class="n">UIImage</span> <span class="o">*</span><span class="p">)</span><span class="nf">pbResizedImageWithWidth</span><span class="p">:(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nv">newWidth</span> <span class="nf">andTiledAreaFrom</span><span class="p">:(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nv">from1</span> <span class="nf">to</span><span class="p">:(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nv">to1</span> <span class="nf">andFrom</span><span class="p">:(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nv">from2</span> <span class="nf">to</span><span class="p">:(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nv">to2</span>  <span class="p">{</span>
+    <span class="n">NSAssert</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span> <span class="o">&lt;</span> <span class="n">newWidth</span><span class="p">,</span> <span class="s">@"Cannot scale NewWidth %f &gt; self.size.width %f"</span><span class="p">,</span> <span class="n">newWidth</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">);</span>
+
+    <span class="n">CGFloat</span> <span class="n">originalWidth</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">;</span>
+    <span class="n">CGFloat</span> <span class="n">tiledAreaWidth</span> <span class="o">=</span> <span class="p">(</span><span class="n">newWidth</span> <span class="o">-</span> <span class="n">originalWidth</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
+
+    <span class="n">UIGraphicsBeginImageContextWithOptions</span><span class="p">(</span><span class="n">CGSizeMake</span><span class="p">(</span><span class="n">originalWidth</span> <span class="o">+</span> <span class="n">tiledAreaWidth</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">),</span> <span class="nb">NO</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">scale</span><span class="p">);</span>
+
+    <span class="n">UIImage</span> <span class="o">*</span><span class="n">firstResizable</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nf">resizableImageWithCapInsets</span><span class="p">:</span><span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">from1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">originalWidth</span> <span class="o">-</span> <span class="n">to1</span><span class="p">)</span> <span class="nf">resizingMode</span><span class="p">:</span><span class="n">UIImageResizingModeTile</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">firstResizable</span> <span class="nf">drawInRect</span><span class="p">:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">originalWidth</span> <span class="o">+</span> <span class="n">tiledAreaWidth</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">)];</span>
+
+    <span class="n">UIImage</span> <span class="o">*</span><span class="n">leftPart</span> <span class="o">=</span> <span class="n">UIGraphicsGetImageFromCurrentImageContext</span><span class="p">();</span>
+    <span class="n">UIGraphicsEndImageContext</span><span class="p">();</span>
+
+    <span class="n">UIGraphicsBeginImageContextWithOptions</span><span class="p">(</span><span class="n">CGSizeMake</span><span class="p">(</span><span class="n">newWidth</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">),</span> <span class="nb">NO</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">scale</span><span class="p">);</span>
+
+    <span class="n">UIImage</span> <span class="o">*</span><span class="n">secondResizable</span> <span class="o">=</span> <span class="p">[</span><span class="n">leftPart</span> <span class="nf">resizableImageWithCapInsets</span><span class="p">:</span><span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">from2</span> <span class="o">+</span> <span class="n">tiledAreaWidth</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">originalWidth</span> <span class="o">-</span> <span class="n">to2</span><span class="p">)</span> <span class="nf">resizingMode</span><span class="p">:</span><span class="n">UIImageResizingModeTile</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">secondResizable</span> <span class="nf">drawInRect</span><span class="p">:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">newWidth</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">)];</span>
+
+    <span class="n">UIImage</span> <span class="o">*</span><span class="n">fullImage</span> <span class="o">=</span> <span class="n">UIGraphicsGetImageFromCurrentImageContext</span><span class="p">();</span>
+    <span class="n">UIGraphicsEndImageContext</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="n">fullImage</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>类似 <code class="language-plaintext highlighter-rouge">resizableImageWithCapInsets:</code>，这里扩展的方法也会返回一张拉伸好的新图片。不同之处在于，指定好两边需要拉伸的部分后，得到的是只拉伸两边而保留了中间的图片。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/15427317/how-to-stretch-a-uiimageview-without-stretching-the-center">https://stackoverflow.com/questions/15427317/how-to-stretch-a-uiimageview-without-stretching-the-center</a></li>
+  <li><a href="https://developer.apple.com/documentation/uikit/uiimage/1624102-resizableimagewithcapinsets?language=objc">resizableImageWithCapInsets:</a></li>
+</ul>
+
+:ET

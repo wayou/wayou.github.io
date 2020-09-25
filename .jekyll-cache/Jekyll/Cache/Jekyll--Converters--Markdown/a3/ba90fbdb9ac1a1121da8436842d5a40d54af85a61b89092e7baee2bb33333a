@@ -1,0 +1,26 @@
+I"�<h1 id="mac-勿扰模式的快捷键">Mac 勿扰模式的快捷键</h1>
+
+<p>通过任务栏右侧的菜单可唤出系统的通知中心，其中包含夜间及勿扰的设置：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/66580209-9c443d00-ebb0-11e9-926f-12defc30dd8a.jpg" alt="系统通知中心" /></p>
+<p align="center">系统通知中心</p>
+
+<p>当专心写码或工作时，可开启勿扰防止分心。如果突然想接收通知，则又需要手动开启。</p>
+
+<p>好在系统设置有方式可为这个开关绑定快捷键，免去了鼠标操作的麻烦。</p>
+
+<ul>
+  <li>打开系统设置，搜索 <code class="language-plaintext highlighter-rouge">keyboard shortcuts</code> 并进入。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/66580231-a36b4b00-ebb0-11e9-8878-8129d7b2ee7f.png" alt="系统设置" /></p>
+<p align="center">系统设置</p>
+
+<ul>
+  <li>定位到 「Mission Control」，选中 「Turn Do Not Disturb On/Off」 双击以设置自己的快捷键。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/66580228-a36b4b00-ebb0-11e9-95e7-71596d0a5703.png" alt="为勿扰绑定快捷键" /></p>
+<p align="center">为勿扰绑定快捷键</p>
+
+:ET

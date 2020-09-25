@@ -1,0 +1,22 @@
+I"�<h1 id="oa-和-so-文件"><code class="language-plaintext highlighter-rouge">.o</code>，<code class="language-plaintext highlighter-rouge">.a</code> 和 <code class="language-plaintext highlighter-rouge">.so</code> 文件</h1>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.a</code>(archive)/lib 静态链接库文件，静态是指生成运行程序是已经打入程序里面</li>
+  <li><code class="language-plaintext highlighter-rouge">.so</code>(shared object)/dll 动态链接库文件，程序运行时，从环境中去找，然后动态加入到程序里</li>
+  <li><code class="language-plaintext highlighter-rouge">.o</code>(object)/object 目标文件，由源码到运行程序编译过程中的中间产物。</li>
+</ul>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">.a/lib</code> 或  <code class="language-plaintext highlighter-rouge">.so/dll</code> 就是一堆 <code class="language-plaintext highlighter-rouge">.o/object</code> 文件的组合。</p>
+
+<p>之所以有中间产物，是因为由源码  C++ 到可执行文件不能一步到位。</p>
+
+<p>因为往往可执行程序由诸多源码编译而来，编译器一次处理一个源文件，将其编译成蹭产物 <code class="language-plaintext highlighter-rouge">.o</code>。最后再一 link 成一个可执行文件。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li>https://oldpan.me/archives/linux-a-so-o-tell</li>
+  <li>http://www.yolinux.com/TUTORIALS/LibraryArchives-StaticAndDynamic.html</li>
+</ul>
+
+:ET

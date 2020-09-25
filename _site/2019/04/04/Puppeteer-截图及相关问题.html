@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Puppeteer 截图及相关问题 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Puppeteer 截图及相关问题" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Puppeteer 截图及相关问题 Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页面进行截图，或者保存成 PDF。 镜像的设置 因为其使用了 Chromium，其源在 Google 域上，最好设置一下 npm 从国内镜像安装，可解决无法安装的问题。 推荐在项目中放置 .npmrc 或 .yarnrc 文件来进行镜像的设置，这样设置只针对项目生效，不影响其他项目，同时其他人不用重复在本地设置。 这是一个整理好的 .npmrc 文件，如果使用的是 yarn，对应的 .yarnrc 文件。也可通过如下命令从 GitHub gist 下载到项目中， # .npmrc $ npx pkgrc # .yarnc $ npx pkgrc yarn 截取页面 使用 page.screenshot() API 进行截图的示例： const puppeteer = require(&quot;puppeteer&quot;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&quot;https://example.com&quot;); await page.screenshot({ path: &quot;screenshot.png&quot; }); await browser.close(); }); 实际应用中，你需要加上等待时间，以保证页面已经完全加载，否则截取出来的画面是页面半成品的样子。 通过 page.waitFor() 可让页面等待指定时间， const puppeteer = require(&#39;puppeteer&#39;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&#39;https://example.com&#39;); // 等待一秒钟 + await page.waitFor(1000); await page.screenshot({path: &#39;screenshot.png&#39;}); await browser.close(); }); 但这里无论你指定的时长是多少，都是比较主观的值。页面实际加载情况受很多因素影响，机器性能，网络好坏等。即页面加载完成是个无法预期的时长，所以这种方式不靠谱。我们应该使用另一个更加有保障的方式，在调用 page.goto() 时，可指定 waitUntil 参数。 const puppeteer = require(&#39;puppeteer&#39;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&#39;https://example.com’,{ + waitUtil: &#39;networkidle2&#39; }); await page.screenshot({path: &#39;screenshot.png&#39;}); await browser.close(); }); networkidle2 - consider navigation to be finished when there are no more than 2 network connections for at least 500 ms. -- 来自 puppeteer 文档中关于 waitUtil 参数的描述 networkidle2 会一直等待，直到页面加载后同时没有存在 2 个以上的资源请求，这个种状态持续至少 500 ms。 此时再进行截图，是比较保险的了。 截图时还有个实用的参数 fullPage，一般情况下也会搭配着使用，对整个页面进行截取。如果页面过长，超出了当前视窗（viewport），它会自动截取超出的部分，即截取结果是长图。这应该是大部分情况下所期望的。 await page.screenshot({ path: &quot;screenshot.png&quot;, fullPage: true }); 注意，其与 clip 参数互斥，即，如果手动指定了 clip 参数对页面进行范围的限定，则不能再指定 fullPage 参数。 // 💥 抛错！ await page.screenshot({ path: &quot;screenshot.png&quot;, fullPage: true, clip: { x: 0, y: 0, width: 400, height: 400 } }); 针对页面中某个元素进行截取 如果你使用过 Chrome DevTool 中的截图命令，或许知道，其中有一个针对元素进行截取的命令。 Chrome DevTool 中对元素进行截图的命令 所以，除了对整个页面进行截取，Chrome 还支持对页面某个元素进行截取。通过 elementHandle .screenshot() 可针对具体元素进行截取。 这就很实用了，能够满足大部分自定义的需求。大多数情况下，我们只对 body 部分感兴趣，通过只对 body 进行截取，就不用指定长宽而且自动排除掉 body 外多余的留白等。 const puppeteer = require(&quot;puppeteer&quot;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&quot;https://example.com&quot;, { waitUtil: &quot;networkidle2&quot; }); const element = await page.$(&quot;body&quot;); await element.screenshot({ path: &quot;screenshot.png&quot; }); }); 其参数与 page.screenshot() 一样。需要注意的是，虽说一样，但其中是不能使用 fullPage 参数的。因为针对元素进行图片截取已经表明是局部截图了，与 fullPage 截取整个页面是冲突的，但它还是会自动滚动以截取完整的这个元素， fullPage 的优点没有丢掉。 数据的返回 生成的图片可直接返回，也可保存成文件后返回文件地址。 其中，截图方法 page.screenshot([options]) 的返回是 &lt;Promise&lt;string|Buffer&gt;&gt;，即生成的可能是 buffer 数据，也可以是base64 形式的字符串数据，默认为 Buffer 内容，通过设置 encoding 参数为 base64 便可得到字符串形式的截图数据。 以 Koa 为例，binary 形式的 buffer 数据直接赋值给 ctx.body 进行返回，通过 response.attachment 可设置返回的文件名。 app.use(async ctx =&gt; { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.goto(url); const buffer = await page.screenshot(); await browser.close(); ctx.response.attachment(&quot;screenshot.png&quot;); ctx.body = buffer; }); 字符串形式时，需要注意拿到的并不是标准的图片 base64 格式，它只包含了数据部分，并没有文件类型部分，即 data:image/png;base64，所以需要手动拼接后才是正确可展示的图片。 app.use(async ctx =&gt; { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.goto(url); const base64 = await page.screenshot({ encoding: &quot;base64&quot; }); await browser.close(); ctx.body = `&lt;img src=&quot;data:image/png;base64,${base64}&quot;/&gt;`; }); 如果你是以异步接口形式返回到前端，只需要将 &quot;data:image/png;base64,${base64}&quot; 这部分作为数据返回即可。 当然，字符串形式下，仍然是可以返回成文件下载的形式的， app.use(async ctx =&gt; { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.goto(url); const base64 = await page.screenshot({ encoding: &quot;base64&quot; }); await browser.close(); ctx.response.attachment(&quot;screenshot.png&quot;); const image = new Buffer(base64, &quot;base64&quot;); ctx.body = image; }); PDF 的生成 通过 page.pdf([options]) 可将页面截取成 PDF 格式。 const puppeteer = require(&quot;puppeteer&quot;); async function run() { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.emulateMedia(&quot;screen&quot;); await page.goto(&quot;https://www.google.com/chromebook/&quot;); await page.pdf({ path: &quot;puppeteer.pdf&quot;, format: &quot;A4&quot; }); await browser.close(); } run(); 一般 PDF 用于打印，所以默认以 print 媒体查询 （media query）的样式来截取。这里调用 page.emulateMedia(&quot;screen&quot;) 显式指定环境为 screen 而不是 print 是为了得到更加接近于页面在浏览器中展示的效果。 需要注意的是，如果页面中使用了背景图片，上面代码截取出来是看不到的。 截图 PDF 时背景图片未显示 需要设置截取时的 ` printBackground 参数为 true`： await page.pdf({ path: &quot;puppeteer.pdf&quot;, format: &quot;A4&quot;, + printBackground: true }); 修正后截图的 PDF 背景图片正常显示 一些问题 服务器字体文件问题 部署到全新的 Linux 环境时，大概率你会看到截来的图片中中文无法显示。 中文字体缺失的情况 ￼ 那是因为系统缺少中文字体，Chromium 无法正常渲染。你需要安装中文字体，通过包管理工具或者手动下载安装。 $ sudo apt-get install language-pack-zh* $ sudo apt-get install chinese* 服务器上 Chromium 无法启动的问题 在 Puppeteer 的 troubleshoting 文档 中有对应的解决方案。 (node:24206) UnhandledPromiseRejectionWarning: Error: Failed to launch chrome! 一般是机器上缺少对应的依赖库，安装补上即可。Puppeteer 自带的 Chromium 是非常纯粹的，它不会安装除了自身作为浏览器外的其他东西。 通过 ldd （List Dynamic Dependencies）命令可查看运行 Chromium 运行所需但缺少的 shared object dependencies。 查看缺少的依赖项 ```sh $ ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | grep not libX11.so.6 =&gt; not found libX11-xcb.so.1 =&gt; not found libxcb.so.1 =&gt; not found libXcomposite.so.1 =&gt; not found libXcursor.so.1 =&gt; not found libXdamage.so.1 =&gt; not found libXext.so.6 =&gt; not found libXfixes.so.3 =&gt; not found libXi.so.6 =&gt; not found libXrender.so.1 =&gt; not found libXtst.so.6 =&gt; not found libgobject-2.0.so.0 =&gt; not found libglib-2.0.so.0 =&gt; not found libnss3.so =&gt; not found libnssutil3.so =&gt; not found libsmime3.so =&gt; not found libnspr4.so =&gt; not found libcups.so.2 =&gt; not found libdbus-1.so.3 =&gt; not found libXss.so.1 =&gt; not found libXrandr.so.2 =&gt; not found libgio-2.0.so.0 =&gt; not found libasound.so.2 =&gt; not found libpangocairo-1.0.so.0 =&gt; not found libpango-1.0.so.0 =&gt; not found libcairo.so.2 =&gt; not found libatk-1.0.so.0 =&gt; not found libatk-bridge-2.0.so.0 =&gt; not found libatspi.so.0 =&gt; not found libgtk-3.so.0 =&gt; not found libgdk-3.so.0 =&gt; not found libgdk_pixbuf-2.0.so.0 =&gt; not found ``` 那么多，一个个搜索（因为这里例出的名称不一定就是直接可用来安装的名称）安装多麻烦。所以需要用其他方法。 以 Debian 系统为例。 tips: 可通过 $ cat /etc/os-release 查看系统信息从而判断是什么系统。 $ cat /etc/os-release PRETTY_NAME=&quot;Debian GNU/Linux 9 (stretch)&quot; NAME=&quot;Debian GNU/Linux&quot; VERSION_ID=&quot;9&quot; VERSION=&quot;9 (stretch)&quot; ID=debian HOME_URL=&quot;https://www.debian.org/&quot; SUPPORT_URL=&quot;https://www.debian.org/support&quot; BUG_REPORT_URL=&quot;https://bugs.debian.org/&quot; 脚本安装 通过 troubleshoting 页面 Chrome headless doesn’t launch 部分其列出的对应系统所需依赖中，将所有依赖复制出来组装成如下的命令执行： sudo apt-get install gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget 通过安装 Chrome 来自动安装 直接安装一个非 Chromium 版本的 Chrome，它会把依赖自动安装上。 Chrome 是基于 Chromium 的发行版，包括 google-chrome-stable，google-chrome-unstable，google-chrome-beta，安装任意一个都行。 还是以 Debian 系统为例： $ apt-get update &amp;&amp; apt-get install google-chrome-unstable 如果直接执行上面的安装，会报错： E: Unable to locate package google-chrome-unstable 这是安装程序时的一个安全相关策略 ，需要先设置一下 apt-key。 $ wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 然后设置 Chrome 的仓库： $ sudo sh -c &#39;echo &quot;deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main&quot; &gt;&gt; /etc/apt/sources.list.d/google.list&#39; 再次执行安装便正常进行了。 安装时可以看到会提示所需的依赖项： 安装 Chrome 时的提示信息 ```sh $ sudo apt-get install google-chrome-unstable Reading package lists... Done Building dependency tree Reading state information... Done The following additional packages will be installed: adwaita-icon-theme at-spi2-core dbus dconf-gsettings-backend dconf-service fontconfig fontconfig-config fonts-liberation glib-networking glib-networking-common glib-networking-services gsettings-desktop-schemas gtk-update-icon-cache hicolor-icon-theme libappindicator3-1 libasound2 libasound2-data libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0 libauthen-sasl-perl libavahi-client3 libavahi-common-data libavahi-common3 libcairo-gobject2 libcairo2 libcolord2 libcroco3 libcups2 libdatrie1 libdbus-1-3 libdbusmenu-glib4 libdbusmenu-gtk3-4 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libegl1-mesa libencode-locale-perl libepoxy0 libfile-basedir-perl libfile-desktopentry-perl libfile-listing-perl libfile-mimeinfo-perl libfont-afm-perl libfontconfig1 libfontenc1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libglib2.0-0 libglib2.0-data libgraphite2-3 libgtk-3-0 libgtk-3-bin libgtk-3-common libharfbuzz0b libhtml-form-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl libice6 libindicator3-7 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl libjbig0 libjpeg62-turbo libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2 libllvm3.9 liblwp-mediatypes-perl liblwp-protocol-https-perl libmailtools-perl libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpciaccess0 libpixman-1-0 libproxy1v5 librest-0.7-0 librsvg2-2 librsvg2-common libsensors4 libsm6 libsoup-gnome2.4-1 libsoup2.4-1 libthai-data libthai0 libtie-ixhash-perl libtiff5 libtimedate-perl libtxc-dxtn-s2tc libu2f-udev liburi-perl libwayland-client0 libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwww-perl libwww-robotrules-perl libx11-6 libx11-data libx11-protocol-perl libx11-xcb1 libxau6 libxaw7 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxft2 libxi6 libxinerama1 libxkbcommon0 libxml-parser-perl libxml-twig-perl libxml-xpathengine-perl libxml2 libxmu6 libxmuu1 libxpm4 libxrandr2 libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base shared-mime-info x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core ``` 按[Y] 确认即可。 有了这些依赖，Puppeteer 中的 Chromium 便可运行了。 $ google-chrome-unstable --version Google Chrome 75.0.3745.4 dev $ ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | grep not google-chrome-unstable --version 正常输出版本号表示安装成功，再次检查 not found 的依赖项输出为空。 我们的目的只是安装依赖，所以装完后可移除 Chome。apt-get remove google-chrome-unstable 时会自动列出其依赖项，就像安装时一样。后续如果机器上不再需要 Chromium 了可通过 apt-get autoremove 来清理。 卸载 Chrome 时的提示信息 ```sh $ sudo apt-get remove google-chrome-unstable ... Building dependency tree Reading state information... Done The following packages were automatically installed and are no longer required: adwaita-icon-theme at-spi2-core dconf-gsettings-backend dconf-service fontconfig fontconfig-config fonts-liberation glib-networking glib-networking-common glib-networking-services gsettings-desktop-schemas gtk-update-icon-cache hicolor-icon-theme libappindicator3-1 libasound2 libasound2-data libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0 libauthen-sasl-perl libavahi-client3 libavahi-common-data libavahi-common3 libcairo-gobject2 libcairo2 libcolord2 libcroco3 libcups2 libdatrie1 libdbusmenu-glib4 libdbusmenu-gtk3-4 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libegl1-mesa libencode-locale-perl libepoxy0 libfile-basedir-perl libfile-desktopentry-perl libfile-listing-perl libfile-mimeinfo-perl libfont-afm-perl libfontconfig1 libfontenc1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libglib2.0-0 libglib2.0-data libgraphite2-3 libgtk-3-0 libgtk-3-bin libgtk-3-common libharfbuzz0b libhtml-form-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl libice6 libicu57 libindicator3-7 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl libjbig0 libjpeg62-turbo libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2 libllvm3.9 liblwp-mediatypes-perl liblwp-protocol-https-perl libmailtools-perl libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpciaccess0 libpixman-1-0 libproxy1v5 librest-0.7-0 librsvg2-2 librsvg2-common libsensors4 libsm6 libsoup-gnome2.4-1 libsoup2.4-1 libthai-data libthai0 libtie-ixhash-perl libtiff5 libtimedate-perl libtxc-dxtn-s2tc libu2f-udev liburi-perl libuv1 libwayland-client0 libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwww-perl libwww-robotrules-perl libx11-6 libx11-data libx11-protocol-perl libx11-xcb1 libxau6 libxaw7 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxft2 libxi6 libxinerama1 libxkbcommon0 libxml-parser-perl libxml-twig-perl libxml-xpathengine-perl libxml2 libxmu6 libxmuu1 libxpm4 libxrandr2 libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base shared-mime-info x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core Use &#39;sudo apt autoremove&#39; to remove them. The following packages will be REMOVED: google-chrome-unstable 0 upgraded, 0 newly installed, 1 to remove and 25 not upgraded. After this operation, 213 MB disk space will be freed. Do you want to continue? [Y/n] (Reading database ... 71778 files and directories currently installed.) Removing google-chrome-unstable (75.0.3745.4-1) ... Processing triggers for mime-support (3.60) ... Processing triggers for man-db (2.7.6.1-2) ... ``` sandbox 的问题 Linux 上 Puppeteer 启动 Chromium 时可能会看到如下的错误提示： [0402/152925.182431:ERROR:zygote_host_impl_linux.cc(89)] Running as root without --no-sandbox is not supported. See https://crbug.com/638180. 错误信息已经很明显，所以在启动时加上 --no-sandbox 参数即可。 const browser = await puppeteer.launch({ args: [&quot;--no-sandbox&quot;] }); 但考虑到安全问题，Puppeteer 是强烈不建议在无沙盒环境下运行，除非加载的页面其内容是绝对可信的。 如果需要设置在沙盒中运行，可参考文档中的两种方法。 相关资源 puppeteer troubleshooting How to Update and Install Latest Chrome in Linux/Ubuntu How to Manually Install, Update, and Uninstall Fonts on Linux Installing Asian Fonts on Ubuntu &amp; Debian" />
+<meta property="og:description" content="Puppeteer 截图及相关问题 Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页面进行截图，或者保存成 PDF。 镜像的设置 因为其使用了 Chromium，其源在 Google 域上，最好设置一下 npm 从国内镜像安装，可解决无法安装的问题。 推荐在项目中放置 .npmrc 或 .yarnrc 文件来进行镜像的设置，这样设置只针对项目生效，不影响其他项目，同时其他人不用重复在本地设置。 这是一个整理好的 .npmrc 文件，如果使用的是 yarn，对应的 .yarnrc 文件。也可通过如下命令从 GitHub gist 下载到项目中， # .npmrc $ npx pkgrc # .yarnc $ npx pkgrc yarn 截取页面 使用 page.screenshot() API 进行截图的示例： const puppeteer = require(&quot;puppeteer&quot;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&quot;https://example.com&quot;); await page.screenshot({ path: &quot;screenshot.png&quot; }); await browser.close(); }); 实际应用中，你需要加上等待时间，以保证页面已经完全加载，否则截取出来的画面是页面半成品的样子。 通过 page.waitFor() 可让页面等待指定时间， const puppeteer = require(&#39;puppeteer&#39;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&#39;https://example.com&#39;); // 等待一秒钟 + await page.waitFor(1000); await page.screenshot({path: &#39;screenshot.png&#39;}); await browser.close(); }); 但这里无论你指定的时长是多少，都是比较主观的值。页面实际加载情况受很多因素影响，机器性能，网络好坏等。即页面加载完成是个无法预期的时长，所以这种方式不靠谱。我们应该使用另一个更加有保障的方式，在调用 page.goto() 时，可指定 waitUntil 参数。 const puppeteer = require(&#39;puppeteer&#39;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&#39;https://example.com’,{ + waitUtil: &#39;networkidle2&#39; }); await page.screenshot({path: &#39;screenshot.png&#39;}); await browser.close(); }); networkidle2 - consider navigation to be finished when there are no more than 2 network connections for at least 500 ms. -- 来自 puppeteer 文档中关于 waitUtil 参数的描述 networkidle2 会一直等待，直到页面加载后同时没有存在 2 个以上的资源请求，这个种状态持续至少 500 ms。 此时再进行截图，是比较保险的了。 截图时还有个实用的参数 fullPage，一般情况下也会搭配着使用，对整个页面进行截取。如果页面过长，超出了当前视窗（viewport），它会自动截取超出的部分，即截取结果是长图。这应该是大部分情况下所期望的。 await page.screenshot({ path: &quot;screenshot.png&quot;, fullPage: true }); 注意，其与 clip 参数互斥，即，如果手动指定了 clip 参数对页面进行范围的限定，则不能再指定 fullPage 参数。 // 💥 抛错！ await page.screenshot({ path: &quot;screenshot.png&quot;, fullPage: true, clip: { x: 0, y: 0, width: 400, height: 400 } }); 针对页面中某个元素进行截取 如果你使用过 Chrome DevTool 中的截图命令，或许知道，其中有一个针对元素进行截取的命令。 Chrome DevTool 中对元素进行截图的命令 所以，除了对整个页面进行截取，Chrome 还支持对页面某个元素进行截取。通过 elementHandle .screenshot() 可针对具体元素进行截取。 这就很实用了，能够满足大部分自定义的需求。大多数情况下，我们只对 body 部分感兴趣，通过只对 body 进行截取，就不用指定长宽而且自动排除掉 body 外多余的留白等。 const puppeteer = require(&quot;puppeteer&quot;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&quot;https://example.com&quot;, { waitUtil: &quot;networkidle2&quot; }); const element = await page.$(&quot;body&quot;); await element.screenshot({ path: &quot;screenshot.png&quot; }); }); 其参数与 page.screenshot() 一样。需要注意的是，虽说一样，但其中是不能使用 fullPage 参数的。因为针对元素进行图片截取已经表明是局部截图了，与 fullPage 截取整个页面是冲突的，但它还是会自动滚动以截取完整的这个元素， fullPage 的优点没有丢掉。 数据的返回 生成的图片可直接返回，也可保存成文件后返回文件地址。 其中，截图方法 page.screenshot([options]) 的返回是 &lt;Promise&lt;string|Buffer&gt;&gt;，即生成的可能是 buffer 数据，也可以是base64 形式的字符串数据，默认为 Buffer 内容，通过设置 encoding 参数为 base64 便可得到字符串形式的截图数据。 以 Koa 为例，binary 形式的 buffer 数据直接赋值给 ctx.body 进行返回，通过 response.attachment 可设置返回的文件名。 app.use(async ctx =&gt; { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.goto(url); const buffer = await page.screenshot(); await browser.close(); ctx.response.attachment(&quot;screenshot.png&quot;); ctx.body = buffer; }); 字符串形式时，需要注意拿到的并不是标准的图片 base64 格式，它只包含了数据部分，并没有文件类型部分，即 data:image/png;base64，所以需要手动拼接后才是正确可展示的图片。 app.use(async ctx =&gt; { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.goto(url); const base64 = await page.screenshot({ encoding: &quot;base64&quot; }); await browser.close(); ctx.body = `&lt;img src=&quot;data:image/png;base64,${base64}&quot;/&gt;`; }); 如果你是以异步接口形式返回到前端，只需要将 &quot;data:image/png;base64,${base64}&quot; 这部分作为数据返回即可。 当然，字符串形式下，仍然是可以返回成文件下载的形式的， app.use(async ctx =&gt; { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.goto(url); const base64 = await page.screenshot({ encoding: &quot;base64&quot; }); await browser.close(); ctx.response.attachment(&quot;screenshot.png&quot;); const image = new Buffer(base64, &quot;base64&quot;); ctx.body = image; }); PDF 的生成 通过 page.pdf([options]) 可将页面截取成 PDF 格式。 const puppeteer = require(&quot;puppeteer&quot;); async function run() { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.emulateMedia(&quot;screen&quot;); await page.goto(&quot;https://www.google.com/chromebook/&quot;); await page.pdf({ path: &quot;puppeteer.pdf&quot;, format: &quot;A4&quot; }); await browser.close(); } run(); 一般 PDF 用于打印，所以默认以 print 媒体查询 （media query）的样式来截取。这里调用 page.emulateMedia(&quot;screen&quot;) 显式指定环境为 screen 而不是 print 是为了得到更加接近于页面在浏览器中展示的效果。 需要注意的是，如果页面中使用了背景图片，上面代码截取出来是看不到的。 截图 PDF 时背景图片未显示 需要设置截取时的 ` printBackground 参数为 true`： await page.pdf({ path: &quot;puppeteer.pdf&quot;, format: &quot;A4&quot;, + printBackground: true }); 修正后截图的 PDF 背景图片正常显示 一些问题 服务器字体文件问题 部署到全新的 Linux 环境时，大概率你会看到截来的图片中中文无法显示。 中文字体缺失的情况 ￼ 那是因为系统缺少中文字体，Chromium 无法正常渲染。你需要安装中文字体，通过包管理工具或者手动下载安装。 $ sudo apt-get install language-pack-zh* $ sudo apt-get install chinese* 服务器上 Chromium 无法启动的问题 在 Puppeteer 的 troubleshoting 文档 中有对应的解决方案。 (node:24206) UnhandledPromiseRejectionWarning: Error: Failed to launch chrome! 一般是机器上缺少对应的依赖库，安装补上即可。Puppeteer 自带的 Chromium 是非常纯粹的，它不会安装除了自身作为浏览器外的其他东西。 通过 ldd （List Dynamic Dependencies）命令可查看运行 Chromium 运行所需但缺少的 shared object dependencies。 查看缺少的依赖项 ```sh $ ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | grep not libX11.so.6 =&gt; not found libX11-xcb.so.1 =&gt; not found libxcb.so.1 =&gt; not found libXcomposite.so.1 =&gt; not found libXcursor.so.1 =&gt; not found libXdamage.so.1 =&gt; not found libXext.so.6 =&gt; not found libXfixes.so.3 =&gt; not found libXi.so.6 =&gt; not found libXrender.so.1 =&gt; not found libXtst.so.6 =&gt; not found libgobject-2.0.so.0 =&gt; not found libglib-2.0.so.0 =&gt; not found libnss3.so =&gt; not found libnssutil3.so =&gt; not found libsmime3.so =&gt; not found libnspr4.so =&gt; not found libcups.so.2 =&gt; not found libdbus-1.so.3 =&gt; not found libXss.so.1 =&gt; not found libXrandr.so.2 =&gt; not found libgio-2.0.so.0 =&gt; not found libasound.so.2 =&gt; not found libpangocairo-1.0.so.0 =&gt; not found libpango-1.0.so.0 =&gt; not found libcairo.so.2 =&gt; not found libatk-1.0.so.0 =&gt; not found libatk-bridge-2.0.so.0 =&gt; not found libatspi.so.0 =&gt; not found libgtk-3.so.0 =&gt; not found libgdk-3.so.0 =&gt; not found libgdk_pixbuf-2.0.so.0 =&gt; not found ``` 那么多，一个个搜索（因为这里例出的名称不一定就是直接可用来安装的名称）安装多麻烦。所以需要用其他方法。 以 Debian 系统为例。 tips: 可通过 $ cat /etc/os-release 查看系统信息从而判断是什么系统。 $ cat /etc/os-release PRETTY_NAME=&quot;Debian GNU/Linux 9 (stretch)&quot; NAME=&quot;Debian GNU/Linux&quot; VERSION_ID=&quot;9&quot; VERSION=&quot;9 (stretch)&quot; ID=debian HOME_URL=&quot;https://www.debian.org/&quot; SUPPORT_URL=&quot;https://www.debian.org/support&quot; BUG_REPORT_URL=&quot;https://bugs.debian.org/&quot; 脚本安装 通过 troubleshoting 页面 Chrome headless doesn’t launch 部分其列出的对应系统所需依赖中，将所有依赖复制出来组装成如下的命令执行： sudo apt-get install gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget 通过安装 Chrome 来自动安装 直接安装一个非 Chromium 版本的 Chrome，它会把依赖自动安装上。 Chrome 是基于 Chromium 的发行版，包括 google-chrome-stable，google-chrome-unstable，google-chrome-beta，安装任意一个都行。 还是以 Debian 系统为例： $ apt-get update &amp;&amp; apt-get install google-chrome-unstable 如果直接执行上面的安装，会报错： E: Unable to locate package google-chrome-unstable 这是安装程序时的一个安全相关策略 ，需要先设置一下 apt-key。 $ wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 然后设置 Chrome 的仓库： $ sudo sh -c &#39;echo &quot;deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main&quot; &gt;&gt; /etc/apt/sources.list.d/google.list&#39; 再次执行安装便正常进行了。 安装时可以看到会提示所需的依赖项： 安装 Chrome 时的提示信息 ```sh $ sudo apt-get install google-chrome-unstable Reading package lists... Done Building dependency tree Reading state information... Done The following additional packages will be installed: adwaita-icon-theme at-spi2-core dbus dconf-gsettings-backend dconf-service fontconfig fontconfig-config fonts-liberation glib-networking glib-networking-common glib-networking-services gsettings-desktop-schemas gtk-update-icon-cache hicolor-icon-theme libappindicator3-1 libasound2 libasound2-data libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0 libauthen-sasl-perl libavahi-client3 libavahi-common-data libavahi-common3 libcairo-gobject2 libcairo2 libcolord2 libcroco3 libcups2 libdatrie1 libdbus-1-3 libdbusmenu-glib4 libdbusmenu-gtk3-4 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libegl1-mesa libencode-locale-perl libepoxy0 libfile-basedir-perl libfile-desktopentry-perl libfile-listing-perl libfile-mimeinfo-perl libfont-afm-perl libfontconfig1 libfontenc1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libglib2.0-0 libglib2.0-data libgraphite2-3 libgtk-3-0 libgtk-3-bin libgtk-3-common libharfbuzz0b libhtml-form-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl libice6 libindicator3-7 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl libjbig0 libjpeg62-turbo libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2 libllvm3.9 liblwp-mediatypes-perl liblwp-protocol-https-perl libmailtools-perl libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpciaccess0 libpixman-1-0 libproxy1v5 librest-0.7-0 librsvg2-2 librsvg2-common libsensors4 libsm6 libsoup-gnome2.4-1 libsoup2.4-1 libthai-data libthai0 libtie-ixhash-perl libtiff5 libtimedate-perl libtxc-dxtn-s2tc libu2f-udev liburi-perl libwayland-client0 libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwww-perl libwww-robotrules-perl libx11-6 libx11-data libx11-protocol-perl libx11-xcb1 libxau6 libxaw7 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxft2 libxi6 libxinerama1 libxkbcommon0 libxml-parser-perl libxml-twig-perl libxml-xpathengine-perl libxml2 libxmu6 libxmuu1 libxpm4 libxrandr2 libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base shared-mime-info x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core ``` 按[Y] 确认即可。 有了这些依赖，Puppeteer 中的 Chromium 便可运行了。 $ google-chrome-unstable --version Google Chrome 75.0.3745.4 dev $ ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | grep not google-chrome-unstable --version 正常输出版本号表示安装成功，再次检查 not found 的依赖项输出为空。 我们的目的只是安装依赖，所以装完后可移除 Chome。apt-get remove google-chrome-unstable 时会自动列出其依赖项，就像安装时一样。后续如果机器上不再需要 Chromium 了可通过 apt-get autoremove 来清理。 卸载 Chrome 时的提示信息 ```sh $ sudo apt-get remove google-chrome-unstable ... Building dependency tree Reading state information... Done The following packages were automatically installed and are no longer required: adwaita-icon-theme at-spi2-core dconf-gsettings-backend dconf-service fontconfig fontconfig-config fonts-liberation glib-networking glib-networking-common glib-networking-services gsettings-desktop-schemas gtk-update-icon-cache hicolor-icon-theme libappindicator3-1 libasound2 libasound2-data libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0 libauthen-sasl-perl libavahi-client3 libavahi-common-data libavahi-common3 libcairo-gobject2 libcairo2 libcolord2 libcroco3 libcups2 libdatrie1 libdbusmenu-glib4 libdbusmenu-gtk3-4 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libegl1-mesa libencode-locale-perl libepoxy0 libfile-basedir-perl libfile-desktopentry-perl libfile-listing-perl libfile-mimeinfo-perl libfont-afm-perl libfontconfig1 libfontenc1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libglib2.0-0 libglib2.0-data libgraphite2-3 libgtk-3-0 libgtk-3-bin libgtk-3-common libharfbuzz0b libhtml-form-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl libice6 libicu57 libindicator3-7 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl libjbig0 libjpeg62-turbo libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2 libllvm3.9 liblwp-mediatypes-perl liblwp-protocol-https-perl libmailtools-perl libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpciaccess0 libpixman-1-0 libproxy1v5 librest-0.7-0 librsvg2-2 librsvg2-common libsensors4 libsm6 libsoup-gnome2.4-1 libsoup2.4-1 libthai-data libthai0 libtie-ixhash-perl libtiff5 libtimedate-perl libtxc-dxtn-s2tc libu2f-udev liburi-perl libuv1 libwayland-client0 libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwww-perl libwww-robotrules-perl libx11-6 libx11-data libx11-protocol-perl libx11-xcb1 libxau6 libxaw7 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxft2 libxi6 libxinerama1 libxkbcommon0 libxml-parser-perl libxml-twig-perl libxml-xpathengine-perl libxml2 libxmu6 libxmuu1 libxpm4 libxrandr2 libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base shared-mime-info x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core Use &#39;sudo apt autoremove&#39; to remove them. The following packages will be REMOVED: google-chrome-unstable 0 upgraded, 0 newly installed, 1 to remove and 25 not upgraded. After this operation, 213 MB disk space will be freed. Do you want to continue? [Y/n] (Reading database ... 71778 files and directories currently installed.) Removing google-chrome-unstable (75.0.3745.4-1) ... Processing triggers for mime-support (3.60) ... Processing triggers for man-db (2.7.6.1-2) ... ``` sandbox 的问题 Linux 上 Puppeteer 启动 Chromium 时可能会看到如下的错误提示： [0402/152925.182431:ERROR:zygote_host_impl_linux.cc(89)] Running as root without --no-sandbox is not supported. See https://crbug.com/638180. 错误信息已经很明显，所以在启动时加上 --no-sandbox 参数即可。 const browser = await puppeteer.launch({ args: [&quot;--no-sandbox&quot;] }); 但考虑到安全问题，Puppeteer 是强烈不建议在无沙盒环境下运行，除非加载的页面其内容是绝对可信的。 如果需要设置在沙盒中运行，可参考文档中的两种方法。 相关资源 puppeteer troubleshooting How to Update and Install Latest Chrome in Linux/Ubuntu How to Manually Install, Update, and Uninstall Fonts on Linux Installing Asian Fonts on Ubuntu &amp; Debian" />
+<link rel="canonical" href="http://localhost:4000/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98.html" />
+<meta property="og:url" content="http://localhost:4000/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-04-04T21:04:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98.html"},"description":"Puppeteer 截图及相关问题 Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页面进行截图，或者保存成 PDF。 镜像的设置 因为其使用了 Chromium，其源在 Google 域上，最好设置一下 npm 从国内镜像安装，可解决无法安装的问题。 推荐在项目中放置 .npmrc 或 .yarnrc 文件来进行镜像的设置，这样设置只针对项目生效，不影响其他项目，同时其他人不用重复在本地设置。 这是一个整理好的 .npmrc 文件，如果使用的是 yarn，对应的 .yarnrc 文件。也可通过如下命令从 GitHub gist 下载到项目中， # .npmrc $ npx pkgrc # .yarnc $ npx pkgrc yarn 截取页面 使用 page.screenshot() API 进行截图的示例： const puppeteer = require(&quot;puppeteer&quot;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&quot;https://example.com&quot;); await page.screenshot({ path: &quot;screenshot.png&quot; }); await browser.close(); }); 实际应用中，你需要加上等待时间，以保证页面已经完全加载，否则截取出来的画面是页面半成品的样子。 通过 page.waitFor() 可让页面等待指定时间， const puppeteer = require(&#39;puppeteer&#39;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&#39;https://example.com&#39;); // 等待一秒钟 + await page.waitFor(1000); await page.screenshot({path: &#39;screenshot.png&#39;}); await browser.close(); }); 但这里无论你指定的时长是多少，都是比较主观的值。页面实际加载情况受很多因素影响，机器性能，网络好坏等。即页面加载完成是个无法预期的时长，所以这种方式不靠谱。我们应该使用另一个更加有保障的方式，在调用 page.goto() 时，可指定 waitUntil 参数。 const puppeteer = require(&#39;puppeteer&#39;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&#39;https://example.com’,{ + waitUtil: &#39;networkidle2&#39; }); await page.screenshot({path: &#39;screenshot.png&#39;}); await browser.close(); }); networkidle2 - consider navigation to be finished when there are no more than 2 network connections for at least 500 ms. -- 来自 puppeteer 文档中关于 waitUtil 参数的描述 networkidle2 会一直等待，直到页面加载后同时没有存在 2 个以上的资源请求，这个种状态持续至少 500 ms。 此时再进行截图，是比较保险的了。 截图时还有个实用的参数 fullPage，一般情况下也会搭配着使用，对整个页面进行截取。如果页面过长，超出了当前视窗（viewport），它会自动截取超出的部分，即截取结果是长图。这应该是大部分情况下所期望的。 await page.screenshot({ path: &quot;screenshot.png&quot;, fullPage: true }); 注意，其与 clip 参数互斥，即，如果手动指定了 clip 参数对页面进行范围的限定，则不能再指定 fullPage 参数。 // 💥 抛错！ await page.screenshot({ path: &quot;screenshot.png&quot;, fullPage: true, clip: { x: 0, y: 0, width: 400, height: 400 } }); 针对页面中某个元素进行截取 如果你使用过 Chrome DevTool 中的截图命令，或许知道，其中有一个针对元素进行截取的命令。 Chrome DevTool 中对元素进行截图的命令 所以，除了对整个页面进行截取，Chrome 还支持对页面某个元素进行截取。通过 elementHandle .screenshot() 可针对具体元素进行截取。 这就很实用了，能够满足大部分自定义的需求。大多数情况下，我们只对 body 部分感兴趣，通过只对 body 进行截取，就不用指定长宽而且自动排除掉 body 外多余的留白等。 const puppeteer = require(&quot;puppeteer&quot;); puppeteer.launch().then(async browser =&gt; { const page = await browser.newPage(); await page.goto(&quot;https://example.com&quot;, { waitUtil: &quot;networkidle2&quot; }); const element = await page.$(&quot;body&quot;); await element.screenshot({ path: &quot;screenshot.png&quot; }); }); 其参数与 page.screenshot() 一样。需要注意的是，虽说一样，但其中是不能使用 fullPage 参数的。因为针对元素进行图片截取已经表明是局部截图了，与 fullPage 截取整个页面是冲突的，但它还是会自动滚动以截取完整的这个元素， fullPage 的优点没有丢掉。 数据的返回 生成的图片可直接返回，也可保存成文件后返回文件地址。 其中，截图方法 page.screenshot([options]) 的返回是 &lt;Promise&lt;string|Buffer&gt;&gt;，即生成的可能是 buffer 数据，也可以是base64 形式的字符串数据，默认为 Buffer 内容，通过设置 encoding 参数为 base64 便可得到字符串形式的截图数据。 以 Koa 为例，binary 形式的 buffer 数据直接赋值给 ctx.body 进行返回，通过 response.attachment 可设置返回的文件名。 app.use(async ctx =&gt; { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.goto(url); const buffer = await page.screenshot(); await browser.close(); ctx.response.attachment(&quot;screenshot.png&quot;); ctx.body = buffer; }); 字符串形式时，需要注意拿到的并不是标准的图片 base64 格式，它只包含了数据部分，并没有文件类型部分，即 data:image/png;base64，所以需要手动拼接后才是正确可展示的图片。 app.use(async ctx =&gt; { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.goto(url); const base64 = await page.screenshot({ encoding: &quot;base64&quot; }); await browser.close(); ctx.body = `&lt;img src=&quot;data:image/png;base64,${base64}&quot;/&gt;`; }); 如果你是以异步接口形式返回到前端，只需要将 &quot;data:image/png;base64,${base64}&quot; 这部分作为数据返回即可。 当然，字符串形式下，仍然是可以返回成文件下载的形式的， app.use(async ctx =&gt; { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.goto(url); const base64 = await page.screenshot({ encoding: &quot;base64&quot; }); await browser.close(); ctx.response.attachment(&quot;screenshot.png&quot;); const image = new Buffer(base64, &quot;base64&quot;); ctx.body = image; }); PDF 的生成 通过 page.pdf([options]) 可将页面截取成 PDF 格式。 const puppeteer = require(&quot;puppeteer&quot;); async function run() { const browser = await puppeteer.launch(); const page = await browser.newPage(); await page.emulateMedia(&quot;screen&quot;); await page.goto(&quot;https://www.google.com/chromebook/&quot;); await page.pdf({ path: &quot;puppeteer.pdf&quot;, format: &quot;A4&quot; }); await browser.close(); } run(); 一般 PDF 用于打印，所以默认以 print 媒体查询 （media query）的样式来截取。这里调用 page.emulateMedia(&quot;screen&quot;) 显式指定环境为 screen 而不是 print 是为了得到更加接近于页面在浏览器中展示的效果。 需要注意的是，如果页面中使用了背景图片，上面代码截取出来是看不到的。 截图 PDF 时背景图片未显示 需要设置截取时的 ` printBackground 参数为 true`： await page.pdf({ path: &quot;puppeteer.pdf&quot;, format: &quot;A4&quot;, + printBackground: true }); 修正后截图的 PDF 背景图片正常显示 一些问题 服务器字体文件问题 部署到全新的 Linux 环境时，大概率你会看到截来的图片中中文无法显示。 中文字体缺失的情况 ￼ 那是因为系统缺少中文字体，Chromium 无法正常渲染。你需要安装中文字体，通过包管理工具或者手动下载安装。 $ sudo apt-get install language-pack-zh* $ sudo apt-get install chinese* 服务器上 Chromium 无法启动的问题 在 Puppeteer 的 troubleshoting 文档 中有对应的解决方案。 (node:24206) UnhandledPromiseRejectionWarning: Error: Failed to launch chrome! 一般是机器上缺少对应的依赖库，安装补上即可。Puppeteer 自带的 Chromium 是非常纯粹的，它不会安装除了自身作为浏览器外的其他东西。 通过 ldd （List Dynamic Dependencies）命令可查看运行 Chromium 运行所需但缺少的 shared object dependencies。 查看缺少的依赖项 ```sh $ ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | grep not libX11.so.6 =&gt; not found libX11-xcb.so.1 =&gt; not found libxcb.so.1 =&gt; not found libXcomposite.so.1 =&gt; not found libXcursor.so.1 =&gt; not found libXdamage.so.1 =&gt; not found libXext.so.6 =&gt; not found libXfixes.so.3 =&gt; not found libXi.so.6 =&gt; not found libXrender.so.1 =&gt; not found libXtst.so.6 =&gt; not found libgobject-2.0.so.0 =&gt; not found libglib-2.0.so.0 =&gt; not found libnss3.so =&gt; not found libnssutil3.so =&gt; not found libsmime3.so =&gt; not found libnspr4.so =&gt; not found libcups.so.2 =&gt; not found libdbus-1.so.3 =&gt; not found libXss.so.1 =&gt; not found libXrandr.so.2 =&gt; not found libgio-2.0.so.0 =&gt; not found libasound.so.2 =&gt; not found libpangocairo-1.0.so.0 =&gt; not found libpango-1.0.so.0 =&gt; not found libcairo.so.2 =&gt; not found libatk-1.0.so.0 =&gt; not found libatk-bridge-2.0.so.0 =&gt; not found libatspi.so.0 =&gt; not found libgtk-3.so.0 =&gt; not found libgdk-3.so.0 =&gt; not found libgdk_pixbuf-2.0.so.0 =&gt; not found ``` 那么多，一个个搜索（因为这里例出的名称不一定就是直接可用来安装的名称）安装多麻烦。所以需要用其他方法。 以 Debian 系统为例。 tips: 可通过 $ cat /etc/os-release 查看系统信息从而判断是什么系统。 $ cat /etc/os-release PRETTY_NAME=&quot;Debian GNU/Linux 9 (stretch)&quot; NAME=&quot;Debian GNU/Linux&quot; VERSION_ID=&quot;9&quot; VERSION=&quot;9 (stretch)&quot; ID=debian HOME_URL=&quot;https://www.debian.org/&quot; SUPPORT_URL=&quot;https://www.debian.org/support&quot; BUG_REPORT_URL=&quot;https://bugs.debian.org/&quot; 脚本安装 通过 troubleshoting 页面 Chrome headless doesn’t launch 部分其列出的对应系统所需依赖中，将所有依赖复制出来组装成如下的命令执行： sudo apt-get install gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget 通过安装 Chrome 来自动安装 直接安装一个非 Chromium 版本的 Chrome，它会把依赖自动安装上。 Chrome 是基于 Chromium 的发行版，包括 google-chrome-stable，google-chrome-unstable，google-chrome-beta，安装任意一个都行。 还是以 Debian 系统为例： $ apt-get update &amp;&amp; apt-get install google-chrome-unstable 如果直接执行上面的安装，会报错： E: Unable to locate package google-chrome-unstable 这是安装程序时的一个安全相关策略 ，需要先设置一下 apt-key。 $ wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 然后设置 Chrome 的仓库： $ sudo sh -c &#39;echo &quot;deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main&quot; &gt;&gt; /etc/apt/sources.list.d/google.list&#39; 再次执行安装便正常进行了。 安装时可以看到会提示所需的依赖项： 安装 Chrome 时的提示信息 ```sh $ sudo apt-get install google-chrome-unstable Reading package lists... Done Building dependency tree Reading state information... Done The following additional packages will be installed: adwaita-icon-theme at-spi2-core dbus dconf-gsettings-backend dconf-service fontconfig fontconfig-config fonts-liberation glib-networking glib-networking-common glib-networking-services gsettings-desktop-schemas gtk-update-icon-cache hicolor-icon-theme libappindicator3-1 libasound2 libasound2-data libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0 libauthen-sasl-perl libavahi-client3 libavahi-common-data libavahi-common3 libcairo-gobject2 libcairo2 libcolord2 libcroco3 libcups2 libdatrie1 libdbus-1-3 libdbusmenu-glib4 libdbusmenu-gtk3-4 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libegl1-mesa libencode-locale-perl libepoxy0 libfile-basedir-perl libfile-desktopentry-perl libfile-listing-perl libfile-mimeinfo-perl libfont-afm-perl libfontconfig1 libfontenc1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libglib2.0-0 libglib2.0-data libgraphite2-3 libgtk-3-0 libgtk-3-bin libgtk-3-common libharfbuzz0b libhtml-form-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl libice6 libindicator3-7 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl libjbig0 libjpeg62-turbo libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2 libllvm3.9 liblwp-mediatypes-perl liblwp-protocol-https-perl libmailtools-perl libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpciaccess0 libpixman-1-0 libproxy1v5 librest-0.7-0 librsvg2-2 librsvg2-common libsensors4 libsm6 libsoup-gnome2.4-1 libsoup2.4-1 libthai-data libthai0 libtie-ixhash-perl libtiff5 libtimedate-perl libtxc-dxtn-s2tc libu2f-udev liburi-perl libwayland-client0 libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwww-perl libwww-robotrules-perl libx11-6 libx11-data libx11-protocol-perl libx11-xcb1 libxau6 libxaw7 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxft2 libxi6 libxinerama1 libxkbcommon0 libxml-parser-perl libxml-twig-perl libxml-xpathengine-perl libxml2 libxmu6 libxmuu1 libxpm4 libxrandr2 libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base shared-mime-info x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core ``` 按[Y] 确认即可。 有了这些依赖，Puppeteer 中的 Chromium 便可运行了。 $ google-chrome-unstable --version Google Chrome 75.0.3745.4 dev $ ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | grep not google-chrome-unstable --version 正常输出版本号表示安装成功，再次检查 not found 的依赖项输出为空。 我们的目的只是安装依赖，所以装完后可移除 Chome。apt-get remove google-chrome-unstable 时会自动列出其依赖项，就像安装时一样。后续如果机器上不再需要 Chromium 了可通过 apt-get autoremove 来清理。 卸载 Chrome 时的提示信息 ```sh $ sudo apt-get remove google-chrome-unstable ... Building dependency tree Reading state information... Done The following packages were automatically installed and are no longer required: adwaita-icon-theme at-spi2-core dconf-gsettings-backend dconf-service fontconfig fontconfig-config fonts-liberation glib-networking glib-networking-common glib-networking-services gsettings-desktop-schemas gtk-update-icon-cache hicolor-icon-theme libappindicator3-1 libasound2 libasound2-data libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0 libauthen-sasl-perl libavahi-client3 libavahi-common-data libavahi-common3 libcairo-gobject2 libcairo2 libcolord2 libcroco3 libcups2 libdatrie1 libdbusmenu-glib4 libdbusmenu-gtk3-4 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libegl1-mesa libencode-locale-perl libepoxy0 libfile-basedir-perl libfile-desktopentry-perl libfile-listing-perl libfile-mimeinfo-perl libfont-afm-perl libfontconfig1 libfontenc1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libglib2.0-0 libglib2.0-data libgraphite2-3 libgtk-3-0 libgtk-3-bin libgtk-3-common libharfbuzz0b libhtml-form-perl libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl libhttp-negotiate-perl libice6 libicu57 libindicator3-7 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl libjbig0 libjpeg62-turbo libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2 libllvm3.9 liblwp-mediatypes-perl liblwp-protocol-https-perl libmailtools-perl libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpciaccess0 libpixman-1-0 libproxy1v5 librest-0.7-0 librsvg2-2 librsvg2-common libsensors4 libsm6 libsoup-gnome2.4-1 libsoup2.4-1 libthai-data libthai0 libtie-ixhash-perl libtiff5 libtimedate-perl libtxc-dxtn-s2tc libu2f-udev liburi-perl libuv1 libwayland-client0 libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwww-perl libwww-robotrules-perl libx11-6 libx11-data libx11-protocol-perl libx11-xcb1 libxau6 libxaw7 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxft2 libxi6 libxinerama1 libxkbcommon0 libxml-parser-perl libxml-twig-perl libxml-xpathengine-perl libxml2 libxmu6 libxmuu1 libxpm4 libxrandr2 libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base shared-mime-info x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core Use &#39;sudo apt autoremove&#39; to remove them. The following packages will be REMOVED: google-chrome-unstable 0 upgraded, 0 newly installed, 1 to remove and 25 not upgraded. After this operation, 213 MB disk space will be freed. Do you want to continue? [Y/n] (Reading database ... 71778 files and directories currently installed.) Removing google-chrome-unstable (75.0.3745.4-1) ... Processing triggers for mime-support (3.60) ... Processing triggers for man-db (2.7.6.1-2) ... ``` sandbox 的问题 Linux 上 Puppeteer 启动 Chromium 时可能会看到如下的错误提示： [0402/152925.182431:ERROR:zygote_host_impl_linux.cc(89)] Running as root without --no-sandbox is not supported. See https://crbug.com/638180. 错误信息已经很明显，所以在启动时加上 --no-sandbox 参数即可。 const browser = await puppeteer.launch({ args: [&quot;--no-sandbox&quot;] }); 但考虑到安全问题，Puppeteer 是强烈不建议在无沙盒环境下运行，除非加载的页面其内容是绝对可信的。 如果需要设置在沙盒中运行，可参考文档中的两种方法。 相关资源 puppeteer troubleshooting How to Update and Install Latest Chrome in Linux/Ubuntu How to Manually Install, Update, and Uninstall Fonts on Linux Installing Asian Fonts on Ubuntu &amp; Debian","@type":"BlogPosting","headline":"Puppeteer 截图及相关问题","dateModified":"2019-04-04T21:04:00+08:00","datePublished":"2019-04-04T21:04:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Puppeteer 截图及相关问题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-04-04T21:04:00+08:00" itemprop="datePublished">Apr 4, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="puppeteer-截图及相关问题">Puppeteer 截图及相关问题</h1>
+
+<p><a href="https://pptr.dev">Puppeteer</a> 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页面进行截图，或者保存成 PDF。</p>
+
+<h2 id="镜像的设置">镜像的设置</h2>
+
+<p>因为其使用了 Chromium，其源在 Google 域上，最好设置一下 npm 从国内镜像安装，可解决无法安装的问题。</p>
+
+<p>推荐在项目中放置 <code class="language-plaintext highlighter-rouge">.npmrc</code> 或 <code class="language-plaintext highlighter-rouge">.yarnrc</code> 文件来进行镜像的设置，这样设置只针对项目生效，不影响其他项目，同时其他人不用重复在本地设置。</p>
+
+<p>这是一个整理好的 <a href="https://gist.github.com/wayou/baa18849de3424db5d7ca24e94645c25"><code class="language-plaintext highlighter-rouge">.npmrc</code> 文件</a>，如果使用的是 yarn，对应的 <a href="https://gist.github.com/wayou/a1a6fb1fc5153bc20829c7b2700ec0bc"><code class="language-plaintext highlighter-rouge">.yarnrc</code> 文件</a>。也可通过如下命令从 GitHub gist 下载到项目中，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># .npmrc</span>
+<span class="nv">$ </span>npx pkgrc
+
+<span class="c"># .yarnc</span>
+<span class="nv">$ </span>npx pkgrc yarn
+</code></pre></div></div>
+
+<h2 id="截取页面">截取页面</h2>
+
+<p>使用 <a href="https://pptr.dev/#?product=Puppeteer&amp;version=v1.14.0&amp;show=api-pagescreenshotoptions"><code class="language-plaintext highlighter-rouge">page.screenshot()</code></a> API 进行截图的示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">puppeteer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">puppeteer</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="k">async</span> <span class="nx">browser</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
+  <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="dl">"</span><span class="s2">https://example.com</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">({</span> <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">screenshot.png</span><span class="dl">"</span> <span class="p">});</span>
+  <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>实际应用中，你需要加上等待时间，以保证页面已经完全加载，否则截取出来的画面是页面半成品的样子。</p>
+
+<p>通过 <a href="https://pptr.dev/#?product=Puppeteer&amp;version=v1.14.0&amp;show=api-pagewaitforselectororfunctionortimeout-options-args"><code class="language-plaintext highlighter-rouge">page.waitFor()</code></a> 可让页面等待指定时间，</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">const puppeteer = require('puppeteer');
+</span>
+puppeteer.launch().then(async browser =&gt; {
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+
+    // 等待一秒钟
+<span class="gi">+  await page.waitFor(1000);
+</span>
+  await page.screenshot({path: 'screenshot.png'});
+  await browser.close();
+<span class="err">});</span>
+</code></pre></div></div>
+
+<p>但这里无论你指定的时长是多少，都是比较主观的值。页面实际加载情况受很多因素影响，机器性能，网络好坏等。即页面加载完成是个无法预期的时长，所以这种方式不靠谱。我们应该使用另一个更加有保障的方式，在调用 <a href="https://pptr.dev/#?product=Puppeteer&amp;version=v1.14.0&amp;show=api-pagegotourl-options"><code class="language-plaintext highlighter-rouge">page.goto()</code></a> 时，可指定 <code class="language-plaintext highlighter-rouge">waitUntil</code> 参数。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">const puppeteer = require('puppeteer');
+</span>
+puppeteer.launch().then(async browser =&gt; {
+  const page = await browser.newPage();
+  await page.goto('https://example.com’,{
+<span class="gi">+      waitUtil: 'networkidle2'
+</span>  });
+  await page.screenshot({path: 'screenshot.png'});
+  await browser.close();
+<span class="err">});</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>networkidle2 - consider navigation to be finished when there are no more than 2 network connections for at least 500 ms.
+<em>-- 来自 <a href="https://pptr.dev/#?product=Puppeteer&amp;version=v1.14.0&amp;show=api-pagegotourl-options">puppeteer 文档中关于 <code class="language-plaintext highlighter-rouge">waitUtil</code> 参数的描述</a></em></p>
+</blockquote>
+
+<p><code class="language-plaintext highlighter-rouge">networkidle2</code> 会一直等待，直到页面加载后同时没有存在 2 个以上的资源请求，这个种状态持续至少 500 ms。</p>
+
+<p>此时再进行截图，是比较保险的了。</p>
+
+<p>截图时还有个实用的参数 <code class="language-plaintext highlighter-rouge">fullPage</code>，一般情况下也会搭配着使用，对整个页面进行截取。如果页面过长，超出了当前视窗（viewport），它会自动截取超出的部分，即截取结果是长图。这应该是大部分情况下所期望的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">({</span> <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">screenshot.png</span><span class="dl">"</span><span class="p">,</span> <span class="na">fullPage</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<p>注意，其与 <code class="language-plaintext highlighter-rouge">clip</code> 参数互斥，即，如果手动指定了 clip 参数对页面进行范围的限定，则不能再指定 <code class="language-plaintext highlighter-rouge">fullPage</code> 参数。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 💥 抛错！</span>
+<span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">({</span>
+  <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">screenshot.png</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">fullPage</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">clip</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="na">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="na">width</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
+    <span class="na">height</span><span class="p">:</span> <span class="mi">400</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="针对页面中某个元素进行截取">针对页面中某个元素进行截取</h2>
+
+<p>如果你使用过 Chrome DevTool 中的截图命令，或许知道，其中有一个针对元素进行截取的命令。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55492896-93573980-566a-11e9-834f-9419a3758981.png" alt="Chrome DevTool 中对元素进行截图的命令" /></p>
+<p align="center">Chrome DevTool 中对元素进行截图的命令</p>
+
+<p>所以，除了对整个页面进行截取，Chrome 还支持对页面某个元素进行截取。通过 <a href="https://pptr.dev/#?product=Puppeteer&amp;version=v1.14.0&amp;show=api-elementhandlescreenshotoptions"><code class="language-plaintext highlighter-rouge">elementHandle .screenshot()</code></a> 可针对具体元素进行截取。</p>
+
+<p>这就很实用了，能够满足大部分自定义的需求。大多数情况下，我们只对 body 部分感兴趣，通过只对 body 进行截取，就不用指定长宽而且自动排除掉 body 外多余的留白等。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">puppeteer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">puppeteer</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="k">async</span> <span class="nx">browser</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
+  <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="dl">"</span><span class="s2">https://example.com</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">waitUtil</span><span class="p">:</span> <span class="dl">"</span><span class="s2">networkidle2</span><span class="dl">"</span>
+  <span class="p">});</span>
+  <span class="kd">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">body</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">element</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">({</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">screenshot.png</span><span class="dl">"</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>其参数与 <code class="language-plaintext highlighter-rouge">page.screenshot()</code> 一样。需要注意的是，虽说一样，但其中是不能使用 <code class="language-plaintext highlighter-rouge">fullPage</code> 参数的。因为针对元素进行图片截取已经表明是局部截图了，与 <code class="language-plaintext highlighter-rouge">fullPage</code> 截取整个页面是冲突的，但它还是会自动滚动以截取完整的这个元素， <code class="language-plaintext highlighter-rouge">fullPage</code> 的优点没有丢掉。</p>
+
+<h2 id="数据的返回">数据的返回</h2>
+
+<p>生成的图片可直接返回，也可保存成文件后返回文件地址。</p>
+
+<p>其中，截图方法 <code class="language-plaintext highlighter-rouge">page.screenshot([options])</code> 的返回是 <code class="language-plaintext highlighter-rouge">&lt;Promise&lt;string|Buffer&gt;&gt;</code>，即生成的可能是 buffer 数据，也可以是base64 形式的字符串数据，默认为 Buffer 内容，通过设置 <code class="language-plaintext highlighter-rouge">encoding</code> 参数为 <code class="language-plaintext highlighter-rouge">base64</code> 便可得到字符串形式的截图数据。</p>
+
+<p>以 Koa 为例，binary 形式的 buffer 数据直接赋值给 <code class="language-plaintext highlighter-rouge">ctx.body</code> 进行返回，通过 <code class="language-plaintext highlighter-rouge">response.attachment</code> 可设置返回的文件名。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
+  <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">();</span>
+  <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">attachment</span><span class="p">(</span><span class="dl">"</span><span class="s2">screenshot.png</span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="nx">buffer</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>字符串形式时，需要注意拿到的并不是标准的图片 base64 格式，它只包含了数据部分，并没有文件类型部分，即 <code class="language-plaintext highlighter-rouge">data:image/png;base64</code>，所以需要手动拼接后才是正确可展示的图片。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
+  <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">base64</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">({</span> <span class="na">encoding</span><span class="p">:</span> <span class="dl">"</span><span class="s2">base64</span><span class="dl">"</span> <span class="p">});</span>
+  <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="s2">`&lt;img src="data:image/png;base64,</span><span class="p">${</span><span class="nx">base64</span><span class="p">}</span><span class="s2">"/&gt;`</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>如果你是以异步接口形式返回到前端，只需要将 <code class="language-plaintext highlighter-rouge">"data:image/png;base64,${base64}"</code> 这部分作为数据返回即可。</p>
+
+<p>当然，字符串形式下，仍然是可以返回成文件下载的形式的，</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
+  <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">base64</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">({</span> <span class="na">encoding</span><span class="p">:</span> <span class="dl">"</span><span class="s2">base64</span><span class="dl">"</span> <span class="p">});</span>
+  <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">attachment</span><span class="p">(</span><span class="dl">"</span><span class="s2">screenshot.png</span><span class="dl">"</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">image</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Buffer</span><span class="p">(</span><span class="nx">base64</span><span class="p">,</span> <span class="dl">"</span><span class="s2">base64</span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="nx">image</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="pdf-的生成">PDF 的生成</h2>
+
+<p>通过 <a href="https://pptr.dev/#?product=Puppeteer&amp;version=v1.14.0&amp;show=api-pagepdfoptions"><code class="language-plaintext highlighter-rouge">page.pdf([options])</code></a> 可将页面截取成 PDF 格式。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">puppeteer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">puppeteer</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">run</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
+
+  <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">emulateMedia</span><span class="p">(</span><span class="dl">"</span><span class="s2">screen</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="dl">"</span><span class="s2">https://www.google.com/chromebook/</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">pdf</span><span class="p">({</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">puppeteer.pdf</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">format</span><span class="p">:</span> <span class="dl">"</span><span class="s2">A4</span><span class="dl">"</span>
+  <span class="p">});</span>
+
+  <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="nx">run</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>一般 PDF 用于打印，所以默认以 <code class="language-plaintext highlighter-rouge">print</code> 媒体查询 （media query）的样式来截取。这里调用 <code class="language-plaintext highlighter-rouge">page.emulateMedia("screen")</code> 显式指定环境为 <code class="language-plaintext highlighter-rouge">screen</code> 而不是 <code class="language-plaintext highlighter-rouge">print</code> 是为了得到更加接近于页面在浏览器中展示的效果。</p>
+
+<p>需要注意的是，如果页面中使用了背景图片，上面代码截取出来是看不到的。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55738983-c3338200-5a5a-11e9-9874-22002bb8da20.png" alt="截图 PDF 时背景图片未显示" /></p>
+<p align="center">截图 PDF 时背景图片未显示</p>
+
+<p>需要设置截取时的 ` printBackground<code class="language-plaintext highlighter-rouge"> 参数为 </code>true`：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  await page.pdf({
+    path: "puppeteer.pdf",
+    format: "A4",
+<span class="gi">+    printBackground: true
+</span>  });
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55739102-fa099800-5a5a-11e9-93e6-f9840eba698d.png" alt="修正后截图的 PDF 背景图片正常显示" /></p>
+<p align="center">修正后截图的 PDF 背景图片正常显示</p>
+
+<h2 id="一些问题">一些问题</h2>
+
+<h3 id="服务器字体文件问题">服务器字体文件问题</h3>
+
+<p>部署到全新的 Linux 环境时，大概率你会看到截来的图片中中文无法显示。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55492861-833f5a00-566a-11e9-9ae2-f4b09a16becc.png" alt="中文字体缺失的情况" /></p>
+<p align="center">中文字体缺失的情况</p>
+
+<p>￼
+那是因为系统缺少中文字体，Chromium 无法正常渲染。你需要<a href="https://help.accusoft.com/PCC/v11.2/HTML/Installing%20Asian%20Fonts%20on%20Ubuntu%20and%20Debian.html">安装</a>中文字体，通过包管理工具或者手动下载安装。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>language-pack-zh<span class="k">*</span>
+<span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>chinese<span class="k">*</span>
+</code></pre></div></div>
+
+<h3 id="服务器上-chromium-无法启动的问题">服务器上 Chromium 无法启动的问题</h3>
+
+<p>在 Puppeteer 的 <a href="https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-doesnt-launch">troubleshoting 文档</a> 中有对应的解决方案。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(node:24206) UnhandledPromiseRejectionWarning: Error: Failed to launch chrome!
+</code></pre></div></div>
+
+<p>一般是机器上缺少对应的依赖库，安装补上即可。Puppeteer 自带的 Chromium 是非常纯粹的，它不会安装除了自身作为浏览器外的其他东西。</p>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">ldd</code> （List Dynamic Dependencies）命令可查看运行 Chromium 运行所需但缺少的 shared object dependencies。</p>
+
+<details>
+<summary>查看缺少的依赖项</summary>
+<p>
+
+```sh
+$ ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | grep not
+        libX11.so.6 =&gt; not found
+        libX11-xcb.so.1 =&gt; not found
+        libxcb.so.1 =&gt; not found
+        libXcomposite.so.1 =&gt; not found
+        libXcursor.so.1 =&gt; not found
+        libXdamage.so.1 =&gt; not found
+        libXext.so.6 =&gt; not found
+        libXfixes.so.3 =&gt; not found
+        libXi.so.6 =&gt; not found
+        libXrender.so.1 =&gt; not found
+        libXtst.so.6 =&gt; not found
+        libgobject-2.0.so.0 =&gt; not found
+        libglib-2.0.so.0 =&gt; not found
+        libnss3.so =&gt; not found
+        libnssutil3.so =&gt; not found
+        libsmime3.so =&gt; not found
+        libnspr4.so =&gt; not found
+        libcups.so.2 =&gt; not found
+        libdbus-1.so.3 =&gt; not found
+        libXss.so.1 =&gt; not found
+        libXrandr.so.2 =&gt; not found
+        libgio-2.0.so.0 =&gt; not found
+        libasound.so.2 =&gt; not found
+        libpangocairo-1.0.so.0 =&gt; not found
+        libpango-1.0.so.0 =&gt; not found
+        libcairo.so.2 =&gt; not found
+        libatk-1.0.so.0 =&gt; not found
+        libatk-bridge-2.0.so.0 =&gt; not found
+        libatspi.so.0 =&gt; not found
+        libgtk-3.so.0 =&gt; not found
+        libgdk-3.so.0 =&gt; not found
+        libgdk_pixbuf-2.0.so.0 =&gt; not found
+```
+</p>
+</details>
+
+<p>那么多，一个个搜索（因为这里例出的名称不一定就是直接可用来安装的名称）安装多麻烦。所以需要用其他方法。</p>
+
+<p>以 Debian 系统为例。</p>
+
+<p><em>tips: 可通过 <code class="language-plaintext highlighter-rouge">$ cat /etc/os-release</code> 查看系统信息从而判断是什么系统。</em></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat</span> /etc/os-release
+<span class="nv">PRETTY_NAME</span><span class="o">=</span><span class="s2">"Debian GNU/Linux 9 (stretch)"</span>
+<span class="nv">NAME</span><span class="o">=</span><span class="s2">"Debian GNU/Linux"</span>
+<span class="nv">VERSION_ID</span><span class="o">=</span><span class="s2">"9"</span>
+<span class="nv">VERSION</span><span class="o">=</span><span class="s2">"9 (stretch)"</span>
+<span class="nv">ID</span><span class="o">=</span>debian
+<span class="nv">HOME_URL</span><span class="o">=</span><span class="s2">"https://www.debian.org/"</span>
+<span class="nv">SUPPORT_URL</span><span class="o">=</span><span class="s2">"https://www.debian.org/support"</span>
+<span class="nv">BUG_REPORT_URL</span><span class="o">=</span><span class="s2">"https://bugs.debian.org/"</span>
+</code></pre></div></div>
+
+<h4 id="脚本安装">脚本安装</h4>
+
+<p>通过 troubleshoting 页面 <a href="https://stackoverflow.com/a/44698744/1553656">Chrome headless doesn’t launch 部分</a>其列出的对应系统所需依赖中，将所有依赖复制出来组装成如下的命令执行：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get <span class="nb">install </span>gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
+</code></pre></div></div>
+
+<h4 id="通过安装-chrome-来自动安装">通过安装 Chrome 来自动安装</h4>
+
+<p>直接安装一个非 Chromium 版本的 Chrome，它会把依赖自动安装上。</p>
+
+<p>Chrome 是基于 Chromium 的发行版，包括 <code class="language-plaintext highlighter-rouge">google-chrome-stable</code>，<code class="language-plaintext highlighter-rouge">google-chrome-unstable</code>，<code class="language-plaintext highlighter-rouge">google-chrome-beta</code>，安装任意一个都行。</p>
+
+<p>还是以 Debian 系统为例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>apt-get update <span class="o">&amp;&amp;</span> apt-get <span class="nb">install </span>google-chrome-unstable
+</code></pre></div></div>
+
+<p>如果直接执行上面的安装，会报错：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>E: Unable to locate package google-chrome-unstable
+</code></pre></div></div>
+
+<p>这是安装程序时的一个<a href="https://stackoverflow.com/a/44698744/1553656">安全相关策略</a> ，需要先设置一下 <code class="language-plaintext highlighter-rouge">apt-key</code>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wget <span class="nt">-q</span> <span class="nt">-O</span> - https://dl-ssl.google.com/linux/linux_signing_key.pub | <span class="nb">sudo </span>apt-key add -
+</code></pre></div></div>
+
+<p>然后设置 Chrome 的仓库：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>sh <span class="nt">-c</span> <span class="s1">'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" &gt;&gt; /etc/apt/sources.list.d/google.list'</span>
+</code></pre></div></div>
+
+<p>再次执行安装便正常进行了。</p>
+
+<p>安装时可以看到会提示所需的依赖项：</p>
+
+<details><summary>安装 Chrome 时的提示信息</summary>
+<p>
+
+```sh
+$ sudo apt-get install google-chrome-unstable
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following additional packages will be installed:
+  adwaita-icon-theme at-spi2-core dbus dconf-gsettings-backend dconf-service fontconfig fontconfig-config fonts-liberation glib-networking
+  glib-networking-common glib-networking-services gsettings-desktop-schemas gtk-update-icon-cache hicolor-icon-theme libappindicator3-1
+  libasound2 libasound2-data libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0 libauthen-sasl-perl libavahi-client3
+  libavahi-common-data libavahi-common3 libcairo-gobject2 libcairo2 libcolord2 libcroco3 libcups2 libdatrie1 libdbus-1-3 libdbusmenu-glib4
+  libdbusmenu-gtk3-4 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libegl1-mesa libencode-locale-perl
+  libepoxy0 libfile-basedir-perl libfile-desktopentry-perl libfile-listing-perl libfile-mimeinfo-perl libfont-afm-perl libfontconfig1
+  libfontenc1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libglib2.0-0 libglib2.0-data
+  libgraphite2-3 libgtk-3-0 libgtk-3-bin libgtk-3-common libharfbuzz0b libhtml-form-perl libhtml-format-perl libhtml-parser-perl
+  libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl
+  libhttp-negotiate-perl libice6 libindicator3-7 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl libjbig0 libjpeg62-turbo
+  libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2 libllvm3.9 liblwp-mediatypes-perl liblwp-protocol-https-perl libmailtools-perl
+  libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0
+  libpangoft2-1.0-0 libpciaccess0 libpixman-1-0 libproxy1v5 librest-0.7-0 librsvg2-2 librsvg2-common libsensors4 libsm6 libsoup-gnome2.4-1
+  libsoup2.4-1 libthai-data libthai0 libtie-ixhash-perl libtiff5 libtimedate-perl libtxc-dxtn-s2tc libu2f-udev liburi-perl
+  libwayland-client0 libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwww-perl libwww-robotrules-perl libx11-6 libx11-data
+  libx11-protocol-perl libx11-xcb1 libxau6 libxaw7 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-render0 libxcb-shape0
+  libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxft2 libxi6
+  libxinerama1 libxkbcommon0 libxml-parser-perl libxml-twig-perl libxml-xpathengine-perl libxml2 libxmu6 libxmuu1 libxpm4 libxrandr2
+  libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base shared-mime-info
+  x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core
+```
+</p>
+</details>
+
+<p>按[Y] 确认即可。</p>
+
+<p>有了这些依赖，Puppeteer 中的 Chromium 便可运行了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>google-chrome-unstable <span class="nt">--version</span>
+Google Chrome 75.0.3745.4 dev
+<span class="nv">$ </span>ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | <span class="nb">grep </span>not
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">google-chrome-unstable --version</code> 正常输出版本号表示安装成功，再次检查 <code class="language-plaintext highlighter-rouge">not found</code> 的依赖项输出为空。</p>
+
+<p>我们的目的只是安装依赖，所以装完后可移除 Chome。<code class="language-plaintext highlighter-rouge">apt-get remove google-chrome-unstable</code> 时会自动列出其依赖项，就像安装时一样。后续如果机器上不再需要 Chromium 了可通过 <code class="language-plaintext highlighter-rouge">apt-get autoremove</code> 来清理。</p>
+
+<details><summary>卸载 Chrome 时的提示信息</summary>
+<p>
+
+```sh
+$ sudo apt-get remove google-chrome-unstable
+...
+Building dependency tree
+Reading state information... Done
+The following packages were automatically installed and are no longer required:
+  adwaita-icon-theme at-spi2-core dconf-gsettings-backend dconf-service fontconfig fontconfig-config fonts-liberation glib-networking
+  glib-networking-common glib-networking-services gsettings-desktop-schemas gtk-update-icon-cache hicolor-icon-theme libappindicator3-1
+  libasound2 libasound2-data libatk-bridge2.0-0 libatk1.0-0 libatk1.0-data libatspi2.0-0 libauthen-sasl-perl libavahi-client3
+  libavahi-common-data libavahi-common3 libcairo-gobject2 libcairo2 libcolord2 libcroco3 libcups2 libdatrie1 libdbusmenu-glib4
+  libdbusmenu-gtk3-4 libdconf1 libdrm-amdgpu1 libdrm-intel1 libdrm-nouveau2 libdrm-radeon1 libdrm2 libegl1-mesa libencode-locale-perl
+  libepoxy0 libfile-basedir-perl libfile-desktopentry-perl libfile-listing-perl libfile-mimeinfo-perl libfont-afm-perl libfontconfig1
+  libfontenc1 libgbm1 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgl1-mesa-dri libgl1-mesa-glx libglapi-mesa libglib2.0-0 libglib2.0-data
+  libgraphite2-3 libgtk-3-0 libgtk-3-bin libgtk-3-common libharfbuzz0b libhtml-form-perl libhtml-format-perl libhtml-parser-perl
+  libhtml-tagset-perl libhtml-tree-perl libhttp-cookies-perl libhttp-daemon-perl libhttp-date-perl libhttp-message-perl
+  libhttp-negotiate-perl libice6 libicu57 libindicator3-7 libio-html-perl libio-socket-ssl-perl libipc-system-simple-perl libjbig0
+  libjpeg62-turbo libjson-glib-1.0-0 libjson-glib-1.0-common liblcms2-2 libllvm3.9 liblwp-mediatypes-perl liblwp-protocol-https-perl
+  libmailtools-perl libnet-dbus-perl libnet-http-perl libnet-smtp-ssl-perl libnet-ssleay-perl libnspr4 libnss3 libpango-1.0-0
+  libpangocairo-1.0-0 libpangoft2-1.0-0 libpciaccess0 libpixman-1-0 libproxy1v5 librest-0.7-0 librsvg2-2 librsvg2-common libsensors4 libsm6
+  libsoup-gnome2.4-1 libsoup2.4-1 libthai-data libthai0 libtie-ixhash-perl libtiff5 libtimedate-perl libtxc-dxtn-s2tc libu2f-udev
+  liburi-perl libuv1 libwayland-client0 libwayland-cursor0 libwayland-egl1-mesa libwayland-server0 libwww-perl libwww-robotrules-perl
+  libx11-6 libx11-data libx11-protocol-perl libx11-xcb1 libxau6 libxaw7 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0
+  libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 libxext6
+  libxfixes3 libxft2 libxi6 libxinerama1 libxkbcommon0 libxml-parser-perl libxml-twig-perl libxml-xpathengine-perl libxml2 libxmu6 libxmuu1
+  libxpm4 libxrandr2 libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base
+  shared-mime-info x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core
+Use 'sudo apt autoremove' to remove them.
+The following packages will be REMOVED:
+  google-chrome-unstable
+0 upgraded, 0 newly installed, 1 to remove and 25 not upgraded.
+After this operation, 213 MB disk space will be freed.
+Do you want to continue? [Y/n]
+(Reading database ... 71778 files and directories currently installed.)
+Removing google-chrome-unstable (75.0.3745.4-1) ...
+Processing triggers for mime-support (3.60) ...
+Processing triggers for man-db (2.7.6.1-2) ...
+```
+</p>
+</details>
+
+<h3 id="sandbox-的问题">sandbox 的问题</h3>
+
+<p>Linux 上 Puppeteer 启动 Chromium 时可能会看到如下的错误提示：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>0402/152925.182431:ERROR:zygote_host_impl_linux.cc<span class="o">(</span>89<span class="o">)]</span> Running as root without <span class="nt">--no-sandbox</span> is not supported. See https://crbug.com/638180.
+</code></pre></div></div>
+
+<p>错误信息已经很明显，所以在启动时加上 <code class="language-plaintext highlighter-rouge">--no-sandbox</code> 参数即可。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">({</span> <span class="na">args</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">--no-sandbox</span><span class="dl">"</span><span class="p">]</span> <span class="p">});</span>
+</code></pre></div></div>
+<p>但考虑到安全问题，Puppeteer 是<a href="https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#setting-up-chrome-linux-sandbox">强烈不建议</a>在无沙盒环境下运行，除非加载的页面其内容是绝对可信的。</p>
+
+<p>如果需要设置在沙盒中运行，可参考<a href="https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#recommended-enable-user-namespace-cloning">文档中的两种方法</a>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-doesnt-launch">puppeteer troubleshooting</a></li>
+  <li><a href="https://linoxide.com/linux-how-to/install-latest-chrome-run-terminal-ubuntu/">How to Update and Install Latest Chrome in Linux/Ubuntu</a></li>
+  <li><a href="https://medium.com/source-words/how-to-manually-install-update-and-uninstall-fonts-on-linux-a8d09a3853b0">How to Manually Install, Update, and Uninstall Fonts on Linux</a></li>
+  <li><a href="https://help.accusoft.com/PCC/v11.2/HTML/Installing%20Asian%20Fonts%20on%20Ubuntu%20and%20Debian.html">Installing Asian Fonts on Ubuntu &amp; Debian</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

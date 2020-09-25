@@ -1,0 +1,87 @@
+I"))<h1 id="利用-chunked-类型响应实现后台请求的监听">利用 chunked 类型响应实现后台请求的监听</h1>
+
+<p><a href="https://github.com/wayou/wayou.github.io/issues/105">Koa 中实现 chunked 数据传输</a> 中介绍了如何在 Koa 中实现 <code class="language-plaintext highlighter-rouge">Transfer-Encoding:chunked</code> 类型的响应分片传输。这里来看一个应用场景。</p>
+
+<p>假如我们想监听后台的请求，并将监听到的数据打印到页面。那么复用 <code class="language-plaintext highlighter-rouge">chunked</code> 类型的响应，我们只需要解决如何在页面 controller 中获取到别的 controller 被执行。</p>
+
+<p>Koa 在 app 上有提供一个 <code class="language-plaintext highlighter-rouge">emit</code> 方法派发事件。这样，可以写一个中间件对请求进行拦截，并且派发事件。然后在在监听的地方可通 <code class="language-plaintext highlighter-rouge">app.on</code> 来响应事件，假设我们展示监听数据的页面 url 为 <code class="language-plaintext highlighter-rouge">/monitor</code>，在 <code class="language-plaintext highlighter-rouge">/monitor</code> 的 controller 中实现 chunked 数据响应，并且监听前面中间件发来的数据，然后不断输出到页面，达到了监听的效果。</p>
+
+<p>实现后代码大概是这样子：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">Koa</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">koa</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">Router</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">@koa/router</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">PORT</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Koa</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Router</span><span class="p">();</span>
+
+<span class="kd">const</span> <span class="nx">requestLogger</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">next</span><span class="p">();</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s2">`response`</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">requestLogger</span><span class="p">);</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">/</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">hello world</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">/api</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">status</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="na">foo</span><span class="p">:</span> <span class="dl">"</span><span class="s2">bar</span><span class="dl">"</span>
+  <span class="p">};</span>
+<span class="p">});</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">/test</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">hello test</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">/monitor</span><span class="dl">"</span><span class="p">,</span> <span class="k">async</span> <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">res</span><span class="p">;</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="dl">"</span><span class="s2">Content-Type</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">text/html</span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">`&lt;h3&gt;net monitor&lt;h3&gt;`</span><span class="p">);</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">response</span><span class="dl">"</span><span class="p">,</span> <span class="nx">data</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">`
+        &lt;details&gt;
+        &lt;summary&gt;
+        &lt;a hre="</span><span class="p">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">url</span><span class="p">}</span><span class="s2">"&gt;</span><span class="p">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">url</span><span class="p">}</span><span class="s2">&lt;/a&gt;
+        &lt;/summary&gt;
+        &lt;pre&gt;</span><span class="p">${</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}</span><span class="s2">&lt;pre&gt;
+        &lt;/details&gt;
+        `</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">routes</span><span class="p">()).</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">allowedMethods</span><span class="p">());</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">PORT</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s2">`server started at http://localhost:</span><span class="p">${</span><span class="nx">PORT</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+
+</code></pre></div></div>
+
+<p>运行效果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/60038091-e8dd3880-96e5-11e9-90fa-142a2641976b.gif" alt="利用 chunked 类型响应实现后台请求的监听" /></p>
+<p align="center">利用 chunked 类型响应实现后台请求的监听</p>
+
+<h2 id="问题">问题</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Transfer-Encoding:chunked</code> 依赖于客户端与服务器之间建立的这个连接一直处于未完成的状态，只要服务端不主动 <code class="language-plaintext highlighter-rouge">res.end()</code> 掉。但服务器配置 keep alive 的时长设置会影响到该连接，超时后会断开，当然可以将限制调大。</li>
+  <li>因为在 <code class="language-plaintext highlighter-rouge">/monitor</code> 这个页面中，它没有办法知道其他路由的到达与结束，所以这里复用了事件。使得在 <code class="language-plaintext highlighter-rouge">/monitor</code> 页面能够监听到其他 controller 的情况。但这种做法会面临内存增长过快的问题，因为连接和事件监听一直保持着。</li>
+</ul>
+
+<p>但如果仅用于调试数据，比如查看页面发生了哪些请求，返回了什么数据，这种一次性暂时的需求，还是没问题的。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://github.com/wayou/wayou.github.io/issues/105">Koa 中实现 chunked 数据传输</a></li>
+</ul>
+
+:ET

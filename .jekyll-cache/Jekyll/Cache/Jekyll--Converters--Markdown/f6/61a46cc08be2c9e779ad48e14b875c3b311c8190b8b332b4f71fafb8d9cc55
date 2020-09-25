@@ -1,0 +1,27 @@
+I"d<h1 id="tcp-与-udp">TCP 与 UDP</h1>
+
+<p>两者皆是用于在网络上发送报文数据（packet）的传输协议，都基于 Internet protocol （IP）。所以 TCP/IP 其实表示的是 TCP over IP （基于 IP 的 TCP 协议）。</p>
+
+<p>基于 IP 有很多协议，但 TCP 和 UDP 是应用最为广泛的两种。</p>
+
+<h2 id="tcp">TCP</h2>
+
+<p>TCP（Transmission Control Protocol）传输控制协议，广泛运用于网络中。</p>
+
+<p>当你打开一个网页时，浏览器向服务器发送 TCP 报文数据以请求网页。服务器收到请求后返回一连串的流式 TCP 报文 （a stream of TCP packets）经由浏览器解析后将网页呈现。</p>
+
+<p>TCP 是双工的，双方互发确认信号以保证消息被正常接收（典型的三次握手）。如果发送方没有收到正确的回应，会重发数据；不仅如此，在接收到报文数据后，还会对数据进行完整性的检查。因此，基于 TCP 的通信是可靠的（reliability）。譬如文件下载，中间发生网络抖动时，不会千万文件损坏。</p>
+
+<h2 id="udp">UDP</h2>
+
+<p>UDP （User Datagram Protocol）用户数据协议。区别于 TCP 之处在于丢弃掉了对数据是否正确送达的检查和数据完整性的检查等，这些保证数据传输可靠性的东西。没有了这些多余的步骤，因此速度上会快很多，但它是一种不可靠的通信。发送方只管不断发送数据，不管数据是否被正确送达。并且数据被丢掉后，将没办法重新请求。</p>
+
+<p>因此  UDP 可用于对传输速度要求高但对正确性不那么高的场景，比如直播，网络游戏。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://support.holmsecurity.com/hc/en-us/articles/212963869-What-is-the-difference-between-TCP-and-UDP-">What is the difference between TCP and UDP?</a></li>
+</ul>
+
+:ET

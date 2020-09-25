@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>MediaDevices.getUserMedia undefined 的问题 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="MediaDevices.getUserMedia undefined 的问题" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="MediaDevices.getUserMedia undefined 的问题 通过 MediaDevices.getUserMedia() 获取用户多媒体权限时，需要注意其只工作于以下三种环境： localhost 域 开启了 HTTPS 的域 使用 file:/// 协议打开的本地文件 其他情况下，比如在一个 HTTP 站点上，navigator.mediaDevices 的值为 undefined。 如果想要 HTTP 环境下也能使用和调试 MediaDevices.getUserMedia()，可通过开启 Chrome 的相应参数。 通过相应参数启动 Chrome 传递相应参数来启动 Chrome，以 http://example.com 为例， --unsafely-treat-insecure-origin-as-secure=&quot;http://example.com&quot; 开启相应 flag 通过传递相应参数来启动 Chrome Insecure origins treated as secure flag 并填入相应白名单。 打开 chrome://flags/#unsafely-treat-insecure-origin-as-secure 将该 flag 切换成 enable 状态 输入框中填写需要开启的域名，譬如 http://example.com&quot;，多个以逗号分隔。 重启后生效。 相关资源 MediaDevices.getUserMedia() getUserMedia() in chrome 47 without using https" />
+<meta property="og:description" content="MediaDevices.getUserMedia undefined 的问题 通过 MediaDevices.getUserMedia() 获取用户多媒体权限时，需要注意其只工作于以下三种环境： localhost 域 开启了 HTTPS 的域 使用 file:/// 协议打开的本地文件 其他情况下，比如在一个 HTTP 站点上，navigator.mediaDevices 的值为 undefined。 如果想要 HTTP 环境下也能使用和调试 MediaDevices.getUserMedia()，可通过开启 Chrome 的相应参数。 通过相应参数启动 Chrome 传递相应参数来启动 Chrome，以 http://example.com 为例， --unsafely-treat-insecure-origin-as-secure=&quot;http://example.com&quot; 开启相应 flag 通过传递相应参数来启动 Chrome Insecure origins treated as secure flag 并填入相应白名单。 打开 chrome://flags/#unsafely-treat-insecure-origin-as-secure 将该 flag 切换成 enable 状态 输入框中填写需要开启的域名，譬如 http://example.com&quot;，多个以逗号分隔。 重启后生效。 相关资源 MediaDevices.getUserMedia() getUserMedia() in chrome 47 without using https" />
+<link rel="canonical" href="http://localhost:4000/2019/08/02/MediaDevices.getUserMedia-undefined-%E7%9A%84%E9%97%AE%E9%A2%98.html" />
+<meta property="og:url" content="http://localhost:4000/2019/08/02/MediaDevices.getUserMedia-undefined-%E7%9A%84%E9%97%AE%E9%A2%98.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-08-02T23:08:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/08/02/MediaDevices.getUserMedia-undefined-%E7%9A%84%E9%97%AE%E9%A2%98.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/08/02/MediaDevices.getUserMedia-undefined-%E7%9A%84%E9%97%AE%E9%A2%98.html"},"description":"MediaDevices.getUserMedia undefined 的问题 通过 MediaDevices.getUserMedia() 获取用户多媒体权限时，需要注意其只工作于以下三种环境： localhost 域 开启了 HTTPS 的域 使用 file:/// 协议打开的本地文件 其他情况下，比如在一个 HTTP 站点上，navigator.mediaDevices 的值为 undefined。 如果想要 HTTP 环境下也能使用和调试 MediaDevices.getUserMedia()，可通过开启 Chrome 的相应参数。 通过相应参数启动 Chrome 传递相应参数来启动 Chrome，以 http://example.com 为例， --unsafely-treat-insecure-origin-as-secure=&quot;http://example.com&quot; 开启相应 flag 通过传递相应参数来启动 Chrome Insecure origins treated as secure flag 并填入相应白名单。 打开 chrome://flags/#unsafely-treat-insecure-origin-as-secure 将该 flag 切换成 enable 状态 输入框中填写需要开启的域名，譬如 http://example.com&quot;，多个以逗号分隔。 重启后生效。 相关资源 MediaDevices.getUserMedia() getUserMedia() in chrome 47 without using https","@type":"BlogPosting","headline":"MediaDevices.getUserMedia undefined 的问题","dateModified":"2019-08-02T23:08:00+08:00","datePublished":"2019-08-02T23:08:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">`MediaDevices.getUserMedia` `undefined` 的问题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-08-02T23:08:00+08:00" itemprop="datePublished">Aug 2, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="mediadevicesgetusermedia-undefined-的问题"><code class="language-plaintext highlighter-rouge">MediaDevices.getUserMedia</code> <code class="language-plaintext highlighter-rouge">undefined</code> 的问题</h1>
+
+<p>通过 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">MediaDevices.getUserMedia()</a> 获取用户多媒体权限时，需要注意其只工作于以下三种环境：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">localhost</code> 域</li>
+  <li>开启了 HTTPS 的域</li>
+  <li>使用 <code class="language-plaintext highlighter-rouge">file:///</code> 协议打开的本地文件</li>
+</ul>
+
+<p>其他情况下，比如在一个 <code class="language-plaintext highlighter-rouge">HTTP</code> 站点上，<code class="language-plaintext highlighter-rouge">navigator.mediaDevices</code> 的值为 <code class="language-plaintext highlighter-rouge">undefined</code>。</p>
+
+<p>如果想要 <code class="language-plaintext highlighter-rouge">HTTP</code> 环境下也能使用和调试 <code class="language-plaintext highlighter-rouge">MediaDevices.getUserMedia()</code>，可通过开启 Chrome 的相应参数。</p>
+
+<h3 id="通过相应参数启动-chrome">通过相应参数启动 Chrome</h3>
+
+<p>传递相应参数来启动 Chrome，以 <code class="language-plaintext highlighter-rouge">http://example.com</code> 为例，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nt">--unsafely-treat-insecure-origin-as-secure</span><span class="o">=</span><span class="s2">"http://example.com"</span>
+</code></pre></div></div>
+
+<h3 id="开启相应-flag">开启相应 flag</h3>
+
+<p>通过传递相应参数来启动 Chrome <code class="language-plaintext highlighter-rouge">Insecure origins treated as secure</code> flag 并填入相应白名单。</p>
+
+<ul>
+  <li>打开 <code class="language-plaintext highlighter-rouge">chrome://flags/#unsafely-treat-insecure-origin-as-secure</code></li>
+  <li>将该 flag 切换成 <code class="language-plaintext highlighter-rouge">enable</code> 状态</li>
+  <li>输入框中填写需要开启的域名，譬如 <code class="language-plaintext highlighter-rouge">http://example.com"</code>，多个以逗号分隔。</li>
+  <li>重启后生效。</li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">MediaDevices.getUserMedia()</a></li>
+  <li><a href="https://stackoverflow.com/a/34198101/1553656">getUserMedia() in chrome 47 without using https</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/08/02/MediaDevices.getUserMedia-undefined-%E7%9A%84%E9%97%AE%E9%A2%98.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

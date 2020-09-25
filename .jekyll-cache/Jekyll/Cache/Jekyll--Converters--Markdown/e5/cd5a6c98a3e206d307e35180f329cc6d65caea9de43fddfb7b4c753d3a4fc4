@@ -1,0 +1,324 @@
+I"#@<h1 id="redis-的使用">Redis 的使用</h1>
+
+<h2 id="安装">安装</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew <span class="nb">install </span>redis
+</code></pre></div></div>
+
+<p>检查安装：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-server <span class="nt">-v</span>
+Redis server <span class="nv">v</span><span class="o">=</span>6.0.3 <span class="nv">sha</span><span class="o">=</span>00000000:0 <span class="nv">malloc</span><span class="o">=</span>libc <span class="nv">bits</span><span class="o">=</span>64 <span class="nv">build</span><span class="o">=</span>5bce11175f58e836
+</code></pre></div></div>
+
+<h2 id="启动">启动</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew services start redis
+</code></pre></div></div>
+
+<p>检查是否在运行：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-cli ping
+PONG
+</code></pre></div></div>
+
+<h3 id="停止">停止</h3>
+
+<p>另，停止 Redis 可通过如下的命令：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-cli shutdown
+</code></pre></div></div>
+
+<h2 id="使用">使用</h2>
+
+<h3 id="登录">登录</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-cli
+127.0.0.1:6379&gt;
+</code></pre></div></div>
+
+<h3 id="帮助">帮助</h3>
+
+<p>使用前，了解下帮助，可方便使用过程中随时查阅。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>127.0.0.1:6379&gt; <span class="nb">help
+</span>redis-cli 6.0.3
+To get <span class="nb">help </span>about Redis commands <span class="nb">type</span>:
+      <span class="s2">"help @&lt;group&gt;"</span> to get a list of commands <span class="k">in</span> &lt;group&gt;
+      <span class="s2">"help &lt;command&gt;"</span> <span class="k">for </span><span class="nb">help </span>on &lt;<span class="nb">command</span><span class="o">&gt;</span>
+      <span class="s2">"help &lt;tab&gt;"</span> to get a list of possible <span class="nb">help </span>topics
+      <span class="s2">"quit"</span> to <span class="nb">exit
+
+</span>To <span class="nb">set </span>redis-cli preferences:
+      <span class="s2">":set hints"</span> <span class="nb">enable </span>online hints
+      <span class="s2">":set nohints"</span> disable online hints
+Set your preferences <span class="k">in</span> ~/.redisclirc
+</code></pre></div></div>
+
+<h4 id="查看具体命令的帮助">查看具体命令的帮助</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">help </span>rpop
+
+  RPOP key
+  summary: Remove and get the last element <span class="k">in </span>a list
+  since: 1.0.0
+  group: list
+
+</code></pre></div></div>
+
+<h3 id="基本存取">基本存取</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SET server:name <span class="s2">"fido"</span>
+GET server:name <span class="o">=&gt;</span> <span class="s2">"fido"</span>
+</code></pre></div></div>
+
+<p>可通过 <code class="language-plaintext highlighter-rouge">EXISTS</code> 检查 key 是否存在：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>EXISTS server:name <span class="o">=&gt;</span> 1
+EXISTS server:blabla <span class="o">=&gt;</span> 0
+</code></pre></div></div>
+
+<h3 id="数值型的增减">数值型的增减</h3>
+
+<p>对于数值类型，Redis 提供了相应命令对其进行增减操作：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SET connections 10
+INCR connections <span class="o">=&gt;</span> 11
+INCR connections <span class="o">=&gt;</span> 12
+DEL connections
+INCR connections <span class="o">=&gt;</span> 1
+</code></pre></div></div>
+
+<p>除了上面步长为 1 的增减，也可使用 <code class="language-plaintext highlighter-rouge">INCRBY</code> <code class="language-plaintext highlighter-rouge">DECRBY</code> 一次增减指定步长：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>INCRBY connections 100 <span class="o">=&gt;</span> 101
+DECRBY connections 10 <span class="o">=&gt;</span> 90
+</code></pre></div></div>
+
+<h4 id="操作的原子性">操作的原子性</h4>
+
+<p>对于数字的增减，完全可以取出来后自己完成，比如：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>x <span class="o">=</span> GET count
+x <span class="o">=</span> x + 1
+SET count x
+</code></pre></div></div>
+
+<p>之所以提供对应的命令，是考虑到并发的问题。</p>
+
+<p>假设对于同一 key，多个用户都读取后进行了增减操作，那么最后得到的值存在不确定性，比如：</p>
+
+<ul>
+  <li>用户 A 读取 <code class="language-plaintext highlighter-rouge">count</code> 得到 10</li>
+  <li>用户 B 读取 <code class="language-plaintext highlighter-rouge">count</code> 得到 10</li>
+  <li>用户 A 对其加 1 并保存得到 11</li>
+  <li>用户 B 对其加 1 并保存得到 11</li>
+</ul>
+
+<p>这里 A B 都对同一字段进行了加 1 操作，期望得到 12 ，但实际得到的是 11。</p>
+
+<p>如果 B 的操作是在 A 保存之后，则一切正常。</p>
+
+<p>所以当并发时，就会存在时机上的不确定性。</p>
+
+<p>使用 Redis 提供的方法进行操作时用户无需关心上面的时机问题，Redis 保证了操作的原子性的，防止了上面问题的出现。</p>
+
+<h3 id="expire--ttl">EXPIRE &amp; TTL</h3>
+
+<p>存储时还可为 key 指定过期时间，过期后自动删除，以于一些临时和周期性数据特别有用。</p>
+
+<h4 id="设置过期时间">设置过期时间</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SET resource:lock “redis demo”
+EXPIRE resource:lock 120
+</code></pre></div></div>
+
+<p>或者，在 <code class="language-plaintext highlighter-rouge">set</code> 的时候可以同时设置过期时间：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SET resource:lock “redis demo” ex 120
+</code></pre></div></div>
+
+<h4 id="查看过期时间">查看过期时间</h4>
+
+<p>TTL = Time to Live，单位为秒。</p>
+
+<p>查看还有多久过期：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>TTL resource:lock <span class="o">=&gt;</span> 110
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">TTL</code> 的返回值：</p>
+
+<ul>
+  <li>未过期的情况下，返回剩余时间</li>
+  <li>过期后，返回 -2</li>
+  <li>-1 表示永远不过期</li>
+</ul>
+
+<p>注意：重新 <code class="language-plaintext highlighter-rouge">SET</code> 后，过期时间失效，变量变成永不过期</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SET resource:lock “redis demo” ex 120
+SET resource:lock “redis demo”
+TTL resource:lock <span class="o">=&gt;</span> <span class="nt">-1</span>
+</code></pre></div></div>
+
+<h4 id="取消过期的设置">取消过期的设置</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SET resource:lock <span class="s2">"Redis Demo 3"</span> EX 5
+PERSIST resource:lock
+TTL resource:lock <span class="o">=&gt;</span> <span class="nt">-1</span>
+</code></pre></div></div>
+
+<h4 id="pexpire-and-pttl">PEXPIRE and PTTL</h4>
+
+<p>与 <code class="language-plaintext highlighter-rouge">EXPIRE</code> 和 <code class="language-plaintext highlighter-rouge">TTL</code> 对应，单位为毫秒</p>
+
+<h3 id="数组数据类型list">数组数据类型/list</h3>
+
+<p>可用的操作：</p>
+
+<ul>
+  <li>添加：<code class="language-plaintext highlighter-rouge">RPUSH</code>,<code class="language-plaintext highlighter-rouge">LPUSH</code></li>
+  <li>移除：<code class="language-plaintext highlighter-rouge">RPOP</code>,<code class="language-plaintext highlighter-rouge">LPOP</code></li>
+  <li>其他：<code class="language-plaintext highlighter-rouge">LLEN</code>,<code class="language-plaintext highlighter-rouge">LRANGE</code>（L 前缀表示 List）</li>
+</ul>
+
+<h4 id="数组元素的添加删除">数组元素的添加删除</h4>
+
+<p>这里，可不事先创建 key，直接添加元素时会自动创建。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>RPUSH friends “Bob”
+EXISTS friends <span class="o">=&gt;</span> 1
+</code></pre></div></div>
+
+<p>其中：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">RPUSH</code> 添加元素的数组末尾并返回操作后的数组长度</li>
+  <li><code class="language-plaintext highlighter-rouge">LPUSH</code> 添加元素到数组首位并返回操作后的数组长度</li>
+  <li><code class="language-plaintext highlighter-rouge">RPOP</code> 移除末尾元素并返回该元素</li>
+  <li><code class="language-plaintext highlighter-rouge">LPOP</code> 移除首位元素并返回该元素</li>
+</ul>
+
+<p>自动创建 key 的情形对其他类型数据也适用。</p>
+
+<p>与自动创建 key 对应，如果执行命令后将 key 置空了，key 也会自动被删除。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>RPUSH friends “Bob”
+EXISTS friends <span class="o">=&gt;</span> 1
+RPOP friends
+EXISTS friends <span class="o">=&gt;</span> 0
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">LPUSH</code>/<code class="language-plaintext highlighter-rouge">RPUSH</code> 可接收多个元素作为参数：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LPUSH friends <span class="s2">"Alice"</span> <span class="s2">"David"</span>
+</code></pre></div></div>
+
+<h4 id="取数组子集">取数组子集</h4>
+
+<p><code class="language-plaintext highlighter-rouge">LRANGE</code> 接收两个参数</p>
+
+<ul>
+  <li>第一个表示子集中首个元素的索引，从 0 开始</li>
+  <li>第二个表示子集最后个元素的索引，-1 表示取到末尾，-2 表示取到倒数第二个</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LRANGE friends 0 <span class="nt">-1</span> <span class="o">=&gt;</span> 1<span class="o">)</span> <span class="s2">"Sam"</span>, 2<span class="o">)</span> <span class="s2">"Alice"</span>, 3<span class="o">)</span> <span class="s2">"Bob"</span>
+LRANGE friends 0 1 <span class="o">=&gt;</span> 1<span class="o">)</span> <span class="s2">"Sam"</span>, 2<span class="o">)</span> <span class="s2">"Alice"</span>
+LRANGE friends 1 2 <span class="o">=&gt;</span> 1<span class="o">)</span> <span class="s2">"Alice"</span>, 2<span class="o">)</span> <span class="s2">"Bob"</span>
+</code></pre></div></div>
+
+<h3 id="set-数据类型">Set 数据类型</h3>
+
+<p>类似数组，但元素无序且唯一，前者可快速访问首尾附近的元素，后者在确定元素是否存在上有优势。</p>
+
+<p>可用操作：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">SADD</code>：添加元素，支持同时添加多个，
+    <ul>
+      <li>返回 0 表示元素已经存在，1 表示之前不存在</li>
+      <li>同时添加多个时，返回不存在的元素的个数</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">SREM</code>：删除元素，返回 1 或 0 表示元素存在与否</li>
+  <li><code class="language-plaintext highlighter-rouge">SISMEMBER</code>：检查元素是否存在，返回 1 表示存在否则 0</li>
+  <li><code class="language-plaintext highlighter-rouge">SMEMBERS</code>：返回所有元素</li>
+  <li><code class="language-plaintext highlighter-rouge">SUNION</code>：合并多个 set 并返回合并后的结果</li>
+</ul>
+
+<p>与 <code class="language-plaintext highlighter-rouge">LRANGE</code> 类似，这里 <code class="language-plaintext highlighter-rouge">S</code> 前缀表示 Set</p>
+
+<p>其他操作还有：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">SPOP</code>，与 list 的 <code class="language-plaintext highlighter-rouge">LPOP</code>/<code class="language-plaintext highlighter-rouge">RPOP</code> 类似，但因为 Set 是无序的，返回的元素不固定。</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SADD letters a b c d e f <span class="o">=&gt;</span> 6
+SPOP letters 2 <span class="o">=&gt;</span> 1<span class="o">)</span> <span class="s2">"c"</span> 2<span class="o">)</span> <span class="s2">"a"</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">SRANDMEMBER</code>，与 <code class="language-plaintext highlighter-rouge">SPOP</code> 类似，但不删除元素，只随机返回元素。当指定数量为负数时，返回中可能存在重复的元素。</li>
+</ul>
+
+<h3 id="有序-set">有序 Set</h3>
+
+<p>无序 Set 使用上会存在很多不便，Redis 1.2 引入了有序 Set。和常规 Set 雷同，只是每个元素有了自己的 score 值以标识顺序。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ZADD hackers 1940 <span class="s2">"Alan Kay"</span>
+ZADD hackers 1906 <span class="s2">"Grace Hopper"</span>
+ZADD hackers 1953 <span class="s2">"Richard Stallman"</span>
+ZADD hackers 1965 <span class="s2">"Yukihiro Matsumoto"</span>
+ZADD hackers 1916 <span class="s2">"Claude Shannon"</span>
+ZADD hackers 1969 <span class="s2">"Linus Torvalds"</span>
+ZADD hackers 1957 <span class="s2">"Sophie Wilson"</span>
+ZADD hackers 1912 <span class="s2">"Alan Turing"</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ZRANGE hackers 2 4 <span class="o">=&gt;</span> 1<span class="o">)</span> <span class="s2">"Claude Shannon"</span>, 2<span class="o">)</span> <span class="s2">"Alan Kay"</span>, 3<span class="o">)</span> <span class="s2">"Richard Stallman"</span>
+</code></pre></div></div>
+
+<h3 id="hash-数据类型">Hash 数据类型</h3>
+
+<p>键值对形式，可表示对象。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HSET user:1000 name <span class="s2">"John Smith"</span>
+HSET user:1000 email <span class="s2">"john.smith@example.com"</span>
+HSET user:1000 password <span class="s2">"s3cret"</span>
+</code></pre></div></div>
+
+<p>或者同时设置多个字段：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HMSET user:1001 name <span class="s2">"Mary Jones"</span> password <span class="s2">"hidden"</span> email <span class="s2">"mjones@example.com"</span>
+</code></pre></div></div>
+
+<p>获取：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HGETALL user:1000
+</code></pre></div></div>
+
+<p>获取单个字段：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HGET user:1001 name <span class="o">=&gt;</span> <span class="s2">"Mary Jones"</span>
+</code></pre></div></div>
+
+<h4 id="数值类型的字段">数值类型的字段</h4>
+
+<p>对于数值类型的字段，同简单字符串一样，可对其进行增加或减少操作：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HSET user:1000 visits 10
+HINCRBY user:1000 visits 1 <span class="o">=&gt;</span> 11
+HINCRBY user:1000 visits 10 <span class="o">=&gt;</span> 21
+HDEL user:1000 visits
+HINCRBY user:1000 visits 1 <span class="o">=&gt;</span> 1
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="http://try.redis.io/">Redis 官方交互式教程</a></li>
+</ul>
+:ET

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>SSL/TLS 链接的建立/握手 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="SSL/TLS 链接的建立/握手" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="SSL/TLS 链接的建立/握手 HTTPS 即 HTTP-within-SSL/TLS，其中 SSL/TLS 又分别表示： SSL：Secure Sockets Layer TLS：Transport Layer Security SSL/TLS 建立链接及握手的过程为： SSL/TLS 建立链接及握手的示意图 阶段一 Client Hello 客户端向服务器发送 随机数 Random1 客户端支持的加密套件 Support Ciphers SSL 版本 Server Hello 服务器向客户端发送 从客户端发送加密套件列表中选择一个，加密套件决定了后续加密及生成摘要的算法 生成随机数Random2。两端的随机数会在后续生成对称密钥时使用。 阶段二 Certificate 服务器将自己的证书下发给客户端，让客户端验证服务器的身份。（ 12306 曾经使用国内自己签发的证书，结果 Chrome 不认就是这个道理） 客户端验证后从证书取出公钥 Server Key Exchange DH 算法需要此步骤，发送服务器使用的 DH参数，RSA 不需要 Certificate Request 可选。服务器要求客户端上报证书。对安全性要求极高时使用。 Server Hello Done 通知客户端 Server Hello 结束 阶段三 Certificate Verify 客户端收到证书后从CA验证其合法性。 验证合法后从证书取出公钥，生成随机数 Random3 使用公钥非对称加密Random3 生成 PreMaster Key Client Key Exchange 客户端将 PreMaster Key 发送服务器，服务器用自己的私钥解出 Random3。 此时两端都拥有 Random 1~3 两端使用相同的算法生成密钥，握手结束后的数据传输都使用此密钥进行对称加密。 为何需要三个随机数？ 因为SSL/TSL 握手过程数据明文传输，多个随机数种子生成的密钥不容易暴力破解。 阶段四 Change Cipher Spec (Client) 这是一条事件消息 客户端通知服务端后续消息都会使用前面协商出来的密钥加密。 Encrypted Handshake Message (Client) 这是条 Client Finish 消息 客户端将前面的握手消息生成摘要，使用前面协商的密钥加密。 这是客户端发出的第一条加密消息 服务端使用密钥解密，解密成功说明密钥一致。 Change Cipher Spec (Server) 事件消息 服务端通知客户端后续消息都使用加密。 Encrypted Handshake Message (Server) Server Finish 消息 服务端将握手过程生成摘要 使用密钥加密发送给客户端 这是服务端发送的第一条加密消息 客户端收到后解密，成功说明密钥一致。 相关资源 An overview of the SSL or TLS handshake TLS Security 5: Establishing a TLS Connection SSL/TLS 握手过程详解" />
+<meta property="og:description" content="SSL/TLS 链接的建立/握手 HTTPS 即 HTTP-within-SSL/TLS，其中 SSL/TLS 又分别表示： SSL：Secure Sockets Layer TLS：Transport Layer Security SSL/TLS 建立链接及握手的过程为： SSL/TLS 建立链接及握手的示意图 阶段一 Client Hello 客户端向服务器发送 随机数 Random1 客户端支持的加密套件 Support Ciphers SSL 版本 Server Hello 服务器向客户端发送 从客户端发送加密套件列表中选择一个，加密套件决定了后续加密及生成摘要的算法 生成随机数Random2。两端的随机数会在后续生成对称密钥时使用。 阶段二 Certificate 服务器将自己的证书下发给客户端，让客户端验证服务器的身份。（ 12306 曾经使用国内自己签发的证书，结果 Chrome 不认就是这个道理） 客户端验证后从证书取出公钥 Server Key Exchange DH 算法需要此步骤，发送服务器使用的 DH参数，RSA 不需要 Certificate Request 可选。服务器要求客户端上报证书。对安全性要求极高时使用。 Server Hello Done 通知客户端 Server Hello 结束 阶段三 Certificate Verify 客户端收到证书后从CA验证其合法性。 验证合法后从证书取出公钥，生成随机数 Random3 使用公钥非对称加密Random3 生成 PreMaster Key Client Key Exchange 客户端将 PreMaster Key 发送服务器，服务器用自己的私钥解出 Random3。 此时两端都拥有 Random 1~3 两端使用相同的算法生成密钥，握手结束后的数据传输都使用此密钥进行对称加密。 为何需要三个随机数？ 因为SSL/TSL 握手过程数据明文传输，多个随机数种子生成的密钥不容易暴力破解。 阶段四 Change Cipher Spec (Client) 这是一条事件消息 客户端通知服务端后续消息都会使用前面协商出来的密钥加密。 Encrypted Handshake Message (Client) 这是条 Client Finish 消息 客户端将前面的握手消息生成摘要，使用前面协商的密钥加密。 这是客户端发出的第一条加密消息 服务端使用密钥解密，解密成功说明密钥一致。 Change Cipher Spec (Server) 事件消息 服务端通知客户端后续消息都使用加密。 Encrypted Handshake Message (Server) Server Finish 消息 服务端将握手过程生成摘要 使用密钥加密发送给客户端 这是服务端发送的第一条加密消息 客户端收到后解密，成功说明密钥一致。 相关资源 An overview of the SSL or TLS handshake TLS Security 5: Establishing a TLS Connection SSL/TLS 握手过程详解" />
+<link rel="canonical" href="http://localhost:4000/2019/06/25/SSL-TLS-%E9%93%BE%E6%8E%A5%E7%9A%84%E5%BB%BA%E7%AB%8B-%E6%8F%A1%E6%89%8B.html" />
+<meta property="og:url" content="http://localhost:4000/2019/06/25/SSL-TLS-%E9%93%BE%E6%8E%A5%E7%9A%84%E5%BB%BA%E7%AB%8B-%E6%8F%A1%E6%89%8B.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-25T01:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/06/25/SSL-TLS-%E9%93%BE%E6%8E%A5%E7%9A%84%E5%BB%BA%E7%AB%8B-%E6%8F%A1%E6%89%8B.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/25/SSL-TLS-%E9%93%BE%E6%8E%A5%E7%9A%84%E5%BB%BA%E7%AB%8B-%E6%8F%A1%E6%89%8B.html"},"description":"SSL/TLS 链接的建立/握手 HTTPS 即 HTTP-within-SSL/TLS，其中 SSL/TLS 又分别表示： SSL：Secure Sockets Layer TLS：Transport Layer Security SSL/TLS 建立链接及握手的过程为： SSL/TLS 建立链接及握手的示意图 阶段一 Client Hello 客户端向服务器发送 随机数 Random1 客户端支持的加密套件 Support Ciphers SSL 版本 Server Hello 服务器向客户端发送 从客户端发送加密套件列表中选择一个，加密套件决定了后续加密及生成摘要的算法 生成随机数Random2。两端的随机数会在后续生成对称密钥时使用。 阶段二 Certificate 服务器将自己的证书下发给客户端，让客户端验证服务器的身份。（ 12306 曾经使用国内自己签发的证书，结果 Chrome 不认就是这个道理） 客户端验证后从证书取出公钥 Server Key Exchange DH 算法需要此步骤，发送服务器使用的 DH参数，RSA 不需要 Certificate Request 可选。服务器要求客户端上报证书。对安全性要求极高时使用。 Server Hello Done 通知客户端 Server Hello 结束 阶段三 Certificate Verify 客户端收到证书后从CA验证其合法性。 验证合法后从证书取出公钥，生成随机数 Random3 使用公钥非对称加密Random3 生成 PreMaster Key Client Key Exchange 客户端将 PreMaster Key 发送服务器，服务器用自己的私钥解出 Random3。 此时两端都拥有 Random 1~3 两端使用相同的算法生成密钥，握手结束后的数据传输都使用此密钥进行对称加密。 为何需要三个随机数？ 因为SSL/TSL 握手过程数据明文传输，多个随机数种子生成的密钥不容易暴力破解。 阶段四 Change Cipher Spec (Client) 这是一条事件消息 客户端通知服务端后续消息都会使用前面协商出来的密钥加密。 Encrypted Handshake Message (Client) 这是条 Client Finish 消息 客户端将前面的握手消息生成摘要，使用前面协商的密钥加密。 这是客户端发出的第一条加密消息 服务端使用密钥解密，解密成功说明密钥一致。 Change Cipher Spec (Server) 事件消息 服务端通知客户端后续消息都使用加密。 Encrypted Handshake Message (Server) Server Finish 消息 服务端将握手过程生成摘要 使用密钥加密发送给客户端 这是服务端发送的第一条加密消息 客户端收到后解密，成功说明密钥一致。 相关资源 An overview of the SSL or TLS handshake TLS Security 5: Establishing a TLS Connection SSL/TLS 握手过程详解","@type":"BlogPosting","headline":"SSL/TLS 链接的建立/握手","dateModified":"2019-06-25T01:06:00+08:00","datePublished":"2019-06-25T01:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">SSL/TLS 链接的建立/握手</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-25T01:06:00+08:00" itemprop="datePublished">Jun 25, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="ssltls-链接的建立握手">SSL/TLS 链接的建立/握手</h1>
+
+<p>HTTPS 即 HTTP-within-SSL/TLS，其中 SSL/TLS 又分别表示：</p>
+
+<ul>
+  <li>SSL：Secure Sockets Layer</li>
+  <li>TLS：Transport Layer Security</li>
+</ul>
+
+<p>SSL/TLS 建立链接及握手的过程为：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/59965876-6cf8ba00-9546-11e9-8fc3-bf3656afe095.png" alt="SSL/TLS 建立链接及握手的示意图" /></p>
+<p align="center">SSL/TLS 建立链接及握手的示意图</p>
+
+<h3 id="阶段一">阶段一</h3>
+
+<ul>
+  <li>Client Hello
+    <ul>
+      <li>客户端向服务器发送
+        <ul>
+          <li>随机数 Random1</li>
+          <li>客户端支持的加密套件 Support Ciphers</li>
+          <li>SSL 版本</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Server Hello
+    <ul>
+      <li>服务器向客户端发送</li>
+      <li>从客户端发送加密套件列表中选择一个，加密套件决定了后续加密及生成摘要的算法</li>
+      <li>生成随机数Random2。两端的随机数会在后续生成对称密钥时使用。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="阶段二">阶段二</h3>
+
+<ul>
+  <li>Certificate
+    <ul>
+      <li>服务器将自己的证书下发给客户端，让客户端验证服务器的身份。（ 12306 曾经使用国内自己签发的证书，结果 Chrome 不认就是这个道理）</li>
+      <li>客户端验证后从证书取出公钥</li>
+    </ul>
+  </li>
+  <li>Server Key Exchange
+    <ul>
+      <li>DH 算法需要此步骤，发送服务器使用的 DH参数，RSA 不需要</li>
+    </ul>
+  </li>
+  <li>Certificate Request
+    <ul>
+      <li>可选。服务器要求客户端上报证书。对安全性要求极高时使用。</li>
+    </ul>
+  </li>
+  <li>Server Hello Done
+    <ul>
+      <li>通知客户端 Server Hello 结束</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="阶段三">阶段三</h3>
+
+<ul>
+  <li>Certificate Verify
+    <ul>
+      <li>客户端收到证书后从CA验证其合法性。</li>
+      <li>验证合法后从证书取出公钥，生成随机数 Random3</li>
+      <li>使用公钥非对称加密Random3 生成 PreMaster Key</li>
+    </ul>
+  </li>
+  <li>Client Key Exchange
+    <ul>
+      <li>客户端将 PreMaster Key 发送服务器，服务器用自己的私钥解出 Random3。</li>
+      <li>此时两端都拥有 Random 1~3</li>
+      <li>两端使用相同的算法生成密钥，握手结束后的数据传输都使用此密钥进行对称加密。</li>
+    </ul>
+  </li>
+  <li>为何需要三个随机数？
+    <ul>
+      <li>因为SSL/TSL 握手过程数据明文传输，多个随机数种子生成的密钥不容易暴力破解。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="阶段四">阶段四</h3>
+
+<ul>
+  <li>Change Cipher Spec (Client)
+    <ul>
+      <li>这是一条事件消息</li>
+      <li>客户端通知服务端后续消息都会使用前面协商出来的密钥加密。</li>
+    </ul>
+  </li>
+  <li>Encrypted Handshake Message (Client)
+    <ul>
+      <li>这是条 Client Finish 消息
+        <ul>
+          <li>客户端将前面的握手消息生成摘要，使用前面协商的密钥加密。</li>
+        </ul>
+      </li>
+      <li>这是客户端发出的第一条加密消息</li>
+      <li>服务端使用密钥解密，解密成功说明密钥一致。</li>
+    </ul>
+  </li>
+  <li>Change Cipher Spec (Server)
+    <ul>
+      <li>事件消息</li>
+      <li>服务端通知客户端后续消息都使用加密。</li>
+    </ul>
+  </li>
+  <li>Encrypted Handshake Message (Server)
+    <ul>
+      <li>Server Finish 消息</li>
+      <li>服务端将握手过程生成摘要</li>
+      <li>使用密钥加密发送给客户端</li>
+      <li>这是服务端发送的第一条加密消息</li>
+      <li>客户端收到后解密，成功说明密钥一致。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+<ul>
+  <li><a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_7.1.0/com.ibm.mq.doc/sy10660_.htm">An overview of the SSL or TLS handshake</a></li>
+  <li><a href="https://www.acunetix.com/blog/articles/establishing-tls-ssl-connection-part-5/">TLS Security 5: Establishing a TLS Connection</a></li>
+  <li><a href="https://www.jianshu.com/p/7158568e4867">SSL/TLS 握手过程详解</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/06/25/SSL-TLS-%E9%93%BE%E6%8E%A5%E7%9A%84%E5%BB%BA%E7%AB%8B-%E6%8F%A1%E6%89%8B.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

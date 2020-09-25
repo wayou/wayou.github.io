@@ -1,0 +1,54 @@
+I"x
+<h1 id="mac-格式化及重装系统">Mac 格式化及重装系统</h1>
+
+<p>如果想要抹除电脑上的数据，最彻底的方式莫过于将磁盘格式化。</p>
+
+<h2 id="格式化">格式化</h2>
+<ul>
+  <li>开机时按住 <kbd>Command</kbd> + <kbd>R</kbd></li>
+  <li>成功进入 Recovery 模式后，选择磁盘工具 Disk Utility</li>
+</ul>
+
+<p>￼
+<img src="https://user-images.githubusercontent.com/3783096/72892697-21172900-3d52-11ea-93c3-be5d5322cb89.jpg" alt="macOS Utilities" /></p>
+
+<ul>
+  <li>在磁盘工具左侧选中需要格式化的磁盘，一般就是容量最大那个，然后右边主界面中选择 Erase。格式等选项默认即可。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/72892703-283e3700-3d52-11ea-9c7a-e823d7cd7924.jpg" alt="Disk Utility" />
+￼</p>
+
+<p>格式化完成后，需要重装系统。</p>
+
+<h2 id="重装系统">重装系统</h2>
+
+<p>重新开机进入后，会出现下图中文件夹加问号的界面。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/72892711-2e341800-3d52-11ea-8d9d-265424f0d8e1.png" alt="mac-folder-questionmark-screen-icon" /></p>
+
+<p>正确的开机方式还是像上面一样，需要配合一些按键。</p>
+<ul>
+  <li><kbd>Command</kbd> + <kbd>R</kbd> 会安装电脑之前的系统版本。</li>
+  <li><kbd>Option/Alt</kbd> + <kbd>Command</kbd> + <kbd>R</kbd> 会安装与机器兼容的最新的系统版本。</li>
+  <li><kbd>Shift</kbd> + <kbd>Option/Alt</kbd> +</li>
+</ul>
+
+<p>开机后先选择 WiFi 并输入密码联网，然后会进入一个地球（Globe）转圈的界面，此过程需等待较长时间，视网速而定。</p>
+
+<p>￼
+<img src="https://user-images.githubusercontent.com/3783096/72892718-33916280-3d52-11ea-8bff-042780f93ac9.jpg" alt="macos-startup-screen-internet-recovery" /></p>
+
+<p>上面步骤完成后，会重新进入到工具界面，选择重新安装系统即可。</p>
+
+<p>如果过程中出现 “Downloading installer information to the target volume failed”，或， “将安装信息下载到目标卷宗失败”，尝试断掉 WiFi 再重连。或尝试切换另外的网络，比如手机开个热点，因为有可能是网络问题，无法下载。</p>
+
+<p>如果安装过程中，到选择磁盘的步骤时，并没有看到可用的磁盘，则需要按前面步骤重启，进入磁盘工具选择相应的磁盘进行格式化。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://support.apple.com/en-nz/HT201314">About macOS Recovery</a></li>
+  <li><a href="https://support.apple.com/en-us/HT204904">How to reinstall macOS from macOS Recovery</a></li>
+</ul>
+:ET

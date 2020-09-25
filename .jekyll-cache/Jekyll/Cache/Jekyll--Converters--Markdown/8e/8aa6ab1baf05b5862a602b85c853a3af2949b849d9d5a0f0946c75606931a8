@@ -1,0 +1,86 @@
+I"�<h1 id="sass-中变量的默认值">SASS 中变量的默认值</h1>
+
+<p>SASS 中定义的变量，后设置的值会覆盖旧的值。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="nv">$color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+
+<span class="nc">.btn</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后为：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.btn</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>如果你编写了一个 UI 库提供 SASS 文件，可能会提供一些参数供用户使用时自定义。而在 SASS 组件内部，我们需要应用上用户设置的这些值。但是如果使用者没有自定义变量的值，那这些变量应该有自己的默认值。</p>
+
+<p>利用前面提到的覆盖机制是不能实现的。因为无论是你在 @import UI 库之前设置还是之后，都不能影响这个导入文件中的值。如果你设置的值在导入之前，那么 UI 库中的变量因为在后面，所以你的设置会被覆盖而不起作用；如果你的设置在导入之后，那更加不起作用了。</p>
+
+<p>假设这是 UI 中的样式文件：</p>
+
+<p><em>_lib.scss</em></p>
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="nc">.btn</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在另一个文件中使用，并且试图自定义变量的值：</p>
+
+<p><em>page.scss</em></p>
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@import</span> <span class="s1">'lib'</span><span class="p">;</span>
+<span class="nv">$color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+</code></pre></div></div>
+<p>或：</p>
+
+<p><em>page.scss</em></p>
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s1">'lib'</span><span class="p">;</span>
+</code></pre></div></div>
+<p>两者编译结果均为：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.btn</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="default"><code class="language-plaintext highlighter-rouge">!default</code></h2>
+
+<p>针对这种情况，SASS 提供了 <code class="language-plaintext highlighter-rouge">!default</code> 标识。将该标识应用于变量值后面，表示如果该变量没有在其他地方定义或即便定义了但值为 <code class="language-plaintext highlighter-rouge">null</code>，那此处设置的默认值才生效，否则使用其他地方设置的那个值。</p>
+
+<p>将上面 _lib.scss 进行改造：</p>
+
+<p><em>_lib.scss</em></p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">- $color: red;
+</span><span class="gi">+ $color: red!default;
+</span><span class="err">.btn</span> {
+    color: $color;
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>使用：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+
+<span class="k">@import</span> <span class="s2">"lib"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><strong>注意</strong>：需要将自定义的值先于 @import，否则也不生效。</p>
+
+<p>此时编译结果将是想要的那样，应用上了外部自定义的变量值。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.btn</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://sass-lang.com/documentation/variables#default-values">SASS Documentation -  Default Values</a></li>
+  <li><a href="https://thoughtbot.com/blog/sass-default">A Sass <code class="language-plaintext highlighter-rouge">!default</code> use case</a></li>
+</ul>
+
+:ET

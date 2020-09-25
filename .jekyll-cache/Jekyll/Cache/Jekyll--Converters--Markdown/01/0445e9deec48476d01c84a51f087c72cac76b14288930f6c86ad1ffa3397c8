@@ -1,0 +1,21 @@
+I"<h1 id="git-rebase-时-library-not-loaded-的错误">git rebase 时 library not loaded 的错误</h1>
+
+<p>在进行 <code class="language-plaintext highlighter-rouge">git rebase</code> 操作时报如下错误：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git rebase upstream/master <span class="nt">-i</span>
+dyld: Library not loaded: /usr/local/opt/ruby/lib/libruby.2.4.0.dylib
+  Referenced from: /usr/local/bin/vim
+  Reason: image not found
+/usr/local/Cellar/git/2.9.0/libexec/git-core/git-rebase--interactive: line 255: 61806 Abort <span class="nb">trap</span>: 6           vim <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
+Could not execute editor
+</code></pre></div></div>
+
+<p>从信息来看并不是 Git 的问题，而是打开 vim 时报错。</p>
+
+<p>联想到最近的操作，应该是 <code class="language-plaintext highlighter-rouge">brew upgrade</code> 没成功导致本地的 ruby 坏了，后来果然找到了对应的支撑：<a href="https://superuser.com/questions/1096438/brew-upgrade-broke-vim-on-os-x-dyld-library-not-loaded">brew upgrade broke Vim on OS X (dyld: Library not loaded)</a>。</p>
+
+<p>解决办法就是重装下 ruby, vim。或成功一遍 <code class="language-plaintext highlighter-rouge">brew upgrade</code>，中途别取消。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew reinstall ruby vim
+</code></pre></div></div>
+:ET

@@ -1,0 +1,28 @@
+I"�<h1 id="iterm2-session-共享">iTerm2 Session 共享</h1>
+
+<p>当前 session 登录远程机器后，新开窗口还需要重新输入密码登录，有点繁琐。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ssh username@remote
+pin+password:
+</code></pre></div></div>
+
+<p>通过配置 <code class="language-plaintext highlighter-rouge">~/.ssh/config</code> 文件可达到 session 共享的目的，去掉重复的密码输入过程。</p>
+
+<p>编辑或创建 <code class="language-plaintext highlighter-rouge">~/.ssh/config</code> 文件，输入如下内容：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host *
+  ControlMaster auto
+  ControlPath ~/.ssh/%r@%h:%p
+</code></pre></div></div>
+
+<p>保存退出 。</p>
+
+<p>此时登录机器后，新开窗口中执行 <code class="language-plaintext highlighter-rouge">ssh</code> 登录时，可以复用之前的登录状态，直接登入。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/20410252/how-to-reuse-an-ssh-connection">How to reuse an ssh connection</a></li>
+</ul>
+
+:ET

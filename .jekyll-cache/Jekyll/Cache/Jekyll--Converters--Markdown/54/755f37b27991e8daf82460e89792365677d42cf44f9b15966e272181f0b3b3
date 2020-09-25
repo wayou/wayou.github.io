@@ -1,0 +1,142 @@
+I"�<<h1 id="mysql-外键">MySQL 外键</h1>
+
+<p>表和表之间可存在引用关系，这在抽象数据到表时，是很常见的。这种联系是通过在表中创建外键（foreign key）来实现的。</p>
+
+<p>比如一个订单，可能关联用户表和产品表，以此来记录<strong>谁</strong>买了什么<strong>产品</strong>。</p>
+
+<p>约定两个概念：</p>
+
+<p><strong>父表</strong>：被引用的表。
+<strong>从表</strong>：表中有相应的外键引用<strong>父表</strong>中的字段。</p>
+
+<p>示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">parent</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">INNODB</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">child</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">INT</span><span class="p">,</span>
+    <span class="n">parent_id</span> <span class="nb">INT</span><span class="p">,</span>
+    <span class="k">INDEX</span> <span class="n">par_ind</span> <span class="p">(</span><span class="n">parent_id</span><span class="p">),</span>
+    <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">parent_id</span><span class="p">)</span>
+        <span class="k">REFERENCES</span> <span class="n">parent</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">CASCADE</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">INNODB</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">parent</code> 为父表，<code class="language-plaintext highlighter-rouge">child</code> 为从表。</p>
+
+<h2 id="外键关联表的同步操作">外键关联表的同步操作</h2>
+
+<p>当表和表之间建立起合适的关联后， <code class="language-plaintext highlighter-rouge">INSERT</code> 和 <code class="language-plaintext highlighter-rouge">UPDATE</code> 操作会自动检查所插入的记录中指定的外键在相应表中是否存在；</p>
+
+<p>建立外键时，可指定 <code class="language-plaintext highlighter-rouge">ON UPDATE &lt;action&gt;</code> 和 <code class="language-plaintext highlighter-rouge">ON DELETE &lt;action&gt;</code> 子语句来指定发生 <code class="language-plaintext highlighter-rouge">UPDATE</code> 和 <code class="language-plaintext highlighter-rouge">DELETE</code> 操作时，外键关联表中数据该如何处理。MySQL 中支持五种处理（action）：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">CASCADE</code>：更新或删除父表记录时，自动更新或删除从表中匹配的记录。实际使用时注意不要在父表或从表中对同一列重复定义 <code class="language-plaintext highlighter-rouge">ON UPDATE CASCADE</code>。CASCADE 类型的操作不会激活触发器 （<a href="https://dev.mysql.com/doc/refman/8.0/en/triggers.html">triggers</a>）。</li>
+  <li><code class="language-plaintext highlighter-rouge">SET NULL</code>：更新或删除父表中记录时，将从表中匹配的记录其外键设置为 <code class="language-plaintext highlighter-rouge">NULL</code>，前提时从表中该外键没有指定为 <code class="language-plaintext highlighter-rouge">NOT NULL</code>。</li>
+  <li><code class="language-plaintext highlighter-rouge">RESTRICT</code>：默认为该项。禁用父表中的更新或删除操作，这与缺省 <code class="language-plaintext highlighter-rouge">ON DELETE</code> 和 <code class="language-plaintext highlighter-rouge">ON UPDATE</code> 子语句效果一样。</li>
+  <li><code class="language-plaintext highlighter-rouge">NO ACTION</code>：来自 SQL 标准中定义的一种操作，与上面 <code class="language-plaintext highlighter-rouge">RESTRICT</code> 等效。一些数据库支持延迟检查（deferred check）, <code class="language-plaintext highlighter-rouge">NO ACTION</code> 便是这种可延迟检查的操作。在 MySQL 中，外键的检查是及时的，所以 <code class="language-plaintext highlighter-rouge">NO ACTION</code> 和 <code class="language-plaintext highlighter-rouge">RESTRICT</code> 完全等效。</li>
+  <li><code class="language-plaintext highlighter-rouge">SET DEFAULT</code>： MySQL 能够解析识别该动作，但 <a href="https://dev.mysql.com/doc/refman/5.6/en/innodb-storage-engine.html"><code class="language-plaintext highlighter-rouge">InnoDB</code></a> 和 <a href="https://dev.mysql.com/doc/refman/5.6/en/mysql-cluster.html"><code class="language-plaintext highlighter-rouge">NDB</code></a> 引擎不支持。</li>
+</ul>
+
+<h2 id="添加外键">添加外键</h2>
+
+<details>
+<summary>
+创建外键的语法
+</summary>
+
+```sql
+[CONSTRAINT [symbol]] FOREIGN KEY
+    [index_name] (col_name, ...)
+    REFERENCES tbl_name (col_name,...)
+    [ON DELETE reference_option]
+    [ON UPDATE reference_option]
+
+reference_option:
+    RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
+```
+
+</details>
+
+<p>文章开头提到的订单表示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">product</span> <span class="p">(</span>
+    <span class="n">category</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">price</span> <span class="nb">DECIMAL</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span>
+<span class="p">)</span>   <span class="n">ENGINE</span><span class="o">=</span><span class="n">INNODB</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">customer</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span>   <span class="n">ENGINE</span><span class="o">=</span><span class="n">INNODB</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">product_order</span> <span class="p">(</span>
+    <span class="k">no</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+    <span class="n">product_category</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">product_id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">customer_id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+
+    <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="k">no</span><span class="p">),</span>
+    <span class="k">INDEX</span> <span class="p">(</span><span class="n">product_category</span><span class="p">,</span> <span class="n">product_id</span><span class="p">),</span>
+    <span class="k">INDEX</span> <span class="p">(</span><span class="n">customer_id</span><span class="p">),</span>
+
+    <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">product_category</span><span class="p">,</span> <span class="n">product_id</span><span class="p">)</span>
+      <span class="k">REFERENCES</span> <span class="n">product</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span>
+      <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CASCADE</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">RESTRICT</span><span class="p">,</span>
+
+    <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">customer_id</span><span class="p">)</span>
+      <span class="k">REFERENCES</span> <span class="n">customer</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span>   <span class="n">ENGINE</span><span class="o">=</span><span class="n">INNODB</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>所以这个关系里有两个父表 <code class="language-plaintext highlighter-rouge">customer</code> 和 <code class="language-plaintext highlighter-rouge">product</code>，一个从表 <code class="language-plaintext highlighter-rouge">product_order</code>。</p>
+
+<p>对现有表添加外键可使用如下的语句：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">tbl_name</span>
+    <span class="k">ADD</span> <span class="p">[</span><span class="k">CONSTRAINT</span> <span class="p">[</span><span class="n">symbol</span><span class="p">]]</span> <span class="k">FOREIGN</span> <span class="k">KEY</span>
+    <span class="p">[</span><span class="n">index_name</span><span class="p">]</span> <span class="p">(</span><span class="n">col_name</span><span class="p">,</span> <span class="p">...)</span>
+    <span class="k">REFERENCES</span> <span class="n">tbl_name</span> <span class="p">(</span><span class="n">col_name</span><span class="p">,...)</span>
+    <span class="p">[</span><span class="k">ON</span> <span class="k">DELETE</span> <span class="n">reference_option</span><span class="p">]</span>
+    <span class="p">[</span><span class="k">ON</span> <span class="k">UPDATE</span> <span class="n">reference_option</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>创建外键时可指定 <code class="language-plaintext highlighter-rouge">[symbol]</code>，即给外键取一个名称，这样在其他操作时可以引用，比如删除外键时。</p>
+
+<h2 id="删除外键">删除外键</h2>
+
+<p>同样是通过 <a href="https://dev.mysql.com/doc/refman/5.6/en/alter-table.html"><code class="language-plaintext highlighter-rouge">ALTER TABLE</code></a> 语句来完成。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">tbl_name</span> <span class="k">DROP</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="n">fk_symbol</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>删除外键时，如果该外键在创建时取了名称，名通过该名称来删除，如果没有，则需要先查询 MySQL 在创建该外键时自动生成的名称 <code class="language-plaintext highlighter-rouge">fk_symbol</code> 是什么。可通过 <code class="language-plaintext highlighter-rouge">SHOW CREATE TABLE &lt;table_name&gt;</code> 来完成查询。譬如：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SHOW</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dept_manager</span><span class="err">\</span><span class="k">G</span>
+<span class="o">***************************</span> <span class="mi">1</span><span class="p">.</span> <span class="k">row</span> <span class="o">***************************</span>
+       <span class="k">Table</span><span class="p">:</span> <span class="n">dept_manager</span>
+<span class="k">Create</span> <span class="k">Table</span><span class="p">:</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`dept_manager`</span> <span class="p">(</span>
+  <span class="nv">`emp_no`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`dept_no`</span> <span class="nb">char</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">utf8mb4_general_ci</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`from_date`</span> <span class="nb">date</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`to_date`</span> <span class="nb">date</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`emp_no`</span><span class="p">,</span><span class="nv">`dept_no`</span><span class="p">),</span>
+  <span class="k">KEY</span> <span class="nv">`dept_no`</span> <span class="p">(</span><span class="nv">`dept_no`</span><span class="p">),</span>
+  <span class="k">CONSTRAINT</span> <span class="nv">`dept_manager_ibfk_1`</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`emp_no`</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="nv">`employees`</span> <span class="p">(</span><span class="nv">`emp_no`</span><span class="p">)</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">CASCADE</span><span class="p">,</span>
+  <span class="k">CONSTRAINT</span> <span class="nv">`dept_manager_ibfk_2`</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`dept_no`</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="nv">`departments`</span> <span class="p">(</span><span class="nv">`dept_no`</span><span class="p">)</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">CASCADE</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span> <span class="k">COLLATE</span><span class="o">=</span><span class="n">utf8mb4_general_ci</span>
+<span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/5.6/en/create-table-foreign-keys.html">13.1.17.6 Using FOREIGN KEY Constraints</a></li>
+</ul>
+
+:ET

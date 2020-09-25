@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>MySQL 中的索引 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="MySQL 中的索引" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="MySQL 中的索引 索引用来加速查询。正常来说，当查询数据时，MySQL 需要从表的第一条记录开始，读取整个表的内容，进行查询。 但如果有索引，MySQL 可根据索引快速定位需要查询条目的具体位置，加快了查询速度。 原理 索引的原理是将被索引列的值，单独取出来存到另一种结构中以获取快速查询的效果。 当列有这些属性中任意一个时，会被索引， PRIMARY KEY, UNIQUE, INDEX, 以及 FULLTEXT。 大部分索引以 B-trees 结构存储。但有些例外： Spatial Data 数据类型，一种基于地理坐标使用数字来标识现实中对象的数据类型，使用 R-trees。 MEMORY 内存表同时支持使用 hash 索引 。 InnoDB 引擎中对于全文本索引（FULLTEXT）直接使用列表（lists）结构。 MySQL 使用索引的场景 以下场景将借助或依赖于索引： 使用 WHERE 进行条件查询时 用于排除一些记录。存在多个索引可选时，MySQL 选择会获取最小记录的那个索引（the most selective index）。 存在多列索引的情况下，从左排开始的列的组合都可用于查询时的优化。比如三个索引列 （col1, col2, col3），查询时可以有这些组合的优化查询 (col1), (col1, col2), and (col1, col2, col3)，详见 Section 8.3.6, “Multiple-Column Indexes”。 联表查询时。特别地，如果列的类型及大小相同的话，查询时会更加高效。比如 VARCHAR 和 CHAR 会当成同一类型，VARCHAR(10) and CHAR(15) 则不是同一类型，因为长度不同。 使用 MIN()，MAX() 函数时。 进行排序或分组时。 某些情况下，仅仅通过索引就能完成查询操作，无须操作真实的表记录。这种提供了查询中足够信息的索引被称为 covering index。 索引并不是万能的，对于数据量小的表以及对于那些查询全部数据的操作，索引的效果并不明显。相反，对于那些查询时涉及到表中大部分数据的情况下，逐条查询比使用索引要快。 索引的类型 主要有以下四种索引类型，关于创建索引的其他详情可参见 MySQL Manual - 13.1.15 CREATE INDEX Syntax。 Index Prefixes FULLTEXT 索引 Spatial 索引 MEMORY Storage Engine 中的索引 Index Prefixes 对于字符串类型的列，在索引创建语法中指定 col_name(N)，可将该列中前 N 个字符进行索引。通过只索引列中前 N 个字符 而非整列，可有效减小索引大小。比如索引 BLOB or TEXT 类型的列： CREATE TABLE test (blob_col BLOB, INDEX(blob_col(10))); 查询时，如果查询项超过了索引长度，索引将用来排除掉那些在索引长度范围内匹配失败的记录，剩下的记录则正常查询。 FULLTEXT 索引 全文本索引用于全文本（full-text）的搜索。只 InnoDB 和 MyISAM 两种引擎下的 CHAR，VARCHAR，TEXT 数据类型支持全文本索引。不像 Index Prefixes，该类型的索引是会对整列的。 Spatial 索引 Spatial Data 数据类型 上创建的索引。 MEMORY Storage Engine 中的索引  MEMORY 存储引擎默认使用 HASH 索引，但也支持 BTREE 索引。 索引的创建 索引可在创建表时创建，参考 13.1.20 CREATE TABLE Syntax，也可针对已有的表进行创建，使用 CREATE INDEX 语句。 创建索引的语法 ```sql CREATE [UNIQUE | FULLTEXT | SPATIAL] INDEX index_name [index_type] ON tbl_name (key_part,...) [index_option] [algorithm_option | lock_option] ... key_part: {col_name [(length)] | (expr)} [ASC | DESC] index_option: KEY_BLOCK_SIZE [=] value | index_type | WITH PARSER parser_name | COMMENT &#39;string&#39; | {VISIBLE | INVISIBLE} index_type: USING {BTREE | HASH} algorithm_option: ALGORITHM [=] {DEFAULT | INPLACE | COPY} lock_option: LOCK [=] {DEFAULT | NONE | SHARED | EXCLUSIVE} ``` 有如下类型的索引指定方式， 以列前缀的方/Column Prefix Key Parts 函数形式/Functional Key Parts Unique 索引 Full-Text 索引 Spatial 索引 以列前缀的方 可用于创建列中指定前缀部分 col_name(length) 的索引。 示例： CREATE INDEX part_of_name ON customer (name(10)); 以上语句对名为 name 的例索引其前 10 个字符。 函数形式 普通形式的索引只能索引列中的值，比如： CREATE TABLE t1 ( col1 VARCHAR(10), col2 VARCHAR(20), INDEX (col1, col2(10)) ); 以上语句对 col1 整列 及 col2 前 10 个字符进行索引。 但使用函数形式，可创建针对表达式的索引，而不是表中的列。 CREATE TABLE t1 (col1 INT, col2 INT, INDEX func_index ((ABS(col1)))); CREATE INDEX idx1 ON t1 ((col1 + col2)); CREATE INDEX idx2 ON t1 ((col1 + col2), (col1 - col2), col1); ALTER TABLE t1 ADD INDEX ((col1 * 40) DESC); 函数形式的索引在定义时需要满足以下的条件，否则抛错： 表达式使用括号包裹，以和列名或列的其他前缀属性区别开来。 /* 🚨 */ INDEX (col1 + col2, col3 - col4) /* ✅ */ INDEX ((col1 + col2), (col3 - col4)) 函数形式的表达式不能形成一个单独的列名，譬如： /* 🚨 */ INDEX ((col1), (col2)) /* ✅ */ INDEX (col1, col2) 函数中不能引用列前缀（column prefixes）。 外键（foreign key）中不使用使用函数形式。 Unique 索引 指定为 UNIQUE 的列约束了列中的值在记录中是唯一的，尝试插入重复值时会抛错。但允许存在多个 NULL 值，如果该列允许为空的话。 如果一个表拥有 PRIMARY KEY 或 UNIQUE NOT NULL 类型的单列整型形成的索引，在 SELECT 语句中可使用 _rowid 关键词来获取索引的列： 如果存在一个整型的 PRIMARY KEY 列，_rowid 则指代该列。 否则 _rowid 指代第一个 UNIQUE NOT NULL 列。如果不存在一个 UNIQUE NOT NULL 类型的整型列，则不能使用 _rowid。 Full-Text 索引 详细的操作参见 12.9.7 Adding a Collation for Full-Text Indexing。 Spatial 索引 不同存储引擎对其支持情况不一，详见 Spatial Indexes。 相关资源 MySQL Manual - 8.3.1 How MySQL Uses Indexes MySQL Manual - 11.5 Spatial Data Types spatial data MySQL Manual - 8.3.5 Column Indexes MySQL Manual - 13.1.15 CREATE INDEX Syntax" />
+<meta property="og:description" content="MySQL 中的索引 索引用来加速查询。正常来说，当查询数据时，MySQL 需要从表的第一条记录开始，读取整个表的内容，进行查询。 但如果有索引，MySQL 可根据索引快速定位需要查询条目的具体位置，加快了查询速度。 原理 索引的原理是将被索引列的值，单独取出来存到另一种结构中以获取快速查询的效果。 当列有这些属性中任意一个时，会被索引， PRIMARY KEY, UNIQUE, INDEX, 以及 FULLTEXT。 大部分索引以 B-trees 结构存储。但有些例外： Spatial Data 数据类型，一种基于地理坐标使用数字来标识现实中对象的数据类型，使用 R-trees。 MEMORY 内存表同时支持使用 hash 索引 。 InnoDB 引擎中对于全文本索引（FULLTEXT）直接使用列表（lists）结构。 MySQL 使用索引的场景 以下场景将借助或依赖于索引： 使用 WHERE 进行条件查询时 用于排除一些记录。存在多个索引可选时，MySQL 选择会获取最小记录的那个索引（the most selective index）。 存在多列索引的情况下，从左排开始的列的组合都可用于查询时的优化。比如三个索引列 （col1, col2, col3），查询时可以有这些组合的优化查询 (col1), (col1, col2), and (col1, col2, col3)，详见 Section 8.3.6, “Multiple-Column Indexes”。 联表查询时。特别地，如果列的类型及大小相同的话，查询时会更加高效。比如 VARCHAR 和 CHAR 会当成同一类型，VARCHAR(10) and CHAR(15) 则不是同一类型，因为长度不同。 使用 MIN()，MAX() 函数时。 进行排序或分组时。 某些情况下，仅仅通过索引就能完成查询操作，无须操作真实的表记录。这种提供了查询中足够信息的索引被称为 covering index。 索引并不是万能的，对于数据量小的表以及对于那些查询全部数据的操作，索引的效果并不明显。相反，对于那些查询时涉及到表中大部分数据的情况下，逐条查询比使用索引要快。 索引的类型 主要有以下四种索引类型，关于创建索引的其他详情可参见 MySQL Manual - 13.1.15 CREATE INDEX Syntax。 Index Prefixes FULLTEXT 索引 Spatial 索引 MEMORY Storage Engine 中的索引 Index Prefixes 对于字符串类型的列，在索引创建语法中指定 col_name(N)，可将该列中前 N 个字符进行索引。通过只索引列中前 N 个字符 而非整列，可有效减小索引大小。比如索引 BLOB or TEXT 类型的列： CREATE TABLE test (blob_col BLOB, INDEX(blob_col(10))); 查询时，如果查询项超过了索引长度，索引将用来排除掉那些在索引长度范围内匹配失败的记录，剩下的记录则正常查询。 FULLTEXT 索引 全文本索引用于全文本（full-text）的搜索。只 InnoDB 和 MyISAM 两种引擎下的 CHAR，VARCHAR，TEXT 数据类型支持全文本索引。不像 Index Prefixes，该类型的索引是会对整列的。 Spatial 索引 Spatial Data 数据类型 上创建的索引。 MEMORY Storage Engine 中的索引  MEMORY 存储引擎默认使用 HASH 索引，但也支持 BTREE 索引。 索引的创建 索引可在创建表时创建，参考 13.1.20 CREATE TABLE Syntax，也可针对已有的表进行创建，使用 CREATE INDEX 语句。 创建索引的语法 ```sql CREATE [UNIQUE | FULLTEXT | SPATIAL] INDEX index_name [index_type] ON tbl_name (key_part,...) [index_option] [algorithm_option | lock_option] ... key_part: {col_name [(length)] | (expr)} [ASC | DESC] index_option: KEY_BLOCK_SIZE [=] value | index_type | WITH PARSER parser_name | COMMENT &#39;string&#39; | {VISIBLE | INVISIBLE} index_type: USING {BTREE | HASH} algorithm_option: ALGORITHM [=] {DEFAULT | INPLACE | COPY} lock_option: LOCK [=] {DEFAULT | NONE | SHARED | EXCLUSIVE} ``` 有如下类型的索引指定方式， 以列前缀的方/Column Prefix Key Parts 函数形式/Functional Key Parts Unique 索引 Full-Text 索引 Spatial 索引 以列前缀的方 可用于创建列中指定前缀部分 col_name(length) 的索引。 示例： CREATE INDEX part_of_name ON customer (name(10)); 以上语句对名为 name 的例索引其前 10 个字符。 函数形式 普通形式的索引只能索引列中的值，比如： CREATE TABLE t1 ( col1 VARCHAR(10), col2 VARCHAR(20), INDEX (col1, col2(10)) ); 以上语句对 col1 整列 及 col2 前 10 个字符进行索引。 但使用函数形式，可创建针对表达式的索引，而不是表中的列。 CREATE TABLE t1 (col1 INT, col2 INT, INDEX func_index ((ABS(col1)))); CREATE INDEX idx1 ON t1 ((col1 + col2)); CREATE INDEX idx2 ON t1 ((col1 + col2), (col1 - col2), col1); ALTER TABLE t1 ADD INDEX ((col1 * 40) DESC); 函数形式的索引在定义时需要满足以下的条件，否则抛错： 表达式使用括号包裹，以和列名或列的其他前缀属性区别开来。 /* 🚨 */ INDEX (col1 + col2, col3 - col4) /* ✅ */ INDEX ((col1 + col2), (col3 - col4)) 函数形式的表达式不能形成一个单独的列名，譬如： /* 🚨 */ INDEX ((col1), (col2)) /* ✅ */ INDEX (col1, col2) 函数中不能引用列前缀（column prefixes）。 外键（foreign key）中不使用使用函数形式。 Unique 索引 指定为 UNIQUE 的列约束了列中的值在记录中是唯一的，尝试插入重复值时会抛错。但允许存在多个 NULL 值，如果该列允许为空的话。 如果一个表拥有 PRIMARY KEY 或 UNIQUE NOT NULL 类型的单列整型形成的索引，在 SELECT 语句中可使用 _rowid 关键词来获取索引的列： 如果存在一个整型的 PRIMARY KEY 列，_rowid 则指代该列。 否则 _rowid 指代第一个 UNIQUE NOT NULL 列。如果不存在一个 UNIQUE NOT NULL 类型的整型列，则不能使用 _rowid。 Full-Text 索引 详细的操作参见 12.9.7 Adding a Collation for Full-Text Indexing。 Spatial 索引 不同存储引擎对其支持情况不一，详见 Spatial Indexes。 相关资源 MySQL Manual - 8.3.1 How MySQL Uses Indexes MySQL Manual - 11.5 Spatial Data Types spatial data MySQL Manual - 8.3.5 Column Indexes MySQL Manual - 13.1.15 CREATE INDEX Syntax" />
+<link rel="canonical" href="http://localhost:4000/2019/05/10/MySQL-%E4%B8%AD%E7%9A%84%E7%B4%A2%E5%BC%95.html" />
+<meta property="og:url" content="http://localhost:4000/2019/05/10/MySQL-%E4%B8%AD%E7%9A%84%E7%B4%A2%E5%BC%95.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-10T00:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/05/10/MySQL-%E4%B8%AD%E7%9A%84%E7%B4%A2%E5%BC%95.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/05/10/MySQL-%E4%B8%AD%E7%9A%84%E7%B4%A2%E5%BC%95.html"},"description":"MySQL 中的索引 索引用来加速查询。正常来说，当查询数据时，MySQL 需要从表的第一条记录开始，读取整个表的内容，进行查询。 但如果有索引，MySQL 可根据索引快速定位需要查询条目的具体位置，加快了查询速度。 原理 索引的原理是将被索引列的值，单独取出来存到另一种结构中以获取快速查询的效果。 当列有这些属性中任意一个时，会被索引， PRIMARY KEY, UNIQUE, INDEX, 以及 FULLTEXT。 大部分索引以 B-trees 结构存储。但有些例外： Spatial Data 数据类型，一种基于地理坐标使用数字来标识现实中对象的数据类型，使用 R-trees。 MEMORY 内存表同时支持使用 hash 索引 。 InnoDB 引擎中对于全文本索引（FULLTEXT）直接使用列表（lists）结构。 MySQL 使用索引的场景 以下场景将借助或依赖于索引： 使用 WHERE 进行条件查询时 用于排除一些记录。存在多个索引可选时，MySQL 选择会获取最小记录的那个索引（the most selective index）。 存在多列索引的情况下，从左排开始的列的组合都可用于查询时的优化。比如三个索引列 （col1, col2, col3），查询时可以有这些组合的优化查询 (col1), (col1, col2), and (col1, col2, col3)，详见 Section 8.3.6, “Multiple-Column Indexes”。 联表查询时。特别地，如果列的类型及大小相同的话，查询时会更加高效。比如 VARCHAR 和 CHAR 会当成同一类型，VARCHAR(10) and CHAR(15) 则不是同一类型，因为长度不同。 使用 MIN()，MAX() 函数时。 进行排序或分组时。 某些情况下，仅仅通过索引就能完成查询操作，无须操作真实的表记录。这种提供了查询中足够信息的索引被称为 covering index。 索引并不是万能的，对于数据量小的表以及对于那些查询全部数据的操作，索引的效果并不明显。相反，对于那些查询时涉及到表中大部分数据的情况下，逐条查询比使用索引要快。 索引的类型 主要有以下四种索引类型，关于创建索引的其他详情可参见 MySQL Manual - 13.1.15 CREATE INDEX Syntax。 Index Prefixes FULLTEXT 索引 Spatial 索引 MEMORY Storage Engine 中的索引 Index Prefixes 对于字符串类型的列，在索引创建语法中指定 col_name(N)，可将该列中前 N 个字符进行索引。通过只索引列中前 N 个字符 而非整列，可有效减小索引大小。比如索引 BLOB or TEXT 类型的列： CREATE TABLE test (blob_col BLOB, INDEX(blob_col(10))); 查询时，如果查询项超过了索引长度，索引将用来排除掉那些在索引长度范围内匹配失败的记录，剩下的记录则正常查询。 FULLTEXT 索引 全文本索引用于全文本（full-text）的搜索。只 InnoDB 和 MyISAM 两种引擎下的 CHAR，VARCHAR，TEXT 数据类型支持全文本索引。不像 Index Prefixes，该类型的索引是会对整列的。 Spatial 索引 Spatial Data 数据类型 上创建的索引。 MEMORY Storage Engine 中的索引  MEMORY 存储引擎默认使用 HASH 索引，但也支持 BTREE 索引。 索引的创建 索引可在创建表时创建，参考 13.1.20 CREATE TABLE Syntax，也可针对已有的表进行创建，使用 CREATE INDEX 语句。 创建索引的语法 ```sql CREATE [UNIQUE | FULLTEXT | SPATIAL] INDEX index_name [index_type] ON tbl_name (key_part,...) [index_option] [algorithm_option | lock_option] ... key_part: {col_name [(length)] | (expr)} [ASC | DESC] index_option: KEY_BLOCK_SIZE [=] value | index_type | WITH PARSER parser_name | COMMENT &#39;string&#39; | {VISIBLE | INVISIBLE} index_type: USING {BTREE | HASH} algorithm_option: ALGORITHM [=] {DEFAULT | INPLACE | COPY} lock_option: LOCK [=] {DEFAULT | NONE | SHARED | EXCLUSIVE} ``` 有如下类型的索引指定方式， 以列前缀的方/Column Prefix Key Parts 函数形式/Functional Key Parts Unique 索引 Full-Text 索引 Spatial 索引 以列前缀的方 可用于创建列中指定前缀部分 col_name(length) 的索引。 示例： CREATE INDEX part_of_name ON customer (name(10)); 以上语句对名为 name 的例索引其前 10 个字符。 函数形式 普通形式的索引只能索引列中的值，比如： CREATE TABLE t1 ( col1 VARCHAR(10), col2 VARCHAR(20), INDEX (col1, col2(10)) ); 以上语句对 col1 整列 及 col2 前 10 个字符进行索引。 但使用函数形式，可创建针对表达式的索引，而不是表中的列。 CREATE TABLE t1 (col1 INT, col2 INT, INDEX func_index ((ABS(col1)))); CREATE INDEX idx1 ON t1 ((col1 + col2)); CREATE INDEX idx2 ON t1 ((col1 + col2), (col1 - col2), col1); ALTER TABLE t1 ADD INDEX ((col1 * 40) DESC); 函数形式的索引在定义时需要满足以下的条件，否则抛错： 表达式使用括号包裹，以和列名或列的其他前缀属性区别开来。 /* 🚨 */ INDEX (col1 + col2, col3 - col4) /* ✅ */ INDEX ((col1 + col2), (col3 - col4)) 函数形式的表达式不能形成一个单独的列名，譬如： /* 🚨 */ INDEX ((col1), (col2)) /* ✅ */ INDEX (col1, col2) 函数中不能引用列前缀（column prefixes）。 外键（foreign key）中不使用使用函数形式。 Unique 索引 指定为 UNIQUE 的列约束了列中的值在记录中是唯一的，尝试插入重复值时会抛错。但允许存在多个 NULL 值，如果该列允许为空的话。 如果一个表拥有 PRIMARY KEY 或 UNIQUE NOT NULL 类型的单列整型形成的索引，在 SELECT 语句中可使用 _rowid 关键词来获取索引的列： 如果存在一个整型的 PRIMARY KEY 列，_rowid 则指代该列。 否则 _rowid 指代第一个 UNIQUE NOT NULL 列。如果不存在一个 UNIQUE NOT NULL 类型的整型列，则不能使用 _rowid。 Full-Text 索引 详细的操作参见 12.9.7 Adding a Collation for Full-Text Indexing。 Spatial 索引 不同存储引擎对其支持情况不一，详见 Spatial Indexes。 相关资源 MySQL Manual - 8.3.1 How MySQL Uses Indexes MySQL Manual - 11.5 Spatial Data Types spatial data MySQL Manual - 8.3.5 Column Indexes MySQL Manual - 13.1.15 CREATE INDEX Syntax","@type":"BlogPosting","headline":"MySQL 中的索引","dateModified":"2019-05-10T00:05:00+08:00","datePublished":"2019-05-10T00:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">MySQL 中的索引</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-10T00:05:00+08:00" itemprop="datePublished">May 10, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="mysql-中的索引">MySQL 中的索引</h1>
+
+<p>索引用来加速查询。正常来说，当查询数据时，MySQL 需要从表的第一条记录开始，读取整个表的内容，进行查询。</p>
+
+<p>但如果有索引，MySQL 可根据索引快速定位需要查询条目的具体位置，加快了查询速度。</p>
+
+<h2 id="原理">原理</h2>
+
+<p>索引的原理是将被索引列的值，单独取出来存到另一种结构中以获取快速查询的效果。</p>
+
+<p>当列有这些属性中任意一个时，会被索引， <code class="language-plaintext highlighter-rouge">PRIMARY KEY</code>, <code class="language-plaintext highlighter-rouge">UNIQUE</code>, <code class="language-plaintext highlighter-rouge">INDEX</code>, 以及 <code class="language-plaintext highlighter-rouge">FULLTEXT</code>。</p>
+
+<p>大部分索引以 <a href="https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_b_tree">B-trees</a> 结构存储。但有些例外：</p>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/spatial-types.html">Spatial Data 数据类型</a>，一种基于地理坐标使用数字来标识现实中对象的数据类型，使用  <a href="https://en.wikipedia.org/wiki/R-tree">R-trees</a>。</li>
+  <li>MEMORY 内存表同时支持使用 <a href="https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_hash_index">hash 索引</a> 。</li>
+  <li>InnoDB 引擎中对于全文本索引（FULLTEXT）直接使用列表（lists）结构。</li>
+</ul>
+
+<h2 id="mysql-使用索引的场景">MySQL 使用索引的场景</h2>
+
+<p>以下场景将借助或依赖于索引：</p>
+
+<ul>
+  <li>使用 <code class="language-plaintext highlighter-rouge">WHERE</code> 进行条件查询时</li>
+  <li>用于排除一些记录。存在多个索引可选时，MySQL 选择会获取最小记录的那个索引（the most <a href="https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_selectivity">selective</a> index）。</li>
+  <li>存在多列索引的情况下，从左排开始的列的组合都可用于查询时的优化。比如三个索引列 （col1, col2, col3），查询时可以有这些组合的优化查询 (col1), (col1, col2), and (col1, col2, col3)，详见 <a href="https://dev.mysql.com/doc/refman/8.0/en/multiple-column-indexes.html">Section 8.3.6, “Multiple-Column Indexes”</a>。</li>
+  <li>联表查询时。特别地，如果列的类型及大小相同的话，查询时会更加高效。比如 VARCHAR 和 CHAR 会当成同一类型，VARCHAR(10) and CHAR(15) 则不是同一类型，因为长度不同。</li>
+  <li>使用 <a href="https://dev.mysql.com/doc/refman/8.0/en/group-by-functions.html#function_min">MIN()</a>，<a href="https://dev.mysql.com/doc/refman/8.0/en/group-by-functions.html#function_max">MAX()</a> 函数时。</li>
+  <li>进行排序或分组时。</li>
+  <li>某些情况下，仅仅通过索引就能完成查询操作，无须操作真实的表记录。这种提供了查询中足够信息的索引被称为 <a href="https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_covering_index">covering index</a>。</li>
+</ul>
+
+<p>索引并不是万能的，对于数据量小的表以及对于那些查询全部数据的操作，索引的效果并不明显。相反，对于那些查询时涉及到表中大部分数据的情况下，逐条查询比使用索引要快。</p>
+
+<h2 id="索引的类型">索引的类型</h2>
+
+<p>主要有以下四种索引类型，关于创建索引的其他详情可参见 <a href="https://dev.mysql.com/doc/refman/8.0/en/create-index.html">MySQL Manual - 13.1.15 CREATE INDEX Syntax</a>。</p>
+
+<ul>
+  <li>Index Prefixes</li>
+  <li>FULLTEXT 索引</li>
+  <li>Spatial 索引</li>
+  <li>MEMORY Storage Engine 中的索引</li>
+</ul>
+
+<h3 id="index-prefixes">Index Prefixes</h3>
+
+<p>对于字符串类型的列，在索引创建语法中指定 <code class="language-plaintext highlighter-rouge">col_name(N)</code>，可将该列中前 N 个字符进行索引。通过只索引列中前 N 个字符 而非整列，可有效减小索引大小。比如索引  BLOB or TEXT 类型的列：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test</span> <span class="p">(</span><span class="n">blob_col</span> <span class="nb">BLOB</span><span class="p">,</span> <span class="k">INDEX</span><span class="p">(</span><span class="n">blob_col</span><span class="p">(</span><span class="mi">10</span><span class="p">)));</span>
+</code></pre></div></div>
+<p>查询时，如果查询项超过了索引长度，索引将用来排除掉那些在索引长度范围内匹配失败的记录，剩下的记录则正常查询。</p>
+
+<h3 id="fulltext-索引">FULLTEXT 索引</h3>
+
+<p>全文本索引用于全文本（full-text）的搜索。只 <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-storage-engine.html">InnoDB</a> 和 <a href="https://dev.mysql.com/doc/refman/8.0/en/myisam-storage-engine.html">MyISAM</a> 两种引擎下的 CHAR，VARCHAR，TEXT 数据类型支持全文本索引。不像 Index Prefixes，该类型的索引是会对整列的。</p>
+
+<h3 id="spatial-索引">Spatial 索引</h3>
+
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/spatial-types.html">Spatial Data 数据类型</a> 上创建的索引。</p>
+
+<h3 id="memory-storage-engine-中的索引">MEMORY Storage Engine 中的索引</h3>
+
+<p> MEMORY 存储引擎默认使用 HASH 索引，但也支持 BTREE 索引。</p>
+
+<h2 id="索引的创建">索引的创建</h2>
+
+<p>索引可在创建表时创建，参考 <a href="https://dev.mysql.com/doc/refman/8.0/en/create-table.html#create-table-indexes-keys">13.1.20 CREATE TABLE Syntax</a>，也可针对已有的表进行创建，使用 <a href="https://dev.mysql.com/doc/refman/8.0/en/create-index.html">CREATE INDEX</a> 语句。</p>
+
+<details>
+<summary>
+创建索引的语法
+</summary>
+
+```sql
+CREATE [UNIQUE | FULLTEXT | SPATIAL] INDEX index_name
+    [index_type]
+    ON tbl_name (key_part,...)
+    [index_option]
+    [algorithm_option | lock_option] ...
+
+key_part: {col_name [(length)] | (expr)} [ASC | DESC]
+
+index_option:
+    KEY_BLOCK_SIZE [=] value
+  | index_type
+  | WITH PARSER parser_name
+  | COMMENT 'string'
+  | {VISIBLE | INVISIBLE}
+
+index_type:
+    USING {BTREE | HASH}
+
+algorithm_option:
+    ALGORITHM [=] {DEFAULT | INPLACE | COPY}
+
+lock_option:
+    LOCK [=] {DEFAULT | NONE | SHARED | EXCLUSIVE}
+```
+
+</details>
+
+<p>有如下类型的索引指定方式，</p>
+
+<ul>
+  <li>以列前缀的方/Column Prefix Key Parts</li>
+  <li>函数形式/Functional Key Parts</li>
+  <li>Unique 索引</li>
+  <li>Full-Text 索引</li>
+  <li>Spatial 索引</li>
+</ul>
+
+<h3 id="以列前缀的方">以列前缀的方</h3>
+
+<p>可用于创建列中指定前缀部分 <code class="language-plaintext highlighter-rouge">col_name(length)</code> 的索引。</p>
+
+<p>示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">part_of_name</span> <span class="k">ON</span> <span class="n">customer</span> <span class="p">(</span><span class="n">name</span><span class="p">(</span><span class="mi">10</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>以上语句对名为 <code class="language-plaintext highlighter-rouge">name</code> 的例索引其前 10 个字符。</p>
+
+<h3 id="函数形式">函数形式</h3>
+
+<p>普通形式的索引只能索引列中的值，比如：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t1</span> <span class="p">(</span>
+  <span class="n">col1</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+  <span class="n">col2</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
+  <span class="k">INDEX</span> <span class="p">(</span><span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>以上语句对 <code class="language-plaintext highlighter-rouge">col1</code> 整列 及 <code class="language-plaintext highlighter-rouge">col2</code> 前 10 个字符进行索引。</p>
+
+<p>但使用函数形式，可创建针对表达式的索引，而不是表中的列。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t1</span> <span class="p">(</span><span class="n">col1</span> <span class="nb">INT</span><span class="p">,</span> <span class="n">col2</span> <span class="nb">INT</span><span class="p">,</span> <span class="k">INDEX</span> <span class="n">func_index</span> <span class="p">((</span><span class="k">ABS</span><span class="p">(</span><span class="n">col1</span><span class="p">))));</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx1</span> <span class="k">ON</span> <span class="n">t1</span> <span class="p">((</span><span class="n">col1</span> <span class="o">+</span> <span class="n">col2</span><span class="p">));</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx2</span> <span class="k">ON</span> <span class="n">t1</span> <span class="p">((</span><span class="n">col1</span> <span class="o">+</span> <span class="n">col2</span><span class="p">),</span> <span class="p">(</span><span class="n">col1</span> <span class="o">-</span> <span class="n">col2</span><span class="p">),</span> <span class="n">col1</span><span class="p">);</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">t1</span> <span class="k">ADD</span> <span class="k">INDEX</span> <span class="p">((</span><span class="n">col1</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)</span> <span class="k">DESC</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>函数形式的索引在定义时需要满足以下的条件，否则抛错：</p>
+
+<ul>
+  <li>表达式使用括号包裹，以和列名或列的其他前缀属性区别开来。</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* 🚨 */</span>
+<span class="k">INDEX</span> <span class="p">(</span><span class="n">col1</span> <span class="o">+</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span> <span class="o">-</span> <span class="n">col4</span><span class="p">)</span>
+
+<span class="cm">/* ✅ */</span>
+<span class="k">INDEX</span> <span class="p">((</span><span class="n">col1</span> <span class="o">+</span> <span class="n">col2</span><span class="p">),</span> <span class="p">(</span><span class="n">col3</span> <span class="o">-</span> <span class="n">col4</span><span class="p">))</span>
+</code></pre></div></div>
+
+<ul>
+  <li>函数形式的表达式不能形成一个单独的列名，譬如：</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* 🚨 */</span>
+<span class="k">INDEX</span> <span class="p">((</span><span class="n">col1</span><span class="p">),</span> <span class="p">(</span><span class="n">col2</span><span class="p">))</span>
+
+<span class="cm">/* ✅ */</span>
+<span class="k">INDEX</span> <span class="p">(</span><span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>函数中不能引用列前缀（column prefixes）。</li>
+  <li>外键（foreign key）中不使用使用函数形式。</li>
+</ul>
+
+<h3 id="unique-索引">Unique 索引</h3>
+
+<p>指定为 <code class="language-plaintext highlighter-rouge">UNIQUE</code> 的列约束了列中的值在记录中是唯一的，尝试插入重复值时会抛错。但允许存在多个 NULL 值，如果该列允许为空的话。</p>
+
+<p>如果一个表拥有 <code class="language-plaintext highlighter-rouge">PRIMARY KEY</code> 或 <code class="language-plaintext highlighter-rouge">UNIQUE NOT NULL</code> 类型的单列整型形成的索引，在 <code class="language-plaintext highlighter-rouge">SELECT</code> 语句中可使用 <code class="language-plaintext highlighter-rouge">_rowid</code> 关键词来获取索引的列：</p>
+
+<ul>
+  <li>如果存在一个整型的 <code class="language-plaintext highlighter-rouge">PRIMARY KEY</code> 列，<code class="language-plaintext highlighter-rouge">_rowid</code> 则指代该列。</li>
+  <li>否则 <code class="language-plaintext highlighter-rouge">_rowid</code> 指代第一个 <code class="language-plaintext highlighter-rouge">UNIQUE NOT NULL</code> 列。如果不存在一个 <code class="language-plaintext highlighter-rouge">UNIQUE NOT NULL</code> 类型的整型列，则不能使用 <code class="language-plaintext highlighter-rouge">_rowid</code>。</li>
+</ul>
+
+<h3 id="full-text-索引">Full-Text 索引</h3>
+
+<p>详细的操作参见 <a href="https://dev.mysql.com/doc/refman/8.0/en/full-text-adding-collation.html">12.9.7 Adding a Collation for Full-Text Indexing</a>。</p>
+
+<h3 id="spatial-索引-1">Spatial 索引</h3>
+
+<p>不同存储引擎对其支持情况不一，详见 <a href="https://dev.mysql.com/doc/refman/8.0/en/create-index.html#create-index-spatial">Spatial Indexes</a>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/mysql-indexes.html">MySQL Manual - 8.3.1 How MySQL Uses Indexes</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/spatial-types.html">MySQL Manual - 11.5 Spatial Data Types</a></li>
+  <li><a href="https://searchsqlserver.techtarget.com/definition/spatial-data">spatial data</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/column-indexes.html">MySQL Manual  - 8.3.5 Column Indexes</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/create-index.html">MySQL Manual - 13.1.15 CREATE INDEX Syntax</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/05/10/MySQL-%E4%B8%AD%E7%9A%84%E7%B4%A2%E5%BC%95.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

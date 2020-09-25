@@ -1,0 +1,202 @@
+I"P<h1 id="react--typescript元素引用的传递">React + TypeScript：元素引用的传递</h1>
+
+<p>React 中需要操作元素时，可通过 <code class="language-plaintext highlighter-rouge">findDOMNode()</code> 或通过 <code class="language-plaintext highlighter-rouge">createRef()</code> 创建对元素的引用来实现。前者官方不推荐，所以这里讨论后者及其与 TypeScript 结合时如何工作。</p>
+
+<h2 id="react-中的元素引用">React 中的元素引用</h2>
+
+<p>正常的组件中，可通过创建对元素的引用来获取到某元素然后进行相应操作。比如元素加载后将焦点定位到输入框。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="nx">props</span><span class="p">){</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">props</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createRef</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="nx">componentDidMount</span><span class="p">(){</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span>
+  <span class="p">}</span>
+
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">App</span><span class="dl">"</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span> <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>创建对元素的引用是通过 <code class="language-plaintext highlighter-rouge">React.createRef()</code> 方法完成的。使用的时候，通过其返回对象身上的 <code class="language-plaintext highlighter-rouge">current</code> 属性可访问到绑定引用的元素。</p>
+
+<p>React 内部对引用的 <code class="language-plaintext highlighter-rouge">current</code> 赋值更新发生在 <code class="language-plaintext highlighter-rouge">componentDidMount</code> 或 <code class="language-plaintext highlighter-rouge">componentDidUpdate</code> 生命周期之前，即存在使用的时候引用未初始化完成的情况，所以 <code class="language-plaintext highlighter-rouge">current</code> 不一定有值。好的做法是使用前先判空。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">.</span><span class="nx">current</span><span class="p">){</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在上面的示例中，之所以不用判空是因为我们在 <code class="language-plaintext highlighter-rouge">componentDidMount</code> 生命周期中使用，此时元素已经加载到页面，所以可以放心使用。</p>
+
+<h2 id="组件中引用的传递">组件中引用的传递</h2>
+
+<p>对于原生 DOM 元素可以像上面那样创建引用，但对于自己写的组件，则需要使用 <code class="language-plaintext highlighter-rouge">forwardRef()</code> 来实现。</p>
+
+<p>假如你写了个按钮组件，想要实现像上面那样，让使用者可通过传递一个 <code class="language-plaintext highlighter-rouge">ref</code> 属性来获取到组件中原生的这个 <code class="language-plaintext highlighter-rouge">&lt;button&gt;</code> 元素以进行相应的操作。</p>
+
+<p><em>button.jsx</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">FancyInput</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">fancy-input</span><span class="dl">"</span> <span class="o">/&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>添加 ref 支持后的按钮组件：</p>
+
+<p><em>button.jsx</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">FancyInput</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">forwardRef</span><span class="p">((</span><span class="nx">props</span><span class="p">,</span> <span class="nx">ref</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span> <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">fancy-input</span><span class="dl">"</span> <span class="o">/&gt;</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">forwardRef</code> 接收一个函数，函数的入参中第一个是组件的 props，第二个便是外部传递进来的 ref 引用。通过将这个引用在组件中绑定到相应的原生 DOM 元素上，实现了外部直接引用到组件内部元素的目的，所以叫 <code class="language-plaintext highlighter-rouge">forwardRef</code>（传递引用）。</p>
+
+<p>使用上面创建的 <code class="language-plaintext highlighter-rouge">FancyInput</code>，在组件加载后使其获得焦点：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">class App extends Component {
+</span>  constructor(props) {
+    super(props);
+    this.inputRef = React.createRef();
+  }
+
+  componentDidMount() {
+    if (this.inputRef.current) {
+      this.inputRef.current.focus();
+    }
+  }
+
+  render() {
+    return (
+      &lt;div className="App"&gt;
+<span class="gd">-        &lt;input type="text" ref={this.inputRef}/&gt;
+</span><span class="gi">+        &lt;FancyInput ref={this.inputRef} /&gt;
+</span>      &lt;/div&gt;
+    );
+  }
+<span class="err">}</span>
+</code></pre></div></div>
+
+<h2 id="typescript-中传递引用">TypeScript 中传递引用</h2>
+
+<p>先看正常情况下，对原生 DOM 元素的引用。还是上面的示例：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{},</span> <span class="p">{}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="nx">inputRef</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createRef</span><span class="p">();</span>
+
+  <span class="nx">componentDidMount</span><span class="p">()</span> <span class="p">{</span>
+    <span class="cm">/** 🚨 Object is possibly 'null' */</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">App</span><span class="dl">"</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="cm">/* 🚨 Type '{}' is missing the following properties from type 'HTMLInputElement':... */</span><span class="p">}</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="kd">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span> <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>像上面那样创建并使用存在两个问题。</p>
+
+<p>一个是提示我们的引用无法赋值到 <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> 的 <code class="language-plaintext highlighter-rouge">ref</code> 属性上，类型不兼容。引用需要与它真实所指代的元素类型相符，这正是 TypeScript 类型检查为我们添加的约束。这个约束的好处是，我们在使用引用的时候，就知道这个引用真实的元素类型，TypeScript 会自动提示可用的方法和属性，同时防止调用该元素身上没有的属性和方法。这里修正的方法很简单，如果 hover 或 <kbd>F12</kbd> 查看 <code class="language-plaintext highlighter-rouge">React.createRef()</code> 的方法签名，会发现它是个泛型方法，支持传递类型参数。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">createRef</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">():</span> <span class="nx">RefObject</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+<p>所以上面创建引用时，显式指定它的类型。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">- private inputRef = React.createRef();
+</span><span class="gi">+ private inputRef = React.createRef&lt;HTMLInputElement&gt;();
+</span></code></pre></div></div>
+
+<p>第二个问题是即使在 <code class="language-plaintext highlighter-rouge">componentDidMount</code> 生命周期中使用，TypeScript 仍然提示 <code class="language-plaintext highlighter-rouge">current</code> 的值有可能为空。上面讨论过，其实此时我们知道它不可能为空的。但因为 TypeScript 无法理解 <code class="language-plaintext highlighter-rouge">componentDidMount</code>，所以它不知道此时引用其实是可以安全使用的。解决办法当然是加上判空的逻辑。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  componentDidMount() {
+<span class="gi">+    if(this.inputRef.current){
+</span>      this.inputRef.current.focus();
+<span class="gi">+    }
+</span>  }
+</code></pre></div></div>
+
+<p>还可通过变量后添加 <code class="language-plaintext highlighter-rouge">!</code> 操作符告诉 TypeScript 该变量此时非空。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  componentDidMount() {
+<span class="gd">-      this.inputRef.current.focus();
+</span><span class="gi">+      this.inputRef.current!.focus();
+</span>  }
+</code></pre></div></div>
+
+<p>修复后完整的代码如下：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{},</span> <span class="p">{}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="nx">inputRef</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createRef</span><span class="o">&lt;</span><span class="nx">HTMLInputElement</span><span class="o">&gt;</span><span class="p">();</span>
+
+  <span class="nx">componentDidMount</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">.</span><span class="nx">current</span><span class="o">!</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">App</span><span class="dl">"</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="kd">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span> <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="react--typescript-组件引用的传递">React + TypeScript 组件引用的传递</h2>
+
+<p>继续到组件的情况，当需要引用的元素在另一个组件内部时，还是通过 <code class="language-plaintext highlighter-rouge">React.forwardRef()</code>。</p>
+
+<p>这是该方法的签名：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">forwardRef</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span> <span class="nx">P</span> <span class="o">=</span> <span class="p">{}</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">Component</span><span class="p">:</span> <span class="nx">RefForwardingComponent</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span> <span class="nx">P</span><span class="o">&gt;</span><span class="p">):</span> <span class="nx">ForwardRefExoticComponent</span><span class="o">&lt;</span><span class="nx">PropsWithoutRef</span><span class="o">&lt;</span><span class="nx">P</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="nx">RefAttributes</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>可以看到，方法接收两个类型参数，<code class="language-plaintext highlighter-rouge">T</code> 为需要引用的元素类型，我们示例中是 <code class="language-plaintext highlighter-rouge">HTMLInputElement</code>，<code class="language-plaintext highlighter-rouge">P</code> 为组件的 props 类型。</p>
+
+<p>所以添加引用传递后，<code class="language-plaintext highlighter-rouge">FancyInput</code> 组件在 TypeScript 中的版本应该长这样：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">FancyInput</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">forwardRef</span><span class="o">&lt;</span><span class="nx">HTMLInputElement</span><span class="p">,</span> <span class="p">{}</span><span class="o">&gt;</span><span class="p">((</span><span class="nx">props</span><span class="p">,</span> <span class="nx">ref</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">input</span> <span class="kd">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span> <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">fancy-input</span><span class="dl">"</span> <span class="o">/&gt;</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>使用组件：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{},</span> <span class="p">{}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="nx">inputRef</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createRef</span><span class="o">&lt;</span><span class="nx">HTMLInputElement</span><span class="o">&gt;</span><span class="p">();</span>
+
+  <span class="nx">componentDidMount</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">.</span><span class="nx">current</span><span class="o">!</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">App</span><span class="dl">"</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">FancyInput</span> <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">inputRef</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://reactjs.org/docs/refs-and-the-dom.html">Refs and the DOM</a></li>
+  <li><a href="https://reactjs.org/docs/forwarding-refs.html">Forwarding Refs</a></li>
+  <li><a href="https://reactjs.org/docs/react-dom.html#finddomnode">findDOMNode()</a></li>
+  <li><a href="https://medium.com/@martin_hotell/react-refs-with-typescript-a32d56c4d315">React Refs with TypeScript</a></li>
+</ul>
+:ET

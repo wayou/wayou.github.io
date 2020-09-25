@@ -1,0 +1,157 @@
+I"�<h1 id="跨域及解决">跨域及解决</h1>
+
+<p>same-origin policy（SOP）限制浏览器中脚本只能获取同域下的资源和数据。</p>
+
+<p>跨域只限制从脚本中对资源发起的访问，页面中标签加载资源是不受限制的。</p>
+
+<h2 id="跨域的定义">跨域的定义</h2>
+
+<p>以下来自维基百科的表格很好地展示了怎样算是跨域，以 <code class="language-plaintext highlighter-rouge">http://www.example.com/dir/page.html</code> 作为基准进行判断时，</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Compared URL</th>
+      <th>Outcome</th>
+      <th>Reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">http://www.example.com/dir/page2.html</code></td>
+      <td>成功</td>
+      <td>相同格式, 主机及端口</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">http://www.example.com/dir2/other.html</code></td>
+      <td>成功</td>
+      <td>相同格式, 主机及端口</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">http://username:password@www.example.com/dir2/other.html</code></td>
+      <td>成功</td>
+      <td>相同格式, 主机及端口</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">http://www.example.com:81/dir/other.html</code></td>
+      <td>失败</td>
+      <td>相同格式及主机但端口不同</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">https://www.example.com/dir/other.html</code></td>
+      <td>失败</td>
+      <td>格式不同</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">http://en.example.com/dir/other.html</code></td>
+      <td>失败</td>
+      <td>不同主机</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">http://example.com/dir/other.html</code></td>
+      <td>失败</td>
+      <td>不同主机 (需要严格匹配)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">http://v2.www.example.com/dir/other.html</code></td>
+      <td>失败</td>
+      <td>不同主机 (需要严格匹配)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">http://www.example.com:80/dir/other.html</code></td>
+      <td>看情况</td>
+      <td>此处端口被显式指明，依赖浏览器的实现而表现不一</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>其中：</p>
+
+<ul>
+  <li>主机（host）</li>
+  <li>格式（URI scheme）</li>
+</ul>
+
+<h2 id="解决办法">解决办法</h2>
+
+<h3 id="服务器配置跨域控制头">服务器配置跨域控制头</h3>
+
+<p>服务器配置相应的跨域控制头以允许相应站点对资源的访问。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Access-Control-Allow-Origin: *
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Access-Control-Allow-Origin: http://www.example.com
+</code></pre></div></div>
+
+<p>此过程浏览器可能会预先发送一个 OPTION 的 preflight 请求到服务器，并带上 <code class="language-plaintext highlighter-rouge">Origin</code> 请求头：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>OPTIONS /
+Host: service.example.com
+Origin: http://www.example.com
+</code></pre></div></div>
+
+<p>服务器允许该域，则返回：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Access-Control-Allow-Origin: http://www.example.com
+Access-Control-Allow-Methods: PUT, DELETE
+</code></pre></div></div>
+
+<h3 id="代理">代理</h3>
+
+<p>将跨域资源走服务器代理，因为从服务器访问是不受跨域限制的。</p>
+
+<h3 id="jsonp">JSONP</h3>
+
+<p>复用跨域只限制从脚本中对资源发起的访问，页面中标签加载资源是不受限制这一特征，可以将跨域的接口用 JSONP（JSON with Padding） 方式来处理。</p>
+
+<p>原理页面中创建 script 标签加载对应的接口，接口返回的文本中包含 js 函数的调用及封装好的数据入参。</p>
+
+<p>示例：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span>
+<span class="kd">function</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://example/api/foo"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">http://example/api/foo</code> 返回文本 <code class="language-plaintext highlighter-rouge">callback("hello")</code> 会以脚本形式被浏览器执行，完成了数据的获取。</p>
+
+<h2 id="跨域传-cookie">跨域传 Cookie</h2>
+
+<p>通过配置 <code class="language-plaintext highlighter-rouge">Access-Control-Allow-Origin</code> 解决了跨域请求，但跨域情况下默认是不会带 Cookie 的。</p>
+
+<p>如果需要跨域发送 Cookie，需要端上面发起异步请求时设置 <code class="language-plaintext highlighter-rouge">withCredentials: true</code>，</p>
+
+<p><em>原生 JavaScript</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="dl">'</span><span class="s1">GET</span><span class="dl">'</span><span class="p">,</span> <span class="nx">url</span><span class="p">);</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">withCredentials</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p><em>jQuery</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+   <span class="na">url</span><span class="p">:</span> <span class="nx">a_cross_domain_url</span><span class="p">,</span>
+   <span class="na">xhrFields</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">withCredentials</span><span class="p">:</span> <span class="kc">true</span>
+   <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>同时，需要服务器配置 <code class="language-plaintext highlighter-rouge">Access-Control-Allow-Credentials</code> 为 <code class="language-plaintext highlighter-rouge">true</code>，否则即使 Cookie 被成功发送也不会被接收。</p>
+
+<p>另外，在配置了 <code class="language-plaintext highlighter-rouge">Access-Control-Allow-Credentials: true</code> 时，<code class="language-plaintext highlighter-rouge">Access-Control-Allow-Origin</code> 不能使用通配符，必需指定单一的源。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (CORS)</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Same-origin_policy">Same-origin policy</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">Cross-origin resource sharing</a></li>
+  <li><a href="https://harttle.land/2016/12/28/cors-with-cookie.html">CORS 跨域发送 Cookie</a></li>
+</ul>
+
+:ET

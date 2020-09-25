@@ -1,0 +1,47 @@
+I">	<h1 id="xed-命令不可用的修正"><code class="language-plaintext highlighter-rouge">xed</code> 命令不可用的修正</h1>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">xed</code> 命令可在命令行中调起 Xcode。</p>
+
+<p>当执行 <code class="language-plaintext highlighter-rouge">xed</code> 报如下错误时：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$  xed .
+xcode-select: error: tool 'xed' requires Xcode, but active developer directory '/Library/Developer/CommandLineTools' is a command line tools instance
+</code></pre></div></div>
+
+<p>可通过如下命令来修正：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>xcode-select <span class="nt">-s</span> /Applications/Xcode.app/Contents/Developer/
+Password:
+</code></pre></div></div>
+
+<p>输入密码确认后 <code class="language-plaintext highlighter-rouge">xed</code> 命令便能正常执行了。</p>
+
+<p>如果是 beta 版本，命令雷同：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>xcode-select <span class="nt">-s</span> /Applications/Xcode-beta.app/Contents/Developer/
+Password:
+</code></pre></div></div>
+
+<p>检查：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>xed <span class="nt">-v</span>
+xed version 12.0
+</code></pre></div></div>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">xed</code> 打开 Xcode 项目：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>xed /path/to/my_project.xcodeproj
+</code></pre></div></div>
+
+<p>如果当前目录包含 Xcode 项目，可直接：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>xed <span class="nb">.</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/17980759/xcode-select-active-developer-directory-error/17980786#17980786">xcode-select active developer directory error</a></li>
+</ul>
+
+:ET

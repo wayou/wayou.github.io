@@ -1,0 +1,132 @@
+I"�<h1 id="ssltls-链接的建立握手">SSL/TLS 链接的建立/握手</h1>
+
+<p>HTTPS 即 HTTP-within-SSL/TLS，其中 SSL/TLS 又分别表示：</p>
+
+<ul>
+  <li>SSL：Secure Sockets Layer</li>
+  <li>TLS：Transport Layer Security</li>
+</ul>
+
+<p>SSL/TLS 建立链接及握手的过程为：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/59965876-6cf8ba00-9546-11e9-8fc3-bf3656afe095.png" alt="SSL/TLS 建立链接及握手的示意图" /></p>
+<p align="center">SSL/TLS 建立链接及握手的示意图</p>
+
+<h3 id="阶段一">阶段一</h3>
+
+<ul>
+  <li>Client Hello
+    <ul>
+      <li>客户端向服务器发送
+        <ul>
+          <li>随机数 Random1</li>
+          <li>客户端支持的加密套件 Support Ciphers</li>
+          <li>SSL 版本</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Server Hello
+    <ul>
+      <li>服务器向客户端发送</li>
+      <li>从客户端发送加密套件列表中选择一个，加密套件决定了后续加密及生成摘要的算法</li>
+      <li>生成随机数Random2。两端的随机数会在后续生成对称密钥时使用。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="阶段二">阶段二</h3>
+
+<ul>
+  <li>Certificate
+    <ul>
+      <li>服务器将自己的证书下发给客户端，让客户端验证服务器的身份。（ 12306 曾经使用国内自己签发的证书，结果 Chrome 不认就是这个道理）</li>
+      <li>客户端验证后从证书取出公钥</li>
+    </ul>
+  </li>
+  <li>Server Key Exchange
+    <ul>
+      <li>DH 算法需要此步骤，发送服务器使用的 DH参数，RSA 不需要</li>
+    </ul>
+  </li>
+  <li>Certificate Request
+    <ul>
+      <li>可选。服务器要求客户端上报证书。对安全性要求极高时使用。</li>
+    </ul>
+  </li>
+  <li>Server Hello Done
+    <ul>
+      <li>通知客户端 Server Hello 结束</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="阶段三">阶段三</h3>
+
+<ul>
+  <li>Certificate Verify
+    <ul>
+      <li>客户端收到证书后从CA验证其合法性。</li>
+      <li>验证合法后从证书取出公钥，生成随机数 Random3</li>
+      <li>使用公钥非对称加密Random3 生成 PreMaster Key</li>
+    </ul>
+  </li>
+  <li>Client Key Exchange
+    <ul>
+      <li>客户端将 PreMaster Key 发送服务器，服务器用自己的私钥解出 Random3。</li>
+      <li>此时两端都拥有 Random 1~3</li>
+      <li>两端使用相同的算法生成密钥，握手结束后的数据传输都使用此密钥进行对称加密。</li>
+    </ul>
+  </li>
+  <li>为何需要三个随机数？
+    <ul>
+      <li>因为SSL/TSL 握手过程数据明文传输，多个随机数种子生成的密钥不容易暴力破解。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="阶段四">阶段四</h3>
+
+<ul>
+  <li>Change Cipher Spec (Client)
+    <ul>
+      <li>这是一条事件消息</li>
+      <li>客户端通知服务端后续消息都会使用前面协商出来的密钥加密。</li>
+    </ul>
+  </li>
+  <li>Encrypted Handshake Message (Client)
+    <ul>
+      <li>这是条 Client Finish 消息
+        <ul>
+          <li>客户端将前面的握手消息生成摘要，使用前面协商的密钥加密。</li>
+        </ul>
+      </li>
+      <li>这是客户端发出的第一条加密消息</li>
+      <li>服务端使用密钥解密，解密成功说明密钥一致。</li>
+    </ul>
+  </li>
+  <li>Change Cipher Spec (Server)
+    <ul>
+      <li>事件消息</li>
+      <li>服务端通知客户端后续消息都使用加密。</li>
+    </ul>
+  </li>
+  <li>Encrypted Handshake Message (Server)
+    <ul>
+      <li>Server Finish 消息</li>
+      <li>服务端将握手过程生成摘要</li>
+      <li>使用密钥加密发送给客户端</li>
+      <li>这是服务端发送的第一条加密消息</li>
+      <li>客户端收到后解密，成功说明密钥一致。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+<ul>
+  <li><a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_7.1.0/com.ibm.mq.doc/sy10660_.htm">An overview of the SSL or TLS handshake</a></li>
+  <li><a href="https://www.acunetix.com/blog/articles/establishing-tls-ssl-connection-part-5/">TLS Security 5: Establishing a TLS Connection</a></li>
+  <li><a href="https://www.jianshu.com/p/7158568e4867">SSL/TLS 握手过程详解</a></li>
+</ul>
+
+:ET

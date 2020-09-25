@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>MySQL GROUP BY 的问题 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="MySQL GROUP BY 的问题" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="MySQL GROUP BY 的问题 拿 employee 示例数据库为例，当进行如下操作时会报错。 mysql&gt; SELECT * FROM employees GROUP BY gender; ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column &#39;employees.employees.emp_no&#39; which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by 其中 employee 的表结构为： mysql&gt; DESCRIBE employees; +------------+---------------+------+-----+---------+-------+ | Field | Type | Null | Key | Default | Extra | +------------+---------------+------+-----+---------+-------+ | emp_no | int(11) | NO | PRI | NULL | | | birth_date | date | NO | | NULL | | | first_name | varchar(14) | NO | | NULL | | | last_name | varchar(16) | NO | | NULL | | | gender | enum(&#39;M&#39;,&#39;F&#39;) | NO | | NULL | | | hire_date | date | NO | | NULL | | +------------+---------------+------+-----+---------+-------+ 6 rows in set (0.01 sec) 原因 SQL 标准中不允许 SELECT 列表，HAVING 条件语句，或 ORDER BY 语句中出现 GROUP BY 中未列出的可聚合列。而 MySQL 中有一个状态 ONLY_FULL_GROUP_BY 来标识是否遵从这一标准，默认为开启状态。 所以这样的语句是不可以的， # 🚨 SELECT gender, last_name FROM employees GROUP BY gender 将 last_name 从 SELECT 中移除或将其添加到 GROUP BY 中都可以修复。 # ✅ SELECT gender, FROM employees GROUP BY gender # ✅ SELECT gender, last_name FROM employees GROUP BY gender, last_name 但这样的修改查询出来就可能就不是想要的结果了。 解决 三种方式来解决。 关闭 ONLY_FULL_GROUP_BY 可以选择关掉 MySQL 的 ONLY_FULL_GROUP_BY 模式。 有两种方式，通过昨晚设置 sql_mode 来关闭。 首先查看变更前的 sql_mode： mysql&gt; SELECT @@sql_mode; +-----------------------------------------------------------------------------------------------------------------------+ | @@sql_mode | +-----------------------------------------------------------------------------------------------------------------------+ | ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | +-----------------------------------------------------------------------------------------------------------------------+ 1 row in set (0.00 sec) 通过以下脚本关闭 ： SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,&#39;ONLY_FULL_GROUP_BY,&#39;,&#39;&#39;)); 再次查询 @@sql_mode 返回中应该已经没有该模式了。 mysql&gt; SELECT @@sql_mode; +----------------------------------------------------------------------------------------------------+ | @@sql_mode | +----------------------------------------------------------------------------------------------------+ | STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | +----------------------------------------------------------------------------------------------------+ 1 row in set (0.00 sec) 第二种是找到 MySQL 配置文件修改并保存。 MySQL 的配置文件名为 my.cnf，可通过以下命令查看你位置： $ mysql --help | grep cnf order of preference, my.cnf, $MYSQL_TCP_PORT, /etc/my.cnf /etc/mysql/my.cnf /usr/local/etc/my.cnf ~/.my.cnf 找到后编辑并保存，重启 MySQL 后生效。 [mysqld] -sql_mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION +sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION 如果文件中没有 sql_mode 配置项可手动添加上。 因为 ONLY_FULL_GROUP_BY 更加符合 SQL 标准，所以不建议关掉。 ANY_VALUE() 还可以通过 ANY_VALUE() 来改造查询语句以避免报错。 使用 ANY_VALUE() 包裹的值不会被检查，跳过该错误。所以这样是可以的： SELECT gender, - last_name + ANY_VALUE(last_name) FROM employees GROUP BY gender 添加列间的依赖 像这个示例中， # 🚨 SELECT gender, last_name FROM employees GROUP BY gender 假如我们让 gender 变成不重复的主键，last_name 便与 gender 产生了一种关系，即 gender 可唯一确定 last_name。此时便可进行 GROUP BY 了。因为，之所以报错是因为在进行聚合的时候有不能确定的列参与了进来。 总结 一般 GROUP BY 会与另外的聚合函数配合使用，比如 COUNT(), SUM() 等。查询所有列无差别地进行 GROUP BY 的情况并不是正常的使用姿势。 相关资源 12.20.3 MySQL Handling of GROUP BY ONLY_FULL_GROUP_BY 12.21 Miscellaneous Functions 12.20.1 Aggregate (GROUP BY) Function Descriptions" />
+<meta property="og:description" content="MySQL GROUP BY 的问题 拿 employee 示例数据库为例，当进行如下操作时会报错。 mysql&gt; SELECT * FROM employees GROUP BY gender; ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column &#39;employees.employees.emp_no&#39; which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by 其中 employee 的表结构为： mysql&gt; DESCRIBE employees; +------------+---------------+------+-----+---------+-------+ | Field | Type | Null | Key | Default | Extra | +------------+---------------+------+-----+---------+-------+ | emp_no | int(11) | NO | PRI | NULL | | | birth_date | date | NO | | NULL | | | first_name | varchar(14) | NO | | NULL | | | last_name | varchar(16) | NO | | NULL | | | gender | enum(&#39;M&#39;,&#39;F&#39;) | NO | | NULL | | | hire_date | date | NO | | NULL | | +------------+---------------+------+-----+---------+-------+ 6 rows in set (0.01 sec) 原因 SQL 标准中不允许 SELECT 列表，HAVING 条件语句，或 ORDER BY 语句中出现 GROUP BY 中未列出的可聚合列。而 MySQL 中有一个状态 ONLY_FULL_GROUP_BY 来标识是否遵从这一标准，默认为开启状态。 所以这样的语句是不可以的， # 🚨 SELECT gender, last_name FROM employees GROUP BY gender 将 last_name 从 SELECT 中移除或将其添加到 GROUP BY 中都可以修复。 # ✅ SELECT gender, FROM employees GROUP BY gender # ✅ SELECT gender, last_name FROM employees GROUP BY gender, last_name 但这样的修改查询出来就可能就不是想要的结果了。 解决 三种方式来解决。 关闭 ONLY_FULL_GROUP_BY 可以选择关掉 MySQL 的 ONLY_FULL_GROUP_BY 模式。 有两种方式，通过昨晚设置 sql_mode 来关闭。 首先查看变更前的 sql_mode： mysql&gt; SELECT @@sql_mode; +-----------------------------------------------------------------------------------------------------------------------+ | @@sql_mode | +-----------------------------------------------------------------------------------------------------------------------+ | ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | +-----------------------------------------------------------------------------------------------------------------------+ 1 row in set (0.00 sec) 通过以下脚本关闭 ： SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,&#39;ONLY_FULL_GROUP_BY,&#39;,&#39;&#39;)); 再次查询 @@sql_mode 返回中应该已经没有该模式了。 mysql&gt; SELECT @@sql_mode; +----------------------------------------------------------------------------------------------------+ | @@sql_mode | +----------------------------------------------------------------------------------------------------+ | STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | +----------------------------------------------------------------------------------------------------+ 1 row in set (0.00 sec) 第二种是找到 MySQL 配置文件修改并保存。 MySQL 的配置文件名为 my.cnf，可通过以下命令查看你位置： $ mysql --help | grep cnf order of preference, my.cnf, $MYSQL_TCP_PORT, /etc/my.cnf /etc/mysql/my.cnf /usr/local/etc/my.cnf ~/.my.cnf 找到后编辑并保存，重启 MySQL 后生效。 [mysqld] -sql_mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION +sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION 如果文件中没有 sql_mode 配置项可手动添加上。 因为 ONLY_FULL_GROUP_BY 更加符合 SQL 标准，所以不建议关掉。 ANY_VALUE() 还可以通过 ANY_VALUE() 来改造查询语句以避免报错。 使用 ANY_VALUE() 包裹的值不会被检查，跳过该错误。所以这样是可以的： SELECT gender, - last_name + ANY_VALUE(last_name) FROM employees GROUP BY gender 添加列间的依赖 像这个示例中， # 🚨 SELECT gender, last_name FROM employees GROUP BY gender 假如我们让 gender 变成不重复的主键，last_name 便与 gender 产生了一种关系，即 gender 可唯一确定 last_name。此时便可进行 GROUP BY 了。因为，之所以报错是因为在进行聚合的时候有不能确定的列参与了进来。 总结 一般 GROUP BY 会与另外的聚合函数配合使用，比如 COUNT(), SUM() 等。查询所有列无差别地进行 GROUP BY 的情况并不是正常的使用姿势。 相关资源 12.20.3 MySQL Handling of GROUP BY ONLY_FULL_GROUP_BY 12.21 Miscellaneous Functions 12.20.1 Aggregate (GROUP BY) Function Descriptions" />
+<link rel="canonical" href="http://localhost:4000/2019/05/17/MySQL-GROUP-BY-%E7%9A%84%E9%97%AE%E9%A2%98.html" />
+<meta property="og:url" content="http://localhost:4000/2019/05/17/MySQL-GROUP-BY-%E7%9A%84%E9%97%AE%E9%A2%98.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-17T23:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/05/17/MySQL-GROUP-BY-%E7%9A%84%E9%97%AE%E9%A2%98.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/05/17/MySQL-GROUP-BY-%E7%9A%84%E9%97%AE%E9%A2%98.html"},"description":"MySQL GROUP BY 的问题 拿 employee 示例数据库为例，当进行如下操作时会报错。 mysql&gt; SELECT * FROM employees GROUP BY gender; ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column &#39;employees.employees.emp_no&#39; which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by 其中 employee 的表结构为： mysql&gt; DESCRIBE employees; +------------+---------------+------+-----+---------+-------+ | Field | Type | Null | Key | Default | Extra | +------------+---------------+------+-----+---------+-------+ | emp_no | int(11) | NO | PRI | NULL | | | birth_date | date | NO | | NULL | | | first_name | varchar(14) | NO | | NULL | | | last_name | varchar(16) | NO | | NULL | | | gender | enum(&#39;M&#39;,&#39;F&#39;) | NO | | NULL | | | hire_date | date | NO | | NULL | | +------------+---------------+------+-----+---------+-------+ 6 rows in set (0.01 sec) 原因 SQL 标准中不允许 SELECT 列表，HAVING 条件语句，或 ORDER BY 语句中出现 GROUP BY 中未列出的可聚合列。而 MySQL 中有一个状态 ONLY_FULL_GROUP_BY 来标识是否遵从这一标准，默认为开启状态。 所以这样的语句是不可以的， # 🚨 SELECT gender, last_name FROM employees GROUP BY gender 将 last_name 从 SELECT 中移除或将其添加到 GROUP BY 中都可以修复。 # ✅ SELECT gender, FROM employees GROUP BY gender # ✅ SELECT gender, last_name FROM employees GROUP BY gender, last_name 但这样的修改查询出来就可能就不是想要的结果了。 解决 三种方式来解决。 关闭 ONLY_FULL_GROUP_BY 可以选择关掉 MySQL 的 ONLY_FULL_GROUP_BY 模式。 有两种方式，通过昨晚设置 sql_mode 来关闭。 首先查看变更前的 sql_mode： mysql&gt; SELECT @@sql_mode; +-----------------------------------------------------------------------------------------------------------------------+ | @@sql_mode | +-----------------------------------------------------------------------------------------------------------------------+ | ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | +-----------------------------------------------------------------------------------------------------------------------+ 1 row in set (0.00 sec) 通过以下脚本关闭 ： SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,&#39;ONLY_FULL_GROUP_BY,&#39;,&#39;&#39;)); 再次查询 @@sql_mode 返回中应该已经没有该模式了。 mysql&gt; SELECT @@sql_mode; +----------------------------------------------------------------------------------------------------+ | @@sql_mode | +----------------------------------------------------------------------------------------------------+ | STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION | +----------------------------------------------------------------------------------------------------+ 1 row in set (0.00 sec) 第二种是找到 MySQL 配置文件修改并保存。 MySQL 的配置文件名为 my.cnf，可通过以下命令查看你位置： $ mysql --help | grep cnf order of preference, my.cnf, $MYSQL_TCP_PORT, /etc/my.cnf /etc/mysql/my.cnf /usr/local/etc/my.cnf ~/.my.cnf 找到后编辑并保存，重启 MySQL 后生效。 [mysqld] -sql_mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION +sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION 如果文件中没有 sql_mode 配置项可手动添加上。 因为 ONLY_FULL_GROUP_BY 更加符合 SQL 标准，所以不建议关掉。 ANY_VALUE() 还可以通过 ANY_VALUE() 来改造查询语句以避免报错。 使用 ANY_VALUE() 包裹的值不会被检查，跳过该错误。所以这样是可以的： SELECT gender, - last_name + ANY_VALUE(last_name) FROM employees GROUP BY gender 添加列间的依赖 像这个示例中， # 🚨 SELECT gender, last_name FROM employees GROUP BY gender 假如我们让 gender 变成不重复的主键，last_name 便与 gender 产生了一种关系，即 gender 可唯一确定 last_name。此时便可进行 GROUP BY 了。因为，之所以报错是因为在进行聚合的时候有不能确定的列参与了进来。 总结 一般 GROUP BY 会与另外的聚合函数配合使用，比如 COUNT(), SUM() 等。查询所有列无差别地进行 GROUP BY 的情况并不是正常的使用姿势。 相关资源 12.20.3 MySQL Handling of GROUP BY ONLY_FULL_GROUP_BY 12.21 Miscellaneous Functions 12.20.1 Aggregate (GROUP BY) Function Descriptions","@type":"BlogPosting","headline":"MySQL GROUP BY 的问题","dateModified":"2019-05-17T23:05:00+08:00","datePublished":"2019-05-17T23:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">MySQL GROUP BY 的问题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-17T23:05:00+08:00" itemprop="datePublished">May 17, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="mysql-group-by-的问题">MySQL GROUP BY 的问题</h1>
+
+<p>拿 <code class="language-plaintext highlighter-rouge">employee</code> 示例数据库为例，当进行如下操作时会报错。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM   employees GROUP  BY gender<span class="p">;</span> 
+ERROR 1055 <span class="o">(</span>42000<span class="o">)</span>: Expression <span class="c">#1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'employees.employees.emp_no' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">employee</code> 的表结构为：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; DESCRIBE employees<span class="p">;</span>
++------------+---------------+------+-----+---------+-------+
+| Field      | Type          | Null | Key | Default | Extra |
++------------+---------------+------+-----+---------+-------+
+| emp_no     | int<span class="o">(</span>11<span class="o">)</span>       | NO   | PRI | NULL    |       |
+| birth_date | <span class="nb">date</span>          | NO   |     | NULL    |       |
+| first_name | varchar<span class="o">(</span>14<span class="o">)</span>   | NO   |     | NULL    |       |
+| last_name  | varchar<span class="o">(</span>16<span class="o">)</span>   | NO   |     | NULL    |       |
+| gender     | enum<span class="o">(</span><span class="s1">'M'</span>,<span class="s1">'F'</span><span class="o">)</span> | NO   |     | NULL    |       |
+| hire_date  | <span class="nb">date</span>          | NO   |     | NULL    |       |
++------------+---------------+------+-----+---------+-------+
+6 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="原因">原因</h2>
+
+<p>SQL 标准中不允许 SELECT 列表，HAVING 条件语句，或 ORDER BY 语句中出现 GROUP BY 中未列出的可聚合列。而 MySQL 中有一个状态 <a href="https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_only_full_group_by">ONLY_FULL_GROUP_BY</a> 来标识是否遵从这一标准，默认为开启状态。</p>
+
+<p>所以这样的语句是不可以的，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">🚨</span>
+<span class="k">SELECT</span> <span class="n">gender</span><span class="p">,</span> 
+       <span class="n">last_name</span> 
+<span class="k">FROM</span>   <span class="n">employees</span> 
+<span class="k">GROUP</span>  <span class="k">BY</span> <span class="n">gender</span> 
+</code></pre></div></div>
+
+<p>将 <code class="language-plaintext highlighter-rouge">last_name</code> 从 SELECT 中移除或将其添加到 GROUP BY 中都可以修复。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ✅</span>
+SELECT gender,
+FROM   employees 
+GROUP  BY gender 
+
+<span class="c"># ✅</span>
+SELECT gender, 
+       last_name 
+FROM   employees 
+GROUP  BY gender, 
+          last_name  
+</code></pre></div></div>
+
+<p>但这样的修改查询出来就可能就不是想要的结果了。</p>
+
+<h2 id="解决">解决</h2>
+
+<p>三种方式来解决。</p>
+
+<h3 id="关闭-only_full_group_by">关闭 ONLY_FULL_GROUP_BY</h3>
+
+<p>可以选择关掉 MySQL 的 <a href="https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_only_full_group_by">ONLY_FULL_GROUP_BY</a> 模式。</p>
+
+<p>有两种方式，通过昨晚设置 <code class="language-plaintext highlighter-rouge">sql_mode</code> 来关闭。</p>
+
+<p>首先查看变更前的 <code class="language-plaintext highlighter-rouge">sql_mode</code>：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT @@sql_mode<span class="p">;</span>
++-----------------------------------------------------------------------------------------------------------------------+
+| @@sql_mode                                                                                                            |
++-----------------------------------------------------------------------------------------------------------------------+
+| ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION |
++-----------------------------------------------------------------------------------------------------------------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>通过以下脚本关闭 ：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="k">SESSION</span> <span class="n">sql_mode</span><span class="o">=</span><span class="p">(</span><span class="k">SELECT</span> <span class="k">REPLACE</span><span class="p">(</span><span class="o">@@</span><span class="n">sql_mode</span><span class="p">,</span><span class="s1">'ONLY_FULL_GROUP_BY,'</span><span class="p">,</span><span class="s1">''</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>再次查询 <code class="language-plaintext highlighter-rouge">@@sql_mode</code> 返回中应该已经没有该模式了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT @@sql_mode<span class="p">;</span>
++----------------------------------------------------------------------------------------------------+
+| @@sql_mode                                                                                         |
++----------------------------------------------------------------------------------------------------+
+| STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION |
++----------------------------------------------------------------------------------------------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>第二种是找到 MySQL 配置文件修改并保存。</p>
+
+<p>MySQL 的配置文件名为 <code class="language-plaintext highlighter-rouge">my.cnf</code>，可通过以下命令查看你位置：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysql <span class="nt">--help</span> | <span class="nb">grep </span>cnf
+                      order of preference, my.cnf, <span class="nv">$MYSQL_TCP_PORT</span>,
+/etc/my.cnf /etc/mysql/my.cnf /usr/local/etc/my.cnf ~/.my.cnf
+</code></pre></div></div>
+
+<p>找到后编辑并保存，重启 MySQL 后生效。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">[mysqld]</span>
+-sql_mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+<span class="gi">+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+</span></code></pre></div></div>
+
+<p>如果文件中没有 <code class="language-plaintext highlighter-rouge">sql_mode</code> 配置项可手动添加上。</p>
+
+<p>因为 <code class="language-plaintext highlighter-rouge">ONLY_FULL_GROUP_BY</code> 更加符合 SQL 标准，所以不建议关掉。</p>
+
+<h3 id="any_value">ANY_VALUE()</h3>
+
+<p>还可以通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_any-value">ANY_VALUE()</a> 来改造查询语句以避免报错。</p>
+
+<p>使用 <code class="language-plaintext highlighter-rouge">ANY_VALUE()</code> 包裹的值不会被检查，跳过该错误。所以这样是可以的：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">SELECT gender, 
+</span><span class="gd">-       last_name
+</span><span class="gi">+       ANY_VALUE(last_name) 
+</span><span class="p">FROM   employees 
+GROUP  BY gender 
+</span></code></pre></div></div>
+
+<h3 id="添加列间的依赖">添加列间的依赖</h3>
+
+<p>像这个示例中，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">🚨</span>
+<span class="k">SELECT</span> <span class="n">gender</span><span class="p">,</span> 
+       <span class="n">last_name</span> 
+<span class="k">FROM</span>   <span class="n">employees</span> 
+<span class="k">GROUP</span>  <span class="k">BY</span> <span class="n">gender</span> 
+</code></pre></div></div>
+
+<p>假如我们让 <code class="language-plaintext highlighter-rouge">gender</code> 变成不重复的主键，<code class="language-plaintext highlighter-rouge">last_name</code> 便与 <code class="language-plaintext highlighter-rouge">gender</code> 产生了一种关系，即 <code class="language-plaintext highlighter-rouge">gender</code> 可唯一确定 <code class="language-plaintext highlighter-rouge">last_name</code>。此时便可进行 <code class="language-plaintext highlighter-rouge">GROUP BY</code> 了。因为，之所以报错是因为在进行聚合的时候有不能确定的列参与了进来。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>一般 GROUP BY 会与另外的聚合函数配合使用，比如 COUNT(), SUM() 等。查询所有列无差别地进行 GROUP BY 的情况并不是正常的使用姿势。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/5.7/en/group-by-handling.html">12.20.3 MySQL Handling of GROUP BY</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_only_full_group_by">ONLY_FULL_GROUP_BY</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/5.7/en/miscellaneous-functions.html">12.21 Miscellaneous Functions</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/group-by-functions.html">12.20.1 Aggregate (GROUP BY) Function Descriptions</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/05/17/MySQL-GROUP-BY-%E7%9A%84%E9%97%AE%E9%A2%98.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

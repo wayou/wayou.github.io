@@ -1,0 +1,58 @@
+I"�<h2 id="uistackview-的背景">UIStackView 的背景</h2>
+
+<p>UIStackView 作为布局组件，本身的 <code class="language-plaintext highlighter-rouge">drawRect</code> 是不会被调用的，其 <code class="language-plaintext highlighter-rouge">backgroundColor</code> 属性会被忽略。</p>
+
+<p>所以，虽然以下设置 <code class="language-plaintext highlighter-rouge">backgroundColor</code> 的代码是合法能够编译的，但其实并不起作用。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">UIStackView</span> <span class="o">*</span><span class="n">view</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIStackView</span> <span class="nf">new</span><span class="p">];</span>
+<span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIColor</span> <span class="nf">redColor</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>要设置 UIStackView 的背景，就只能变通来做，</p>
+
+<ul>
+  <li>将其添加到另一个 UIView 中，设置后者的背景色</li>
+  <li>或者添加一个子元素到其中专门用来设置背景色。</li>
+</ul>
+
+<p>第一种方法好理解，既然 UIStackView 没有背景色，那自然它放哪就用的谁的背景。</p>
+
+<p>第二种方式可通过扩展 UIStackView 来做：</p>
+
+<p>Objecitve-C 版本：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">addBackground</span><span class="p">:(</span><span class="n">UIColor</span> <span class="o">*</span><span class="p">)</span><span class="nv">color</span> <span class="p">{</span>
+  <span class="n">UIView</span> <span class="o">*</span><span class="n">subView</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIView</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">initWithFrame</span><span class="p">:</span><span class="n">self</span><span class="p">.</span><span class="n">bounds</span><span class="p">];</span>
+  <span class="n">subView</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="n">color</span><span class="p">;</span>
+  <span class="n">subView</span><span class="p">.</span><span class="n">autoresizingMask</span> <span class="o">=</span> <span class="n">UIViewAutoresizingFlexibleWidth</span> <span class="o">|</span> <span class="n">UIViewAutoresizingFlexibleHeight</span><span class="p">;</span>
+  <span class="p">[</span><span class="n">self</span> <span class="nf">insertSubview</span><span class="p">:</span><span class="n">subView</span> <span class="nf">atIndex</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>NOETS</strong>：其中 <a href="https://developer.apple.com/documentation/uikit/uiview/1622559-autoresizingmask?language=objc"><code class="language-plaintext highlighter-rouge">autoresizingMask</code></a> 指定视图在父级元素尺寸发生变化时自身如何重新适配。这里即背景层始终保持填充父级元素。</p>
+
+<p>使用：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">UIStackView</span> <span class="o">*</span><span class="n">view</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIStackView</span> <span class="nf">new</span><span class="p">];</span>
+<span class="p">[</span><span class="n">view</span> <span class="nf">addBackground</span><span class="p">:[</span><span class="n">UIColor</span> <span class="nf">redColor</span><span class="p">]];</span>
+</code></pre></div></div>
+
+<p>Swift 版本：</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">extension</span> <span class="kt">UIStackView</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">addBackground</span><span class="p">(</span><span class="nv">color</span><span class="p">:</span> <span class="kt">UIColor</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">subView</span> <span class="o">=</span> <span class="kt">UIView</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">bounds</span><span class="p">)</span>
+        <span class="n">subView</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="n">subView</span><span class="o">.</span><span class="n">autoresizingMask</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="n">flexibleWidth</span><span class="p">,</span> <span class="o">.</span><span class="n">flexibleHeight</span><span class="p">]</span>
+        <span class="nf">insertSubview</span><span class="p">(</span><span class="n">subView</span><span class="p">,</span> <span class="nv">at</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/a/34868367/1553656">How to change the background color of UIStackView?</a></li>
+</ul>
+
+:ET

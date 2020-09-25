@@ -1,0 +1,30 @@
+I"�<h1 id="es-提案的各状态">ES 提案的各状态</h1>
+
+<p>JavaScrpit，亦即 ECMAScript，新功能的演进是由一个叫 <a href="https://www.ecma-international.org/memento/tc39.htm">TC39</a> 这么个组织在统筹协调和推进的。</p>
+
+<p>一般新特性会由社区先提案，被采纳后开始进入下一流程。一个提案到最终落地到成为标准，需要经过几个阶段（stage）。</p>
+
+<p>目前采纳进入正式流程中的提案可在 <a href="https://github.com/tc39/proposals">tc39/proposals</a> 查看到。可以看到，<a href="http://github.com/tc39/proposal-decorators">装饰器 Decorator</a> 处于 Stage 2 阶段，<a href="https://github.com/tc39/proposal-global"><code class="language-plaintext highlighter-rouge">globalThis</code></a> 处于 Stage 3 这个阶段。</p>
+
+<p>以下是各阶段及含义的描述：</p>
+
+<ul>
+  <li>Stage 0/Strawperson： 潜在的可能被纳入规范的一些想法。</li>
+  <li>Stage 1/Proposal：为该想法设想一些适用场景，可能的 case。提出解决实现方案以及可能的变更。</li>
+  <li>Stage 2/Draft：经过上一步验证讨论后，这一阶段开始起草语言层面的语义语法，准备正式的规范文档。</li>
+  <li>Stage 3/Candidate：提案进入到了候选阶段。开始接收一些反馈对提案进行完善。</li>
+  <li>Stage 4/Finished：可以被纳入到正式的 ECMAScript 语言规范中了。</li>
+</ul>
+
+<p>更加详细的各阶段的描述可通过 <a href="https://tc39.es/process-document/">The TC39 Process</a> 中的表格来了解。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://tc39.es/process-document/">The TC39 Process</a></li>
+  <li><a href="https://github.com/tc39/proposals">tc39/proposals</a></li>
+  <li><a href="https://tc39.es/ecma262/">ecma262</a></li>
+  <li><a href="https://tc39.es/proposal-decorators/">Decorators proposal</a></li>
+</ul>
+
+:ET

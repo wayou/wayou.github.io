@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>TypeScript 中的方法重载 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="TypeScript 中的方法重载" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TypeScript 中的方法重载 方法重载（overload）在传统的静态类型语言中是很常见的。JavaScript 作为动态语言， 是没有重载这一说的。一是它的参数没有类型的区分，二是对参数个数也没有检查。虽然语言层面无法自动进行重载，但借助其动态的特性，我们可以在代码中手动检查入参的类型，或者通过 arguments 获取到参数个数，从而实现根据不同的入参做不同的操作。 比如有一个获取聊天消息的方法，根据传入的参数从数组中查找数据。如果入参为数字，则认为是 id，然后从数据源中找对应 id 的数据并返回，否则当成类型，返回这一类型的消息。 function getMessage(query) { if (typeof query === &quot;nunber&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query); } } TypeScript 中，假如我们的消息数据为如下结构： type MessageType = &quot;string&quot; | &quot;image&quot; | &quot;audio&quot;; type Message = { id: number; type: MessageType; content: string; }; 上面获取数据的方法等价于： function getMessage( query: number | MessageType ): Message[] | Message | undefined { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query); } } 这样做一是类型书写上比较丑陋，二是没有发挥出 TypeScript 类型检查的优势，这里我们是可以根据入参的类型明确知道返回的类型的，即如果传入的是 id，返回的是单个数据或undefined，如果是根据类型查找，返回的是数组。而现在调用方法后，得到的类型太过宽泛，这和使用 any 做为返回没多大差别。 函数返回类型不够紧凑 因为类型的不明朗，返回的结果都不能直接操作，需要进行类型转换后才能继续。 const result1 = getMessage(&quot;audio&quot;); /** 不能直接对 result1 调用数组方法 */ console.log((result1 as Message[]).length); const result2 = getMessage(1); if (result2) { /** 不能对 result2 直接访问消息对象中的属性 */ console.log((result2 as Message).content); } 重载的实现 这时候可通过提供多个函数类型的声明来解决上面的问题，最后得到的结果就是间接实现了函数的重载。当然这个重载只是 TypeScript 编译时的。 function getMessage(id: number): Message | undefined; function getMessage(type: MessageType): Message[]; function getMessage(query: any): any { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query); } } 这样改造后，我们在调用的时候直接就会有重载的提示。 实现 TypeScript 的重载后调用时的自动提示 并且得到的结果类型是重载方法中指定的入参与返回的组合，在对结果进行使用时，无须再进行类型转换。 const result1 = getMessage(&quot;audio&quot;); /** ✅ 无须类型转换 */ console.log(result1.length); const result2 = getMessage(1); if (result2) { /** ✅ 无须类型转换 */ console.log(result2.content); } 这里需要理解的是，上面添加的函数类型仅作为 TypeScript 在编译时使用的，它不是真的实现像传统静态类型语言那样的重载，也不会改变编译后代码的输出。实际运行时仍然是不带重载的 JavaScript 版本。 编译后的代码 ```js &quot;use strict&quot;; var data = [ { id: 0, type: &quot;string&quot;, content: &quot;hello&quot; }, { id: 1, type: &quot;image&quot;, content: &quot;url_for_iamge&quot; }, { id: 2, type: &quot;string&quot;, content: &quot;world&quot; } ]; function getMessage(query) { if (typeof query === &quot;number&quot;) { return data.find(function (message) { return message.id === query; }); } else { return data.filter(function (message) { return message.type === query; }); } } var result1 = getMessage(&quot;audio&quot;); /** ✅ 无须类型转换 */ console.log(result1.length); var result2 = getMessage(1); if (result2) { /** ✅ 无须类型转换 */ console.log(result2.content); } ``` 但这一点也不影响我们在 TypeScript 中使用这种假的重载。 可选参数 另一个 TypeScript 重载的场景。还是上面获取消息数据的方法，因为根据类型查找消息时，会返回同类型消息的一个数组。此时我们想加一个参数实现只返回结果中前几个数据，那么可以很方便地进行如下的改造： function getMessage(id: number): Message | undefined; +function getMessage(type: MessageType, count?: number): Message[]; +function getMessage(query: any, count = 10): any { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { + return data.filter(message =&gt; message.type === query).splice(0, count); } } 通过重载，这个新增的参数很容易实现只针对入参 MessageType 时，这样如果我们有如下的调用，会得到编译时的报错： /** 🚨 Argument of type &#39;1&#39; is not assignable to parameter of type &#39;MessageType&#39; */ getMessage(1,10); 而非重载的版本是享受不到上面提到的类型优势的。 function getMessage( query: number | MessageType, count = 10 ): Message[] | Message | undefined { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query).splice(0, count); } } /** ✅ ojbk, 不错报 */ getMessage(1, 10); 重载过程 TypeScript 重载的过程是，拿传入的参数和重载的方法签名列表中由上往下逐个匹配，直到找到一个完全匹配的函数签名，否则报错。所以推荐的做法是将签名更加具体的重载放上面，不那么具体的放后面。 /** ✅*/ function getMessage(type: MessageType, count?: number): Message[]; function getMessage(id: number): Message | undefined; /** 🚨*/ function getMessage(id: number): Message | undefined; function getMessage(type: MessageType, count?: number): Message[]; 像上面示例中正确做法这样，如果说入参个数只有一个，那可以直接跳过第一个函数签名，无须做入参类型的判断。 相关资源 TypeScript Handbook - Functions - Overloads Typescript method overloading" />
+<meta property="og:description" content="TypeScript 中的方法重载 方法重载（overload）在传统的静态类型语言中是很常见的。JavaScript 作为动态语言， 是没有重载这一说的。一是它的参数没有类型的区分，二是对参数个数也没有检查。虽然语言层面无法自动进行重载，但借助其动态的特性，我们可以在代码中手动检查入参的类型，或者通过 arguments 获取到参数个数，从而实现根据不同的入参做不同的操作。 比如有一个获取聊天消息的方法，根据传入的参数从数组中查找数据。如果入参为数字，则认为是 id，然后从数据源中找对应 id 的数据并返回，否则当成类型，返回这一类型的消息。 function getMessage(query) { if (typeof query === &quot;nunber&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query); } } TypeScript 中，假如我们的消息数据为如下结构： type MessageType = &quot;string&quot; | &quot;image&quot; | &quot;audio&quot;; type Message = { id: number; type: MessageType; content: string; }; 上面获取数据的方法等价于： function getMessage( query: number | MessageType ): Message[] | Message | undefined { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query); } } 这样做一是类型书写上比较丑陋，二是没有发挥出 TypeScript 类型检查的优势，这里我们是可以根据入参的类型明确知道返回的类型的，即如果传入的是 id，返回的是单个数据或undefined，如果是根据类型查找，返回的是数组。而现在调用方法后，得到的类型太过宽泛，这和使用 any 做为返回没多大差别。 函数返回类型不够紧凑 因为类型的不明朗，返回的结果都不能直接操作，需要进行类型转换后才能继续。 const result1 = getMessage(&quot;audio&quot;); /** 不能直接对 result1 调用数组方法 */ console.log((result1 as Message[]).length); const result2 = getMessage(1); if (result2) { /** 不能对 result2 直接访问消息对象中的属性 */ console.log((result2 as Message).content); } 重载的实现 这时候可通过提供多个函数类型的声明来解决上面的问题，最后得到的结果就是间接实现了函数的重载。当然这个重载只是 TypeScript 编译时的。 function getMessage(id: number): Message | undefined; function getMessage(type: MessageType): Message[]; function getMessage(query: any): any { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query); } } 这样改造后，我们在调用的时候直接就会有重载的提示。 实现 TypeScript 的重载后调用时的自动提示 并且得到的结果类型是重载方法中指定的入参与返回的组合，在对结果进行使用时，无须再进行类型转换。 const result1 = getMessage(&quot;audio&quot;); /** ✅ 无须类型转换 */ console.log(result1.length); const result2 = getMessage(1); if (result2) { /** ✅ 无须类型转换 */ console.log(result2.content); } 这里需要理解的是，上面添加的函数类型仅作为 TypeScript 在编译时使用的，它不是真的实现像传统静态类型语言那样的重载，也不会改变编译后代码的输出。实际运行时仍然是不带重载的 JavaScript 版本。 编译后的代码 ```js &quot;use strict&quot;; var data = [ { id: 0, type: &quot;string&quot;, content: &quot;hello&quot; }, { id: 1, type: &quot;image&quot;, content: &quot;url_for_iamge&quot; }, { id: 2, type: &quot;string&quot;, content: &quot;world&quot; } ]; function getMessage(query) { if (typeof query === &quot;number&quot;) { return data.find(function (message) { return message.id === query; }); } else { return data.filter(function (message) { return message.type === query; }); } } var result1 = getMessage(&quot;audio&quot;); /** ✅ 无须类型转换 */ console.log(result1.length); var result2 = getMessage(1); if (result2) { /** ✅ 无须类型转换 */ console.log(result2.content); } ``` 但这一点也不影响我们在 TypeScript 中使用这种假的重载。 可选参数 另一个 TypeScript 重载的场景。还是上面获取消息数据的方法，因为根据类型查找消息时，会返回同类型消息的一个数组。此时我们想加一个参数实现只返回结果中前几个数据，那么可以很方便地进行如下的改造： function getMessage(id: number): Message | undefined; +function getMessage(type: MessageType, count?: number): Message[]; +function getMessage(query: any, count = 10): any { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { + return data.filter(message =&gt; message.type === query).splice(0, count); } } 通过重载，这个新增的参数很容易实现只针对入参 MessageType 时，这样如果我们有如下的调用，会得到编译时的报错： /** 🚨 Argument of type &#39;1&#39; is not assignable to parameter of type &#39;MessageType&#39; */ getMessage(1,10); 而非重载的版本是享受不到上面提到的类型优势的。 function getMessage( query: number | MessageType, count = 10 ): Message[] | Message | undefined { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query).splice(0, count); } } /** ✅ ojbk, 不错报 */ getMessage(1, 10); 重载过程 TypeScript 重载的过程是，拿传入的参数和重载的方法签名列表中由上往下逐个匹配，直到找到一个完全匹配的函数签名，否则报错。所以推荐的做法是将签名更加具体的重载放上面，不那么具体的放后面。 /** ✅*/ function getMessage(type: MessageType, count?: number): Message[]; function getMessage(id: number): Message | undefined; /** 🚨*/ function getMessage(id: number): Message | undefined; function getMessage(type: MessageType, count?: number): Message[]; 像上面示例中正确做法这样，如果说入参个数只有一个，那可以直接跳过第一个函数签名，无须做入参类型的判断。 相关资源 TypeScript Handbook - Functions - Overloads Typescript method overloading" />
+<link rel="canonical" href="http://localhost:4000/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD.html" />
+<meta property="og:url" content="http://localhost:4000/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-04-12T23:04:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD.html"},"description":"TypeScript 中的方法重载 方法重载（overload）在传统的静态类型语言中是很常见的。JavaScript 作为动态语言， 是没有重载这一说的。一是它的参数没有类型的区分，二是对参数个数也没有检查。虽然语言层面无法自动进行重载，但借助其动态的特性，我们可以在代码中手动检查入参的类型，或者通过 arguments 获取到参数个数，从而实现根据不同的入参做不同的操作。 比如有一个获取聊天消息的方法，根据传入的参数从数组中查找数据。如果入参为数字，则认为是 id，然后从数据源中找对应 id 的数据并返回，否则当成类型，返回这一类型的消息。 function getMessage(query) { if (typeof query === &quot;nunber&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query); } } TypeScript 中，假如我们的消息数据为如下结构： type MessageType = &quot;string&quot; | &quot;image&quot; | &quot;audio&quot;; type Message = { id: number; type: MessageType; content: string; }; 上面获取数据的方法等价于： function getMessage( query: number | MessageType ): Message[] | Message | undefined { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query); } } 这样做一是类型书写上比较丑陋，二是没有发挥出 TypeScript 类型检查的优势，这里我们是可以根据入参的类型明确知道返回的类型的，即如果传入的是 id，返回的是单个数据或undefined，如果是根据类型查找，返回的是数组。而现在调用方法后，得到的类型太过宽泛，这和使用 any 做为返回没多大差别。 函数返回类型不够紧凑 因为类型的不明朗，返回的结果都不能直接操作，需要进行类型转换后才能继续。 const result1 = getMessage(&quot;audio&quot;); /** 不能直接对 result1 调用数组方法 */ console.log((result1 as Message[]).length); const result2 = getMessage(1); if (result2) { /** 不能对 result2 直接访问消息对象中的属性 */ console.log((result2 as Message).content); } 重载的实现 这时候可通过提供多个函数类型的声明来解决上面的问题，最后得到的结果就是间接实现了函数的重载。当然这个重载只是 TypeScript 编译时的。 function getMessage(id: number): Message | undefined; function getMessage(type: MessageType): Message[]; function getMessage(query: any): any { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query); } } 这样改造后，我们在调用的时候直接就会有重载的提示。 实现 TypeScript 的重载后调用时的自动提示 并且得到的结果类型是重载方法中指定的入参与返回的组合，在对结果进行使用时，无须再进行类型转换。 const result1 = getMessage(&quot;audio&quot;); /** ✅ 无须类型转换 */ console.log(result1.length); const result2 = getMessage(1); if (result2) { /** ✅ 无须类型转换 */ console.log(result2.content); } 这里需要理解的是，上面添加的函数类型仅作为 TypeScript 在编译时使用的，它不是真的实现像传统静态类型语言那样的重载，也不会改变编译后代码的输出。实际运行时仍然是不带重载的 JavaScript 版本。 编译后的代码 ```js &quot;use strict&quot;; var data = [ { id: 0, type: &quot;string&quot;, content: &quot;hello&quot; }, { id: 1, type: &quot;image&quot;, content: &quot;url_for_iamge&quot; }, { id: 2, type: &quot;string&quot;, content: &quot;world&quot; } ]; function getMessage(query) { if (typeof query === &quot;number&quot;) { return data.find(function (message) { return message.id === query; }); } else { return data.filter(function (message) { return message.type === query; }); } } var result1 = getMessage(&quot;audio&quot;); /** ✅ 无须类型转换 */ console.log(result1.length); var result2 = getMessage(1); if (result2) { /** ✅ 无须类型转换 */ console.log(result2.content); } ``` 但这一点也不影响我们在 TypeScript 中使用这种假的重载。 可选参数 另一个 TypeScript 重载的场景。还是上面获取消息数据的方法，因为根据类型查找消息时，会返回同类型消息的一个数组。此时我们想加一个参数实现只返回结果中前几个数据，那么可以很方便地进行如下的改造： function getMessage(id: number): Message | undefined; +function getMessage(type: MessageType, count?: number): Message[]; +function getMessage(query: any, count = 10): any { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { + return data.filter(message =&gt; message.type === query).splice(0, count); } } 通过重载，这个新增的参数很容易实现只针对入参 MessageType 时，这样如果我们有如下的调用，会得到编译时的报错： /** 🚨 Argument of type &#39;1&#39; is not assignable to parameter of type &#39;MessageType&#39; */ getMessage(1,10); 而非重载的版本是享受不到上面提到的类型优势的。 function getMessage( query: number | MessageType, count = 10 ): Message[] | Message | undefined { if (typeof query === &quot;number&quot;) { return data.find(message =&gt; message.id === query); } else { return data.filter(message =&gt; message.type === query).splice(0, count); } } /** ✅ ojbk, 不错报 */ getMessage(1, 10); 重载过程 TypeScript 重载的过程是，拿传入的参数和重载的方法签名列表中由上往下逐个匹配，直到找到一个完全匹配的函数签名，否则报错。所以推荐的做法是将签名更加具体的重载放上面，不那么具体的放后面。 /** ✅*/ function getMessage(type: MessageType, count?: number): Message[]; function getMessage(id: number): Message | undefined; /** 🚨*/ function getMessage(id: number): Message | undefined; function getMessage(type: MessageType, count?: number): Message[]; 像上面示例中正确做法这样，如果说入参个数只有一个，那可以直接跳过第一个函数签名，无须做入参类型的判断。 相关资源 TypeScript Handbook - Functions - Overloads Typescript method overloading","@type":"BlogPosting","headline":"TypeScript 中的方法重载","dateModified":"2019-04-12T23:04:00+08:00","datePublished":"2019-04-12T23:04:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">TypeScript 中的方法重载</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-04-12T23:04:00+08:00" itemprop="datePublished">Apr 12, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="typescript-中的方法重载">TypeScript 中的方法重载</h1>
+
+<p>方法重载（overload）在传统的静态类型语言中是很常见的。JavaScript 作为动态语言， 是没有重载这一说的。一是它的参数没有类型的区分，二是对参数个数也没有检查。虽然语言层面无法自动进行重载，但借助其动态的特性，我们可以在代码中手动检查入参的类型，或者通过 <code class="language-plaintext highlighter-rouge">arguments</code> 获取到参数个数，从而实现根据不同的入参做不同的操作。</p>
+
+<p>比如有一个获取聊天消息的方法，根据传入的参数从数组中查找数据。如果入参为数字，则认为是 id，然后从数据源中找对应 id 的数据并返回，否则当成类型，返回这一类型的消息。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span><span class="nx">query</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">query</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">nunber</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">message</span> <span class="o">=&gt;</span> <span class="nx">message</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">query</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">message</span> <span class="o">=&gt;</span> <span class="nx">message</span><span class="p">.</span><span class="nx">type</span> <span class="o">===</span> <span class="nx">query</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>TypeScript 中，假如我们的消息数据为如下结构：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">MessageType</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">string</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">image</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">audio</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">type</span> <span class="nx">Message</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">id</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+  <span class="nl">type</span><span class="p">:</span> <span class="nx">MessageType</span><span class="p">;</span>
+  <span class="nl">content</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>上面获取数据的方法等价于：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span>
+  <span class="nx">query</span><span class="p">:</span> <span class="kr">number</span> <span class="o">|</span> <span class="nx">MessageType</span>
+<span class="p">):</span> <span class="nx">Message</span><span class="p">[]</span> <span class="o">|</span> <span class="nx">Message</span> <span class="o">|</span> <span class="kc">undefined</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">query</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">number</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">message</span> <span class="o">=&gt;</span> <span class="nx">message</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">query</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">message</span> <span class="o">=&gt;</span> <span class="nx">message</span><span class="p">.</span><span class="kd">type</span> <span class="o">===</span> <span class="nx">query</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这样做一是类型书写上比较丑陋，二是没有发挥出 TypeScript 类型检查的优势，这里我们是可以根据入参的类型明确知道返回的类型的，即如果传入的是 id，返回的是单个数据或<code class="language-plaintext highlighter-rouge">undefined</code>，如果是根据类型查找，返回的是数组。而现在调用方法后，得到的类型太过宽泛，这和使用 <code class="language-plaintext highlighter-rouge">any</code> 做为返回没多大差别。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55962274-231c6980-5ca3-11e9-8381-33a767a0517b.png" alt="函数返回类型不够紧凑" /></p>
+<p align="center">函数返回类型不够紧凑</p>
+
+<p>因为类型的不明朗，返回的结果都不能直接操作，需要进行类型转换后才能继续。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">result1</span> <span class="o">=</span> <span class="nx">getMessage</span><span class="p">(</span><span class="dl">"</span><span class="s2">audio</span><span class="dl">"</span><span class="p">);</span>
+<span class="cm">/** 不能直接对 result1 调用数组方法 */</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">((</span><span class="nx">result1</span> <span class="k">as</span> <span class="nx">Message</span><span class="p">[]).</span><span class="nx">length</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">result2</span> <span class="o">=</span> <span class="nx">getMessage</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">result2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/** 不能对 result2 直接访问消息对象中的属性 */</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">((</span><span class="nx">result2</span> <span class="k">as</span> <span class="nx">Message</span><span class="p">).</span><span class="nx">content</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="重载的实现">重载的实现</h3>
+
+<p>这时候可通过提供多个函数类型的声明来解决上面的问题，最后得到的结果就是间接实现了函数的重载。当然这个重载只是 TypeScript 编译时的。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span><span class="nx">id</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="nx">Message</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span><span class="kd">type</span><span class="p">:</span> <span class="nx">MessageType</span><span class="p">):</span> <span class="nx">Message</span><span class="p">[];</span>
+<span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span><span class="nx">query</span><span class="p">:</span> <span class="kr">any</span><span class="p">):</span> <span class="kr">any</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">query</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">number</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">message</span> <span class="o">=&gt;</span> <span class="nx">message</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">query</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">message</span> <span class="o">=&gt;</span> <span class="nx">message</span><span class="p">.</span><span class="kd">type</span> <span class="o">===</span> <span class="nx">query</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这样改造后，我们在调用的时候直接就会有重载的提示。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55962191-ff592380-5ca2-11e9-8df2-cfd7356c4dda.png" alt="实现 TypeScript 的重载后调用时的自动提示" /></p>
+<p align="center">实现 TypeScript 的重载后调用时的自动提示</p>
+
+<p>并且得到的结果类型是重载方法中指定的入参与返回的组合，在对结果进行使用时，无须再进行类型转换。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">result1</span> <span class="o">=</span> <span class="nx">getMessage</span><span class="p">(</span><span class="dl">"</span><span class="s2">audio</span><span class="dl">"</span><span class="p">);</span>
+<span class="cm">/** ✅ 无须类型转换 */</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result1</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">result2</span> <span class="o">=</span> <span class="nx">getMessage</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">result2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/** ✅ 无须类型转换 */</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result2</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这里需要理解的是，上面添加的函数类型仅作为 TypeScript 在编译时使用的，它不是真的实现像传统静态类型语言那样的重载，也不会改变编译后代码的输出。实际运行时仍然是不带重载的 JavaScript 版本。</p>
+
+<details>
+<summary>编译后的代码</summary>
+
+```js
+"use strict";
+var data = [
+    {
+        id: 0,
+        type: "string",
+        content: "hello"
+    },
+    {
+        id: 1,
+        type: "image",
+        content: "url_for_iamge"
+    },
+    {
+        id: 2,
+        type: "string",
+        content: "world"
+    }
+];
+function getMessage(query) {
+    if (typeof query === "number") {
+        return data.find(function (message) { return message.id === query; });
+    }
+    else {
+        return data.filter(function (message) { return message.type === query; });
+    }
+}
+var result1 = getMessage("audio");
+/** ✅ 无须类型转换 */
+console.log(result1.length);
+var result2 = getMessage(1);
+if (result2) {
+    /** ✅ 无须类型转换 */
+    console.log(result2.content);
+}
+```
+</details>
+
+<p>但这一点也不影响我们在 TypeScript 中使用这种假的重载。</p>
+
+<h3 id="可选参数">可选参数</h3>
+
+<p>另一个 TypeScript 重载的场景。还是上面获取消息数据的方法，因为根据类型查找消息时，会返回同类型消息的一个数组。此时我们想加一个参数实现只返回结果中前几个数据，那么可以很方便地进行如下的改造：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function getMessage(id: number): Message | undefined;
+</span><span class="gi">+function getMessage(type: MessageType, count?: number): Message[];
++function getMessage(query: any, count = 10): any {
+</span>  if (typeof query === "number") {
+    return data.find(message =&gt; message.id === query);
+  } else {
+<span class="gi">+    return data.filter(message =&gt; message.type === query).splice(0, count);
+</span>  }
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>通过重载，这个新增的参数很容易实现只针对入参 <code class="language-plaintext highlighter-rouge">MessageType</code> 时，这样如果我们有如下的调用，会得到编译时的报错：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 🚨 Argument of type '1' is not assignable to parameter of type 'MessageType' */</span>
+<span class="nx">getMessage</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>而非重载的版本是享受不到上面提到的类型优势的。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span>
+  <span class="nx">query</span><span class="p">:</span> <span class="kr">number</span> <span class="o">|</span> <span class="nx">MessageType</span><span class="p">,</span>
+  <span class="nx">count</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="p">):</span> <span class="nx">Message</span><span class="p">[]</span> <span class="o">|</span> <span class="nx">Message</span> <span class="o">|</span> <span class="kc">undefined</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">query</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">number</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">message</span> <span class="o">=&gt;</span> <span class="nx">message</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">query</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">message</span> <span class="o">=&gt;</span> <span class="nx">message</span><span class="p">.</span><span class="kd">type</span> <span class="o">===</span> <span class="nx">query</span><span class="p">).</span><span class="nx">splice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">count</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/** ✅ ojbk, 不错报 */</span>
+<span class="nx">getMessage</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="重载过程">重载过程</h3>
+
+<p>TypeScript 重载的过程是，拿传入的参数和重载的方法签名列表中由上往下逐个匹配，直到找到一个完全匹配的函数签名，否则报错。所以推荐的做法是将签名更加具体的重载放上面，不那么具体的放后面。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** ✅*/</span>
+<span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span><span class="kd">type</span><span class="p">:</span> <span class="nx">MessageType</span><span class="p">,</span> <span class="nx">count</span><span class="p">?:</span> <span class="kr">number</span><span class="p">):</span> <span class="nx">Message</span><span class="p">[];</span>
+<span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span><span class="nx">id</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="nx">Message</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>
+
+<span class="cm">/** 🚨*/</span>
+<span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span><span class="nx">id</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="nx">Message</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">getMessage</span><span class="p">(</span><span class="kd">type</span><span class="p">:</span> <span class="nx">MessageType</span><span class="p">,</span> <span class="nx">count</span><span class="p">?:</span> <span class="kr">number</span><span class="p">):</span> <span class="nx">Message</span><span class="p">[];</span>
+</code></pre></div></div>
+
+<p>像上面示例中正确做法这样，如果说入参个数只有一个，那可以直接跳过第一个函数签名，无须做入参类型的判断。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/functions.html">TypeScript Handbook - Functions - Overloads</a></li>
+  <li><a href="https://medium.com/@kevinkreuzer/typescript-method-overloading-c256dd63245a">Typescript method overloading</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

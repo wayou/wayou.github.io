@@ -1,0 +1,175 @@
+I"U5<h1 id="objective-c-属性的声明及-dynamic">Objective-C 属性的声明及 @dynamic</h1>
+
+<p>类接口中属性其实是 getter 和 setter 的集合，当你声明一个属性时，</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>你得到的其实是一对存取器方法：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">-</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">name</span><span class="p">;</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setName</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>即，代码中使用 <code class="language-plaintext highlighter-rouge">obj.name</code> 的地方会变成 <code class="language-plaintext highlighter-rouge">[obj name]</code>，向对象发送 getter 消息。而 <code class="language-plaintext highlighter-rouge">obj.name = @"hello"</code> 则在编译后成为 <code class="language-plaintext highlighter-rouge">[obj setName:@"hello"]</code>。</p>
+
+<p>按照 Objective-C 的命名约定，这背后实际存储 <code class="language-plaintext highlighter-rouge">name</code> 的变量，会是 <code class="language-plaintext highlighter-rouge">_name</code>，称这个 <code class="language-plaintext highlighter-rouge">_name</code> 为 <strong>实例变量（intance variable）</strong>。当然也可直接访问这个 <code class="language-plaintext highlighter-rouge">_name</code> 进行操作，但只有 <code class="language-plaintext highlighter-rouge">obj.name</code> 会通过存取器来进行值设置和读取。</p>
+
+<p>前面只是属性的声明，在类的实现中，有这些种途径来完成属性存取器的实现，</p>
+
+<ul>
+  <li>自动，只需使用 <code class="language-plaintext highlighter-rouge">@property</code> 声明一下即可。</li>
+  <li>自定义存取器</li>
+  <li>使用 <code class="language-plaintext highlighter-rouge">@dynamic</code>。</li>
+</ul>
+
+<h2 id="自动生成">自动生成</h2>
+
+<p>这也是最常用的方式，如果没有额外的需求，使用 <code class="language-plaintext highlighter-rouge">@property</code> 进行属性的声明即可。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@interface</span> <span class="nc">MyClass</span> <span class="p">:</span> <span class="nc">UIView</span>
+
+<span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+<span class="k">@implementation</span> <span class="nc">MyClass</span>
+
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p>实现部分会有编译器自动完成，编译后生成的代码如文章开头所示，即：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">-</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">name</span><span class="p">;</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setName</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="自定义存取器">自定义存取器</h2>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@interface</span> <span class="nc">MyClass</span> <span class="p">:</span> <span class="nc">UIView</span> <span class="p">{</span>
+    <span class="n">NSString</span> <span class="o">*</span><span class="n">_name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">@property</span> <span class="p">(</span><span class="n">copy</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+<span class="k">@implementation</span> <span class="nc">MyClass</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">name</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">_name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setName</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">name</span> <span class="p">{</span>
+    <span class="n">_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="nf">uppercaseString</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p>自定义存取器往往伴随着需要使用  <code class="language-plaintext highlighter-rouge">@synthesize</code> 关键字。</p>
+
+<h3 id="synthesize"><code class="language-plaintext highlighter-rouge">@synthesize</code></h3>
+
+<p>默认情况下，编译器会为属性生成一条 <code class="language-plaintext highlighter-rouge">@synthesize</code>，比如下面示例中，<code class="language-plaintext highlighter-rouge">@synthesize name = _name;</code> 写或不写效果一样：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@interface</span> <span class="nc">MyClass</span> <span class="p">:</span> <span class="nc">UIView</span> <span class="p">{</span>
+    <span class="n">NSString</span> <span class="o">*</span><span class="n">_name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+<span class="k">@implementation</span> <span class="nc">MyClass</span>
+
+<span class="k">@synthesize</span> <span class="n">name</span> <span class="o">=</span> <span class="n">_name</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+</code></pre></div></div>
+<p>这样我们在类的实现中可以访问 <code class="language-plaintext highlighter-rouge">[self.name]</code> 或直接访问  <code class="language-plaintext highlighter-rouge">_name</code>。</p>
+
+<p>如果你想自定义实例变量的名称，则可通过  <code class="language-plaintext highlighter-rouge">@synthesize</code> 来实现，比如：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@synthesize</span> <span class="n">name</span> <span class="o">=</span> <span class="n">blah</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>此时 <code class="language-plaintext highlighter-rouge">name</code> 属性还是那个属性，<code class="language-plaintext highlighter-rouge">self.name</code>  正常访问，但其背后的实例变量则变成了 <code class="language-plaintext highlighter-rouge">blah</code>，而不是 <code class="language-plaintext highlighter-rouge">_name</code> 了。</p>
+
+<p>使用 <code class="language-plaintext highlighter-rouge">@synthesize</code> 还有种情况就是自定义了存取器，此时编译器不会自动生成实例变量，需要手动 <code class="language-plaintext highlighter-rouge">@synthesize</code> 或自己声明这个实例变量（在类声明的顶部放在花括号中）。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@interface</span> <span class="nc">MyClass</span> <span class="p">:</span> <span class="nc">UIView</span>
+
+<span class="k">@property</span> <span class="p">(</span><span class="n">copy</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+<span class="k">@implementation</span> <span class="nc">MyClass</span>
+
+ <span class="k">@synthesize</span> <span class="n">name</span> <span class="o">=</span> <span class="n">_name</span><span class="p">;</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">name</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">_name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setName</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">name</span> <span class="p">{</span>
+    <span class="n">_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="nf">uppercaseString</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+</code></pre></div></div>
+
+<p>或</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@interface</span> <span class="nc">MyClass</span> <span class="p">:</span> <span class="nc">UIView</span> <span class="p">{</span>
+    <span class="n">NSString</span> <span class="o">*</span><span class="n">_name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">@property</span> <span class="p">(</span><span class="n">copy</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+<span class="k">@implementation</span> <span class="nc">MyClass</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">name</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">_name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setName</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">name</span> <span class="p">{</span>
+    <span class="n">_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="nf">uppercaseString</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+</code></pre></div></div>
+
+<h2 id="dynamic"><code class="language-plaintext highlighter-rouge">@dynamic</code></h2>
+
+<p><code class="language-plaintext highlighter-rouge">@dynamic</code> 告诉编译器该属性的存取器会在别的地方有定义。</p>
+
+<p>比如，父类定义了一个按钮属性，子类中使用时想为该属性创建 outlet，</p>
+
+<p>父类：</p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">retain</span><span class="p">)</span> <span class="n">NSButton</span> <span class="o">*</span><span class="n">someButton</span><span class="p">;</span>
+ <span class="p">...</span>
+ <span class="k">@synthesize</span> <span class="n">someButton</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>子类 ：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">retain</span><span class="p">)</span> <span class="n">IBOutlet</span> <span class="n">NSButton</span> <span class="o">*</span><span class="n">someButton</span><span class="p">;</span>
+ <span class="p">...</span>
+ <span class="k">@dynamic</span> <span class="n">someButton</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/52376315/dynamic-property-in-objective-c/52392649#52392649">@dynamic property in Objective C</a></li>
+  <li><a href="https://stackoverflow.com/questions/1160498/synthesize-vs-dynamic-what-are-the-differences">@synthesize vs @dynamic, what are the differences?
+</a></li>
+</ul>
+
+:ET

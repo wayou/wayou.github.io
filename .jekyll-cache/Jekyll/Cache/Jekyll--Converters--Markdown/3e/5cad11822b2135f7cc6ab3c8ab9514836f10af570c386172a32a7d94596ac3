@@ -1,0 +1,61 @@
+I"�<h1 id="npm-script-中使用命令行参数">npm script 中使用命令行参数</h1>
+
+<p>假如 package.json 中有如下 script:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+	</span><span class="nl">"serve"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node server.js"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>如果想启动的时候，指定服务启动的端口，可以这样传递：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm run server <span class="nt">--</span> <span class="nt">--port</span><span class="o">=</span>3001
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">--</code> 可以达到将其后跟随的文本附加到实际命令之后的效果。所以，实例运行的命令为 ：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>node server.js <span class="s2">"--port=3001"</span>
+</code></pre></div></div>
+
+<p>这样在 server.js 中就可通过 <code class="language-plaintext highlighter-rouge">process.argv</code> 得到参数了。</p>
+
+<h2 id="script-中任意位置插入参数">script 中任意位置插入参数</h2>
+
+<p>上述情形适用于将参数拼接在命令最后的情况，且不在 shell 层面处理参数，而是在具体的 node 代码中获取并处理参数。</p>
+
+<p>考察这样的情形：实现 CI (持续集成) 时将 git 版本戳替换到代码中。</p>
+
+<ul>
+  <li>首先代码中提前需要被替换的字符比如 <code class="language-plaintext highlighter-rouge">__REVISION__</code></li>
+  <li>首先 CI 过程会通过 git 命令拿到版本戳</li>
+  <li>调用 npm script 命令并传递前面获取到的版本戳</li>
+  <li>npm script 执行相应的命令进行查找替换</li>
+</ul>
+
+<p>其中，shell 查的替换的命令为：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sed</span> <span class="nt">-i</span> <span class="nt">-e</span> <span class="s1">'s/few/asd/g'</span> hello.txt
+</code></pre></div></div>
+
+<p>npm script 可以这么写：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"revision"</span>: <span class="s2">"sed -i -e </span><span class="se">\"</span><span class="s2">s/__REVISION__/</span><span class="k">${</span><span class="nv">npm_config_revision</span><span class="k">}</span><span class="s2">/g</span><span class="se">\"</span><span class="s2"> ./test.js"</span>,
+</code></pre></div></div>
+
+<p>调用：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run revision <span class="nt">--revision</span><span class="o">=</span>xxx
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">--foo=bar</code> 形式的参数会生成现形如 <code class="language-plaintext highlighter-rouge">$npm_config_foo</code> 的变量。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/a/60458728/1553656">Sending command line arguments to npm script</a></li>
+  <li><a href="https://github.com/wayou/wayou.github.io/issues/14">Webpack 调教之参数的投喂</a></li>
+  <li><a href="https://unix.stackexchange.com/a/159369/209192">Using ‘sed’ to find and replace [duplicate]</a></li>
+</ul>
+:ET

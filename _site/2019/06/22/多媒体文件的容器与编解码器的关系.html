@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>多媒体文件的容器与编解码器的关系 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="多媒体文件的容器与编解码器的关系" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="多媒体文件的容器与编解码器的关系 音视频文件的格式各类繁多，但我们在说格式的时候，一般是指文件后缀，比如 .mp3 .mp4。 从编程的角度来说，一个多媒体文件包含两部分，容器（container） 与编解码算法（codec），容器便是多媒体文件中众多数据的封装后对外的呈现，表现出来就是文件的扩展名，而编解码算法，则是播放该多媒体文件所需要和使用的算法。具体来说， 容器 可看成是一个盒子，里面存放了该多媒体文件的所有信息，比如视频，包含音频和视频数据及相应所使用的编解码算法，以及其他视频相关的元数据，比如标题，作者信息，字幕文件等。同样是视频文件，如果根据所包含的音频及视频各类的不同，会形成不同的容器。容器体现在文件的扩展名上，对用户来说比较显而易见。常见的容器包括 OGG, Matroska, AVI, MPEG。 编解码算法 是多媒体文件中数据所使用的编码算法，这体现在，你需要有一个支持相应编码的解码器，才能播放得了。这里算法的作用主要体现在压缩原始的媒体信息，使之在一个合理可接受的范围内，方便全输与使用。已经存在的压缩算法各类繁多，他们对不同类型的数据有各有优缺点，所以不能说哪种算法是最优的，只有最适合的。 多媒体文件中容器与编解码算法的关系示意图 -- 图片来自 pitivi.org 常见视频格式 以下是来自维基百科 Video file format 条目中的表格： 名称 扩展名 容器格式 视频编码格式 音频编码格式 备注 WebM .webm Matroska VP8, VP9, AV1 Vorbis, Opus Royalty-free format created for HTML5 video. Matroska .mkv Matroska any any   Flash Video (FLV) .flv FLV VP6, Sorenson Spark, Screen video, Screen video 2, H.264 MP3, ADPCM, Nellymoser, Speex, AAC Use of the H.264 and AAC compression formats in the FLV file format has some limitations and authors of Flash Player strongly encourage everyone to embrace the new standard F4V file format[2] de facto standard for web-based streaming video (over RTMP). F4V .flv MPEG-4 Part 12 H.264 MP3, AAC Replacement for FLV. Vob .vob VOB H.262/MPEG-2 Part 2 or MPEG-1 Part 2 PCM, DTS, MPEG-1, Audio Layer II (MP2), or Dolby Digital (AC-3) Files in VOB format have .vob filename extension and are typically stored in the VIDEO_TS folder at the root of a DVD. The VOB format is based on the MPEG program stream format. Ogg Video .ogv, .ogg Ogg Theora, Dirac Vorbis, FLAC   Dirac .drc ? Dirac ?   GIF .gif N/A N/A none Simple animation, inefficient compression, no sound, widely supported Video alternative to GIF .gifv HTML any none Not standardized, and not a real video file in the classical meaning since it merely references the real video file (e.g. a .webm file), which has to exist separately elsewhere. A .gifv “file” is simply a HTML webpage which includes a HTML5 video tag, where the video has no sound. As there were large communities online which create art using the medium of short soundless videos in GIF format, GIFV was created as a functionally similar replacement with vastly smaller filesizes than the inefficient GIF format. Multiple-image Network Graphics .mng N/A N/A none Inefficient, not widely used. AVI .avi AVI any any Uses RIFF MPEG Transport Stream .MTS, .M2TS AVCHD AVCHD (MPEG-4 / H.264 ) Dolby AC-3 or uncompressed linear PCM The standard video format used by many Sony and Panasonic HD camcorders. It is also used for storing high definition video on Blu-ray discs. QuickTime File Format .mov, .qt QuickTime many[3] AAC, MP3, others[3]   Windows Media Video .wmv ASF Windows Media Video, Windows Media Video Screen, Windows Media Video Image Windows Media Audio, Sipro ACELP.net   Raw video format .yuv Further documentation needed Doesn’t apply Doesn’t apply Supports all resolutions, sampling structures, and frame rates RealMedia (RM) .rm RealMedia RealVideo RealAudio Made for RealPlayer RealMedia Variable Bitrate (RMVB) .rmvb RealMedia Variable Bitrate RealVideo RealAudio Made for RealPlayer Advanced Systems Format (ASF) .asf ASF any any   AMV video format .amv Modified version of AVI[4] Variant of Motion JPEG Variant of IMA, ADPCM Proprietary video file format produced for MP4 players and S1 MP3 players with video playback MPEG-4 Part 14 (MP4) .mp4, .m4p (with DRM), .m4v MPEG-4 Part 12 H.264, MPEG-4 Part 2, MPEG-2, MPEG-1 Advanced Audio Coding, MP3, others   MPEG-1 .mpg, .mp2, .mpeg, .mpe, .mpv MPEG-1 part 1 MPEG-1 part 2 MPEG-1 Audio Layer I, MPEG-1 Audio Layer I, MPEG-1 Audio Layer III (MP3) Old, but very widely used due to installed base. MPEG-2 – Video .mpg, .mpeg, .m2v ? H.262 AAC, MP3, MPEG-2 Part 3, others   M4V – (file format for videos for iPods and PlayStation Portables developed by Apple) .m4v MPEG-4 Part 12 H.264 AAC, Dolby Digital Developed by Apple, used in iTunes. Very similar to MP4 format, but may optionally have DRM. SVI .svi MPEG-4 utilising a special header ? ? Samsung video format for portable players 3GPP .3gp MPEG-4 Part 12 MPEG-4 Part 2, H.263, H.264 AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2) Common video format for cell phones 3GPP2 .3g2 MPEG-4 Part 12 MPEG-4 Part 2, H.263, H.264 AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2), EVRC, SMV or VMR-WB Common video format for cell phones Material Exchange Format (MXF) .mxf MXF ? ?   ROQ .roq ? ? ? used by Quake 3[5] Nullsoft Streaming Video (NSV) .nsv NSV ? ? For streaming video content over the Internet Flash Video (FLV) .flv .f4v .f4p .f4a .f4b Audio, video, text, data Adobe Flash Platform SWF, F4V, ISO base media file format Developed by the Adobe Flash Platform 常见音频格式 以下是来自维基百科 Audio file format 条目中的表格： 扩展名 所属公司 描述 .3gp   Multimedia container format can contain proprietary formats as AMR, AMR-WB or AMR-WB+, but also some open formats .aa Audible.com (Amazon.com) A low-bitrate audiobook container format with DRM, containing audio encoded as either MP3 or the ACELP speech codec. .aac   The Advanced Audio Coding format is based on the MPEG-2 and MPEG-4 standards. AAC files are usually ADTS or ADIF containers. .aax Audible.com (Amazon.com) An Audiobook format, which is a variable-bitrate (allowing high quality) M4B file encrypted with DRM. MPB contains AAC or ALAC encoded audio in an MPEG-4 container. (More details below.) .act   ACT is a lossy ADPCM 8 kbit/s compressed audio format recorded by most Chinese MP3 and MP4 players with a recording function, and voice recorders .aiff Apple A standard uncompressed CD-quality, audio file format used by Apple. Established 3 years prior to Microsoft’s uncompressed version wav. .amr   AMR-NB audio, used primarily for speech. .ape Matthew T. Ashland Monkey’s Audio lossless audio compression format. .au Sun Microsystems The standard audio file format used by Sun, Unix and Java. The audio in au files can be PCM or compressed with the μ-law, a-law or G729 codecs. .awb   AMR-WB audio, used primarily for speech, same as the ITU-T’s G.722.2 specification. .dct NCH Software A variable codec format designed for dictation. It has dictation header information and can be encrypted (as may be required by medical confidentiality laws). A proprietary format of NCH Software. .dss Olympus DSS files are an Olympus proprietary format. It is a fairly old and poor codec. GSM or MP3 are generally preferred where the recorder allows. It allows additional data to be held in the file header. .dvf Sony A Sony proprietary format for compressed voice files; commonly used by Sony dictation recorders. .flac   A file format for the Free Lossless Audio Codec, an open-source lossless compression codec. .gsm   Designed for telephony use in Europe, gsm is a very practical format for telephone quality voice. It makes a good compromise between file size and quality. Note that wav files can also be encoded with the gsm codec. .iklax iKlax An iKlax Media proprietary format, the iKlax format is a multi-track digital audio format allowing various actions on musical data, for instance on mixing and volumes arrangements. .ivs 3D Solar UK Ltd A proprietary version with Digital Rights Management developed by 3D Solar UK Ltd for use in music downloaded from their Tronme Music Store and interactive music and video player. .m4a   An audio-only MPEG-4 file, used by Apple for unprotected music downloaded from their iTunes Music Store. Audio within the m4a file is typically encoded with AAC, although lossless ALAC may also be used. .m4b   An Audiobook / podcast extension with AAC or ALAC encoded audio in an MPEG-4 container. Both M4A and M4B formats can contain metadata including chapter markers, images, and hyperlinks, but M4B allows “bookmarks” (remembering the last listening spot), whereas M4A does not.[7] .m4p Apple A version of AAC with proprietary Digital Rights Management developed by Apple for use in music downloaded from their iTunes Music Store. .mmf Yamaha, Samsung A Samsung audio format that is used in ringtones. Developed by Yamaha (SMAF stands for “Synthetic music Mobile Application Format”, and is a multimedia data format invented by the Yamaha Corporation, .mmf file format). .mp3   MPEG Layer III Audio. It is the most common sound file format used today. .mpc   Musepack or MPC (formerly known as MPEGplus, MPEG+ or MP+) is an open source lossy audio codec, specifically optimized for transparent compression of stereo audio at bitrates of 160–180 kbit/s. .msv Sony A Sony proprietary format for Memory Stick compressed voice files. .nmf NICE NICE Media Player audio file .nsf Nintendo The NES Sound Format (.nsf) is used for storing and playing music from the NES and related systems.[8] .ogg, .oga, .mogg Xiph.Org Foundation A free, open source container format supporting a variety of formats, the most popular of which is the audio format Vorbis. Vorbis offers compression similar to MP3 but is less popular. Mogg, the “Multi-Track-Single-Logical-Stream Ogg-Vorbis”, is the multi-channel or multi-track Ogg file format. .opus Internet Engineering Task Force A lossy audio compression format developed by the Internet Engineering Task Force (IETF) and made especially suitable for interactive real-time applications over the Internet. As an open format standardised through RFC 6716, a reference implementation is provided under the 3-clause BSD license. .ra, .rm RealNetworks A RealAudio format designed for streaming audio over the Internet. The .ra format allows files to be stored in a self-contained fashion on a computer, with all of the audio data contained inside the file itself. .raw   A raw file can contain audio in any format but is usually used with PCM audio data. It is rarely used except for technical tests. .sln   Signed Linear PCM format used by Asterisk. Prior to v.10 the standard formats were 16-bit Signed Linear PCM sampled at 8 kHz and at 16 kHz. With v.10 many more sampling rates were added.[9] .tta   The True Audio, real-time lossless audio codec. .voc Creative Technology The file format consists of a 26-byte header and a series of subsequent data blocks containing the audio information .vox   The vox format most commonly uses the Dialogic ADPCM (Adaptive Differential Pulse Code Modulation) codec. Similar to other ADPCM formats, it compresses to 4-bits. Vox format files are similar to wave files except that the vox files contain no information about the file itself so the codec sample rate and number of channels must first be specified in order to play a vox file. .wav   Standard audio file container format used mainly in Windows PCs. Commonly used for storing uncompressed (PCM), CD-quality sound files, which means that they can be large in size—around 10 MB per minute. Wave files can also contain data encoded with a variety of (lossy) codecs to reduce the file size (for example the GSM or MP3 formats). Wav files use a RIFF structure. .wma Microsoft Windows Media Audio format, created by Microsoft. Designed with Digital Rights Management (DRM) abilities for copy protection. .wv   Format for wavpack files. .webm   Royalty-free format created for HTML5 video. .8svx Electronic Arts The IFF-8SVX format for 8-bit sound samples, created by Electronic Arts in 1984 at the birth of the Amiga. 相关资源 Understanding codecs and containers Video file format Audio file format" />
+<meta property="og:description" content="多媒体文件的容器与编解码器的关系 音视频文件的格式各类繁多，但我们在说格式的时候，一般是指文件后缀，比如 .mp3 .mp4。 从编程的角度来说，一个多媒体文件包含两部分，容器（container） 与编解码算法（codec），容器便是多媒体文件中众多数据的封装后对外的呈现，表现出来就是文件的扩展名，而编解码算法，则是播放该多媒体文件所需要和使用的算法。具体来说， 容器 可看成是一个盒子，里面存放了该多媒体文件的所有信息，比如视频，包含音频和视频数据及相应所使用的编解码算法，以及其他视频相关的元数据，比如标题，作者信息，字幕文件等。同样是视频文件，如果根据所包含的音频及视频各类的不同，会形成不同的容器。容器体现在文件的扩展名上，对用户来说比较显而易见。常见的容器包括 OGG, Matroska, AVI, MPEG。 编解码算法 是多媒体文件中数据所使用的编码算法，这体现在，你需要有一个支持相应编码的解码器，才能播放得了。这里算法的作用主要体现在压缩原始的媒体信息，使之在一个合理可接受的范围内，方便全输与使用。已经存在的压缩算法各类繁多，他们对不同类型的数据有各有优缺点，所以不能说哪种算法是最优的，只有最适合的。 多媒体文件中容器与编解码算法的关系示意图 -- 图片来自 pitivi.org 常见视频格式 以下是来自维基百科 Video file format 条目中的表格： 名称 扩展名 容器格式 视频编码格式 音频编码格式 备注 WebM .webm Matroska VP8, VP9, AV1 Vorbis, Opus Royalty-free format created for HTML5 video. Matroska .mkv Matroska any any   Flash Video (FLV) .flv FLV VP6, Sorenson Spark, Screen video, Screen video 2, H.264 MP3, ADPCM, Nellymoser, Speex, AAC Use of the H.264 and AAC compression formats in the FLV file format has some limitations and authors of Flash Player strongly encourage everyone to embrace the new standard F4V file format[2] de facto standard for web-based streaming video (over RTMP). F4V .flv MPEG-4 Part 12 H.264 MP3, AAC Replacement for FLV. Vob .vob VOB H.262/MPEG-2 Part 2 or MPEG-1 Part 2 PCM, DTS, MPEG-1, Audio Layer II (MP2), or Dolby Digital (AC-3) Files in VOB format have .vob filename extension and are typically stored in the VIDEO_TS folder at the root of a DVD. The VOB format is based on the MPEG program stream format. Ogg Video .ogv, .ogg Ogg Theora, Dirac Vorbis, FLAC   Dirac .drc ? Dirac ?   GIF .gif N/A N/A none Simple animation, inefficient compression, no sound, widely supported Video alternative to GIF .gifv HTML any none Not standardized, and not a real video file in the classical meaning since it merely references the real video file (e.g. a .webm file), which has to exist separately elsewhere. A .gifv “file” is simply a HTML webpage which includes a HTML5 video tag, where the video has no sound. As there were large communities online which create art using the medium of short soundless videos in GIF format, GIFV was created as a functionally similar replacement with vastly smaller filesizes than the inefficient GIF format. Multiple-image Network Graphics .mng N/A N/A none Inefficient, not widely used. AVI .avi AVI any any Uses RIFF MPEG Transport Stream .MTS, .M2TS AVCHD AVCHD (MPEG-4 / H.264 ) Dolby AC-3 or uncompressed linear PCM The standard video format used by many Sony and Panasonic HD camcorders. It is also used for storing high definition video on Blu-ray discs. QuickTime File Format .mov, .qt QuickTime many[3] AAC, MP3, others[3]   Windows Media Video .wmv ASF Windows Media Video, Windows Media Video Screen, Windows Media Video Image Windows Media Audio, Sipro ACELP.net   Raw video format .yuv Further documentation needed Doesn’t apply Doesn’t apply Supports all resolutions, sampling structures, and frame rates RealMedia (RM) .rm RealMedia RealVideo RealAudio Made for RealPlayer RealMedia Variable Bitrate (RMVB) .rmvb RealMedia Variable Bitrate RealVideo RealAudio Made for RealPlayer Advanced Systems Format (ASF) .asf ASF any any   AMV video format .amv Modified version of AVI[4] Variant of Motion JPEG Variant of IMA, ADPCM Proprietary video file format produced for MP4 players and S1 MP3 players with video playback MPEG-4 Part 14 (MP4) .mp4, .m4p (with DRM), .m4v MPEG-4 Part 12 H.264, MPEG-4 Part 2, MPEG-2, MPEG-1 Advanced Audio Coding, MP3, others   MPEG-1 .mpg, .mp2, .mpeg, .mpe, .mpv MPEG-1 part 1 MPEG-1 part 2 MPEG-1 Audio Layer I, MPEG-1 Audio Layer I, MPEG-1 Audio Layer III (MP3) Old, but very widely used due to installed base. MPEG-2 – Video .mpg, .mpeg, .m2v ? H.262 AAC, MP3, MPEG-2 Part 3, others   M4V – (file format for videos for iPods and PlayStation Portables developed by Apple) .m4v MPEG-4 Part 12 H.264 AAC, Dolby Digital Developed by Apple, used in iTunes. Very similar to MP4 format, but may optionally have DRM. SVI .svi MPEG-4 utilising a special header ? ? Samsung video format for portable players 3GPP .3gp MPEG-4 Part 12 MPEG-4 Part 2, H.263, H.264 AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2) Common video format for cell phones 3GPP2 .3g2 MPEG-4 Part 12 MPEG-4 Part 2, H.263, H.264 AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2), EVRC, SMV or VMR-WB Common video format for cell phones Material Exchange Format (MXF) .mxf MXF ? ?   ROQ .roq ? ? ? used by Quake 3[5] Nullsoft Streaming Video (NSV) .nsv NSV ? ? For streaming video content over the Internet Flash Video (FLV) .flv .f4v .f4p .f4a .f4b Audio, video, text, data Adobe Flash Platform SWF, F4V, ISO base media file format Developed by the Adobe Flash Platform 常见音频格式 以下是来自维基百科 Audio file format 条目中的表格： 扩展名 所属公司 描述 .3gp   Multimedia container format can contain proprietary formats as AMR, AMR-WB or AMR-WB+, but also some open formats .aa Audible.com (Amazon.com) A low-bitrate audiobook container format with DRM, containing audio encoded as either MP3 or the ACELP speech codec. .aac   The Advanced Audio Coding format is based on the MPEG-2 and MPEG-4 standards. AAC files are usually ADTS or ADIF containers. .aax Audible.com (Amazon.com) An Audiobook format, which is a variable-bitrate (allowing high quality) M4B file encrypted with DRM. MPB contains AAC or ALAC encoded audio in an MPEG-4 container. (More details below.) .act   ACT is a lossy ADPCM 8 kbit/s compressed audio format recorded by most Chinese MP3 and MP4 players with a recording function, and voice recorders .aiff Apple A standard uncompressed CD-quality, audio file format used by Apple. Established 3 years prior to Microsoft’s uncompressed version wav. .amr   AMR-NB audio, used primarily for speech. .ape Matthew T. Ashland Monkey’s Audio lossless audio compression format. .au Sun Microsystems The standard audio file format used by Sun, Unix and Java. The audio in au files can be PCM or compressed with the μ-law, a-law or G729 codecs. .awb   AMR-WB audio, used primarily for speech, same as the ITU-T’s G.722.2 specification. .dct NCH Software A variable codec format designed for dictation. It has dictation header information and can be encrypted (as may be required by medical confidentiality laws). A proprietary format of NCH Software. .dss Olympus DSS files are an Olympus proprietary format. It is a fairly old and poor codec. GSM or MP3 are generally preferred where the recorder allows. It allows additional data to be held in the file header. .dvf Sony A Sony proprietary format for compressed voice files; commonly used by Sony dictation recorders. .flac   A file format for the Free Lossless Audio Codec, an open-source lossless compression codec. .gsm   Designed for telephony use in Europe, gsm is a very practical format for telephone quality voice. It makes a good compromise between file size and quality. Note that wav files can also be encoded with the gsm codec. .iklax iKlax An iKlax Media proprietary format, the iKlax format is a multi-track digital audio format allowing various actions on musical data, for instance on mixing and volumes arrangements. .ivs 3D Solar UK Ltd A proprietary version with Digital Rights Management developed by 3D Solar UK Ltd for use in music downloaded from their Tronme Music Store and interactive music and video player. .m4a   An audio-only MPEG-4 file, used by Apple for unprotected music downloaded from their iTunes Music Store. Audio within the m4a file is typically encoded with AAC, although lossless ALAC may also be used. .m4b   An Audiobook / podcast extension with AAC or ALAC encoded audio in an MPEG-4 container. Both M4A and M4B formats can contain metadata including chapter markers, images, and hyperlinks, but M4B allows “bookmarks” (remembering the last listening spot), whereas M4A does not.[7] .m4p Apple A version of AAC with proprietary Digital Rights Management developed by Apple for use in music downloaded from their iTunes Music Store. .mmf Yamaha, Samsung A Samsung audio format that is used in ringtones. Developed by Yamaha (SMAF stands for “Synthetic music Mobile Application Format”, and is a multimedia data format invented by the Yamaha Corporation, .mmf file format). .mp3   MPEG Layer III Audio. It is the most common sound file format used today. .mpc   Musepack or MPC (formerly known as MPEGplus, MPEG+ or MP+) is an open source lossy audio codec, specifically optimized for transparent compression of stereo audio at bitrates of 160–180 kbit/s. .msv Sony A Sony proprietary format for Memory Stick compressed voice files. .nmf NICE NICE Media Player audio file .nsf Nintendo The NES Sound Format (.nsf) is used for storing and playing music from the NES and related systems.[8] .ogg, .oga, .mogg Xiph.Org Foundation A free, open source container format supporting a variety of formats, the most popular of which is the audio format Vorbis. Vorbis offers compression similar to MP3 but is less popular. Mogg, the “Multi-Track-Single-Logical-Stream Ogg-Vorbis”, is the multi-channel or multi-track Ogg file format. .opus Internet Engineering Task Force A lossy audio compression format developed by the Internet Engineering Task Force (IETF) and made especially suitable for interactive real-time applications over the Internet. As an open format standardised through RFC 6716, a reference implementation is provided under the 3-clause BSD license. .ra, .rm RealNetworks A RealAudio format designed for streaming audio over the Internet. The .ra format allows files to be stored in a self-contained fashion on a computer, with all of the audio data contained inside the file itself. .raw   A raw file can contain audio in any format but is usually used with PCM audio data. It is rarely used except for technical tests. .sln   Signed Linear PCM format used by Asterisk. Prior to v.10 the standard formats were 16-bit Signed Linear PCM sampled at 8 kHz and at 16 kHz. With v.10 many more sampling rates were added.[9] .tta   The True Audio, real-time lossless audio codec. .voc Creative Technology The file format consists of a 26-byte header and a series of subsequent data blocks containing the audio information .vox   The vox format most commonly uses the Dialogic ADPCM (Adaptive Differential Pulse Code Modulation) codec. Similar to other ADPCM formats, it compresses to 4-bits. Vox format files are similar to wave files except that the vox files contain no information about the file itself so the codec sample rate and number of channels must first be specified in order to play a vox file. .wav   Standard audio file container format used mainly in Windows PCs. Commonly used for storing uncompressed (PCM), CD-quality sound files, which means that they can be large in size—around 10 MB per minute. Wave files can also contain data encoded with a variety of (lossy) codecs to reduce the file size (for example the GSM or MP3 formats). Wav files use a RIFF structure. .wma Microsoft Windows Media Audio format, created by Microsoft. Designed with Digital Rights Management (DRM) abilities for copy protection. .wv   Format for wavpack files. .webm   Royalty-free format created for HTML5 video. .8svx Electronic Arts The IFF-8SVX format for 8-bit sound samples, created by Electronic Arts in 1984 at the birth of the Amiga. 相关资源 Understanding codecs and containers Video file format Audio file format" />
+<link rel="canonical" href="http://localhost:4000/2019/06/22/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB.html" />
+<meta property="og:url" content="http://localhost:4000/2019/06/22/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-22T23:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/06/22/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/22/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB.html"},"description":"多媒体文件的容器与编解码器的关系 音视频文件的格式各类繁多，但我们在说格式的时候，一般是指文件后缀，比如 .mp3 .mp4。 从编程的角度来说，一个多媒体文件包含两部分，容器（container） 与编解码算法（codec），容器便是多媒体文件中众多数据的封装后对外的呈现，表现出来就是文件的扩展名，而编解码算法，则是播放该多媒体文件所需要和使用的算法。具体来说， 容器 可看成是一个盒子，里面存放了该多媒体文件的所有信息，比如视频，包含音频和视频数据及相应所使用的编解码算法，以及其他视频相关的元数据，比如标题，作者信息，字幕文件等。同样是视频文件，如果根据所包含的音频及视频各类的不同，会形成不同的容器。容器体现在文件的扩展名上，对用户来说比较显而易见。常见的容器包括 OGG, Matroska, AVI, MPEG。 编解码算法 是多媒体文件中数据所使用的编码算法，这体现在，你需要有一个支持相应编码的解码器，才能播放得了。这里算法的作用主要体现在压缩原始的媒体信息，使之在一个合理可接受的范围内，方便全输与使用。已经存在的压缩算法各类繁多，他们对不同类型的数据有各有优缺点，所以不能说哪种算法是最优的，只有最适合的。 多媒体文件中容器与编解码算法的关系示意图 -- 图片来自 pitivi.org 常见视频格式 以下是来自维基百科 Video file format 条目中的表格： 名称 扩展名 容器格式 视频编码格式 音频编码格式 备注 WebM .webm Matroska VP8, VP9, AV1 Vorbis, Opus Royalty-free format created for HTML5 video. Matroska .mkv Matroska any any   Flash Video (FLV) .flv FLV VP6, Sorenson Spark, Screen video, Screen video 2, H.264 MP3, ADPCM, Nellymoser, Speex, AAC Use of the H.264 and AAC compression formats in the FLV file format has some limitations and authors of Flash Player strongly encourage everyone to embrace the new standard F4V file format[2] de facto standard for web-based streaming video (over RTMP). F4V .flv MPEG-4 Part 12 H.264 MP3, AAC Replacement for FLV. Vob .vob VOB H.262/MPEG-2 Part 2 or MPEG-1 Part 2 PCM, DTS, MPEG-1, Audio Layer II (MP2), or Dolby Digital (AC-3) Files in VOB format have .vob filename extension and are typically stored in the VIDEO_TS folder at the root of a DVD. The VOB format is based on the MPEG program stream format. Ogg Video .ogv, .ogg Ogg Theora, Dirac Vorbis, FLAC   Dirac .drc ? Dirac ?   GIF .gif N/A N/A none Simple animation, inefficient compression, no sound, widely supported Video alternative to GIF .gifv HTML any none Not standardized, and not a real video file in the classical meaning since it merely references the real video file (e.g. a .webm file), which has to exist separately elsewhere. A .gifv “file” is simply a HTML webpage which includes a HTML5 video tag, where the video has no sound. As there were large communities online which create art using the medium of short soundless videos in GIF format, GIFV was created as a functionally similar replacement with vastly smaller filesizes than the inefficient GIF format. Multiple-image Network Graphics .mng N/A N/A none Inefficient, not widely used. AVI .avi AVI any any Uses RIFF MPEG Transport Stream .MTS, .M2TS AVCHD AVCHD (MPEG-4 / H.264 ) Dolby AC-3 or uncompressed linear PCM The standard video format used by many Sony and Panasonic HD camcorders. It is also used for storing high definition video on Blu-ray discs. QuickTime File Format .mov, .qt QuickTime many[3] AAC, MP3, others[3]   Windows Media Video .wmv ASF Windows Media Video, Windows Media Video Screen, Windows Media Video Image Windows Media Audio, Sipro ACELP.net   Raw video format .yuv Further documentation needed Doesn’t apply Doesn’t apply Supports all resolutions, sampling structures, and frame rates RealMedia (RM) .rm RealMedia RealVideo RealAudio Made for RealPlayer RealMedia Variable Bitrate (RMVB) .rmvb RealMedia Variable Bitrate RealVideo RealAudio Made for RealPlayer Advanced Systems Format (ASF) .asf ASF any any   AMV video format .amv Modified version of AVI[4] Variant of Motion JPEG Variant of IMA, ADPCM Proprietary video file format produced for MP4 players and S1 MP3 players with video playback MPEG-4 Part 14 (MP4) .mp4, .m4p (with DRM), .m4v MPEG-4 Part 12 H.264, MPEG-4 Part 2, MPEG-2, MPEG-1 Advanced Audio Coding, MP3, others   MPEG-1 .mpg, .mp2, .mpeg, .mpe, .mpv MPEG-1 part 1 MPEG-1 part 2 MPEG-1 Audio Layer I, MPEG-1 Audio Layer I, MPEG-1 Audio Layer III (MP3) Old, but very widely used due to installed base. MPEG-2 – Video .mpg, .mpeg, .m2v ? H.262 AAC, MP3, MPEG-2 Part 3, others   M4V – (file format for videos for iPods and PlayStation Portables developed by Apple) .m4v MPEG-4 Part 12 H.264 AAC, Dolby Digital Developed by Apple, used in iTunes. Very similar to MP4 format, but may optionally have DRM. SVI .svi MPEG-4 utilising a special header ? ? Samsung video format for portable players 3GPP .3gp MPEG-4 Part 12 MPEG-4 Part 2, H.263, H.264 AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2) Common video format for cell phones 3GPP2 .3g2 MPEG-4 Part 12 MPEG-4 Part 2, H.263, H.264 AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2), EVRC, SMV or VMR-WB Common video format for cell phones Material Exchange Format (MXF) .mxf MXF ? ?   ROQ .roq ? ? ? used by Quake 3[5] Nullsoft Streaming Video (NSV) .nsv NSV ? ? For streaming video content over the Internet Flash Video (FLV) .flv .f4v .f4p .f4a .f4b Audio, video, text, data Adobe Flash Platform SWF, F4V, ISO base media file format Developed by the Adobe Flash Platform 常见音频格式 以下是来自维基百科 Audio file format 条目中的表格： 扩展名 所属公司 描述 .3gp   Multimedia container format can contain proprietary formats as AMR, AMR-WB or AMR-WB+, but also some open formats .aa Audible.com (Amazon.com) A low-bitrate audiobook container format with DRM, containing audio encoded as either MP3 or the ACELP speech codec. .aac   The Advanced Audio Coding format is based on the MPEG-2 and MPEG-4 standards. AAC files are usually ADTS or ADIF containers. .aax Audible.com (Amazon.com) An Audiobook format, which is a variable-bitrate (allowing high quality) M4B file encrypted with DRM. MPB contains AAC or ALAC encoded audio in an MPEG-4 container. (More details below.) .act   ACT is a lossy ADPCM 8 kbit/s compressed audio format recorded by most Chinese MP3 and MP4 players with a recording function, and voice recorders .aiff Apple A standard uncompressed CD-quality, audio file format used by Apple. Established 3 years prior to Microsoft’s uncompressed version wav. .amr   AMR-NB audio, used primarily for speech. .ape Matthew T. Ashland Monkey’s Audio lossless audio compression format. .au Sun Microsystems The standard audio file format used by Sun, Unix and Java. The audio in au files can be PCM or compressed with the μ-law, a-law or G729 codecs. .awb   AMR-WB audio, used primarily for speech, same as the ITU-T’s G.722.2 specification. .dct NCH Software A variable codec format designed for dictation. It has dictation header information and can be encrypted (as may be required by medical confidentiality laws). A proprietary format of NCH Software. .dss Olympus DSS files are an Olympus proprietary format. It is a fairly old and poor codec. GSM or MP3 are generally preferred where the recorder allows. It allows additional data to be held in the file header. .dvf Sony A Sony proprietary format for compressed voice files; commonly used by Sony dictation recorders. .flac   A file format for the Free Lossless Audio Codec, an open-source lossless compression codec. .gsm   Designed for telephony use in Europe, gsm is a very practical format for telephone quality voice. It makes a good compromise between file size and quality. Note that wav files can also be encoded with the gsm codec. .iklax iKlax An iKlax Media proprietary format, the iKlax format is a multi-track digital audio format allowing various actions on musical data, for instance on mixing and volumes arrangements. .ivs 3D Solar UK Ltd A proprietary version with Digital Rights Management developed by 3D Solar UK Ltd for use in music downloaded from their Tronme Music Store and interactive music and video player. .m4a   An audio-only MPEG-4 file, used by Apple for unprotected music downloaded from their iTunes Music Store. Audio within the m4a file is typically encoded with AAC, although lossless ALAC may also be used. .m4b   An Audiobook / podcast extension with AAC or ALAC encoded audio in an MPEG-4 container. Both M4A and M4B formats can contain metadata including chapter markers, images, and hyperlinks, but M4B allows “bookmarks” (remembering the last listening spot), whereas M4A does not.[7] .m4p Apple A version of AAC with proprietary Digital Rights Management developed by Apple for use in music downloaded from their iTunes Music Store. .mmf Yamaha, Samsung A Samsung audio format that is used in ringtones. Developed by Yamaha (SMAF stands for “Synthetic music Mobile Application Format”, and is a multimedia data format invented by the Yamaha Corporation, .mmf file format). .mp3   MPEG Layer III Audio. It is the most common sound file format used today. .mpc   Musepack or MPC (formerly known as MPEGplus, MPEG+ or MP+) is an open source lossy audio codec, specifically optimized for transparent compression of stereo audio at bitrates of 160–180 kbit/s. .msv Sony A Sony proprietary format for Memory Stick compressed voice files. .nmf NICE NICE Media Player audio file .nsf Nintendo The NES Sound Format (.nsf) is used for storing and playing music from the NES and related systems.[8] .ogg, .oga, .mogg Xiph.Org Foundation A free, open source container format supporting a variety of formats, the most popular of which is the audio format Vorbis. Vorbis offers compression similar to MP3 but is less popular. Mogg, the “Multi-Track-Single-Logical-Stream Ogg-Vorbis”, is the multi-channel or multi-track Ogg file format. .opus Internet Engineering Task Force A lossy audio compression format developed by the Internet Engineering Task Force (IETF) and made especially suitable for interactive real-time applications over the Internet. As an open format standardised through RFC 6716, a reference implementation is provided under the 3-clause BSD license. .ra, .rm RealNetworks A RealAudio format designed for streaming audio over the Internet. The .ra format allows files to be stored in a self-contained fashion on a computer, with all of the audio data contained inside the file itself. .raw   A raw file can contain audio in any format but is usually used with PCM audio data. It is rarely used except for technical tests. .sln   Signed Linear PCM format used by Asterisk. Prior to v.10 the standard formats were 16-bit Signed Linear PCM sampled at 8 kHz and at 16 kHz. With v.10 many more sampling rates were added.[9] .tta   The True Audio, real-time lossless audio codec. .voc Creative Technology The file format consists of a 26-byte header and a series of subsequent data blocks containing the audio information .vox   The vox format most commonly uses the Dialogic ADPCM (Adaptive Differential Pulse Code Modulation) codec. Similar to other ADPCM formats, it compresses to 4-bits. Vox format files are similar to wave files except that the vox files contain no information about the file itself so the codec sample rate and number of channels must first be specified in order to play a vox file. .wav   Standard audio file container format used mainly in Windows PCs. Commonly used for storing uncompressed (PCM), CD-quality sound files, which means that they can be large in size—around 10 MB per minute. Wave files can also contain data encoded with a variety of (lossy) codecs to reduce the file size (for example the GSM or MP3 formats). Wav files use a RIFF structure. .wma Microsoft Windows Media Audio format, created by Microsoft. Designed with Digital Rights Management (DRM) abilities for copy protection. .wv   Format for wavpack files. .webm   Royalty-free format created for HTML5 video. .8svx Electronic Arts The IFF-8SVX format for 8-bit sound samples, created by Electronic Arts in 1984 at the birth of the Amiga. 相关资源 Understanding codecs and containers Video file format Audio file format","@type":"BlogPosting","headline":"多媒体文件的容器与编解码器的关系","dateModified":"2019-06-22T23:06:00+08:00","datePublished":"2019-06-22T23:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">多媒体文件的容器与编解码器的关系</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-22T23:06:00+08:00" itemprop="datePublished">Jun 22, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="多媒体文件的容器与编解码器的关系">多媒体文件的容器与编解码器的关系</h1>
+
+<p>音视频文件的格式各类繁多，但我们在说格式的时候，一般是指文件后缀，比如 <code class="language-plaintext highlighter-rouge">.mp3</code> <code class="language-plaintext highlighter-rouge">.mp4</code>。</p>
+
+<p>从编程的角度来说，一个多媒体文件包含两部分，<a href="http://en.wikipedia.org/wiki/Digital_container_format">容器（container）</a> 与<a href="http://en.wikipedia.org/wiki/Codec">编解码算法（codec）</a>，容器便是多媒体文件中众多数据的封装后对外的呈现，表现出来就是文件的扩展名，而编解码算法，则是播放该多媒体文件所需要和使用的算法。具体来说，</p>
+
+<ul>
+  <li>
+    <p><strong>容器</strong> 可看成是一个盒子，里面存放了该多媒体文件的所有信息，比如视频，包含音频和视频数据及相应所使用的编解码算法，以及其他视频相关的元数据，比如标题，作者信息，字幕文件等。同样是视频文件，如果根据所包含的音频及视频各类的不同，会形成不同的容器。容器体现在文件的扩展名上，对用户来说比较显而易见。常见的容器包括 OGG, Matroska, AVI, MPEG。</p>
+  </li>
+  <li>
+    <p><strong>编解码算法</strong> 是多媒体文件中数据所使用的编码算法，这体现在，你需要有一个支持相应编码的解码器，才能播放得了。这里算法的作用主要体现在压缩原始的媒体信息，使之在一个合理可接受的范围内，方便全输与使用。已经存在的压缩算法各类繁多，他们对不同类型的数据有各有优缺点，所以不能说哪种算法是最优的，只有最适合的。</p>
+  </li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/59859856-1fe2df80-93b0-11e9-8808-86c5770c292b.jpg" alt="多媒体文件中容器与编解码算法的关系示意图--图片来自 pitivi.org" /></p>
+<p align="center">多媒体文件中容器与编解码算法的关系示意图 -- 图片来自 <a href="http://www.pitivi.org/manual/codecscontainers.html">pitivi.org</a></p>
+
+<h2 id="常见视频格式">常见视频格式</h2>
+
+<p>以下是来自维基百科 <a href="https://en.wikipedia.org/wiki/Video_file_format">Video file format</a> 条目中的表格：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>扩展名</th>
+      <th>容器格式</th>
+      <th>视频编码格式</th>
+      <th>音频编码格式</th>
+      <th>备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>WebM</td>
+      <td>.webm</td>
+      <td>Matroska</td>
+      <td>VP8, VP9, AV1</td>
+      <td>Vorbis, Opus</td>
+      <td>Royalty-free format created for HTML5 video.</td>
+    </tr>
+    <tr>
+      <td>Matroska</td>
+      <td>.mkv</td>
+      <td>Matroska</td>
+      <td>any</td>
+      <td>any</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Flash Video (FLV)</td>
+      <td>.flv</td>
+      <td>FLV</td>
+      <td>VP6, Sorenson Spark, Screen video, Screen video 2, H.264</td>
+      <td>MP3, ADPCM, Nellymoser, Speex, AAC</td>
+      <td>Use of the H.264 and AAC compression formats in the FLV file format has some limitations and authors of Flash Player strongly encourage everyone to embrace the new standard F4V file format[2] de facto standard for web-based streaming video (over RTMP).</td>
+    </tr>
+    <tr>
+      <td>F4V</td>
+      <td>.flv</td>
+      <td>MPEG-4 Part 12</td>
+      <td>H.264</td>
+      <td>MP3, AAC</td>
+      <td>Replacement for FLV.</td>
+    </tr>
+    <tr>
+      <td>Vob</td>
+      <td>.vob</td>
+      <td>VOB</td>
+      <td>H.262/MPEG-2 Part 2 or MPEG-1 Part 2</td>
+      <td>PCM, DTS, MPEG-1, Audio Layer II (MP2), or Dolby Digital (AC-3)</td>
+      <td>Files in VOB format have .vob filename extension and are typically stored in the VIDEO_TS folder at the root of a DVD. The VOB format is based on the MPEG program stream format.</td>
+    </tr>
+    <tr>
+      <td>Ogg Video</td>
+      <td>.ogv, .ogg</td>
+      <td>Ogg</td>
+      <td>Theora, Dirac</td>
+      <td>Vorbis, FLAC</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Dirac</td>
+      <td>.drc</td>
+      <td>?</td>
+      <td>Dirac</td>
+      <td>?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>GIF</td>
+      <td>.gif</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>none</td>
+      <td>Simple animation, inefficient compression, no sound, widely supported</td>
+    </tr>
+    <tr>
+      <td>Video alternative to GIF</td>
+      <td>.gifv</td>
+      <td>HTML</td>
+      <td>any</td>
+      <td>none</td>
+      <td>Not standardized, and not a real video file in the classical meaning since it merely references the real video file (e.g. a .webm file), which has to exist separately elsewhere. A .gifv “file” is simply a HTML webpage which includes a HTML5 video tag, where the video has no sound. As there were large communities online which create art using the medium of short soundless videos in GIF format, GIFV was created as a functionally similar replacement with vastly smaller filesizes than the inefficient GIF format.</td>
+    </tr>
+    <tr>
+      <td>Multiple-image Network Graphics</td>
+      <td>.mng</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>none</td>
+      <td>Inefficient, not widely used.</td>
+    </tr>
+    <tr>
+      <td>AVI</td>
+      <td>.avi</td>
+      <td>AVI</td>
+      <td>any</td>
+      <td>any</td>
+      <td>Uses RIFF</td>
+    </tr>
+    <tr>
+      <td>MPEG Transport Stream</td>
+      <td>.MTS, .M2TS</td>
+      <td>AVCHD</td>
+      <td>AVCHD (MPEG-4 / H.264 )</td>
+      <td>Dolby AC-3 or uncompressed linear PCM</td>
+      <td>The standard video format used by many Sony and Panasonic HD camcorders. It is also used for storing high definition video on Blu-ray discs.</td>
+    </tr>
+    <tr>
+      <td>QuickTime File Format</td>
+      <td>.mov, .qt</td>
+      <td>QuickTime</td>
+      <td>many[3]</td>
+      <td>AAC, MP3, others[3]</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Windows Media Video</td>
+      <td>.wmv</td>
+      <td>ASF</td>
+      <td>Windows Media Video, Windows Media Video Screen, Windows Media Video Image</td>
+      <td>Windows Media Audio, Sipro ACELP.net</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Raw video format</td>
+      <td>.yuv</td>
+      <td>Further documentation needed</td>
+      <td>Doesn’t apply</td>
+      <td>Doesn’t apply</td>
+      <td>Supports all resolutions, sampling structures, and frame rates</td>
+    </tr>
+    <tr>
+      <td>RealMedia (RM)</td>
+      <td>.rm</td>
+      <td>RealMedia</td>
+      <td>RealVideo</td>
+      <td>RealAudio</td>
+      <td>Made for RealPlayer</td>
+    </tr>
+    <tr>
+      <td>RealMedia Variable Bitrate (RMVB)</td>
+      <td>.rmvb</td>
+      <td>RealMedia Variable Bitrate</td>
+      <td>RealVideo</td>
+      <td>RealAudio</td>
+      <td>Made for RealPlayer</td>
+    </tr>
+    <tr>
+      <td>Advanced Systems Format (ASF)</td>
+      <td>.asf</td>
+      <td>ASF</td>
+      <td>any</td>
+      <td>any</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>AMV video format</td>
+      <td>.amv</td>
+      <td>Modified version of AVI[4]</td>
+      <td>Variant of Motion JPEG</td>
+      <td>Variant of IMA, ADPCM</td>
+      <td>Proprietary video file format produced for MP4 players and S1 MP3 players with video playback</td>
+    </tr>
+    <tr>
+      <td>MPEG-4 Part 14 (MP4)</td>
+      <td>.mp4, .m4p (with DRM), .m4v</td>
+      <td>MPEG-4 Part 12</td>
+      <td>H.264, MPEG-4 Part 2, MPEG-2, MPEG-1</td>
+      <td>Advanced Audio Coding, MP3, others</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>MPEG-1</td>
+      <td>.mpg, .mp2, .mpeg, .mpe, .mpv</td>
+      <td>MPEG-1 part 1</td>
+      <td>MPEG-1 part 2</td>
+      <td>MPEG-1 Audio Layer I, MPEG-1 Audio Layer I, MPEG-1 Audio Layer III (MP3)</td>
+      <td>Old, but very widely used due to installed base.</td>
+    </tr>
+    <tr>
+      <td>MPEG-2 – Video</td>
+      <td>.mpg, .mpeg, .m2v</td>
+      <td>?</td>
+      <td>H.262</td>
+      <td>AAC, MP3, MPEG-2 Part 3, others</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>M4V – (file format for videos for iPods and PlayStation Portables developed by Apple)</td>
+      <td>.m4v</td>
+      <td>MPEG-4 Part 12</td>
+      <td>H.264</td>
+      <td>AAC, Dolby Digital</td>
+      <td>Developed by Apple, used in iTunes. Very similar to MP4 format, but may optionally have DRM.</td>
+    </tr>
+    <tr>
+      <td>SVI</td>
+      <td>.svi</td>
+      <td>MPEG-4 utilising a special header</td>
+      <td>?</td>
+      <td>?</td>
+      <td>Samsung video format for portable players</td>
+    </tr>
+    <tr>
+      <td>3GPP</td>
+      <td>.3gp</td>
+      <td>MPEG-4 Part 12</td>
+      <td>MPEG-4 Part 2, H.263, H.264</td>
+      <td>AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2)</td>
+      <td>Common video format for cell phones</td>
+    </tr>
+    <tr>
+      <td>3GPP2</td>
+      <td>.3g2</td>
+      <td>MPEG-4 Part 12</td>
+      <td>MPEG-4 Part 2, H.263, H.264</td>
+      <td>AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2), EVRC, SMV or VMR-WB</td>
+      <td>Common video format for cell phones</td>
+    </tr>
+    <tr>
+      <td>Material Exchange Format (MXF)</td>
+      <td>.mxf</td>
+      <td>MXF</td>
+      <td>?</td>
+      <td>?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>ROQ</td>
+      <td>.roq</td>
+      <td>?</td>
+      <td>?</td>
+      <td>?</td>
+      <td>used by Quake 3[5]</td>
+    </tr>
+    <tr>
+      <td>Nullsoft Streaming Video (NSV)</td>
+      <td>.nsv</td>
+      <td>NSV</td>
+      <td>?</td>
+      <td>?</td>
+      <td>For streaming video content over the Internet</td>
+    </tr>
+    <tr>
+      <td>Flash Video (FLV)</td>
+      <td>.flv .f4v .f4p .f4a .f4b</td>
+      <td>Audio, video, text, data</td>
+      <td>Adobe Flash Platform</td>
+      <td>SWF, F4V, ISO base media file format</td>
+      <td>Developed by the Adobe Flash Platform</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="常见音频格式">常见音频格式</h2>
+
+<p>以下是来自维基百科 <a href="https://en.wikipedia.org/wiki/Audio_file_format">Audio file format</a> 条目中的表格：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>扩展名</th>
+      <th>所属公司</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>.3gp</td>
+      <td> </td>
+      <td>Multimedia container format can contain proprietary formats as AMR, AMR-WB or AMR-WB+, but also some open formats</td>
+    </tr>
+    <tr>
+      <td>.aa</td>
+      <td>Audible.com (Amazon.com)</td>
+      <td>A low-bitrate audiobook container format with DRM, containing audio encoded as either MP3 or the ACELP speech codec.</td>
+    </tr>
+    <tr>
+      <td>.aac</td>
+      <td> </td>
+      <td>The Advanced Audio Coding format is based on the MPEG-2 and MPEG-4 standards. AAC files are usually ADTS or ADIF containers.</td>
+    </tr>
+    <tr>
+      <td>.aax</td>
+      <td>Audible.com (Amazon.com)</td>
+      <td>An Audiobook format, which is a variable-bitrate (allowing high quality) M4B file encrypted with DRM. MPB contains AAC or ALAC encoded audio in an MPEG-4 container. (More details below.)</td>
+    </tr>
+    <tr>
+      <td>.act</td>
+      <td> </td>
+      <td>ACT is a lossy ADPCM 8 kbit/s compressed audio format recorded by most Chinese MP3 and MP4 players with a recording function, and voice recorders</td>
+    </tr>
+    <tr>
+      <td>.aiff</td>
+      <td>Apple</td>
+      <td>A standard uncompressed CD-quality, audio file format used by Apple. Established 3 years prior to Microsoft’s uncompressed version wav.</td>
+    </tr>
+    <tr>
+      <td>.amr</td>
+      <td> </td>
+      <td>AMR-NB audio, used primarily for speech.</td>
+    </tr>
+    <tr>
+      <td>.ape</td>
+      <td>Matthew T. Ashland</td>
+      <td>Monkey’s Audio lossless audio compression format.</td>
+    </tr>
+    <tr>
+      <td>.au</td>
+      <td>Sun Microsystems</td>
+      <td>The standard audio file format used by Sun, Unix and Java. The audio in au files can be PCM or compressed with the μ-law, a-law or G729 codecs.</td>
+    </tr>
+    <tr>
+      <td>.awb</td>
+      <td> </td>
+      <td>AMR-WB audio, used primarily for speech, same as the ITU-T’s G.722.2 specification.</td>
+    </tr>
+    <tr>
+      <td>.dct</td>
+      <td>NCH Software</td>
+      <td>A variable codec format designed for dictation. It has dictation header information and can be encrypted (as may be required by medical confidentiality laws). A proprietary format of NCH Software.</td>
+    </tr>
+    <tr>
+      <td>.dss</td>
+      <td>Olympus</td>
+      <td>DSS files are an Olympus proprietary format. It is a fairly old and poor codec. GSM or MP3 are generally preferred where the recorder allows. It allows additional data to be held in the file header.</td>
+    </tr>
+    <tr>
+      <td>.dvf</td>
+      <td>Sony</td>
+      <td>A Sony proprietary format for compressed voice files; commonly used by Sony dictation recorders.</td>
+    </tr>
+    <tr>
+      <td>.flac</td>
+      <td> </td>
+      <td>A file format for the Free Lossless Audio Codec, an open-source lossless compression codec.</td>
+    </tr>
+    <tr>
+      <td>.gsm</td>
+      <td> </td>
+      <td>Designed for telephony use in Europe, gsm is a very practical format for telephone quality voice. It makes a good compromise between file size and quality. Note that wav files can also be encoded with the gsm codec.</td>
+    </tr>
+    <tr>
+      <td>.iklax</td>
+      <td>iKlax</td>
+      <td>An iKlax Media proprietary format, the iKlax format is a multi-track digital audio format allowing various actions on musical data, for instance on mixing and volumes arrangements.</td>
+    </tr>
+    <tr>
+      <td>.ivs</td>
+      <td>3D Solar UK Ltd</td>
+      <td>A proprietary version with Digital Rights Management developed by 3D Solar UK Ltd for use in music downloaded from their Tronme Music Store and interactive music and video player.</td>
+    </tr>
+    <tr>
+      <td>.m4a</td>
+      <td> </td>
+      <td>An audio-only MPEG-4 file, used by Apple for unprotected music downloaded from their iTunes Music Store.  Audio within the m4a file is typically encoded with AAC, although lossless ALAC may also be used.</td>
+    </tr>
+    <tr>
+      <td>.m4b</td>
+      <td> </td>
+      <td>An Audiobook / podcast extension with AAC or ALAC encoded audio in an MPEG-4 container.  Both M4A and M4B formats can contain metadata including chapter markers, images, and hyperlinks, but M4B allows “bookmarks” (remembering the last listening spot), whereas M4A does not.[7]</td>
+    </tr>
+    <tr>
+      <td>.m4p</td>
+      <td>Apple</td>
+      <td>A version of AAC with proprietary Digital Rights Management developed by Apple for use in music downloaded from their iTunes Music Store.</td>
+    </tr>
+    <tr>
+      <td>.mmf</td>
+      <td>Yamaha, Samsung</td>
+      <td>A Samsung audio format that is used in ringtones. Developed by Yamaha (SMAF stands for “Synthetic music Mobile Application Format”, and is a multimedia data format invented by the Yamaha Corporation, .mmf file format).</td>
+    </tr>
+    <tr>
+      <td>.mp3</td>
+      <td> </td>
+      <td>MPEG Layer III Audio. It is the most common sound file format used today.</td>
+    </tr>
+    <tr>
+      <td>.mpc</td>
+      <td> </td>
+      <td>Musepack or MPC (formerly known as MPEGplus, MPEG+ or MP+) is an open source lossy audio codec, specifically optimized for transparent compression of stereo audio at bitrates of 160–180 kbit/s.</td>
+    </tr>
+    <tr>
+      <td>.msv</td>
+      <td>Sony</td>
+      <td>A Sony proprietary format for Memory Stick compressed voice files.</td>
+    </tr>
+    <tr>
+      <td>.nmf</td>
+      <td>NICE</td>
+      <td>NICE Media Player audio file</td>
+    </tr>
+    <tr>
+      <td>.nsf</td>
+      <td>Nintendo</td>
+      <td>The NES Sound Format (.nsf) is used for storing and playing music from the NES and related systems.[8]</td>
+    </tr>
+    <tr>
+      <td>.ogg, .oga, .mogg</td>
+      <td>Xiph.Org Foundation</td>
+      <td>A free, open source container format supporting a variety of formats, the most popular of which is the audio format Vorbis. Vorbis offers compression similar to MP3 but is less popular. Mogg, the “Multi-Track-Single-Logical-Stream Ogg-Vorbis”, is the multi-channel or multi-track Ogg file format.</td>
+    </tr>
+    <tr>
+      <td>.opus</td>
+      <td>Internet Engineering Task Force</td>
+      <td>A lossy audio compression format developed by the Internet Engineering Task Force (IETF) and made especially suitable for interactive real-time applications over the Internet. As an open format standardised through RFC 6716, a reference implementation is provided under the 3-clause BSD license.</td>
+    </tr>
+    <tr>
+      <td>.ra, .rm</td>
+      <td>RealNetworks</td>
+      <td>A RealAudio format designed for streaming audio over the Internet. The .ra format allows files to be stored in a self-contained fashion on a computer, with all of the audio data contained inside the file itself.</td>
+    </tr>
+    <tr>
+      <td>.raw</td>
+      <td> </td>
+      <td>A raw file can contain audio in any format but is usually used with PCM audio data. It is rarely used except for technical tests.</td>
+    </tr>
+    <tr>
+      <td>.sln</td>
+      <td> </td>
+      <td>Signed Linear PCM format used by Asterisk. Prior to v.10 the standard formats were 16-bit Signed Linear PCM sampled at 8 kHz and at 16 kHz. With v.10 many more sampling rates were added.[9]</td>
+    </tr>
+    <tr>
+      <td>.tta</td>
+      <td> </td>
+      <td>The True Audio, real-time lossless audio codec.</td>
+    </tr>
+    <tr>
+      <td>.voc</td>
+      <td>Creative Technology</td>
+      <td>The file format consists of a 26-byte header and a series of subsequent data blocks containing the audio information</td>
+    </tr>
+    <tr>
+      <td>.vox</td>
+      <td> </td>
+      <td>The vox format most commonly uses the Dialogic ADPCM (Adaptive Differential Pulse Code Modulation) codec. Similar to other ADPCM formats, it compresses to 4-bits. Vox format files are similar to wave files except that the vox files contain no information about the file itself so the codec sample rate and number of channels must first be specified in order to play a vox file.</td>
+    </tr>
+    <tr>
+      <td>.wav</td>
+      <td> </td>
+      <td>Standard audio file container format used mainly in Windows PCs. Commonly used for storing uncompressed (PCM), CD-quality sound files, which means that they can be large in size—around 10 MB per minute. Wave files can also contain data encoded with a variety of (lossy) codecs to reduce the file size (for example the GSM or MP3 formats). Wav files use a RIFF structure.</td>
+    </tr>
+    <tr>
+      <td>.wma</td>
+      <td>Microsoft</td>
+      <td>Windows Media Audio format, created by Microsoft. Designed with Digital Rights Management (DRM) abilities for copy protection.</td>
+    </tr>
+    <tr>
+      <td>.wv</td>
+      <td> </td>
+      <td>Format for wavpack files.</td>
+    </tr>
+    <tr>
+      <td>.webm</td>
+      <td> </td>
+      <td>Royalty-free format created for HTML5 video.</td>
+    </tr>
+    <tr>
+      <td>.8svx</td>
+      <td>Electronic Arts</td>
+      <td>The IFF-8SVX format for 8-bit sound samples, created by Electronic Arts in 1984 at the birth of the Amiga.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="http://www.pitivi.org/manual/codecscontainers.html">Understanding codecs and containers</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Video_file_format">Video file format</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Audio_file_format">Audio file format</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/06/22/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

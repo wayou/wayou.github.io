@@ -1,0 +1,85 @@
+I"�<h1 id="clang-format-的-xcode-集成">clang-format 的 Xcode 集成</h1>
+
+<p>之前文章 <a href="https://github.com/wayou/wayou.github.io/issues/116">Xcode 中配置 clang-format 格式化 C++ 代码</a> 中介绍的格式化方法有两个问题，</p>
+
+<ul>
+  <li>不能格式化整个文件，必需先选中文本</li>
+  <li>不支持项目中的 <code class="language-plaintext highlighter-rouge">.clang-format</code> 配置文件，只能读取全局的</li>
+</ul>
+
+<p>利用 Xcode 自带的 Behaviors 可绑定快捷键执行一些任务，比如执行 shell 脚本。</p>
+
+<p>而这里执行的 shell 脚本较 Automator 中的脚本区别在于，可以解决上面提到的两个问题。</p>
+
+<ul>
+  <li>脚本中通过执行 Apple Script 获取到当前正在编辑文件的路径，达到格式化整个文件的目的，无需进行文本选择。</li>
+  <li>因为执行上下文不在全局，所以项目中的 <code class="language-plaintext highlighter-rouge">.clang-format</code> 配置文件可以生效。这样格式配置可跟着项目走。</li>
+</ul>
+
+<h2 id="创建格式化脚本">创建格式化脚本</h2>
+
+<p>首先创建一个 Behavior 中需要执行的脚本，在这个脚本中完成文件路径的获取，clang-format 的执行。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># exec &amp; &gt;&gt; ~/Desktop/test.log</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/bin:<span class="nv">$PATH</span>
+<span class="nv">file</span><span class="o">=</span><span class="sb">`</span>osascript <span class="nt">-e</span> <span class="s2">"tell application id </span><span class="se">\"</span><span class="s2">com.apple.dt.Xcode</span><span class="se">\"</span><span class="s2">
+    set CurrentActiveDocument to document 1 whose name ends with (word -1 of (get name of   window 1))
+    set WhatYouWant to path of CurrentActiveDocument
+end tell"</span><span class="sb">`</span>
+<span class="c"># echo $file &gt;&gt;  ~/Desktop/test.log</span>
+clang-format <span class="nt">-i</span> <span class="nt">-style</span><span class="o">=</span>file <span class="nv">$file</span>
+</code></pre></div></div>
+
+<p>将脚本保存到某个位置譬如 <code class="language-plaintext highlighter-rouge">x/y/z/foramt.sh</code>。</p>
+
+<h2 id="赋予脚本可执行权限">赋予脚本可执行权限</h2>
+
+<p>然后通过以下命令保证脚本有执行权限：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">chmod</span> +x x/y/z/foramt.sh
+</code></pre></div></div>
+
+<h2 id="配置-xcode-behavior">配置 Xcode behavior</h2>
+
+<ul>
+  <li>打开 Xcode behavior</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70046680-7613aa00-1601-11ea-9e9e-c958123985c3.png" alt="打开 Xcode behavior" /></p>
+<p align="center">Xcode behavior</p>
+
+<ul>
+  <li>
+    <p>点击左下角的 <code class="language-plaintext highlighter-rouge">+</code> 添加新的 behavior，随便取个名称，再点击名称旁边的 ⌘ 为该项绑定一个快捷键，比如 <code class="language-plaintext highlighter-rouge">⌘+⇧+M</code>，</p>
+  </li>
+  <li>
+    <p>右边内容区域最下面勾选 <code class="language-plaintext highlighter-rouge">Run</code> 并选择前面步骤保存的 shell 文件。</p>
+  </li>
+</ul>
+
+<p>最后完成后看起来是这样：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70046663-701dc900-1601-11ea-957f-21662325a6a0.png" alt="配置 Xcode behavior" /></p>
+<p align="center">配置 Xcode behavior</p>
+
+<h2 id="使用">使用</h2>
+
+<p>配置完成后，在编码过程中可通过前面配置的快捷键进行整个文件的格式化了。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70046649-6a27e800-1601-11ea-99bb-adf6d288582e.gif" alt="格式化效果" /></p>
+<p align="center">格式化效果</p>
+
+<p>如果项目根目录有放置 <code class="language-plaintext highlighter-rouge">.clang-format</code> 文件，则会正常读取到。同时这种方式还支持不同目录下放置不同的 <code class="language-plaintext highlighter-rouge">.clang-format</code> 配置文件，因为 clang-format 在格式化文件是，是会从文件所在目录向上逐级查找格式化配置文件的。</p>
+
+<h2 id="gotchas">gotchas</h2>
+
+<p>实际使用过程中发现该命令会有失效的情况，具体还不知道是 xcode behavior 没执行还是 clang-format 的问题。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/10341327/xcode-4-can-i-get-a-path-to-the-currently-active-file-via-applescript/14602063">Xcode 4 : Can I get a path to the currently active file via AppleScript?</a></li>
+  <li><a href="http://jeffreysambells.com/2012/07/26/path-to-current-xcode-document-in-bash">Path to Current Xcode Document</a></li>
+</ul>
+:ET

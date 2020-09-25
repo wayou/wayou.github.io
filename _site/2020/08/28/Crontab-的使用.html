@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Crontab 的使用 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Crontab 的使用" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Crontab 的使用 crontab 用于设置定时任务，通过 cat /etc/crontab 可查看 crontab 示例： $ cat /etc/crontab SHELL=/bin/bash PATH=/sbin:/bin:/usr/sbin:/usr/bin MAILTO=root # For details see man 4 crontabs # Example of job definition: # .---------------- minute (0 - 59) # | .------------- hour (0 - 23) # | | .---------- day of month (1 - 31) # | | | .------- month (1 - 12) OR jan,feb,mar,apr ... # | | | | .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat # | | | | | # * * * * * user-name command to be executed 根据输出可知，该命令分三部分， 设置的循环周期 user-name 指定运行该任务的身份 最后一部分是需要运行的脚本路径或具体的命令 身份 期中以什么身份运行脚本，可通过 crontab 的 -u 参数指定， $ sudo crontab -u user001 -e 上述命令将以 user001 的身份创建并运行 job。 也可以直接编辑 /etc/crontab 文件，该文件中可指定 username: 1 1 * * * user001 user001 /data/home/user001/test.sh job 的管理 crontab -e: 编辑或创建 job，配合 -u 可操作指定用户的 job crontab -l: 列出 job，配合 -u 参数可查看指定用户的 job crontab -r: 删除 job 文件，慎用，没有确认过程直接就删了 crontab -i: 同 -r，但删除前会先确认 循环周期 5 个 * 的位置分别代表了不同时间单位，由左至右依次为， 分，取值范围 0 ~ 59 时，0 ~23 天，1 ~ 31 月，1 ~ 12，部分实现支持使用名称 jan,feb,mar,… 星期，0 ~ 6，其中星期天为 0，部分实际支持使用名称，sun, mon, tue… 所以如下格式： 30 5 11 12 * echo &quot;hello&quot; 表示 “12 月 11 日的 5:30” 打印 “hello”。 特殊符号 * 期中，* 代表该位置时间单位下所有可取的值，比如第一个位置代表分，指定为 * 时就是每分钟都执行。 所以五个星 * * * * * 表示每分钟。 , 指定多个值时用于逗号分隔， 0,15,30 * * * * 表示当时间为 0,15 或 30 分钟的时候执行。 - 连字符用于指定范围， 0-15,30 * * * * 表示 0~15 之间的每分钟，以及第 30 分钟的时候执行。 / 除号用于设置重复的间隔， */15 * * * * 表示每个一刻钟的时候，即 0,15,30,45 这些时刻。 它与 15 * * * * 的区分是后者表示一个值，即 15min 的时候，13:15, 12:15 这些。 非标准的字符串 还有一些方便的预设关键字，但这些都是非标准的，不同机器支持情况不同。 Entry Description Equivalent to       @yearly (or @annually) 每年一月午夜 0 0 1 1 * @monthly 每月首日午夜 0 0 1 * * @weekly 每周天午夜 0 0 * * 0 @daily (or @midnight) 每天午夜 0 0 * * * @hourly 每小时 0 * * * * @reboot 重启时 N/A 示例：重启后启动 redis @reboot /usr/local/bin/redis-server /path/to/redis.conf 一些示例 每分钟打印日期到指定文件， crontab -e 打开 job 编辑界面 输入 */1 * * * * date &gt;&gt; /data/home/wayongliu/foo.txt 然后 :wq 保存退出 tail -f /data/home/wayongliu/foo.txt` 查看结果 实现每隔多少秒执行 因为能设置的最小时间单位为分，需要设置每隔多少秒执行时，就需要变通来实现。 借助 sleep，可不用 crontab, 比如每 5 秒： #!/bin/bash while true do /home/user/myscript.sh sleep 5 done 也可以 sleep 与 crontab 结合来用，考虑到每 5 秒，一分钟内即执行 12 次，可以设置 12 个 job： * * * * * /home/user/myscript.sh * * * * * sleep 5; /home/user/myscript.sh * * * * * sleep 10; /home/user/myscript.sh * * * * * sleep 15; /home/user/myscript.sh * * * * * sleep 20; /home/user/myscript.sh * * * * * sleep 25; /home/user/myscript.sh * * * * * sleep 30; /home/user/myscript.sh * * * * * sleep 35; /home/user/myscript.sh * * * * * sleep 40; /home/user/myscript.sh * * * * * sleep 45; /home/user/myscript.sh * * * * * sleep 50; /home/user/myscript.sh * * * * * sleep 55; /home/user/myscript.sh 其中第一个任务会在每分钟开始时执行， 第二个也是每分钟开始执行，不过会 sleep 5s，所以实际是每分钟每 5s 的时候执行， 后面的任务类似，从而达到了需要的效果。 相关资源 在线查看 crontab 模式对应的执行周期 The Ultimate Crontab Cheatsheet How to run a cronjob every X seconds in cron wikipedia - crontab" />
+<meta property="og:description" content="Crontab 的使用 crontab 用于设置定时任务，通过 cat /etc/crontab 可查看 crontab 示例： $ cat /etc/crontab SHELL=/bin/bash PATH=/sbin:/bin:/usr/sbin:/usr/bin MAILTO=root # For details see man 4 crontabs # Example of job definition: # .---------------- minute (0 - 59) # | .------------- hour (0 - 23) # | | .---------- day of month (1 - 31) # | | | .------- month (1 - 12) OR jan,feb,mar,apr ... # | | | | .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat # | | | | | # * * * * * user-name command to be executed 根据输出可知，该命令分三部分， 设置的循环周期 user-name 指定运行该任务的身份 最后一部分是需要运行的脚本路径或具体的命令 身份 期中以什么身份运行脚本，可通过 crontab 的 -u 参数指定， $ sudo crontab -u user001 -e 上述命令将以 user001 的身份创建并运行 job。 也可以直接编辑 /etc/crontab 文件，该文件中可指定 username: 1 1 * * * user001 user001 /data/home/user001/test.sh job 的管理 crontab -e: 编辑或创建 job，配合 -u 可操作指定用户的 job crontab -l: 列出 job，配合 -u 参数可查看指定用户的 job crontab -r: 删除 job 文件，慎用，没有确认过程直接就删了 crontab -i: 同 -r，但删除前会先确认 循环周期 5 个 * 的位置分别代表了不同时间单位，由左至右依次为， 分，取值范围 0 ~ 59 时，0 ~23 天，1 ~ 31 月，1 ~ 12，部分实现支持使用名称 jan,feb,mar,… 星期，0 ~ 6，其中星期天为 0，部分实际支持使用名称，sun, mon, tue… 所以如下格式： 30 5 11 12 * echo &quot;hello&quot; 表示 “12 月 11 日的 5:30” 打印 “hello”。 特殊符号 * 期中，* 代表该位置时间单位下所有可取的值，比如第一个位置代表分，指定为 * 时就是每分钟都执行。 所以五个星 * * * * * 表示每分钟。 , 指定多个值时用于逗号分隔， 0,15,30 * * * * 表示当时间为 0,15 或 30 分钟的时候执行。 - 连字符用于指定范围， 0-15,30 * * * * 表示 0~15 之间的每分钟，以及第 30 分钟的时候执行。 / 除号用于设置重复的间隔， */15 * * * * 表示每个一刻钟的时候，即 0,15,30,45 这些时刻。 它与 15 * * * * 的区分是后者表示一个值，即 15min 的时候，13:15, 12:15 这些。 非标准的字符串 还有一些方便的预设关键字，但这些都是非标准的，不同机器支持情况不同。 Entry Description Equivalent to       @yearly (or @annually) 每年一月午夜 0 0 1 1 * @monthly 每月首日午夜 0 0 1 * * @weekly 每周天午夜 0 0 * * 0 @daily (or @midnight) 每天午夜 0 0 * * * @hourly 每小时 0 * * * * @reboot 重启时 N/A 示例：重启后启动 redis @reboot /usr/local/bin/redis-server /path/to/redis.conf 一些示例 每分钟打印日期到指定文件， crontab -e 打开 job 编辑界面 输入 */1 * * * * date &gt;&gt; /data/home/wayongliu/foo.txt 然后 :wq 保存退出 tail -f /data/home/wayongliu/foo.txt` 查看结果 实现每隔多少秒执行 因为能设置的最小时间单位为分，需要设置每隔多少秒执行时，就需要变通来实现。 借助 sleep，可不用 crontab, 比如每 5 秒： #!/bin/bash while true do /home/user/myscript.sh sleep 5 done 也可以 sleep 与 crontab 结合来用，考虑到每 5 秒，一分钟内即执行 12 次，可以设置 12 个 job： * * * * * /home/user/myscript.sh * * * * * sleep 5; /home/user/myscript.sh * * * * * sleep 10; /home/user/myscript.sh * * * * * sleep 15; /home/user/myscript.sh * * * * * sleep 20; /home/user/myscript.sh * * * * * sleep 25; /home/user/myscript.sh * * * * * sleep 30; /home/user/myscript.sh * * * * * sleep 35; /home/user/myscript.sh * * * * * sleep 40; /home/user/myscript.sh * * * * * sleep 45; /home/user/myscript.sh * * * * * sleep 50; /home/user/myscript.sh * * * * * sleep 55; /home/user/myscript.sh 其中第一个任务会在每分钟开始时执行， 第二个也是每分钟开始执行，不过会 sleep 5s，所以实际是每分钟每 5s 的时候执行， 后面的任务类似，从而达到了需要的效果。 相关资源 在线查看 crontab 模式对应的执行周期 The Ultimate Crontab Cheatsheet How to run a cronjob every X seconds in cron wikipedia - crontab" />
+<link rel="canonical" href="http://localhost:4000/2020/08/28/Crontab-%E7%9A%84%E4%BD%BF%E7%94%A8.html" />
+<meta property="og:url" content="http://localhost:4000/2020/08/28/Crontab-%E7%9A%84%E4%BD%BF%E7%94%A8.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-08-28T22:08:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2020/08/28/Crontab-%E7%9A%84%E4%BD%BF%E7%94%A8.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2020/08/28/Crontab-%E7%9A%84%E4%BD%BF%E7%94%A8.html"},"description":"Crontab 的使用 crontab 用于设置定时任务，通过 cat /etc/crontab 可查看 crontab 示例： $ cat /etc/crontab SHELL=/bin/bash PATH=/sbin:/bin:/usr/sbin:/usr/bin MAILTO=root # For details see man 4 crontabs # Example of job definition: # .---------------- minute (0 - 59) # | .------------- hour (0 - 23) # | | .---------- day of month (1 - 31) # | | | .------- month (1 - 12) OR jan,feb,mar,apr ... # | | | | .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat # | | | | | # * * * * * user-name command to be executed 根据输出可知，该命令分三部分， 设置的循环周期 user-name 指定运行该任务的身份 最后一部分是需要运行的脚本路径或具体的命令 身份 期中以什么身份运行脚本，可通过 crontab 的 -u 参数指定， $ sudo crontab -u user001 -e 上述命令将以 user001 的身份创建并运行 job。 也可以直接编辑 /etc/crontab 文件，该文件中可指定 username: 1 1 * * * user001 user001 /data/home/user001/test.sh job 的管理 crontab -e: 编辑或创建 job，配合 -u 可操作指定用户的 job crontab -l: 列出 job，配合 -u 参数可查看指定用户的 job crontab -r: 删除 job 文件，慎用，没有确认过程直接就删了 crontab -i: 同 -r，但删除前会先确认 循环周期 5 个 * 的位置分别代表了不同时间单位，由左至右依次为， 分，取值范围 0 ~ 59 时，0 ~23 天，1 ~ 31 月，1 ~ 12，部分实现支持使用名称 jan,feb,mar,… 星期，0 ~ 6，其中星期天为 0，部分实际支持使用名称，sun, mon, tue… 所以如下格式： 30 5 11 12 * echo &quot;hello&quot; 表示 “12 月 11 日的 5:30” 打印 “hello”。 特殊符号 * 期中，* 代表该位置时间单位下所有可取的值，比如第一个位置代表分，指定为 * 时就是每分钟都执行。 所以五个星 * * * * * 表示每分钟。 , 指定多个值时用于逗号分隔， 0,15,30 * * * * 表示当时间为 0,15 或 30 分钟的时候执行。 - 连字符用于指定范围， 0-15,30 * * * * 表示 0~15 之间的每分钟，以及第 30 分钟的时候执行。 / 除号用于设置重复的间隔， */15 * * * * 表示每个一刻钟的时候，即 0,15,30,45 这些时刻。 它与 15 * * * * 的区分是后者表示一个值，即 15min 的时候，13:15, 12:15 这些。 非标准的字符串 还有一些方便的预设关键字，但这些都是非标准的，不同机器支持情况不同。 Entry Description Equivalent to       @yearly (or @annually) 每年一月午夜 0 0 1 1 * @monthly 每月首日午夜 0 0 1 * * @weekly 每周天午夜 0 0 * * 0 @daily (or @midnight) 每天午夜 0 0 * * * @hourly 每小时 0 * * * * @reboot 重启时 N/A 示例：重启后启动 redis @reboot /usr/local/bin/redis-server /path/to/redis.conf 一些示例 每分钟打印日期到指定文件， crontab -e 打开 job 编辑界面 输入 */1 * * * * date &gt;&gt; /data/home/wayongliu/foo.txt 然后 :wq 保存退出 tail -f /data/home/wayongliu/foo.txt` 查看结果 实现每隔多少秒执行 因为能设置的最小时间单位为分，需要设置每隔多少秒执行时，就需要变通来实现。 借助 sleep，可不用 crontab, 比如每 5 秒： #!/bin/bash while true do /home/user/myscript.sh sleep 5 done 也可以 sleep 与 crontab 结合来用，考虑到每 5 秒，一分钟内即执行 12 次，可以设置 12 个 job： * * * * * /home/user/myscript.sh * * * * * sleep 5; /home/user/myscript.sh * * * * * sleep 10; /home/user/myscript.sh * * * * * sleep 15; /home/user/myscript.sh * * * * * sleep 20; /home/user/myscript.sh * * * * * sleep 25; /home/user/myscript.sh * * * * * sleep 30; /home/user/myscript.sh * * * * * sleep 35; /home/user/myscript.sh * * * * * sleep 40; /home/user/myscript.sh * * * * * sleep 45; /home/user/myscript.sh * * * * * sleep 50; /home/user/myscript.sh * * * * * sleep 55; /home/user/myscript.sh 其中第一个任务会在每分钟开始时执行， 第二个也是每分钟开始执行，不过会 sleep 5s，所以实际是每分钟每 5s 的时候执行， 后面的任务类似，从而达到了需要的效果。 相关资源 在线查看 crontab 模式对应的执行周期 The Ultimate Crontab Cheatsheet How to run a cronjob every X seconds in cron wikipedia - crontab","@type":"BlogPosting","headline":"Crontab 的使用","dateModified":"2020-08-28T22:08:00+08:00","datePublished":"2020-08-28T22:08:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Crontab 的使用</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-08-28T22:08:00+08:00" itemprop="datePublished">Aug 28, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="crontab-的使用">Crontab 的使用</h1>
+
+<p><code class="language-plaintext highlighter-rouge">crontab</code> 用于设置定时任务，通过 <code class="language-plaintext highlighter-rouge">cat /etc/crontab</code> 可查看 crontab 示例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat</span> /etc/crontab 
+<span class="nv">SHELL</span><span class="o">=</span>/bin/bash
+<span class="nv">PATH</span><span class="o">=</span>/sbin:/bin:/usr/sbin:/usr/bin
+<span class="nv">MAILTO</span><span class="o">=</span>root
+
+<span class="c"># For details see man 4 crontabs</span>
+
+<span class="c"># Example of job definition:</span>
+<span class="c"># .---------------- minute (0 - 59)</span>
+<span class="c"># |  .------------- hour (0 - 23)</span>
+<span class="c"># |  |  .---------- day of month (1 - 31)</span>
+<span class="c"># |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...</span>
+<span class="c"># |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat</span>
+<span class="c"># |  |  |  |  |</span>
+<span class="c"># *  *  *  *  * user-name  command to be executed</span>
+</code></pre></div></div>
+
+<p>根据输出可知，该命令分三部分，</p>
+
+<ul>
+  <li>
+    <ul>
+      <li>设置的循环周期</li>
+    </ul>
+  </li>
+  <li>user-name 指定运行该任务的身份</li>
+  <li>最后一部分是需要运行的脚本路径或具体的命令</li>
+</ul>
+
+<h2 id="身份">身份</h2>
+
+<p>期中以什么身份运行脚本，可通过 <code class="language-plaintext highlighter-rouge">crontab</code> 的 <code class="language-plaintext highlighter-rouge">-u</code> 参数指定，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>crontab <span class="nt">-u</span> user001 <span class="nt">-e</span>
+</code></pre></div></div>
+
+<p>上述命令将以 <code class="language-plaintext highlighter-rouge">user001</code> 的身份创建并运行 job。</p>
+
+<p>也可以直接编辑 <code class="language-plaintext highlighter-rouge">/etc/crontab</code> 文件，该文件中可指定 username:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 1 <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> user001 user001 /data/home/user001/test.sh
+</code></pre></div></div>
+
+<h2 id="job-的管理">job 的管理</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">crontab -e</code>: 编辑或创建 job，配合 <code class="language-plaintext highlighter-rouge">-u</code> 可操作指定用户的 job</li>
+  <li><code class="language-plaintext highlighter-rouge">crontab -l</code>: 列出 job，配合 <code class="language-plaintext highlighter-rouge">-u</code> 参数可查看指定用户的 job</li>
+  <li><code class="language-plaintext highlighter-rouge">crontab -r</code>: 删除 job 文件，慎用，没有确认过程直接就删了</li>
+  <li><code class="language-plaintext highlighter-rouge">crontab -i</code>: 同 <code class="language-plaintext highlighter-rouge">-r</code>，但删除前会先确认</li>
+</ul>
+
+<h2 id="循环周期">循环周期</h2>
+
+<p>5 个 <code class="language-plaintext highlighter-rouge">*</code> 的位置分别代表了不同时间单位，由左至右依次为，</p>
+
+<ul>
+  <li>分，取值范围 0 ~ 59</li>
+  <li>时，0 ~23</li>
+  <li>天，1 ~ 31</li>
+  <li>月，1 ~ 12，部分实现支持使用名称 jan,feb,mar,…</li>
+  <li>星期，0 ~ 6，其中星期天为 0，部分实际支持使用名称，sun, mon, tue…</li>
+</ul>
+
+<p>所以如下格式：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>30 5 11 12 * echo "hello"
+</code></pre></div></div>
+
+<p>表示 “12 月 11 日的 5:30” 打印 “hello”。</p>
+
+<h3 id="特殊符号">特殊符号</h3>
+
+<h4><code class="language-plaintext highlighter-rouge">*</code></h4>
+
+<p>期中，<code class="language-plaintext highlighter-rouge">*</code> 代表该位置时间单位下所有可取的值，比如第一个位置代表分，指定为 <code class="language-plaintext highlighter-rouge">*</code> 时就是每分钟都执行。</p>
+
+<p>所以五个星 <code class="language-plaintext highlighter-rouge">* * * * *</code> 表示每分钟。</p>
+
+<h4 id="-1"><code class="language-plaintext highlighter-rouge">,</code></h4>
+
+<p>指定多个值时用于逗号分隔，</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0,15,30 * * * *
+</code></pre></div></div>
+
+<p>表示当时间为 0,15 或 30 分钟的时候执行。</p>
+
+<h4 id="-"><code class="language-plaintext highlighter-rouge">-</code></h4>
+
+<p>连字符用于指定范围，</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0-15,30 * * * *
+</code></pre></div></div>
+
+<p>表示 0~15 之间的每分钟，以及第 30 分钟的时候执行。</p>
+
+<h4 id="-2"><code class="language-plaintext highlighter-rouge">/</code></h4>
+
+<p>除号用于设置重复的间隔，</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>*/15 * * * *
+</code></pre></div></div>
+
+<p>表示每个一刻钟的时候，即 0,15,30,45 这些时刻。</p>
+
+<p>它与 <code class="language-plaintext highlighter-rouge">15 * * * *</code> 的区分是后者表示一个值，即 15min 的时候，13:15, 12:15 这些。</p>
+
+<h4 id="非标准的字符串">非标准的字符串</h4>
+
+<p>还有一些方便的预设关键字，但这些都是非标准的，不同机器支持情况不同。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Entry</th>
+      <th>Description</th>
+      <th>Equivalent to</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">@yearly (or @annually)</code></td>
+      <td>每年一月午夜</td>
+      <td><code class="language-plaintext highlighter-rouge">0 0 1 1 *</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">@monthly</code></td>
+      <td>每月首日午夜</td>
+      <td><code class="language-plaintext highlighter-rouge">0 0 1 * *</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">@weekly</code></td>
+      <td>每周天午夜</td>
+      <td><code class="language-plaintext highlighter-rouge">0 0 * * 0</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">@daily (or @midnight)</code></td>
+      <td>每天午夜</td>
+      <td><code class="language-plaintext highlighter-rouge">0 0 * * *</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">@hourly</code></td>
+      <td>每小时</td>
+      <td><code class="language-plaintext highlighter-rouge">0 * * * *</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">@reboot</code></td>
+      <td>重启时</td>
+      <td>N/A</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>示例：重启后启动 redis</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@reboot /usr/local/bin/redis-server /path/to/redis.conf
+</code></pre></div></div>
+
+<h2 id="一些示例">一些示例</h2>
+
+<p>每分钟打印日期到指定文件，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">crontab -e</code> 打开 job 编辑界面</li>
+  <li>输入 <code class="language-plaintext highlighter-rouge">*/1 * * * * date &gt;&gt; /data/home/wayongliu/foo.txt</code> 然后 <code class="language-plaintext highlighter-rouge">:wq</code> 保存退出</li>
+  <li><code class="language-plaintext highlighter-rouge">tail -f </code>/data/home/wayongliu/foo.txt` 查看结果</li>
+</ul>
+
+<h3 id="实现每隔多少秒执行">实现每隔多少秒执行</h3>
+
+<p>因为能设置的最小时间单位为分，需要设置每隔多少秒执行时，就需要变通来实现。</p>
+
+<p>借助 sleep，可不用 crontab, 比如每 5 秒：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="k">while </span><span class="nb">true
+</span><span class="k">do</span>
+ /home/user/myscript.sh
+ <span class="nb">sleep </span>5
+<span class="k">done</span>
+</code></pre></div></div>
+
+<p>也可以 sleep 与 crontab 结合来用，考虑到每 5 秒，一分钟内即执行 12 次，可以设置 12 个 job：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>5<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>10<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>15<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>20<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>25<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>30<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>35<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>40<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>45<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>50<span class="p">;</span> /home/user/myscript.sh
+<span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="nb">sleep </span>55<span class="p">;</span> /home/user/myscript.sh
+</code></pre></div></div>
+
+<p>其中第一个任务会在每分钟开始时执行，
+第二个也是每分钟开始执行，不过会 sleep 5s，所以实际是每分钟每 5s 的时候执行，
+后面的任务类似，从而达到了需要的效果。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://crontab.guru/">在线查看 crontab 模式对应的执行周期</a></li>
+  <li><a href="https://www.codementor.io/@akul08/the-ultimate-crontab-cheatsheet-5op0f7o4r">The Ultimate Crontab Cheatsheet</a></li>
+  <li><a href="http://tech.saigonist.com/b/server/how-run-cronjob-every-x-seconds-cron.html">How to run a cronjob every X seconds in cron</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Cron">wikipedia - crontab</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2020/08/28/Crontab-%E7%9A%84%E4%BD%BF%E7%94%A8.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

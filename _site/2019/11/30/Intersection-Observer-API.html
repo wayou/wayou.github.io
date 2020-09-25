@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Intersection Observer API | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Intersection Observer API" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Intersection Observer API 随着 Web 应用的丰富和成熟，检测元素是否可见的需求增多。之前一般是通过三方库来实现，各自有各自的实现方式，性能也有差异。Intersection Observer API 便是这种功能的一个原生支持。 适用场景 页面滚动过程中的懒加载。 长页面无限内容加载。 页面中广告查看量的计算。 以及其他需要用户可见才进行的操作，动画等。 用法及参数 初始化监视器 let options = { root: document.querySelector(&#39;#scrollArea&#39;), rootMargin: &#39;0px&#39;, threshold: 1.0 } let observer = new IntersectionObserver(callback, options); 使用该 API，有两个角色会参与进来， 容器（root or root element）：缺省或传递 null 时为文档视窗 viewport，否则是指定的元素。 目标元素（target）：需要监视（observe）的目标元素。 API 会在目标元素可见，即出现在容器中时执行指定的回调。 但回调也不是都执行，它受参数 threshold 的控制。 所以还需要理解一个概念，Intersection Ratio，可理解成目标元素的身体出现在容器中多少时，才触发回调，进一步理解请看下图： Intersection Ratio 示例 -- 图片来自 Arnelle Balane 的文章 The Intersection Observer API 上面 threshold 就是指定 Intersection Ratio 的。它是一个介于 0~1 的小数，默认为 0 ，即一旦可见就执行，1 则表示元素全部可见才执行。 除了将 threshold 指定为数字，还可指定为一个数字的数组，比如 [0, 0.25, 0.5, 0.75, 1]，这样在元素出现过程中，其可见范围分别为 0, 25%，50%，75%, 100% 时都会触发一次回调。 而 rootMargin 则用于指定容器的边距，接收的值和 CSS margin 一样。这个边距会在计算目标可见范围时被考虑进去，即在容器原有的内容范围内，减去 margin 的这部分。 执行监视 利用构造器 IntersectionObserver 创建好一个监视器后，便可以对容器内的元素进行监视了。 let target = document.querySelector(&#39;#listItem&#39;); observer.observe(target); 回调 回调的结构如下： let callback = (entries, observer) =&gt; { entries.forEach(entry =&gt; { // Each entry describes an intersection change for one observed // target element: // entry.boundingClientRect // entry.intersectionRatio // entry.intersectionRect // entry.isIntersecting // entry.rootBounds // entry.target // entry.time }); }; 回调的入参为一个 IntersectionObserverEntry 数组，同时还有监视器本身 observer。 注意：虽然监测器的监听是异步的，但回调的执行是在主线程，所以回调中不宜进行耗时任务，如果确实需要应该使用 Window.requestIdleCallback() 来执行。 一个完整的示例 实现一个页面无限滚动及图片懒加载。完整代码可在 wayou/intersection-observer-api 查看。 App.tsx ```js import React, { useState, useEffect, useCallback } from &quot;react&quot;; import &quot;./App.css&quot;; const IMAGE_API = &quot;https://picsum.photos/200&quot;; const PAGE_SIZE = 10; const IMAGES_PAGED = new Array(PAGE_SIZE).fill(IMAGE_API); let loaderObserver: IntersectionObserver; let lazyLoadObserver: IntersectionObserver; let options = { rootMargin: &quot;0px&quot;, threshold: 0 }; let page = 0; const App = () =&gt; { const [images, setImages] = useState&lt;string[]&gt;(IMAGES_PAGED); const infiniteCallback = useCallback( (_entries, _observer) =&gt; { console.info(`loading page ${++page}`); setImages(prev =&gt; [...prev, ...IMAGES_PAGED]); }, [] ); const lazyLoadCallback = useCallback( (entries, observer) =&gt; { entries.forEach(entry =&gt; { if (entry.isIntersecting) { // stop observer and load the image const lazyImage = entry.target as HTMLImageElement; console.log(&quot;lazy loading &quot;, lazyImage); lazyImage.classList.remove(&quot;empty&quot;); lazyImage.src = lazyImage.dataset.src!; observer.unobserve(entry.target); } }); }, [] ); //setup infinite loading useEffect(() =&gt; { if (!loaderObserver) { loaderObserver = new IntersectionObserver(infiniteCallback, options); } const target = document.querySelector(&quot;footer&quot;); if (target) { loaderObserver.observe(target); } return () =&gt; { if (target) { loaderObserver.unobserve(target); } }; }, [infiniteCallback]); // setup lazy loading useEffect(() =&gt; { if (!lazyLoadObserver) { lazyLoadObserver = new IntersectionObserver(lazyLoadCallback, options); } const imgs = document.querySelectorAll(&quot;img.empty&quot;); if (imgs) { imgs.forEach(img =&gt; { console.count(&quot;setup img observer&quot;); lazyLoadObserver.observe(img); }); } return () =&gt; { if (imgs) { imgs.forEach(img =&gt; { lazyLoadObserver.unobserve(img); }); } }; }, [lazyLoadCallback, images]); return ( {images.map((image, index) =&gt; ( &lt;img className=&quot;empty&quot; key={index} data-src={image + `?f=${index}`} /&gt; ))} loading more .... ); }; export default App; ``` &lt;/details&gt; 运行效果： 利用 Intersection Observer API 实现的无限图片懒加载运行效果 ## 兼容性 虽然是实验性 API，但支持情况还可以。根据 [Can I Use #intersectionobserver](https://caniuse.com/#search=intersectionobserver) 的数据，PC 端除 IE 外主流浏览器均已支持，移动端 UC 部分支持，其余浏览器支持良好。 ## 相关资源 - [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)" />
+<meta property="og:description" content="Intersection Observer API 随着 Web 应用的丰富和成熟，检测元素是否可见的需求增多。之前一般是通过三方库来实现，各自有各自的实现方式，性能也有差异。Intersection Observer API 便是这种功能的一个原生支持。 适用场景 页面滚动过程中的懒加载。 长页面无限内容加载。 页面中广告查看量的计算。 以及其他需要用户可见才进行的操作，动画等。 用法及参数 初始化监视器 let options = { root: document.querySelector(&#39;#scrollArea&#39;), rootMargin: &#39;0px&#39;, threshold: 1.0 } let observer = new IntersectionObserver(callback, options); 使用该 API，有两个角色会参与进来， 容器（root or root element）：缺省或传递 null 时为文档视窗 viewport，否则是指定的元素。 目标元素（target）：需要监视（observe）的目标元素。 API 会在目标元素可见，即出现在容器中时执行指定的回调。 但回调也不是都执行，它受参数 threshold 的控制。 所以还需要理解一个概念，Intersection Ratio，可理解成目标元素的身体出现在容器中多少时，才触发回调，进一步理解请看下图： Intersection Ratio 示例 -- 图片来自 Arnelle Balane 的文章 The Intersection Observer API 上面 threshold 就是指定 Intersection Ratio 的。它是一个介于 0~1 的小数，默认为 0 ，即一旦可见就执行，1 则表示元素全部可见才执行。 除了将 threshold 指定为数字，还可指定为一个数字的数组，比如 [0, 0.25, 0.5, 0.75, 1]，这样在元素出现过程中，其可见范围分别为 0, 25%，50%，75%, 100% 时都会触发一次回调。 而 rootMargin 则用于指定容器的边距，接收的值和 CSS margin 一样。这个边距会在计算目标可见范围时被考虑进去，即在容器原有的内容范围内，减去 margin 的这部分。 执行监视 利用构造器 IntersectionObserver 创建好一个监视器后，便可以对容器内的元素进行监视了。 let target = document.querySelector(&#39;#listItem&#39;); observer.observe(target); 回调 回调的结构如下： let callback = (entries, observer) =&gt; { entries.forEach(entry =&gt; { // Each entry describes an intersection change for one observed // target element: // entry.boundingClientRect // entry.intersectionRatio // entry.intersectionRect // entry.isIntersecting // entry.rootBounds // entry.target // entry.time }); }; 回调的入参为一个 IntersectionObserverEntry 数组，同时还有监视器本身 observer。 注意：虽然监测器的监听是异步的，但回调的执行是在主线程，所以回调中不宜进行耗时任务，如果确实需要应该使用 Window.requestIdleCallback() 来执行。 一个完整的示例 实现一个页面无限滚动及图片懒加载。完整代码可在 wayou/intersection-observer-api 查看。 App.tsx ```js import React, { useState, useEffect, useCallback } from &quot;react&quot;; import &quot;./App.css&quot;; const IMAGE_API = &quot;https://picsum.photos/200&quot;; const PAGE_SIZE = 10; const IMAGES_PAGED = new Array(PAGE_SIZE).fill(IMAGE_API); let loaderObserver: IntersectionObserver; let lazyLoadObserver: IntersectionObserver; let options = { rootMargin: &quot;0px&quot;, threshold: 0 }; let page = 0; const App = () =&gt; { const [images, setImages] = useState&lt;string[]&gt;(IMAGES_PAGED); const infiniteCallback = useCallback( (_entries, _observer) =&gt; { console.info(`loading page ${++page}`); setImages(prev =&gt; [...prev, ...IMAGES_PAGED]); }, [] ); const lazyLoadCallback = useCallback( (entries, observer) =&gt; { entries.forEach(entry =&gt; { if (entry.isIntersecting) { // stop observer and load the image const lazyImage = entry.target as HTMLImageElement; console.log(&quot;lazy loading &quot;, lazyImage); lazyImage.classList.remove(&quot;empty&quot;); lazyImage.src = lazyImage.dataset.src!; observer.unobserve(entry.target); } }); }, [] ); //setup infinite loading useEffect(() =&gt; { if (!loaderObserver) { loaderObserver = new IntersectionObserver(infiniteCallback, options); } const target = document.querySelector(&quot;footer&quot;); if (target) { loaderObserver.observe(target); } return () =&gt; { if (target) { loaderObserver.unobserve(target); } }; }, [infiniteCallback]); // setup lazy loading useEffect(() =&gt; { if (!lazyLoadObserver) { lazyLoadObserver = new IntersectionObserver(lazyLoadCallback, options); } const imgs = document.querySelectorAll(&quot;img.empty&quot;); if (imgs) { imgs.forEach(img =&gt; { console.count(&quot;setup img observer&quot;); lazyLoadObserver.observe(img); }); } return () =&gt; { if (imgs) { imgs.forEach(img =&gt; { lazyLoadObserver.unobserve(img); }); } }; }, [lazyLoadCallback, images]); return ( {images.map((image, index) =&gt; ( &lt;img className=&quot;empty&quot; key={index} data-src={image + `?f=${index}`} /&gt; ))} loading more .... ); }; export default App; ``` &lt;/details&gt; 运行效果： 利用 Intersection Observer API 实现的无限图片懒加载运行效果 ## 兼容性 虽然是实验性 API，但支持情况还可以。根据 [Can I Use #intersectionobserver](https://caniuse.com/#search=intersectionobserver) 的数据，PC 端除 IE 外主流浏览器均已支持，移动端 UC 部分支持，其余浏览器支持良好。 ## 相关资源 - [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)" />
+<link rel="canonical" href="http://localhost:4000/2019/11/30/Intersection-Observer-API.html" />
+<meta property="og:url" content="http://localhost:4000/2019/11/30/Intersection-Observer-API.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-11-30T22:11:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/11/30/Intersection-Observer-API.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/11/30/Intersection-Observer-API.html"},"description":"Intersection Observer API 随着 Web 应用的丰富和成熟，检测元素是否可见的需求增多。之前一般是通过三方库来实现，各自有各自的实现方式，性能也有差异。Intersection Observer API 便是这种功能的一个原生支持。 适用场景 页面滚动过程中的懒加载。 长页面无限内容加载。 页面中广告查看量的计算。 以及其他需要用户可见才进行的操作，动画等。 用法及参数 初始化监视器 let options = { root: document.querySelector(&#39;#scrollArea&#39;), rootMargin: &#39;0px&#39;, threshold: 1.0 } let observer = new IntersectionObserver(callback, options); 使用该 API，有两个角色会参与进来， 容器（root or root element）：缺省或传递 null 时为文档视窗 viewport，否则是指定的元素。 目标元素（target）：需要监视（observe）的目标元素。 API 会在目标元素可见，即出现在容器中时执行指定的回调。 但回调也不是都执行，它受参数 threshold 的控制。 所以还需要理解一个概念，Intersection Ratio，可理解成目标元素的身体出现在容器中多少时，才触发回调，进一步理解请看下图： Intersection Ratio 示例 -- 图片来自 Arnelle Balane 的文章 The Intersection Observer API 上面 threshold 就是指定 Intersection Ratio 的。它是一个介于 0~1 的小数，默认为 0 ，即一旦可见就执行，1 则表示元素全部可见才执行。 除了将 threshold 指定为数字，还可指定为一个数字的数组，比如 [0, 0.25, 0.5, 0.75, 1]，这样在元素出现过程中，其可见范围分别为 0, 25%，50%，75%, 100% 时都会触发一次回调。 而 rootMargin 则用于指定容器的边距，接收的值和 CSS margin 一样。这个边距会在计算目标可见范围时被考虑进去，即在容器原有的内容范围内，减去 margin 的这部分。 执行监视 利用构造器 IntersectionObserver 创建好一个监视器后，便可以对容器内的元素进行监视了。 let target = document.querySelector(&#39;#listItem&#39;); observer.observe(target); 回调 回调的结构如下： let callback = (entries, observer) =&gt; { entries.forEach(entry =&gt; { // Each entry describes an intersection change for one observed // target element: // entry.boundingClientRect // entry.intersectionRatio // entry.intersectionRect // entry.isIntersecting // entry.rootBounds // entry.target // entry.time }); }; 回调的入参为一个 IntersectionObserverEntry 数组，同时还有监视器本身 observer。 注意：虽然监测器的监听是异步的，但回调的执行是在主线程，所以回调中不宜进行耗时任务，如果确实需要应该使用 Window.requestIdleCallback() 来执行。 一个完整的示例 实现一个页面无限滚动及图片懒加载。完整代码可在 wayou/intersection-observer-api 查看。 App.tsx ```js import React, { useState, useEffect, useCallback } from &quot;react&quot;; import &quot;./App.css&quot;; const IMAGE_API = &quot;https://picsum.photos/200&quot;; const PAGE_SIZE = 10; const IMAGES_PAGED = new Array(PAGE_SIZE).fill(IMAGE_API); let loaderObserver: IntersectionObserver; let lazyLoadObserver: IntersectionObserver; let options = { rootMargin: &quot;0px&quot;, threshold: 0 }; let page = 0; const App = () =&gt; { const [images, setImages] = useState&lt;string[]&gt;(IMAGES_PAGED); const infiniteCallback = useCallback( (_entries, _observer) =&gt; { console.info(`loading page ${++page}`); setImages(prev =&gt; [...prev, ...IMAGES_PAGED]); }, [] ); const lazyLoadCallback = useCallback( (entries, observer) =&gt; { entries.forEach(entry =&gt; { if (entry.isIntersecting) { // stop observer and load the image const lazyImage = entry.target as HTMLImageElement; console.log(&quot;lazy loading &quot;, lazyImage); lazyImage.classList.remove(&quot;empty&quot;); lazyImage.src = lazyImage.dataset.src!; observer.unobserve(entry.target); } }); }, [] ); //setup infinite loading useEffect(() =&gt; { if (!loaderObserver) { loaderObserver = new IntersectionObserver(infiniteCallback, options); } const target = document.querySelector(&quot;footer&quot;); if (target) { loaderObserver.observe(target); } return () =&gt; { if (target) { loaderObserver.unobserve(target); } }; }, [infiniteCallback]); // setup lazy loading useEffect(() =&gt; { if (!lazyLoadObserver) { lazyLoadObserver = new IntersectionObserver(lazyLoadCallback, options); } const imgs = document.querySelectorAll(&quot;img.empty&quot;); if (imgs) { imgs.forEach(img =&gt; { console.count(&quot;setup img observer&quot;); lazyLoadObserver.observe(img); }); } return () =&gt; { if (imgs) { imgs.forEach(img =&gt; { lazyLoadObserver.unobserve(img); }); } }; }, [lazyLoadCallback, images]); return ( {images.map((image, index) =&gt; ( &lt;img className=&quot;empty&quot; key={index} data-src={image + `?f=${index}`} /&gt; ))} loading more .... ); }; export default App; ``` &lt;/details&gt; 运行效果： 利用 Intersection Observer API 实现的无限图片懒加载运行效果 ## 兼容性 虽然是实验性 API，但支持情况还可以。根据 [Can I Use #intersectionobserver](https://caniuse.com/#search=intersectionobserver) 的数据，PC 端除 IE 外主流浏览器均已支持，移动端 UC 部分支持，其余浏览器支持良好。 ## 相关资源 - [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)","@type":"BlogPosting","headline":"Intersection Observer API","dateModified":"2019-11-30T22:11:00+08:00","datePublished":"2019-11-30T22:11:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Intersection Observer API</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-11-30T22:11:00+08:00" itemprop="datePublished">Nov 30, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="intersection-observer-api">Intersection Observer API</h1>
+
+<p>随着 Web 应用的丰富和成熟，检测元素是否可见的需求增多。之前一般是通过三方库来实现，各自有各自的实现方式，性能也有差异。<a href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API">Intersection Observer API</a> 便是这种功能的一个原生支持。</p>
+
+<h2 id="适用场景">适用场景</h2>
+
+<ul>
+  <li>页面滚动过程中的懒加载。</li>
+  <li>长页面无限内容加载。</li>
+  <li>页面中广告查看量的计算。</li>
+  <li>以及其他需要用户可见才进行的操作，动画等。</li>
+</ul>
+
+<h2 id="用法及参数">用法及参数</h2>
+
+<h3 id="初始化监视器">初始化监视器</h3>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">root</span><span class="p">:</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">'</span><span class="s1">#scrollArea</span><span class="dl">'</span><span class="p">),</span>
+  <span class="na">rootMargin</span><span class="p">:</span> <span class="dl">'</span><span class="s1">0px</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">threshold</span><span class="p">:</span> <span class="mf">1.0</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">observer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">IntersectionObserver</span><span class="p">(</span><span class="nx">callback</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>使用该 API，有两个角色会参与进来，</p>
+<ul>
+  <li><strong>容器（root or root element）</strong>：缺省或传递 <code class="language-plaintext highlighter-rouge">null</code> 时为文档视窗 viewport，否则是指定的元素。</li>
+  <li><strong>目标元素（target）</strong>：需要监视（observe）的目标元素。</li>
+</ul>
+
+<p>API 会在目标元素可见，即出现在容器中时执行指定的回调。</p>
+
+<p>但回调也不是都执行，它受参数 <code class="language-plaintext highlighter-rouge">threshold</code> 的控制。</p>
+
+<p>所以还需要理解一个概念，<strong>Intersection Ratio</strong>，可理解成目标元素的身体出现在容器中多少时，才触发回调，进一步理解请看下图：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/69900141-f2608000-13aa-11ea-8ab5-27508bf08417.png" alt="Intersection Ratio 示例" /></p>
+<p align="center">Intersection Ratio 示例 -- <i>图片来自 Arnelle Balane
+的文章 <a href="https://blog.arnellebalane.com/the-intersection-observer-api-d441be0b088d">The Intersection Observer API
+</a></i></p>
+
+<p>上面 <code class="language-plaintext highlighter-rouge">threshold</code> 就是指定 Intersection Ratio 的。它是一个介于 0~1 的小数，默认为 0 ，即一旦可见就执行，1 则表示元素全部可见才执行。</p>
+
+<p>除了将 <code class="language-plaintext highlighter-rouge">threshold</code> 指定为数字，还可指定为一个数字的数组，比如 <code class="language-plaintext highlighter-rouge">[0, 0.25, 0.5, 0.75, 1]</code>，这样在元素出现过程中，其可见范围分别为 0, 25%，50%，75%, 100% 时都会触发一次回调。</p>
+
+<p>而 <code class="language-plaintext highlighter-rouge">rootMargin</code> 则用于指定容器的边距，接收的值和 CSS margin 一样。这个边距会在计算目标可见范围时被考虑进去，即在容器原有的内容范围内，减去 margin 的这部分。</p>
+
+<h3 id="执行监视">执行监视</h3>
+
+<p>利用构造器 <code class="language-plaintext highlighter-rouge">IntersectionObserver</code> 创建好一个监视器后，便可以对容器内的元素进行监视了。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">target</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">'</span><span class="s1">#listItem</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">observer</span><span class="p">.</span><span class="nx">observe</span><span class="p">(</span><span class="nx">target</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="回调">回调</h3>
+
+<p>回调的结构如下：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">callback</span> <span class="o">=</span> <span class="p">(</span><span class="nx">entries</span><span class="p">,</span> <span class="nx">observer</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> 
+  <span class="nx">entries</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">entry</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// Each entry describes an intersection change for one observed</span>
+    <span class="c1">// target element:</span>
+    <span class="c1">//   entry.boundingClientRect</span>
+    <span class="c1">//   entry.intersectionRatio</span>
+    <span class="c1">//   entry.intersectionRect</span>
+    <span class="c1">//   entry.isIntersecting</span>
+    <span class="c1">//   entry.rootBounds</span>
+    <span class="c1">//   entry.target</span>
+    <span class="c1">//   entry.time</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>回调的入参为一个 <a href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry"><code class="language-plaintext highlighter-rouge">IntersectionObserverEntry</code></a> 数组，同时还有监视器本身 <code class="language-plaintext highlighter-rouge">observer</code>。</p>
+
+<p><strong>注意</strong>：虽然监测器的监听是异步的，但回调的执行是在主线程，所以回调中不宜进行耗时任务，如果确实需要应该使用 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback"><code class="language-plaintext highlighter-rouge">Window.requestIdleCallback()</code></a> 来执行。</p>
+
+<h2 id="一个完整的示例">一个完整的示例</h2>
+
+<p>实现一个页面无限滚动及图片懒加载。完整代码可在 <a href="https://github.com/wayou/intersection-observer-api">wayou/intersection-observer-api</a> 查看。</p>
+
+<details>
+<summary>
+App.tsx
+</summary>
+
+```js
+import React, { useState, useEffect, useCallback } from "react";
+import "./App.css";
+
+const IMAGE_API = "https://picsum.photos/200";
+const PAGE_SIZE = 10;
+const IMAGES_PAGED = new Array(PAGE_SIZE).fill(IMAGE_API);
+
+let loaderObserver: IntersectionObserver;
+let lazyLoadObserver: IntersectionObserver;
+let options = {
+  rootMargin: "0px",
+  threshold: 0
+};
+let page = 0;
+
+const App = () =&gt; {
+  const [images, setImages] = useState&lt;string[]&gt;(IMAGES_PAGED);
+
+  const infiniteCallback = useCallback<IntersectionObserverCallback>(
+    (_entries, _observer) =&gt; {
+      console.info(`loading page ${++page}`);
+      setImages(prev =&gt; [...prev, ...IMAGES_PAGED]);
+    },
+    []
+  );
+
+  const lazyLoadCallback = useCallback<IntersectionObserverCallback>(
+    (entries, observer) =&gt; {
+      entries.forEach(entry =&gt; {
+        if (entry.isIntersecting) {
+          // stop observer and load the image
+          const lazyImage = entry.target as HTMLImageElement;
+          console.log("lazy loading ", lazyImage);
+          lazyImage.classList.remove("empty");
+          lazyImage.src = lazyImage.dataset.src!;
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    []
+  );
+
+  //setup  infinite loading
+  useEffect(() =&gt; {
+    if (!loaderObserver) {
+      loaderObserver = new IntersectionObserver(infiniteCallback, options);
+    }
+    const target = document.querySelector("footer");
+    if (target) {
+      loaderObserver.observe(target);
+    }
+    return () =&gt; {
+      if (target) {
+        loaderObserver.unobserve(target);
+      }
+    };
+  }, [infiniteCallback]);
+
+  // setup lazy loading
+  useEffect(() =&gt; {
+    if (!lazyLoadObserver) {
+      lazyLoadObserver = new IntersectionObserver(lazyLoadCallback, options);
+    }
+    const imgs = document.querySelectorAll("img.empty");
+    if (imgs) {
+      imgs.forEach(img =&gt; {
+        console.count("setup img observer");
+        lazyLoadObserver.observe(img);
+      });
+    }
+    return () =&gt; {
+      if (imgs) {
+        imgs.forEach(img =&gt; {
+          lazyLoadObserver.unobserve(img);
+        });
+      }
+    };
+  }, [lazyLoadCallback, images]);
+
+  return (
+    <div classname="App">
+      <div classname="content-wrap">
+        {images.map((image, index) =&gt; (
+          &lt;img className="empty" key={index} data-src={image + `?f=${index}`} /&gt;
+        ))}
+      </div>
+      <footer>loading more ....</footer>
+    </div>
+  );
+};
+
+export default App;
+
+```
+
+&lt;/details&gt;
+
+
+运行效果：
+
+<p align="center">
+<img align="center" alt="利用 Intersection Observer API 实现的无限图片懒加载运行效果" src="https://user-images.githubusercontent.com/3783096/69900832-496a5300-13b3-11ea-9a27-101717229e11.gif" />
+</p>
+<p align="center">利用 Intersection Observer API 实现的无限图片懒加载运行效果</p>
+
+
+## 兼容性
+
+虽然是实验性 API，但支持情况还可以。根据 [Can I Use #intersectionobserver](https://caniuse.com/#search=intersectionobserver) 的数据，PC 端除 IE 外主流浏览器均已支持，移动端 UC 部分支持，其余浏览器支持良好。
+
+## 相关资源
+
+- [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
+
+    
+</IntersectionObserverCallback></IntersectionObserverCallback></details>
+
+  </div><a class="u-url" href="/2019/11/30/Intersection-Observer-API.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

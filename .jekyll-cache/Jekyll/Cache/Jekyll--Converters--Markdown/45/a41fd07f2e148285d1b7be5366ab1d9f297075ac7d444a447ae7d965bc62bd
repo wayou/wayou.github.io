@@ -1,0 +1,100 @@
+I"v$<h1 id="javascript-map-和-set">JavaScript Map 和 Set</h1>
+
+<h2 id="结论">结论</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Map</code>：存放键值对，区别于 <code class="language-plaintext highlighter-rouge">Object</code>，键可以是任何值。</li>
+  <li><code class="language-plaintext highlighter-rouge">Set</code>：存放不重复的值</li>
+</ul>
+
+<h2 id="map">Map</h2>
+
+<p>存储键值对，读取时与插入顺序一致。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Map</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="dl">"</span><span class="s2">1</span><span class="dl">"</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="dl">"</span><span class="s2">3</span><span class="dl">"</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="dl">"</span><span class="s2">2</span><span class="dl">"</span><span class="p">]]);</span>
+<span class="nx">map</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">bar</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">]</span> <span class="k">of</span> <span class="nx">map</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 '1'
+3 '3'
+2 '2'
+foo bar
+</code></pre></div></div>
+
+<p>任何值，对象或原始值，都可作为 <code class="language-plaintext highlighter-rouge">Map</code> 的键。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">myMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Map</span><span class="p">();</span>
+
+<span class="kd">var</span> <span class="nx">keyString</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">a string</span><span class="dl">'</span><span class="p">,</span>
+    <span class="nx">keyObj</span> <span class="o">=</span> <span class="p">{},</span>
+    <span class="nx">keyFunc</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{};</span>
+
+<span class="c1">// setting the values</span>
+<span class="nx">myMap</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="nx">keyString</span><span class="p">,</span> <span class="dl">"</span><span class="s2">value associated with 'a string'</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">myMap</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="nx">keyObj</span><span class="p">,</span> <span class="dl">'</span><span class="s1">value associated with keyObj</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">myMap</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="nx">keyFunc</span><span class="p">,</span> <span class="dl">'</span><span class="s1">value associated with keyFunc</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">myMap</span><span class="p">.</span><span class="nx">size</span><span class="p">;</span> <span class="c1">// 3</span>
+
+<span class="c1">// getting the values</span>
+<span class="nx">myMap</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">keyString</span><span class="p">);</span>    <span class="c1">// "value associated with 'a string'"</span>
+<span class="nx">myMap</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">keyObj</span><span class="p">);</span>       <span class="c1">// "value associated with keyObj"</span>
+<span class="nx">myMap</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">keyFunc</span><span class="p">);</span>      <span class="c1">// "value associated with keyFunc"</span>
+
+<span class="nx">myMap</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">a string</span><span class="dl">'</span><span class="p">);</span>   <span class="c1">// "value associated with 'a string'"</span>
+                         <span class="c1">// because keyString === 'a string'</span>
+<span class="nx">myMap</span><span class="p">.</span><span class="kd">get</span><span class="p">({});</span>           <span class="c1">// undefined, because keyObj !== {}</span>
+<span class="nx">myMap</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{});</span> <span class="c1">// undefined, because keyFunc !== function () {}</span>
+</code></pre></div></div>
+
+<p>相比 <code class="language-plaintext highlighter-rouge">Object</code>，除了对可作为键的值没要求外，<code class="language-plaintext highlighter-rouge">Map</code> 自带遍历器（iterator），可对其使用 <code class="language-plaintext highlighter-rouge">for of</code> 语句。</p>
+
+<p>同时还自带一些便捷的属性和方法，比如 <code class="language-plaintext highlighter-rouge">size</code>，<code class="language-plaintext highlighter-rouge">clear()</code>。</p>
+
+<h2 id="set">Set</h2>
+
+<p>存储唯一的值，对于重复的值会被忽略。</p>
+
+<p>示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">b</span><span class="p">:</span> <span class="mi">2</span> <span class="p">};</span>
+<span class="kd">var</span> <span class="kd">set</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Set</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="dl">"</span><span class="s2">foo</span><span class="dl">"</span><span class="p">]);</span>
+<span class="kd">set</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+<span class="kd">set</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">size:</span><span class="dl">"</span><span class="p">,</span> <span class="kd">set</span><span class="p">.</span><span class="nx">size</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kd">set</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kd">set</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">obj</span><span class="p">));</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">val</span> <span class="k">of</span> <span class="kd">set</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>4
+true
+true
+1
+2
+foo
+{ a: 1, b: 2 }
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set">MDN - Set</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map">MDN - Map</a></li>
+  <li><a href="https://stackoverflow.com/questions/24085708/javascript-map-object-vs-set-object">javascript Map object vs Set object</a></li>
+</ul>
+
+:ET

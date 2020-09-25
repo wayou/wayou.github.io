@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>理解 Linux 中 ls 的输出 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="理解 Linux 中 ls 的输出" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="理解 Linux 中 ls 的输出 ls 的输出会因各 Linux 版本变种而略有差异，这里只讨论一般情况下的输出。 下面是来自 man page 关于 ls 的描述： $ man ls ls - list directory contents 列出文件夹中的内容。 但一般我们会配合着 -l 参数使用，将输出展示成列表形式。 在 ls 的 man page 中搜索 -l 可看到该参数的意义： -l use a long listing format 列表形式下看到的输出大概成这样： -rwxrw-r-- 10 root root 2048 Jan 13 07:11 afile.exe 各列的含义 -rwxrw-r-- 10 root root 2048 Jan 13 07:11 afile.exe ?UUUGGGOOOS 00 UUUUUU GGGGGG #### ^-- 修改日期及文件或文件夹名 ^ ^ ^ ^ ^ ^ ^ ^ ^ | | | | | | | | \--- 文件大小，单位为字节（byte） | | | | | | | \-------- 所有者所处的分组 | | | | | | \--------------- 所有者名称 | | | | | \---------------------- 包含的项目（item）数量 | | | | \--------------------------- 额外的权限（`.`，`+`，`s` 等，为空表示没有） | \--\--\----------------------------- 分别对应 [U]ser, [G]roup, and [O]thers 三种账户的读，写，可执行权限 \------------------------------------- 标识文件类型 文件权限/file permissions 包含三部分： 第一位标识文件类型， -：文件。 d：文件夹（directory）。 l：软链（symlink）。 后面的值三个一组，xxx xxx xxx。分别对应了 user，group 与 other 的权限。其中每一组包含三位，每一位则表示具体的读写及可执行权限，如果是字母表示有该权限， - 表示没有相应的权限。 r：读取权限/readable。 w：写入权限/writable。 x：可执行权限/executable，即将文件作为可执行文件运行。 最后位可选，表示还有额外的权限控制，如果没有则为空，参见这里的解释。 其中, user 即文件所属的用户，它的所有者，也可理解成其创建者，如果该文件没有被修改过权限的话。 group 即用户所属的分组。 other 表示既不是主人也不属于 user 所处的分组的其他任何身份。 所以连起来的话，-rwxrw-r-- 表示该项是个文件，其所有者拥有全部三种权限（rwx），和所有者同在一个分组下的用户没有可执行的权限（rw-），其他用户只读（r--）。 Tips: 系统会为文件默认赋予权限，但可通过 chmod （change mode）命令来手动改变文件的权限。 one more thing 有趣的是，权限除了使用 rwx 字母的方式表示，还可使用八进制（octal）数字来表示。 0：无权限 - 1：可执行 x 2：写权限 w 3：可写和可执行 wx 4：读权限 r 5：可读可执行 rx 6：读写 rw 7：读写及可执行 rwx 数字形式的权限通常用于 chmod 命令，方便修改文件的权限。比如将文件设置对用户有全部权限（对应数字 7），分组可读可执行（5），其他只读（4）： $ chmod 754 somefile.js 你当然还是可以使用字母的方式来进行设置的， $ chmod u=rwx,g=rx,o=r somefile.js 细心的你可能发现了，无论哪种权限组合，都可以通过三种其他的权限其数字相加而得到， 比如 7 表示读写及可执行，7 = 4（读） + 2 （写） + 1 （可执行） 再比如只读权限 4 = 4（读） + 0 （写） + 0 （可执行） 这便是其设计其妙之处，所以你应该理解为何 0~7 对应的是上面列出的权限。方便之处在于，只需要记住 4，2，1 分别对应读，写，可执行。其他权限通过相加计算即可。 链接数量/number of links 表示包含的项目数量。如果该项是文件，则无疑是 1。如果该项是文件夹，表示文件夹下还包含多少个文件或文件夹。 所属用户/owner name 文件的所有者。 所属分组/owner group 所有者所处的分组名。 文件大小/file size 文件或文件夹的大小，单位为字节（byte）。通过参数可配置输出为更加容易理解的形式，比如 -h (--human-readable)： -rw-rw-r-- 1 liuwayong liuwayong 1.6K Mar 30 18:18 app.js 修改日期/time of last modification 最后的修改日期。 文件或目录名/file/directory name 文件或文件夹的名称。如果是软链接，会显示出其所指向的位置。 lrwxrwxrwx 1 root root 16 Aug 2 2018 videodata -&gt; /data/videodata/ 相关资料 What do the fields in ls -al output mean? ’+’ and ‘s’ in permission strings What is the default size unit in linux ls -l command The Chmod Command and Linux File Permissions Explained" />
+<meta property="og:description" content="理解 Linux 中 ls 的输出 ls 的输出会因各 Linux 版本变种而略有差异，这里只讨论一般情况下的输出。 下面是来自 man page 关于 ls 的描述： $ man ls ls - list directory contents 列出文件夹中的内容。 但一般我们会配合着 -l 参数使用，将输出展示成列表形式。 在 ls 的 man page 中搜索 -l 可看到该参数的意义： -l use a long listing format 列表形式下看到的输出大概成这样： -rwxrw-r-- 10 root root 2048 Jan 13 07:11 afile.exe 各列的含义 -rwxrw-r-- 10 root root 2048 Jan 13 07:11 afile.exe ?UUUGGGOOOS 00 UUUUUU GGGGGG #### ^-- 修改日期及文件或文件夹名 ^ ^ ^ ^ ^ ^ ^ ^ ^ | | | | | | | | \--- 文件大小，单位为字节（byte） | | | | | | | \-------- 所有者所处的分组 | | | | | | \--------------- 所有者名称 | | | | | \---------------------- 包含的项目（item）数量 | | | | \--------------------------- 额外的权限（`.`，`+`，`s` 等，为空表示没有） | \--\--\----------------------------- 分别对应 [U]ser, [G]roup, and [O]thers 三种账户的读，写，可执行权限 \------------------------------------- 标识文件类型 文件权限/file permissions 包含三部分： 第一位标识文件类型， -：文件。 d：文件夹（directory）。 l：软链（symlink）。 后面的值三个一组，xxx xxx xxx。分别对应了 user，group 与 other 的权限。其中每一组包含三位，每一位则表示具体的读写及可执行权限，如果是字母表示有该权限， - 表示没有相应的权限。 r：读取权限/readable。 w：写入权限/writable。 x：可执行权限/executable，即将文件作为可执行文件运行。 最后位可选，表示还有额外的权限控制，如果没有则为空，参见这里的解释。 其中, user 即文件所属的用户，它的所有者，也可理解成其创建者，如果该文件没有被修改过权限的话。 group 即用户所属的分组。 other 表示既不是主人也不属于 user 所处的分组的其他任何身份。 所以连起来的话，-rwxrw-r-- 表示该项是个文件，其所有者拥有全部三种权限（rwx），和所有者同在一个分组下的用户没有可执行的权限（rw-），其他用户只读（r--）。 Tips: 系统会为文件默认赋予权限，但可通过 chmod （change mode）命令来手动改变文件的权限。 one more thing 有趣的是，权限除了使用 rwx 字母的方式表示，还可使用八进制（octal）数字来表示。 0：无权限 - 1：可执行 x 2：写权限 w 3：可写和可执行 wx 4：读权限 r 5：可读可执行 rx 6：读写 rw 7：读写及可执行 rwx 数字形式的权限通常用于 chmod 命令，方便修改文件的权限。比如将文件设置对用户有全部权限（对应数字 7），分组可读可执行（5），其他只读（4）： $ chmod 754 somefile.js 你当然还是可以使用字母的方式来进行设置的， $ chmod u=rwx,g=rx,o=r somefile.js 细心的你可能发现了，无论哪种权限组合，都可以通过三种其他的权限其数字相加而得到， 比如 7 表示读写及可执行，7 = 4（读） + 2 （写） + 1 （可执行） 再比如只读权限 4 = 4（读） + 0 （写） + 0 （可执行） 这便是其设计其妙之处，所以你应该理解为何 0~7 对应的是上面列出的权限。方便之处在于，只需要记住 4，2，1 分别对应读，写，可执行。其他权限通过相加计算即可。 链接数量/number of links 表示包含的项目数量。如果该项是文件，则无疑是 1。如果该项是文件夹，表示文件夹下还包含多少个文件或文件夹。 所属用户/owner name 文件的所有者。 所属分组/owner group 所有者所处的分组名。 文件大小/file size 文件或文件夹的大小，单位为字节（byte）。通过参数可配置输出为更加容易理解的形式，比如 -h (--human-readable)： -rw-rw-r-- 1 liuwayong liuwayong 1.6K Mar 30 18:18 app.js 修改日期/time of last modification 最后的修改日期。 文件或目录名/file/directory name 文件或文件夹的名称。如果是软链接，会显示出其所指向的位置。 lrwxrwxrwx 1 root root 16 Aug 2 2018 videodata -&gt; /data/videodata/ 相关资料 What do the fields in ls -al output mean? ’+’ and ‘s’ in permission strings What is the default size unit in linux ls -l command The Chmod Command and Linux File Permissions Explained" />
+<link rel="canonical" href="http://localhost:4000/2019/03/31/%E7%90%86%E8%A7%A3-Linux-%E4%B8%AD-ls-%E7%9A%84%E8%BE%93%E5%87%BA.html" />
+<meta property="og:url" content="http://localhost:4000/2019/03/31/%E7%90%86%E8%A7%A3-Linux-%E4%B8%AD-ls-%E7%9A%84%E8%BE%93%E5%87%BA.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-03-31T20:03:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/03/31/%E7%90%86%E8%A7%A3-Linux-%E4%B8%AD-ls-%E7%9A%84%E8%BE%93%E5%87%BA.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/03/31/%E7%90%86%E8%A7%A3-Linux-%E4%B8%AD-ls-%E7%9A%84%E8%BE%93%E5%87%BA.html"},"description":"理解 Linux 中 ls 的输出 ls 的输出会因各 Linux 版本变种而略有差异，这里只讨论一般情况下的输出。 下面是来自 man page 关于 ls 的描述： $ man ls ls - list directory contents 列出文件夹中的内容。 但一般我们会配合着 -l 参数使用，将输出展示成列表形式。 在 ls 的 man page 中搜索 -l 可看到该参数的意义： -l use a long listing format 列表形式下看到的输出大概成这样： -rwxrw-r-- 10 root root 2048 Jan 13 07:11 afile.exe 各列的含义 -rwxrw-r-- 10 root root 2048 Jan 13 07:11 afile.exe ?UUUGGGOOOS 00 UUUUUU GGGGGG #### ^-- 修改日期及文件或文件夹名 ^ ^ ^ ^ ^ ^ ^ ^ ^ | | | | | | | | \\--- 文件大小，单位为字节（byte） | | | | | | | \\-------- 所有者所处的分组 | | | | | | \\--------------- 所有者名称 | | | | | \\---------------------- 包含的项目（item）数量 | | | | \\--------------------------- 额外的权限（`.`，`+`，`s` 等，为空表示没有） | \\--\\--\\----------------------------- 分别对应 [U]ser, [G]roup, and [O]thers 三种账户的读，写，可执行权限 \\------------------------------------- 标识文件类型 文件权限/file permissions 包含三部分： 第一位标识文件类型， -：文件。 d：文件夹（directory）。 l：软链（symlink）。 后面的值三个一组，xxx xxx xxx。分别对应了 user，group 与 other 的权限。其中每一组包含三位，每一位则表示具体的读写及可执行权限，如果是字母表示有该权限， - 表示没有相应的权限。 r：读取权限/readable。 w：写入权限/writable。 x：可执行权限/executable，即将文件作为可执行文件运行。 最后位可选，表示还有额外的权限控制，如果没有则为空，参见这里的解释。 其中, user 即文件所属的用户，它的所有者，也可理解成其创建者，如果该文件没有被修改过权限的话。 group 即用户所属的分组。 other 表示既不是主人也不属于 user 所处的分组的其他任何身份。 所以连起来的话，-rwxrw-r-- 表示该项是个文件，其所有者拥有全部三种权限（rwx），和所有者同在一个分组下的用户没有可执行的权限（rw-），其他用户只读（r--）。 Tips: 系统会为文件默认赋予权限，但可通过 chmod （change mode）命令来手动改变文件的权限。 one more thing 有趣的是，权限除了使用 rwx 字母的方式表示，还可使用八进制（octal）数字来表示。 0：无权限 - 1：可执行 x 2：写权限 w 3：可写和可执行 wx 4：读权限 r 5：可读可执行 rx 6：读写 rw 7：读写及可执行 rwx 数字形式的权限通常用于 chmod 命令，方便修改文件的权限。比如将文件设置对用户有全部权限（对应数字 7），分组可读可执行（5），其他只读（4）： $ chmod 754 somefile.js 你当然还是可以使用字母的方式来进行设置的， $ chmod u=rwx,g=rx,o=r somefile.js 细心的你可能发现了，无论哪种权限组合，都可以通过三种其他的权限其数字相加而得到， 比如 7 表示读写及可执行，7 = 4（读） + 2 （写） + 1 （可执行） 再比如只读权限 4 = 4（读） + 0 （写） + 0 （可执行） 这便是其设计其妙之处，所以你应该理解为何 0~7 对应的是上面列出的权限。方便之处在于，只需要记住 4，2，1 分别对应读，写，可执行。其他权限通过相加计算即可。 链接数量/number of links 表示包含的项目数量。如果该项是文件，则无疑是 1。如果该项是文件夹，表示文件夹下还包含多少个文件或文件夹。 所属用户/owner name 文件的所有者。 所属分组/owner group 所有者所处的分组名。 文件大小/file size 文件或文件夹的大小，单位为字节（byte）。通过参数可配置输出为更加容易理解的形式，比如 -h (--human-readable)： -rw-rw-r-- 1 liuwayong liuwayong 1.6K Mar 30 18:18 app.js 修改日期/time of last modification 最后的修改日期。 文件或目录名/file/directory name 文件或文件夹的名称。如果是软链接，会显示出其所指向的位置。 lrwxrwxrwx 1 root root 16 Aug 2 2018 videodata -&gt; /data/videodata/ 相关资料 What do the fields in ls -al output mean? ’+’ and ‘s’ in permission strings What is the default size unit in linux ls -l command The Chmod Command and Linux File Permissions Explained","@type":"BlogPosting","headline":"理解 Linux 中 ls 的输出","dateModified":"2019-03-31T20:03:00+08:00","datePublished":"2019-03-31T20:03:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">理解 Linux 中 `ls` 的输出</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-03-31T20:03:00+08:00" itemprop="datePublished">Mar 31, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="理解-linux-中-ls-的输出">理解 Linux 中 <code class="language-plaintext highlighter-rouge">ls</code> 的输出</h1>
+
+<p><code class="language-plaintext highlighter-rouge">ls</code> 的输出会因各 Linux 版本变种而略有差异，这里只讨论一般情况下的输出。</p>
+
+<p>下面是来自 man page 关于 <code class="language-plaintext highlighter-rouge">ls</code> 的描述：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>man <span class="nb">ls
+       ls</span> - list directory contents
+</code></pre></div></div>
+
+<p>列出文件夹中的内容。</p>
+
+<p>但一般我们会配合着 <code class="language-plaintext highlighter-rouge">-l</code> 参数使用，将输出展示成列表形式。</p>
+
+<p>在 <code class="language-plaintext highlighter-rouge">ls</code> 的 man page 中搜索 <code class="language-plaintext highlighter-rouge">-l</code> 可看到该参数的意义：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>       <span class="nt">-l</span>     use a long listing format
+</code></pre></div></div>
+
+<p>列表形式下看到的输出大概成这样：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-rwxrw-r--</span>    10    root   root 2048    Jan 13 07:11 afile.exe
+</code></pre></div></div>
+
+<h3 id="各列的含义">各列的含义</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-rwxrw-r--    10    root   root 2048    Jan 13 07:11 afile.exe
+?UUUGGGOOOS   00  UUUUUU GGGGGG ####    ^-- 修改日期及文件或文件夹名
+^ ^  ^  ^ ^    ^      ^      ^    ^
+| |  |  | |    |      |      |    \--- 文件大小，单位为字节（byte）
+| |  |  | |    |      |      \-------- 所有者所处的分组
+| |  |  | |    |      \--------------- 所有者名称
+| |  |  | |    \---------------------- 包含的项目（item）数量
+| |  |  | \--------------------------- 额外的权限（`.`，`+`，`s` 等，为空表示没有）
+| \--\--\----------------------------- 分别对应 [U]ser, [G]roup, and [O]thers 三种账户的读，写，可执行权限
+\------------------------------------- 标识文件类型
+</code></pre></div></div>
+
+<h4 id="文件权限file-permissions">文件权限/file permissions</h4>
+
+<p>包含三部分：</p>
+<ul>
+  <li>第一位标识文件类型，
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">-</code>：文件。</li>
+      <li><code class="language-plaintext highlighter-rouge">d</code>：文件夹（directory）。</li>
+      <li><code class="language-plaintext highlighter-rouge">l</code>：软链（symlink）。</li>
+    </ul>
+  </li>
+  <li>后面的值三个一组，<code class="language-plaintext highlighter-rouge">xxx xxx xxx</code>。分别对应了 <code class="language-plaintext highlighter-rouge">user</code>，<code class="language-plaintext highlighter-rouge">group</code> 与 <code class="language-plaintext highlighter-rouge">other</code> 的权限。其中每一组包含三位，每一位则表示具体的读写及可执行权限，如果是字母表示有该权限， <code class="language-plaintext highlighter-rouge">-</code> 表示没有相应的权限。
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">r</code>：读取权限/readable。</li>
+      <li><code class="language-plaintext highlighter-rouge">w</code>：写入权限/writable。</li>
+      <li><code class="language-plaintext highlighter-rouge">x</code>：可执行权限/executable，即将文件作为可执行文件运行。</li>
+    </ul>
+  </li>
+  <li>最后位可选，表示还有额外的权限控制，如果没有则为空，参见<a href="https://unix.stackexchange.com/a/206912/209192">这里的解释</a>。</li>
+</ul>
+
+<p>其中,</p>
+<ul>
+  <li>user 即文件所属的用户，它的所有者，也可理解成其创建者，如果该文件没有被修改过权限的话。</li>
+  <li>group 即用户所属的分组。</li>
+  <li>other 表示既不是主人也不属于 user 所处的分组的其他任何身份。</li>
+</ul>
+
+<p>所以连起来的话，<code class="language-plaintext highlighter-rouge">-rwxrw-r--</code> 表示该项是个文件，其所有者拥有全部三种权限（<code class="language-plaintext highlighter-rouge">rwx</code>），和所有者同在一个分组下的用户没有可执行的权限（<code class="language-plaintext highlighter-rouge">rw-</code>），其他用户只读（<code class="language-plaintext highlighter-rouge">r--</code>）。</p>
+
+<p><em>Tips: 系统会为文件默认赋予权限，但可通过 <code class="language-plaintext highlighter-rouge">chmod</code> （change mode）命令来手动改变文件的权限。</em></p>
+
+<h4 id="one-more-thing">one more thing</h4>
+
+<p>有趣的是，权限除了使用 <code class="language-plaintext highlighter-rouge">rwx</code> 字母的方式表示，还可使用八进制（octal）数字来表示。</p>
+
+<ul>
+  <li>0：无权限 <code class="language-plaintext highlighter-rouge">-</code></li>
+  <li><strong>1：可执行 <code class="language-plaintext highlighter-rouge">x</code></strong></li>
+  <li><strong>2：写权限 <code class="language-plaintext highlighter-rouge">w</code></strong></li>
+  <li>3：可写和可执行 <code class="language-plaintext highlighter-rouge">wx</code></li>
+  <li><strong>4：读权限 <code class="language-plaintext highlighter-rouge">r</code></strong></li>
+  <li>5：可读可执行 <code class="language-plaintext highlighter-rouge">rx</code></li>
+  <li>6：读写 <code class="language-plaintext highlighter-rouge">rw</code></li>
+  <li>7：读写及可执行 <code class="language-plaintext highlighter-rouge">rwx</code></li>
+</ul>
+
+<p>数字形式的权限通常用于 <code class="language-plaintext highlighter-rouge">chmod</code> 命令，方便修改文件的权限。比如将文件设置对用户有全部权限（对应数字 7），分组可读可执行（5），其他只读（4）：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">chmod </span>754 somefile.js
+</code></pre></div></div>
+
+<p>你当然还是可以使用字母的方式来进行设置的，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">chmod </span><span class="nv">u</span><span class="o">=</span>rwx,g<span class="o">=</span>rx,o<span class="o">=</span>r somefile.js
+</code></pre></div></div>
+
+<p>细心的你可能发现了，无论哪种权限组合，都可以通过三种其他的权限其数字相加而得到，</p>
+<ul>
+  <li>比如 7 表示读写及可执行，7 = 4（读） + 2 （写） + 1 （可执行）</li>
+  <li>再比如只读权限 4 = 4（读） + 0 （写） + 0 （可执行）</li>
+</ul>
+
+<p>这便是其设计其妙之处，所以你应该理解为何 0~7 对应的是上面列出的权限。方便之处在于，只需要记住 <strong>4</strong>，<strong>2</strong>，<strong>1</strong> 分别对应<strong>读</strong>，<strong>写</strong>，<strong>可执行</strong>。其他权限通过相加计算即可。</p>
+
+<h4 id="链接数量number-of-links">链接数量/number of links</h4>
+
+<p>表示包含的项目数量。如果该项是文件，则无疑是 1。如果该项是文件夹，表示文件夹下还包含多少个文件或文件夹。</p>
+
+<h4 id="所属用户owner-name">所属用户/owner name</h4>
+
+<p>文件的所有者。</p>
+
+<h4 id="所属分组owner-group">所属分组/owner group</h4>
+
+<p>所有者所处的分组名。</p>
+
+<h4 id="文件大小file-size">文件大小/file size</h4>
+
+<p>文件或文件夹的大小，单位为字节（byte）。通过参数可配置输出为更加容易理解的形式，比如 <code class="language-plaintext highlighter-rouge">-h</code> (<code class="language-plaintext highlighter-rouge">--human-readable</code>)：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-rw-rw-r--</span>   1 liuwayong liuwayong 1.6K Mar 30 18:18 app.js
+</code></pre></div></div>
+
+<h4 id="修改日期time-of-last-modification">修改日期/time of last modification</h4>
+
+<p>最后的修改日期。</p>
+
+<h4 id="文件或目录名filedirectory-name">文件或目录名/file/directory name</h4>
+
+<p>文件或文件夹的名称。如果是软链接，会显示出其所指向的位置。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lrwxrwxrwx  1 root      root        16 Aug  2  2018 videodata -&gt; /data/videodata/
+</code></pre></div></div>
+
+<h3 id="相关资料">相关资料</h3>
+
+<ul>
+  <li><a href="https://unix.stackexchange.com/questions/103114/what-do-the-fields-in-ls-al-output-mean">What do the fields in ls -al output mean?</a></li>
+  <li><a href="https://unix.stackexchange.com/a/206912/209192">’+’ and ‘s’ in permission strings</a></li>
+  <li><a href="https://superuser.com/questions/554124/what-is-the-default-size-unit-in-linux-ls-l-command">What is the default size unit in linux ls -l command</a></li>
+  <li><a href="https://www.makeuseof.com/tag/chmod-command-linux-file-permissions/">The Chmod Command and Linux File Permissions Explained</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/03/31/%E7%90%86%E8%A7%A3-Linux-%E4%B8%AD-ls-%E7%9A%84%E8%BE%93%E5%87%BA.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

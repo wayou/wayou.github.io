@@ -1,0 +1,79 @@
+I"�
+<h1 id="stdfopen-中-r-与-w-的区别"><code class="language-plaintext highlighter-rouge">std::fopen</code> 中 <code class="language-plaintext highlighter-rouge">r+</code> 与 <code class="language-plaintext highlighter-rouge">w+</code> 的区别</h1>
+
+<p>C++ 中操作文件的 <code class="language-plaintext highlighter-rouge">fopen</code> 签名如下：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">std</span><span class="o">::</span><span class="kt">FILE</span><span class="o">*</span> <span class="nf">fopen</span><span class="p">(</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filename</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">mode</span> <span class="p">);</span>
+</code></pre></div></div>
+
+<p>其中第二个参数定义了文件以怎样的模式来打开，完整的模式表：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>模式</th>
+      <th>含义</th>
+      <th>详情</th>
+      <th>文件存在时</th>
+      <th>文件不存在时</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“r”</td>
+      <td>读</td>
+      <td>打开并读取</td>
+      <td>从头开始读取</td>
+      <td>抛错</td>
+    </tr>
+    <tr>
+      <td>“w”</td>
+      <td>写</td>
+      <td>创建并写入</td>
+      <td>清空</td>
+      <td>创建</td>
+    </tr>
+    <tr>
+      <td>“a”</td>
+      <td>追加</td>
+      <td>向文件追加内容</td>
+      <td>从末尾开始追加</td>
+      <td>创建</td>
+    </tr>
+    <tr>
+      <td>“r+”</td>
+      <td>扩展读</td>
+      <td>打开后可读写</td>
+      <td>从头</td>
+      <td>抛错</td>
+    </tr>
+    <tr>
+      <td>“w+”</td>
+      <td>扩展写</td>
+      <td>创建并读写</td>
+      <td>清空</td>
+      <td>创建</td>
+    </tr>
+    <tr>
+      <td>“a+”</td>
+      <td>扩展追加</td>
+      <td>打开后可读写</td>
+      <td>从末尾开始追加</td>
+      <td>创建</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>注意到 <code class="language-plaintext highlighter-rouge">r+</code> 和 <code class="language-plaintext highlighter-rouge">w+</code> 方式下，都可对文件进行读写操作，那么区别在哪？</p>
+
+<p>前者侧重于<strong>读</strong>，所以不会清空文件或创建文件，如果尝试读取过程中发现文件不存在，直接抛错。</p>
+
+<p>后者侧重于<strong>写</strong>，文件不存在会先创建，已经存在会先清空再写入内容。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="http://en.cppreference.com/w/cpp/io/c/fopen">std::fopen</a></li>
+</ul>
+
+:ET

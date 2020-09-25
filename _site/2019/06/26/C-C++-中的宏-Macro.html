@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>C/C++ 中的宏/Macro | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="C/C++ 中的宏/Macro" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="C/C++ 中的宏/Macro 宏（Macro）本质上就是代码片段，通过别名来使用。在编译前的预处理中，宏会被替换为真实所指代的代码片段，即下图中 Preprocessor 处理的部分。 C/C++ 代码编译过程 - 图片来自 ntu.edu.sg 根据用法的不同，分两种，Object-like 和 Function-like。前者用于 Object 对象，后者用于函数方法。 C/C++ 代码编译过程中，可通过相应参数来获取到各编译步骤中的产出，比如想看被预处理编译之后的宏，使用 gcc 使加上 -E 参数。 $ gcc -E macro.c 宏的定义 通过 #define 指令定义一个宏。 #define NAME_OF_MACRO value 比如，以下代码定义了一个名为 BUFFER_SIZE 的宏，指代 1024 这个数字。 #define BUFFER_SIZE 1024 使用时， foo = (char *) malloc (BUFFER_SIZE); 使用预处理器编译： $ gcc -E test.c 编译结果： foo = (char *) malloc (1024); 多行 宏的定义是跟随 #define 在一同一行内的，但可通过 反斜杠 \ 实现换行从而定义出多行的宏。 #include &lt;stdio.h&gt; #define GREETING_STR \ &quot;hello \ world&quot; int main() { printf(GREETING_STR); return 0; } 多行的宏经过编译后会还原到一行中。 test.c #include &lt;stdio.h&gt; #define GREETING_STR \ &quot;hello \ world&quot; int main() { printf(GREETING_STR); } 编译后： int main() { printf(&quot;hello world&quot;); return 0; } 宏展开时的顺序 宏的展开是在处理源码时按照其出现位置进行的，如果宏定义有嵌套关系，也是层层进行展开，比如： #include &lt;stdio.h&gt; #define GREETING_NAME &quot;wayou&quot; #define GREETING &quot;hello,&quot; GREETING_NAME int main() { printf(GREETING); return 0; } 首先遇到 GREETING，将其展开成 GREETING_NAME &quot;wayou&quot;，然后发现另一个宏 GREETING_NAME，将其展开最后得到 &quot;hello,&quot; &quot;wayou&quot;。所以编译后的代码为： int main() { printf(&quot;hello,&quot; &quot;wayou&quot;); return 0; } 其展开的顺序并不是宏定义时的顺序，为了验证，可将上面示例代码中两个宏的定义调换一下，得到： -#define GREETING_NAME &quot;wayou&quot; #define GREETING &quot;hello,&quot; GREETING_NAME +#define GREETING_NAME &quot;wayou&quot; 再次编译查看产出，会发现没有区别，也不会报 GREETING 中所依赖的 GREETING_NAME 找不到的错。其实 #define 只是告诉编译器定义了这么个宏，而具体的求值，则是使用宏的地方才开始的。 像下面这样，当宏存在覆盖时，会以新的为准，其结果为 37。 #define BUFSIZE 1020 #define TABLESIZE BUFSIZE #undef BUFSIZE #define BUFSIZE 37 Object-like 宏 Object-like 类型的宏看起来就像普通的数据对象，故名。多用于数字常量的情形下。且宏名一般使用全大写形式方便识别。像上面示例中，都是 Object-like 的。 Function-like 宏 也可定义出使用时像是方法调用一样的宏，这便是 Function-like 类型的宏。 #define lang_init() c_init() lang_init() // 编译后 c_init() 函数类型的宏只在以方法调用形式使用时才会被展开，即名称后加括号，否则会被忽略。当宏名和函数名重名时，这一策略就会显得有用了，比如： extern void foo(void); #define foo() /* optimized inline version */ … foo(); funcptr = foo; 这里 foo() 的调用会来自宏里面定义的那个函数，而 funcptr 会正确地指向函数地址，如果后者也被宏展开，则成了 funptr=foo() 显然就不对了。 函数类型的宏在定义时需注意，宏名与后面括号不能有空格，否则就是普通的 Object-like 类型对象。 #define lang_init () c_init() lang_init() // 编译后： () c_init()() 宏的参数 函数类型的宏，可以像正常函数一样指定入参，入参需为逗号分隔合法的 C 字面量。 #define min(X, Y) ((X) &lt; (Y) ? (X) : (Y)) x = min(a, b); → x = ((a) &lt; (b) ? (a) : (b)); y = min(1, 2); → y = ((1) &lt; (2) ? (1) : (2)); z = min(a + 28, *p); → z = ((a + 28) &lt; (*p) ? (a + 28) : (*p)); 入参中的括号 入参中只需要括号对称，但不要求方括号或花括号成对出现，所以下面的代码： macro (array[x = y, x + 1]) 其入参实际为 array[x = y 和 x + 1]。 入参的展开 入参本质上也是宏，对象类型的宏，在函数宏展示时，这些参数也被展示到了函数宏的函数体里。 min (min (a, b), c) 首先被展开成： min (((a) &lt; (b) ? (a) : (b)), (c)) 然后进一步展开成（此处换行为方便阅读，实际编译后没有）： ((((a) &lt; (b) ? (a) : (b))) &lt; (c) ? (((a) &lt; (b) ? (a) : (b))) : (c)) 参数的缺省 函数宏在使用时其入参可缺省，但不能全部缺省，至少提供一个入参。 min(, b) → (( ) &lt; (b) ? ( ) : (b)) min(a, ) → ((a ) &lt; ( ) ? (a ) : ( )) min(,) → (( ) &lt; ( ) ? ( ) : ( )) min((,),) → (((,)) &lt; ( ) ? ((,)) : ( )) min() error→ macro &quot;min&quot; requires 2 arguments, but only 1 given min(,,) error→ macro &quot;min&quot; passed 3 arguments, but takes just 2 字符化/Stringizing 如果函数宏中入参在字符串中，是不会被展开的，它就是普通的字符串字面量，这样的结果是符合预期的。 #define foo(x) x, &quot;x&quot; foo(bar) → bar, &quot;x&quot; 但如果确实想将入参展开成字符串，可在使用入参时，加上 # 前缀。 #define WARN_IF(EXP) \ do { if (EXP) \ fprintf (stderr, &quot;Warning: &quot; #EXP &quot;\n&quot;); } \ while (0) WARN_IF (x == 0); → do { if (x == 0) fprintf (stderr, &quot;Warning: &quot; &quot;x == 0&quot; &quot;\n&quot;); } while (0); 此处 #EXP 在字符串中会被正确展开。What’s more, 如果这里的 x 也是宏，那只会在 if 语句中进行展开。 拼接 通过 ## 可将两个宏展开成一个，即将两者进行了拼接，这种操作叫 “token pasting”，或 “token concatenation”，就是拼接嘛。 宏拼接一般用在需要拼接的宏是来自宏参数的情况，其他情况，大可直接将两个宏写在一起即可，用不着 ## 指令。 考察下面这个场景，其中命令名重复出现： struct command { char *name; void (*function) (void); }; struct command commands[] = { { &quot;quit&quot;, quit_command }, { &quot;help&quot;, help_command }, … }; 通过定义宏配合拼接，可达到精简代码的目的： #define COMMAND(NAME) { #NAME, NAME ## _command } struct command commands[] = { COMMAND (quit), COMMAND (help), … }; 不定参数 像普通函数一样，函数类型的宏也可定义接收不定参数。 #define eprintf(…) fprintf (stderr, __VA_ARGS__) 调用时，命名参数后面，包括逗号都会进入到 __VA_ARGS__ 关键字当中。但 C++ 中还支持对这些参数命名从而不用 __VA_ARGS__。 eprintf (&quot;%s:%d: &quot;, input_file, lineno) // 编译后： fprintf (stderr, &quot;%s:%d: &quot;, input_file, lineno) C++ 中可这么写： #define eprintf(args…) fprintf (stderr, args) 不定参数与命名参数混合的情况 不定参数为命名参数后面省略的部分。 #define eprintf(format, …) fprintf (stderr, format, __VA_ARGS__) 预设的宏 标准库及编译器中预设了一些有用的宏，可以在这里 查阅。 取消和重置宏 当某个宏不再使用时，可通过 #undef 将取注销掉。#undef 后紧跟宏名，后面不要跟其他东西，即使是函数类型的宏。 #define FOO 4 x = FOO; → x = 4; #undef FOO x = FOO; → x = FOO; 两个宏相似的定义 满足以下条件时，我们认为两者是相似的： 类型相同，比如同为对象类型，或函数类型的宏 展开后各位置的符号（token）相同 如果是函数宏，入参相同 空白的不限但出现的位置相同 比如，下面这些是相似的： #define FOUR (2 + 2) #define FOUR (2 + 2) #define FOUR (2 /* two */ + 2) 而下面这些则不然： #define FOUR (2 + 2) #define FOUR ( 2+2 ) // 空白位置不一样 #define FOUR (2 * 2) // 宏的内容不一样 #define FOUR(score,and,seven,years,ago) (2 + 2) // 入参不一样 宏重复定义时的表现 对于使用了 #undef 注销过的宏，再次定义同名的宏时，要求新定义的宏不与老的相似。 而如果说一个已经存在的宏，并没有注销，重复定义时，如果相似，则新的定义会忽略，如果不相似，编译器会报警告同时使用新定义的宏。这允许在多个文件中定义同一个宏。 相关资源 gcc - Macros Standard C++ Library reference 3.7.1 Standard Predefined Macros" />
+<meta property="og:description" content="C/C++ 中的宏/Macro 宏（Macro）本质上就是代码片段，通过别名来使用。在编译前的预处理中，宏会被替换为真实所指代的代码片段，即下图中 Preprocessor 处理的部分。 C/C++ 代码编译过程 - 图片来自 ntu.edu.sg 根据用法的不同，分两种，Object-like 和 Function-like。前者用于 Object 对象，后者用于函数方法。 C/C++ 代码编译过程中，可通过相应参数来获取到各编译步骤中的产出，比如想看被预处理编译之后的宏，使用 gcc 使加上 -E 参数。 $ gcc -E macro.c 宏的定义 通过 #define 指令定义一个宏。 #define NAME_OF_MACRO value 比如，以下代码定义了一个名为 BUFFER_SIZE 的宏，指代 1024 这个数字。 #define BUFFER_SIZE 1024 使用时， foo = (char *) malloc (BUFFER_SIZE); 使用预处理器编译： $ gcc -E test.c 编译结果： foo = (char *) malloc (1024); 多行 宏的定义是跟随 #define 在一同一行内的，但可通过 反斜杠 \ 实现换行从而定义出多行的宏。 #include &lt;stdio.h&gt; #define GREETING_STR \ &quot;hello \ world&quot; int main() { printf(GREETING_STR); return 0; } 多行的宏经过编译后会还原到一行中。 test.c #include &lt;stdio.h&gt; #define GREETING_STR \ &quot;hello \ world&quot; int main() { printf(GREETING_STR); } 编译后： int main() { printf(&quot;hello world&quot;); return 0; } 宏展开时的顺序 宏的展开是在处理源码时按照其出现位置进行的，如果宏定义有嵌套关系，也是层层进行展开，比如： #include &lt;stdio.h&gt; #define GREETING_NAME &quot;wayou&quot; #define GREETING &quot;hello,&quot; GREETING_NAME int main() { printf(GREETING); return 0; } 首先遇到 GREETING，将其展开成 GREETING_NAME &quot;wayou&quot;，然后发现另一个宏 GREETING_NAME，将其展开最后得到 &quot;hello,&quot; &quot;wayou&quot;。所以编译后的代码为： int main() { printf(&quot;hello,&quot; &quot;wayou&quot;); return 0; } 其展开的顺序并不是宏定义时的顺序，为了验证，可将上面示例代码中两个宏的定义调换一下，得到： -#define GREETING_NAME &quot;wayou&quot; #define GREETING &quot;hello,&quot; GREETING_NAME +#define GREETING_NAME &quot;wayou&quot; 再次编译查看产出，会发现没有区别，也不会报 GREETING 中所依赖的 GREETING_NAME 找不到的错。其实 #define 只是告诉编译器定义了这么个宏，而具体的求值，则是使用宏的地方才开始的。 像下面这样，当宏存在覆盖时，会以新的为准，其结果为 37。 #define BUFSIZE 1020 #define TABLESIZE BUFSIZE #undef BUFSIZE #define BUFSIZE 37 Object-like 宏 Object-like 类型的宏看起来就像普通的数据对象，故名。多用于数字常量的情形下。且宏名一般使用全大写形式方便识别。像上面示例中，都是 Object-like 的。 Function-like 宏 也可定义出使用时像是方法调用一样的宏，这便是 Function-like 类型的宏。 #define lang_init() c_init() lang_init() // 编译后 c_init() 函数类型的宏只在以方法调用形式使用时才会被展开，即名称后加括号，否则会被忽略。当宏名和函数名重名时，这一策略就会显得有用了，比如： extern void foo(void); #define foo() /* optimized inline version */ … foo(); funcptr = foo; 这里 foo() 的调用会来自宏里面定义的那个函数，而 funcptr 会正确地指向函数地址，如果后者也被宏展开，则成了 funptr=foo() 显然就不对了。 函数类型的宏在定义时需注意，宏名与后面括号不能有空格，否则就是普通的 Object-like 类型对象。 #define lang_init () c_init() lang_init() // 编译后： () c_init()() 宏的参数 函数类型的宏，可以像正常函数一样指定入参，入参需为逗号分隔合法的 C 字面量。 #define min(X, Y) ((X) &lt; (Y) ? (X) : (Y)) x = min(a, b); → x = ((a) &lt; (b) ? (a) : (b)); y = min(1, 2); → y = ((1) &lt; (2) ? (1) : (2)); z = min(a + 28, *p); → z = ((a + 28) &lt; (*p) ? (a + 28) : (*p)); 入参中的括号 入参中只需要括号对称，但不要求方括号或花括号成对出现，所以下面的代码： macro (array[x = y, x + 1]) 其入参实际为 array[x = y 和 x + 1]。 入参的展开 入参本质上也是宏，对象类型的宏，在函数宏展示时，这些参数也被展示到了函数宏的函数体里。 min (min (a, b), c) 首先被展开成： min (((a) &lt; (b) ? (a) : (b)), (c)) 然后进一步展开成（此处换行为方便阅读，实际编译后没有）： ((((a) &lt; (b) ? (a) : (b))) &lt; (c) ? (((a) &lt; (b) ? (a) : (b))) : (c)) 参数的缺省 函数宏在使用时其入参可缺省，但不能全部缺省，至少提供一个入参。 min(, b) → (( ) &lt; (b) ? ( ) : (b)) min(a, ) → ((a ) &lt; ( ) ? (a ) : ( )) min(,) → (( ) &lt; ( ) ? ( ) : ( )) min((,),) → (((,)) &lt; ( ) ? ((,)) : ( )) min() error→ macro &quot;min&quot; requires 2 arguments, but only 1 given min(,,) error→ macro &quot;min&quot; passed 3 arguments, but takes just 2 字符化/Stringizing 如果函数宏中入参在字符串中，是不会被展开的，它就是普通的字符串字面量，这样的结果是符合预期的。 #define foo(x) x, &quot;x&quot; foo(bar) → bar, &quot;x&quot; 但如果确实想将入参展开成字符串，可在使用入参时，加上 # 前缀。 #define WARN_IF(EXP) \ do { if (EXP) \ fprintf (stderr, &quot;Warning: &quot; #EXP &quot;\n&quot;); } \ while (0) WARN_IF (x == 0); → do { if (x == 0) fprintf (stderr, &quot;Warning: &quot; &quot;x == 0&quot; &quot;\n&quot;); } while (0); 此处 #EXP 在字符串中会被正确展开。What’s more, 如果这里的 x 也是宏，那只会在 if 语句中进行展开。 拼接 通过 ## 可将两个宏展开成一个，即将两者进行了拼接，这种操作叫 “token pasting”，或 “token concatenation”，就是拼接嘛。 宏拼接一般用在需要拼接的宏是来自宏参数的情况，其他情况，大可直接将两个宏写在一起即可，用不着 ## 指令。 考察下面这个场景，其中命令名重复出现： struct command { char *name; void (*function) (void); }; struct command commands[] = { { &quot;quit&quot;, quit_command }, { &quot;help&quot;, help_command }, … }; 通过定义宏配合拼接，可达到精简代码的目的： #define COMMAND(NAME) { #NAME, NAME ## _command } struct command commands[] = { COMMAND (quit), COMMAND (help), … }; 不定参数 像普通函数一样，函数类型的宏也可定义接收不定参数。 #define eprintf(…) fprintf (stderr, __VA_ARGS__) 调用时，命名参数后面，包括逗号都会进入到 __VA_ARGS__ 关键字当中。但 C++ 中还支持对这些参数命名从而不用 __VA_ARGS__。 eprintf (&quot;%s:%d: &quot;, input_file, lineno) // 编译后： fprintf (stderr, &quot;%s:%d: &quot;, input_file, lineno) C++ 中可这么写： #define eprintf(args…) fprintf (stderr, args) 不定参数与命名参数混合的情况 不定参数为命名参数后面省略的部分。 #define eprintf(format, …) fprintf (stderr, format, __VA_ARGS__) 预设的宏 标准库及编译器中预设了一些有用的宏，可以在这里 查阅。 取消和重置宏 当某个宏不再使用时，可通过 #undef 将取注销掉。#undef 后紧跟宏名，后面不要跟其他东西，即使是函数类型的宏。 #define FOO 4 x = FOO; → x = 4; #undef FOO x = FOO; → x = FOO; 两个宏相似的定义 满足以下条件时，我们认为两者是相似的： 类型相同，比如同为对象类型，或函数类型的宏 展开后各位置的符号（token）相同 如果是函数宏，入参相同 空白的不限但出现的位置相同 比如，下面这些是相似的： #define FOUR (2 + 2) #define FOUR (2 + 2) #define FOUR (2 /* two */ + 2) 而下面这些则不然： #define FOUR (2 + 2) #define FOUR ( 2+2 ) // 空白位置不一样 #define FOUR (2 * 2) // 宏的内容不一样 #define FOUR(score,and,seven,years,ago) (2 + 2) // 入参不一样 宏重复定义时的表现 对于使用了 #undef 注销过的宏，再次定义同名的宏时，要求新定义的宏不与老的相似。 而如果说一个已经存在的宏，并没有注销，重复定义时，如果相似，则新的定义会忽略，如果不相似，编译器会报警告同时使用新定义的宏。这允许在多个文件中定义同一个宏。 相关资源 gcc - Macros Standard C++ Library reference 3.7.1 Standard Predefined Macros" />
+<link rel="canonical" href="http://localhost:4000/2019/06/26/C-C++-%E4%B8%AD%E7%9A%84%E5%AE%8F-Macro.html" />
+<meta property="og:url" content="http://localhost:4000/2019/06/26/C-C++-%E4%B8%AD%E7%9A%84%E5%AE%8F-Macro.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-26T01:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/06/26/C-C++-%E4%B8%AD%E7%9A%84%E5%AE%8F-Macro.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/26/C-C++-%E4%B8%AD%E7%9A%84%E5%AE%8F-Macro.html"},"description":"C/C++ 中的宏/Macro 宏（Macro）本质上就是代码片段，通过别名来使用。在编译前的预处理中，宏会被替换为真实所指代的代码片段，即下图中 Preprocessor 处理的部分。 C/C++ 代码编译过程 - 图片来自 ntu.edu.sg 根据用法的不同，分两种，Object-like 和 Function-like。前者用于 Object 对象，后者用于函数方法。 C/C++ 代码编译过程中，可通过相应参数来获取到各编译步骤中的产出，比如想看被预处理编译之后的宏，使用 gcc 使加上 -E 参数。 $ gcc -E macro.c 宏的定义 通过 #define 指令定义一个宏。 #define NAME_OF_MACRO value 比如，以下代码定义了一个名为 BUFFER_SIZE 的宏，指代 1024 这个数字。 #define BUFFER_SIZE 1024 使用时， foo = (char *) malloc (BUFFER_SIZE); 使用预处理器编译： $ gcc -E test.c 编译结果： foo = (char *) malloc (1024); 多行 宏的定义是跟随 #define 在一同一行内的，但可通过 反斜杠 \\ 实现换行从而定义出多行的宏。 #include &lt;stdio.h&gt; #define GREETING_STR \\ &quot;hello \\ world&quot; int main() { printf(GREETING_STR); return 0; } 多行的宏经过编译后会还原到一行中。 test.c #include &lt;stdio.h&gt; #define GREETING_STR \\ &quot;hello \\ world&quot; int main() { printf(GREETING_STR); } 编译后： int main() { printf(&quot;hello world&quot;); return 0; } 宏展开时的顺序 宏的展开是在处理源码时按照其出现位置进行的，如果宏定义有嵌套关系，也是层层进行展开，比如： #include &lt;stdio.h&gt; #define GREETING_NAME &quot;wayou&quot; #define GREETING &quot;hello,&quot; GREETING_NAME int main() { printf(GREETING); return 0; } 首先遇到 GREETING，将其展开成 GREETING_NAME &quot;wayou&quot;，然后发现另一个宏 GREETING_NAME，将其展开最后得到 &quot;hello,&quot; &quot;wayou&quot;。所以编译后的代码为： int main() { printf(&quot;hello,&quot; &quot;wayou&quot;); return 0; } 其展开的顺序并不是宏定义时的顺序，为了验证，可将上面示例代码中两个宏的定义调换一下，得到： -#define GREETING_NAME &quot;wayou&quot; #define GREETING &quot;hello,&quot; GREETING_NAME +#define GREETING_NAME &quot;wayou&quot; 再次编译查看产出，会发现没有区别，也不会报 GREETING 中所依赖的 GREETING_NAME 找不到的错。其实 #define 只是告诉编译器定义了这么个宏，而具体的求值，则是使用宏的地方才开始的。 像下面这样，当宏存在覆盖时，会以新的为准，其结果为 37。 #define BUFSIZE 1020 #define TABLESIZE BUFSIZE #undef BUFSIZE #define BUFSIZE 37 Object-like 宏 Object-like 类型的宏看起来就像普通的数据对象，故名。多用于数字常量的情形下。且宏名一般使用全大写形式方便识别。像上面示例中，都是 Object-like 的。 Function-like 宏 也可定义出使用时像是方法调用一样的宏，这便是 Function-like 类型的宏。 #define lang_init() c_init() lang_init() // 编译后 c_init() 函数类型的宏只在以方法调用形式使用时才会被展开，即名称后加括号，否则会被忽略。当宏名和函数名重名时，这一策略就会显得有用了，比如： extern void foo(void); #define foo() /* optimized inline version */ … foo(); funcptr = foo; 这里 foo() 的调用会来自宏里面定义的那个函数，而 funcptr 会正确地指向函数地址，如果后者也被宏展开，则成了 funptr=foo() 显然就不对了。 函数类型的宏在定义时需注意，宏名与后面括号不能有空格，否则就是普通的 Object-like 类型对象。 #define lang_init () c_init() lang_init() // 编译后： () c_init()() 宏的参数 函数类型的宏，可以像正常函数一样指定入参，入参需为逗号分隔合法的 C 字面量。 #define min(X, Y) ((X) &lt; (Y) ? (X) : (Y)) x = min(a, b); → x = ((a) &lt; (b) ? (a) : (b)); y = min(1, 2); → y = ((1) &lt; (2) ? (1) : (2)); z = min(a + 28, *p); → z = ((a + 28) &lt; (*p) ? (a + 28) : (*p)); 入参中的括号 入参中只需要括号对称，但不要求方括号或花括号成对出现，所以下面的代码： macro (array[x = y, x + 1]) 其入参实际为 array[x = y 和 x + 1]。 入参的展开 入参本质上也是宏，对象类型的宏，在函数宏展示时，这些参数也被展示到了函数宏的函数体里。 min (min (a, b), c) 首先被展开成： min (((a) &lt; (b) ? (a) : (b)), (c)) 然后进一步展开成（此处换行为方便阅读，实际编译后没有）： ((((a) &lt; (b) ? (a) : (b))) &lt; (c) ? (((a) &lt; (b) ? (a) : (b))) : (c)) 参数的缺省 函数宏在使用时其入参可缺省，但不能全部缺省，至少提供一个入参。 min(, b) → (( ) &lt; (b) ? ( ) : (b)) min(a, ) → ((a ) &lt; ( ) ? (a ) : ( )) min(,) → (( ) &lt; ( ) ? ( ) : ( )) min((,),) → (((,)) &lt; ( ) ? ((,)) : ( )) min() error→ macro &quot;min&quot; requires 2 arguments, but only 1 given min(,,) error→ macro &quot;min&quot; passed 3 arguments, but takes just 2 字符化/Stringizing 如果函数宏中入参在字符串中，是不会被展开的，它就是普通的字符串字面量，这样的结果是符合预期的。 #define foo(x) x, &quot;x&quot; foo(bar) → bar, &quot;x&quot; 但如果确实想将入参展开成字符串，可在使用入参时，加上 # 前缀。 #define WARN_IF(EXP) \\ do { if (EXP) \\ fprintf (stderr, &quot;Warning: &quot; #EXP &quot;\\n&quot;); } \\ while (0) WARN_IF (x == 0); → do { if (x == 0) fprintf (stderr, &quot;Warning: &quot; &quot;x == 0&quot; &quot;\\n&quot;); } while (0); 此处 #EXP 在字符串中会被正确展开。What’s more, 如果这里的 x 也是宏，那只会在 if 语句中进行展开。 拼接 通过 ## 可将两个宏展开成一个，即将两者进行了拼接，这种操作叫 “token pasting”，或 “token concatenation”，就是拼接嘛。 宏拼接一般用在需要拼接的宏是来自宏参数的情况，其他情况，大可直接将两个宏写在一起即可，用不着 ## 指令。 考察下面这个场景，其中命令名重复出现： struct command { char *name; void (*function) (void); }; struct command commands[] = { { &quot;quit&quot;, quit_command }, { &quot;help&quot;, help_command }, … }; 通过定义宏配合拼接，可达到精简代码的目的： #define COMMAND(NAME) { #NAME, NAME ## _command } struct command commands[] = { COMMAND (quit), COMMAND (help), … }; 不定参数 像普通函数一样，函数类型的宏也可定义接收不定参数。 #define eprintf(…) fprintf (stderr, __VA_ARGS__) 调用时，命名参数后面，包括逗号都会进入到 __VA_ARGS__ 关键字当中。但 C++ 中还支持对这些参数命名从而不用 __VA_ARGS__。 eprintf (&quot;%s:%d: &quot;, input_file, lineno) // 编译后： fprintf (stderr, &quot;%s:%d: &quot;, input_file, lineno) C++ 中可这么写： #define eprintf(args…) fprintf (stderr, args) 不定参数与命名参数混合的情况 不定参数为命名参数后面省略的部分。 #define eprintf(format, …) fprintf (stderr, format, __VA_ARGS__) 预设的宏 标准库及编译器中预设了一些有用的宏，可以在这里 查阅。 取消和重置宏 当某个宏不再使用时，可通过 #undef 将取注销掉。#undef 后紧跟宏名，后面不要跟其他东西，即使是函数类型的宏。 #define FOO 4 x = FOO; → x = 4; #undef FOO x = FOO; → x = FOO; 两个宏相似的定义 满足以下条件时，我们认为两者是相似的： 类型相同，比如同为对象类型，或函数类型的宏 展开后各位置的符号（token）相同 如果是函数宏，入参相同 空白的不限但出现的位置相同 比如，下面这些是相似的： #define FOUR (2 + 2) #define FOUR (2 + 2) #define FOUR (2 /* two */ + 2) 而下面这些则不然： #define FOUR (2 + 2) #define FOUR ( 2+2 ) // 空白位置不一样 #define FOUR (2 * 2) // 宏的内容不一样 #define FOUR(score,and,seven,years,ago) (2 + 2) // 入参不一样 宏重复定义时的表现 对于使用了 #undef 注销过的宏，再次定义同名的宏时，要求新定义的宏不与老的相似。 而如果说一个已经存在的宏，并没有注销，重复定义时，如果相似，则新的定义会忽略，如果不相似，编译器会报警告同时使用新定义的宏。这允许在多个文件中定义同一个宏。 相关资源 gcc - Macros Standard C++ Library reference 3.7.1 Standard Predefined Macros","@type":"BlogPosting","headline":"C/C++ 中的宏/Macro","dateModified":"2019-06-26T01:06:00+08:00","datePublished":"2019-06-26T01:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">C/C++ 中的宏/Macro</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-26T01:06:00+08:00" itemprop="datePublished">Jun 26, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="cc-中的宏macro">C/C++ 中的宏/Macro</h1>
+
+<p>宏（Macro）本质上就是代码片段，通过别名来使用。在编译前的预处理中，宏会被替换为真实所指代的代码片段，即下图中 Preprocessor 处理的部分。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/59971360-37d38280-95ad-11e9-880f-4399cc42381c.png" alt="C/C++ 代码编译过程" /></p>
+<p align="center">C/C++ 代码编译过程 - 图片来自 <a href="https://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html">ntu.edu.sg</a></p>
+
+<p>根据用法的不同，分两种，Object-like 和 Function-like。前者用于 Object 对象，后者用于函数方法。</p>
+
+<p>C/C++ 代码编译过程中，可通过相应参数来获取到各编译步骤中的产出，比如想看被预处理编译之后的宏，使用 <code class="language-plaintext highlighter-rouge">gcc</code> 使加上 <code class="language-plaintext highlighter-rouge">-E</code> 参数。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-E</span> macro.c
+</code></pre></div></div>
+
+<h2 id="宏的定义">宏的定义</h2>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">#define</code> 指令定义一个宏。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define NAME_OF_MACRO value
+</span></code></pre></div></div>
+
+<p>比如，以下代码定义了一个名为 <code class="language-plaintext highlighter-rouge">BUFFER_SIZE</code> 的宏，指代 <code class="language-plaintext highlighter-rouge">1024</code> 这个数字。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define BUFFER_SIZE 1024
+</span></code></pre></div></div>
+
+<p>使用时，</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">foo</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">malloc</span> <span class="p">(</span><span class="n">BUFFER_SIZE</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>使用预处理器编译：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-E</span> test.c
+</code></pre></div></div>
+
+<p>编译结果：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">foo</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">malloc</span> <span class="p">(</span><span class="mi">1024</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="多行">多行</h3>
+
+<p>宏的定义是跟随 <code class="language-plaintext highlighter-rouge">#define</code> 在一同一行内的，但可通过 反斜杠 <code class="language-plaintext highlighter-rouge">\</code> 实现换行从而定义出多行的宏。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+#define GREETING_STR \
+  "hello \
+world"
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="n">GREETING_STR</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>多行的宏经过编译后会还原到一行中。</p>
+
+<p><em>test.c</em></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+#define GREETING_STR \
+  "hello \
+world"
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> <span class="n">printf</span><span class="p">(</span><span class="n">GREETING_STR</span><span class="p">);</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"hello world"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="宏展开时的顺序">宏展开时的顺序</h3>
+
+<p>宏的展开是在处理源码时按照其出现位置进行的，如果宏定义有嵌套关系，也是层层进行展开，比如：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="cp">#define GREETING_NAME "wayou"
+#define GREETING "hello," GREETING_NAME
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="n">GREETING</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>首先遇到 <code class="language-plaintext highlighter-rouge">GREETING</code>，将其展开成 <code class="language-plaintext highlighter-rouge">GREETING_NAME "wayou"</code>，然后发现另一个宏 <code class="language-plaintext highlighter-rouge">GREETING_NAME</code>，将其展开最后得到 <code class="language-plaintext highlighter-rouge">"hello," "wayou"</code>。所以编译后的代码为：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"hello,"</span> <span class="s">"wayou"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>其展开的顺序并不是宏定义时的顺序，为了验证，可将上面示例代码中两个宏的定义调换一下，得到：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">-#define GREETING_NAME "wayou"
+</span><span class="err">#define</span> GREETING "hello," GREETING_NAME
+<span class="gi">+#define GREETING_NAME "wayou"
+</span></code></pre></div></div>
+
+<p>再次编译查看产出，会发现没有区别，也不会报 <code class="language-plaintext highlighter-rouge">GREETING</code> 中所依赖的 <code class="language-plaintext highlighter-rouge">GREETING_NAME</code> 找不到的错。其实 <code class="language-plaintext highlighter-rouge">#define</code> 只是告诉编译器定义了这么个宏，而具体的求值，则是使用宏的地方才开始的。</p>
+
+<p>像下面这样，当宏存在覆盖时，会以新的为准，其结果为 37。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define BUFSIZE 1020
+#define TABLESIZE BUFSIZE
+#undef BUFSIZE
+#define BUFSIZE 37
+</span></code></pre></div></div>
+
+<h2 id="object-like-宏">Object-like 宏</h2>
+
+<p>Object-like 类型的宏看起来就像普通的数据对象，故名。多用于数字常量的情形下。且宏名一般使用全大写形式方便识别。像上面示例中，都是 Object-like 的。</p>
+
+<h2 id="function-like-宏">Function-like 宏</h2>
+
+<p>也可定义出使用时像是方法调用一样的宏，这便是 Function-like 类型的宏。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define lang_init()  c_init()
+</span><span class="n">lang_init</span><span class="p">()</span>
+
+<span class="c1">// 编译后</span>
+<span class="n">c_init</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>函数类型的宏只在以方法调用形式使用时才会被展开，即名称后加括号，否则会被忽略。当宏名和函数名重名时，这一策略就会显得有用了，比如：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">extern</span> <span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="cp">#define foo() </span><span class="cm">/* optimized inline version */</span><span class="cp">
+</span><span class="err">…</span>
+  <span class="n">foo</span><span class="p">();</span>
+  <span class="n">funcptr</span> <span class="o">=</span> <span class="n">foo</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">foo()</code> 的调用会来自宏里面定义的那个函数，而 <code class="language-plaintext highlighter-rouge">funcptr</code> 会正确地指向函数地址，如果后者也被宏展开，则成了 <code class="language-plaintext highlighter-rouge">funptr=foo()</code> 显然就不对了。</p>
+
+<p>函数类型的宏在定义时需注意，宏名与后面括号不能有空格，否则就是普通的 Object-like 类型对象。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define lang_init ()    c_init()
+</span><span class="n">lang_init</span><span class="p">()</span>
+
+<span class="c1">// 编译后：</span>
+<span class="p">()</span> <span class="n">c_init</span><span class="p">()()</span>
+</code></pre></div></div>
+
+<h2 id="宏的参数">宏的参数</h2>
+
+<p>函数类型的宏，可以像正常函数一样指定入参，入参需为逗号分隔合法的 C 字面量。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))
+</span>  <span class="n">x</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>          <span class="err">→</span>  <span class="n">x</span> <span class="o">=</span> <span class="p">((</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">));</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>          <span class="err">→</span>  <span class="n">y</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+  <span class="n">z</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">28</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>    <span class="err">→</span>  <span class="n">z</span> <span class="o">=</span> <span class="p">((</span><span class="n">a</span> <span class="o">+</span> <span class="mi">28</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">28</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">));</span>
+</code></pre></div></div>
+
+<h3 id="入参中的括号">入参中的括号</h3>
+
+<p>入参中只需要括号对称，但不要求方括号或花括号成对出现，所以下面的代码：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">macro</span> <span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">x</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>其入参实际为 <code class="language-plaintext highlighter-rouge">array[x = y</code> 和 <code class="language-plaintext highlighter-rouge">x + 1]</code>。</p>
+
+<h3 id="入参的展开">入参的展开</h3>
+
+<p>入参本质上也是宏，对象类型的宏，在函数宏展示时，这些参数也被展示到了函数宏的函数体里。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">min</span> <span class="p">(</span><span class="n">min</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">c</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>首先被展开成：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">min</span> <span class="p">(((</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">)),</span> <span class="p">(</span><span class="n">c</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>然后进一步展开成（此处换行为方便阅读，实际编译后没有）：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">((((</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">)))</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">c</span><span class="p">)</span>
+ <span class="o">?</span> <span class="p">(((</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">)))</span>
+ <span class="o">:</span> <span class="p">(</span><span class="n">c</span><span class="p">))</span>
+</code></pre></div></div>
+
+<h3 id="参数的缺省">参数的缺省</h3>
+
+<p>函数宏在使用时其入参可缺省，但不能全部缺省，至少提供一个入参。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">min</span><span class="p">(,</span> <span class="n">b</span><span class="p">)</span>        <span class="err">→</span> <span class="p">((</span>   <span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span>   <span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">))</span>
+<span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">)</span>        <span class="err">→</span> <span class="p">((</span><span class="n">a</span>  <span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span> <span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span>  <span class="p">)</span> <span class="o">:</span> <span class="p">(</span> <span class="p">))</span>
+<span class="n">min</span><span class="p">(,)</span>          <span class="err">→</span> <span class="p">((</span>   <span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span> <span class="p">)</span> <span class="o">?</span> <span class="p">(</span>   <span class="p">)</span> <span class="o">:</span> <span class="p">(</span> <span class="p">))</span>
+<span class="n">min</span><span class="p">((,),)</span>       <span class="err">→</span> <span class="p">(((,))</span> <span class="o">&lt;</span> <span class="p">(</span> <span class="p">)</span> <span class="o">?</span> <span class="p">((,))</span> <span class="o">:</span> <span class="p">(</span> <span class="p">))</span>
+
+<span class="n">min</span><span class="p">()</span>      <span class="n">error</span><span class="err">→</span> <span class="n">macro</span> <span class="s">"min"</span> <span class="n">requires</span> <span class="mi">2</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">but</span> <span class="n">only</span> <span class="mi">1</span> <span class="n">given</span>
+<span class="n">min</span><span class="p">(,,)</span>    <span class="n">error</span><span class="err">→</span> <span class="n">macro</span> <span class="s">"min"</span> <span class="n">passed</span> <span class="mi">3</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">but</span> <span class="n">takes</span> <span class="n">just</span> <span class="mi">2</span>
+</code></pre></div></div>
+
+<h3 id="字符化stringizing">字符化/Stringizing</h3>
+
+<p>如果函数宏中入参在字符串中，是不会被展开的，它就是普通的字符串字面量，这样的结果是符合预期的。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define foo(x) x, "x"
+</span><span class="n">foo</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>        <span class="err">→</span> <span class="n">bar</span><span class="p">,</span> <span class="s">"x"</span>
+</code></pre></div></div>
+
+<p>但如果确实想将入参展开成字符串，可在使用入参时，加上 <code class="language-plaintext highlighter-rouge">#</code> 前缀。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define WARN_IF(EXP) \
+do { if (EXP) \
+        fprintf (stderr, "Warning: " #EXP "\n"); } \
+while (0)
+</span><span class="n">WARN_IF</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+     <span class="err">→</span> <span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+           <span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Warning: "</span> <span class="s">"x == 0"</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>此处 <code class="language-plaintext highlighter-rouge">#EXP</code> 在字符串中会被正确展开。What’s more, 如果这里的 <code class="language-plaintext highlighter-rouge">x</code> 也是宏，那只会在 <code class="language-plaintext highlighter-rouge">if</code> 语句中进行展开。</p>
+
+<h2 id="拼接">拼接</h2>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">##</code> 可将两个宏展开成一个，即将两者进行了拼接，这种操作叫 “token pasting”，或 “token concatenation”，就是拼接嘛。</p>
+
+<p>宏拼接一般用在需要拼接的宏是来自宏参数的情况，其他情况，大可直接将两个宏写在一起即可，用不着 <code class="language-plaintext highlighter-rouge">##</code> 指令。</p>
+
+<p>考察下面这个场景，其中命令名重复出现：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">command</span>
+<span class="p">{</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)</span> <span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<span class="p">{</span>
+  <span class="p">{</span> <span class="s">"quit"</span><span class="p">,</span> <span class="n">quit_command</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"help"</span><span class="p">,</span> <span class="n">help_command</span> <span class="p">},</span>
+  <span class="err">…</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>通过定义宏配合拼接，可达到精简代码的目的：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }
+</span>
+<span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<span class="p">{</span>
+  <span class="n">COMMAND</span> <span class="p">(</span><span class="n">quit</span><span class="p">),</span>
+  <span class="n">COMMAND</span> <span class="p">(</span><span class="n">help</span><span class="p">),</span>
+  <span class="err">…</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="不定参数">不定参数</h2>
+
+<p>像普通函数一样，函数类型的宏也可定义接收不定参数。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define eprintf(…) fprintf (stderr, __VA_ARGS__)
+</span></code></pre></div></div>
+
+<p>调用时，命名参数后面，包括逗号都会进入到 <code class="language-plaintext highlighter-rouge">__VA_ARGS__</code> 关键字当中。但 C++ 中还支持对这些参数命名从而不用 <code class="language-plaintext highlighter-rouge">__VA_ARGS__</code>。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eprintf</span> <span class="p">(</span><span class="s">"%s:%d: "</span><span class="p">,</span> <span class="n">input_file</span><span class="p">,</span> <span class="n">lineno</span><span class="p">)</span>
+
+<span class="c1">// 编译后：</span>
+<span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"%s:%d: "</span><span class="p">,</span> <span class="n">input_file</span><span class="p">,</span> <span class="n">lineno</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>C++ 中可这么写：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define eprintf(args…) fprintf (stderr, args)
+</span></code></pre></div></div>
+
+<h3 id="不定参数与命名参数混合的情况">不定参数与命名参数混合的情况</h3>
+
+<p>不定参数为命名参数后面省略的部分。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define eprintf(format, …) fprintf (stderr, format, __VA_ARGS__)
+</span></code></pre></div></div>
+
+<h2 id="预设的宏">预设的宏</h2>
+
+<p>标准库及编译器中预设了一些有用的宏，可以在<a href="https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html#Predefined-Macros">这里</a> 查阅。</p>
+
+<h2 id="取消和重置宏">取消和重置宏</h2>
+
+<p>当某个宏不再使用时，可通过 <code class="language-plaintext highlighter-rouge">#undef</code> 将取注销掉。<code class="language-plaintext highlighter-rouge">#undef</code> 后紧跟宏名，后面不要跟其他东西，即使是函数类型的宏。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define FOO 4
+</span><span class="n">x</span> <span class="o">=</span> <span class="n">FOO</span><span class="p">;</span>        <span class="err">→</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+<span class="cp">#undef FOO
+</span><span class="n">x</span> <span class="o">=</span> <span class="n">FOO</span><span class="p">;</span>        <span class="err">→</span> <span class="n">x</span> <span class="o">=</span> <span class="n">FOO</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="两个宏相似的定义">两个宏相似的定义</h3>
+
+<p>满足以下条件时，我们认为两者是相似的：</p>
+
+<ul>
+  <li>类型相同，比如同为对象类型，或函数类型的宏</li>
+  <li>展开后各位置的符号（token）相同</li>
+  <li>如果是函数宏，入参相同</li>
+  <li>空白的不限但出现的位置相同</li>
+</ul>
+
+<p>比如，下面这些是相似的：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define FOUR (2 + 2)
+#define FOUR         (2    +    2)
+#define FOUR (2 </span><span class="cm">/* two */</span><span class="cp"> + 2)
+</span></code></pre></div></div>
+
+<p>而下面这些则不然：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define FOUR (2 + 2)
+#define FOUR ( 2+2 ) // 空白位置不一样 
+#define FOUR (2 * 2) // 宏的内容不一样
+#define FOUR(score,and,seven,years,ago) (2 + 2) // 入参不一样
+</span></code></pre></div></div>
+
+<h3 id="宏重复定义时的表现">宏重复定义时的表现</h3>
+
+<p>对于使用了 <code class="language-plaintext highlighter-rouge">#undef</code> 注销过的宏，再次定义同名的宏时，要求新定义的宏不与老的相似。</p>
+
+<p>而如果说一个已经存在的宏，并没有注销，重复定义时，如果相似，则新的定义会忽略，如果不相似，编译器会报警告同时使用新定义的宏。这允许在多个文件中定义同一个宏。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://gcc.gnu.org/onlinedocs/cpp/Macros.html">gcc - Macros</a></li>
+  <li><a href="http://www.cplusplus.com/reference/">Standard C++ Library reference</a></li>
+  <li><a href="https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html">3.7.1 Standard Predefined Macros</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/06/26/C-C++-%E4%B8%AD%E7%9A%84%E5%AE%8F-Macro.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

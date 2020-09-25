@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Unix 开发中的 Make 三连 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Unix 开发中的 Make 三连" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Unix 开发中的 Make 三连 Unix 开发过程中，经常性的操作是从源码编译安装相应库文件，所以下面三个命令便是家常便饭，俗称三连： ./configure make make install 下面来看看这三步分别做了什么。 configure 执行 ./configure 文件一般是进行正式编译前的一些环境准备，准备编译需要的依赖项等。比如检测当前的系统平台，检测需要的编译器是否存在如何调用，配置和生成相应编译所需文件。 make 前期准备工作完成无误后，就可能调用 make 来执行编译了。实际执行的是 Makefile 文件中定义的任务来从源码进行项目的编译。 通常情况下下载下来的 tar 包中可能没有包含正式的 Makefile 文件，而是另外形式呈现的临时文件，比如 Makefile.in，Makefile.am,Makefile.MSVC 等，然后在执行 ./configure 的时候根据相应环境来生成最终需要的 Makefile 文件。 make install 项目编译正常后，会生成相应的产出，可执行文件，so 或 o 文件或 DLL 动态链接文件等。最后一步就是将生成的文件复制到相应的系统目录，这个过程便是安装。 比如将可执行文件复制到系统 PATH 能取到的地方，帮助文档复制到 MANPATH，其他文件复制到对应目录下。 相关资源 The magic behind configure, make, make install" />
+<meta property="og:description" content="Unix 开发中的 Make 三连 Unix 开发过程中，经常性的操作是从源码编译安装相应库文件，所以下面三个命令便是家常便饭，俗称三连： ./configure make make install 下面来看看这三步分别做了什么。 configure 执行 ./configure 文件一般是进行正式编译前的一些环境准备，准备编译需要的依赖项等。比如检测当前的系统平台，检测需要的编译器是否存在如何调用，配置和生成相应编译所需文件。 make 前期准备工作完成无误后，就可能调用 make 来执行编译了。实际执行的是 Makefile 文件中定义的任务来从源码进行项目的编译。 通常情况下下载下来的 tar 包中可能没有包含正式的 Makefile 文件，而是另外形式呈现的临时文件，比如 Makefile.in，Makefile.am,Makefile.MSVC 等，然后在执行 ./configure 的时候根据相应环境来生成最终需要的 Makefile 文件。 make install 项目编译正常后，会生成相应的产出，可执行文件，so 或 o 文件或 DLL 动态链接文件等。最后一步就是将生成的文件复制到相应的系统目录，这个过程便是安装。 比如将可执行文件复制到系统 PATH 能取到的地方，帮助文档复制到 MANPATH，其他文件复制到对应目录下。 相关资源 The magic behind configure, make, make install" />
+<link rel="canonical" href="http://localhost:4000/2019/06/21/Unix-%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84-Make-%E4%B8%89%E8%BF%9E.html" />
+<meta property="og:url" content="http://localhost:4000/2019/06/21/Unix-%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84-Make-%E4%B8%89%E8%BF%9E.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-21T23:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/06/21/Unix-%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84-Make-%E4%B8%89%E8%BF%9E.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/21/Unix-%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84-Make-%E4%B8%89%E8%BF%9E.html"},"description":"Unix 开发中的 Make 三连 Unix 开发过程中，经常性的操作是从源码编译安装相应库文件，所以下面三个命令便是家常便饭，俗称三连： ./configure make make install 下面来看看这三步分别做了什么。 configure 执行 ./configure 文件一般是进行正式编译前的一些环境准备，准备编译需要的依赖项等。比如检测当前的系统平台，检测需要的编译器是否存在如何调用，配置和生成相应编译所需文件。 make 前期准备工作完成无误后，就可能调用 make 来执行编译了。实际执行的是 Makefile 文件中定义的任务来从源码进行项目的编译。 通常情况下下载下来的 tar 包中可能没有包含正式的 Makefile 文件，而是另外形式呈现的临时文件，比如 Makefile.in，Makefile.am,Makefile.MSVC 等，然后在执行 ./configure 的时候根据相应环境来生成最终需要的 Makefile 文件。 make install 项目编译正常后，会生成相应的产出，可执行文件，so 或 o 文件或 DLL 动态链接文件等。最后一步就是将生成的文件复制到相应的系统目录，这个过程便是安装。 比如将可执行文件复制到系统 PATH 能取到的地方，帮助文档复制到 MANPATH，其他文件复制到对应目录下。 相关资源 The magic behind configure, make, make install","@type":"BlogPosting","headline":"Unix 开发中的 Make 三连","dateModified":"2019-06-21T23:06:00+08:00","datePublished":"2019-06-21T23:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Unix 开发中的 Make 三连</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-21T23:06:00+08:00" itemprop="datePublished">Jun 21, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="unix-开发中的-make-三连">Unix 开发中的 Make 三连</h1>
+
+<p>Unix 开发过程中，经常性的操作是从源码编译安装相应库文件，所以下面三个命令便是家常便饭，俗称三连：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">./configure</code></li>
+  <li><code class="language-plaintext highlighter-rouge">make</code></li>
+  <li><code class="language-plaintext highlighter-rouge">make install</code></li>
+</ul>
+
+<p>下面来看看这三步分别做了什么。</p>
+
+<h2 id="configure"><code class="language-plaintext highlighter-rouge">configure</code></h2>
+
+<p>执行 <code class="language-plaintext highlighter-rouge">./configure</code> 文件一般是进行正式编译前的一些环境准备，准备编译需要的依赖项等。比如检测当前的系统平台，检测需要的编译器是否存在如何调用，配置和生成相应编译所需文件。</p>
+
+<h2 id="make"><code class="language-plaintext highlighter-rouge">make</code></h2>
+
+<p>前期准备工作完成无误后，就可能调用 <code class="language-plaintext highlighter-rouge">make</code> 来执行编译了。实际执行的是 <code class="language-plaintext highlighter-rouge">Makefile</code> 文件中定义的任务来从源码进行项目的编译。</p>
+
+<p>通常情况下下载下来的 tar 包中可能没有包含正式的 <code class="language-plaintext highlighter-rouge">Makefile</code> 文件，而是另外形式呈现的临时文件，比如 <code class="language-plaintext highlighter-rouge">Makefile.in</code>，<code class="language-plaintext highlighter-rouge">Makefile.am</code>,<code class="language-plaintext highlighter-rouge">Makefile.MSVC</code> 等，然后在执行 <code class="language-plaintext highlighter-rouge">./configure</code> 的时候根据相应环境来生成最终需要的 <code class="language-plaintext highlighter-rouge">Makefile</code> 文件。</p>
+
+<h2 id="make-install"><code class="language-plaintext highlighter-rouge">make install</code></h2>
+
+<p>项目编译正常后，会生成相应的产出，可执行文件，<code class="language-plaintext highlighter-rouge">so</code> 或 <code class="language-plaintext highlighter-rouge">o</code> 文件或 <code class="language-plaintext highlighter-rouge">DLL</code> 动态链接文件等。最后一步就是将生成的文件复制到相应的系统目录，这个过程便是安装。</p>
+
+<p>比如将可执行文件复制到系统 <code class="language-plaintext highlighter-rouge">PATH</code> 能取到的地方，帮助文档复制到 <code class="language-plaintext highlighter-rouge">MANPATH</code>，其他文件复制到对应目录下。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://thoughtbot.com/blog/the-magic-behind-configure-make-make-install">The magic behind configure, make, make install</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/06/21/Unix-%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84-Make-%E4%B8%89%E8%BF%9E.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

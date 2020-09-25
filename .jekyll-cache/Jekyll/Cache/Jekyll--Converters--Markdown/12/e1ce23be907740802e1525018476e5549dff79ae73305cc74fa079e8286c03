@@ -1,0 +1,216 @@
+I"�B<p>大部分现代语言都会标配包管理器，比如 Node.js 的 npm，如果没有，那一定会出现第三方社区提供的工具，比如 Cocoa 则是 <a href="https://cocoapods.org/">CocoaPods</a>，而且还会不止一种，<a href="https://github.com/Carthage/Carthage">Carthage</a>...</p>
+
+<h2 id="安装">安装</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>gem <span class="nb">install </span>cocoapods
+</code></pre></div></div>
+
+<p>检查安装：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pod <span class="nt">--version</span>
+</code></pre></div></div>
+
+<h3 id="更新">更新</h3>
+
+<p>要更新到最新版本，重新安装即可：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>gem <span class="nb">install </span>cocoapods
+</code></pre></div></div>
+
+<h2 id="初始化">初始化</h2>
+
+<p>在项目根目录执行</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pod init
+</code></pre></div></div>
+
+<p>该命令会创建一个 <code class="language-plaintext highlighter-rouge">Podfile</code> 到当前目录，里面内容长这样：</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Uncomment the next line to define a global platform for your project</span>
+<span class="n">platform</span> <span class="ss">:ios</span><span class="p">,</span> <span class="s1">'11.0'</span>
+
+<span class="n">target</span> <span class="s1">'ProjectName'</span> <span class="k">do</span>
+  <span class="c1"># Comment the next line if you don't want to use dynamic frameworks</span>
+  <span class="n">use_frameworks!</span>
+  
+  <span class="c1"># Pods for ProjectName</span>
+  
+  <span class="n">target</span> <span class="s1">'Tests'</span> <span class="k">do</span>
+    <span class="n">inherit!</span> <span class="ss">:search_paths</span>
+    <span class="c1"># Pods for testing</span>
+  <span class="k">end</span>
+
+  <span class="n">target</span> <span class="s1">'UITests'</span> <span class="k">do</span>
+    <span class="n">inherit!</span> <span class="ss">:search_paths</span>
+    <span class="c1"># Pods for testing</span>
+  <span class="k">end</span>
+
+<span class="k">end</span>
+
+</code></pre></div></div>
+
+<h2 id="pod-包的安装">Pod 包的安装</h2>
+
+<p>编辑 Podfile 添加需要安装依赖的库，比如添加 <a href="https://github.com/SnapKit/Masonry">Masonry</a></p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#</span> Uncomment the next line to define a global platform for your project
+<span class="p">platform :ios, '11.0'
+</span>
+target 'ProjectName' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+  
+  # Pods for ProjectName
+<span class="gi">+ pod 'Masonry', '~&gt; 1.1'
+</span>  ...
+<span class="p">end
+</span></code></pre></div></div>
+
+<p>然后执行安装命令：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pod <span class="nb">install</span>
+</code></pre></div></div>
+
+<details>
+
+<summary>pod install 的输出信息</summary>
+
+```
+$ pod install
+Analyzing dependencies
+Downloading dependencies
+Installing Masonry (1.1.0)
+Generating Pods project
+Integrating client project
+
+[!] Please close any current Xcode sessions and use `PodTest.xcworkspace` for this project from now on.
+Pod installation complete! There is 1 dependency from the Podfile and 1 total pod installed.
+
+[!] Automatically assigning platform `iOS` with version `13.2` on target `PodTest` because no platform was specified. Please specify a platform for this target in your Podfile. See `https://guides.cocoapods.org/syntax/podfile.html#platform`.
+
+```
+
+
+</details>
+
+<p>顺利的话，就可以在项目中引入库的头文件进行使用了。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#import &lt;Masonry/Masonry.h&gt;
+</span></code></pre></div></div>
+
+<h2 id="可能遇到的问题">可能遇到的问题</h2>
+
+<h3 id="pod-源">Pod 源</h3>
+
+<p>如果安装时出现无法下载的错误，来自 trunk 的资源直接连接不上。那是因为新的 Pod 1.8.4 中将源从 master 切换到了 trunk，可修改成 master 源。</p>
+
+<details>
+
+<summary>pod install 时报无法下载的错误详情</summary>
+
+```
+$ pod install
+Analyzing dependencies
+[!] CDN: trunk Repo update failed - 27 error(s):
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.0.2/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.0.3/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.1.0/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.1.5/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.1.6/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.2.0/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.2.1/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.2.2/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.2.3/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.2.4/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.3.0/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.3.1/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.3.2/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.4.0/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.5.0/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.5.1/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.5.2/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.5.3/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.6.0/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.6.1/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.6.2/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.6.3/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/0.6.4/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/1.0.0/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/1.0.1/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/1.0.2/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+CDN: trunk URL couldn't be downloaded: https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/a/a/4/Masonry/1.1.0/Masonry.podspec.json, error: Failed to open TCP connection to raw.githubusercontent.com:443 (Connection refused - connect(2) for "raw.githubusercontent.com" port 443)
+
+[!] Automatically assigning platform `iOS` with version `13.2` on target `PodTest` because no platform was specified. Please specify a platform for this target in your Podfile. See `https://guides.cocoapods.org/syntax/podfile.html#platform`.
+```
+</details>
+
+<p>查看当前的源：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pod repo list
+
+master
+- Type: git <span class="o">(</span>master<span class="o">)</span>
+- URL:  https://github.com/CocoaPods/Specs.git
+- Path: /Users/wayou/.cocoapods/repos/master
+
+trunk
+- Type: CDN
+- URL:  https://cdn.cocoapods.org/
+- Path: /Users/wayou/.cocoapods/repos/trunk
+
+2 repos
+</code></pre></div></div>
+
+<p>删除 trunk:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pod repo remove trunk
+</code></pre></div></div>
+
+<p>Podfile 中手动配置源，如果不显式配置一下，再次执行 <code class="language-plaintext highlighter-rouge">pod install</code> 时 trunk 还会自动被加回来。</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span> <span class="s1">'https://github.com/CocoaPods/Specs.git'</span>
+</code></pre></div></div>
+<h4 id="回退-cocoa-pod-到老版本">回退 Cocoa Pod 到老版本</h4>
+
+<p>最后，还有个不推荐的办法，直接回退到老版本的 pod 就一切正常了。所有可用版本列表参见<a href="https://rubygems.org/gems/cocoapods/versions">这里</a></p>
+
+<p>删除当前版本：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>gem uninstall cocoapods
+</code></pre></div></div>
+
+<p>安装指定版：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>gem <span class="nb">install </span>cocoapods <span class="nt">-v</span> 1.7.5
+</code></pre></div></div>
+
+<h3 id="framework-not-found"><code class="language-plaintext highlighter-rouge">framework not found</code></h3>
+
+<p>安装完 Pod 包之后如果编译报  <code class="language-plaintext highlighter-rouge">framework not found</code>，即安装好的包找不到，极有可能是项目打开方式不对。配置好 Pod 后需要使用 <code class="language-plaintext highlighter-rouge">&lt;ProjectName&gt;.xcworkspace</code> 文件作为项目入口，即用 Xcode 打开 <code class="language-plaintext highlighter-rouge">.xcworkspace</code> 文件而不是 <code class="language-plaintext highlighter-rouge">xcodeproj</code> 了。</p>
+
+<p>这一点在安装完 pod 包时命令行有提示：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[!] Please close any current Xcode sessions and use `PodTest.xcworkspace` for this project from now on.
+Pod installation complete! There is 1 dependency from the Podfile and 1 total pod installed.
+</code></pre></div></div>
+
+<h3 id="pod-中的-warning">Pod 中的 warning</h3>
+
+<p>如果三方库在编译过程中产生警告，可以在 Podfild 中配置忽略掉，因为三方库代码是不建议直接修改的，所以也做不了什么。</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ignore all warnings from all pods</span>
+<span class="n">inhibit_all_warnings!</span>
+
+<span class="c1"># ignore warnings from a specific pod</span>
+<span class="n">pod</span> <span class="s1">'FBSDKCoreKit'</span><span class="p">,</span> <span class="ss">:inhibit_warnings</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://guides.cocoapods.org/using/using-cocoapods.html">Using CocoaPods</a></li>
+  <li><a href="https://stackoverflow.com/a/13209057/1553656">Ignore Xcode warnings when using Cocoapods</a></li>
+  <li><a href="https://stackoverflow.com/questions/58409725/%D0%A1ocoapods-trunk-url-couldnt-be-downloaded">Сocoapods trunk URL couldn’t be downloaded</a></li>
+  <li><a href="https://stackoverflow.com/a/20489489/1553656">How to downgrade or install an older version of Cocoapods</a></li>
+</ul>
+:ET

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>TypeScript unknown 类型 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="TypeScript unknown 类型" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TypeScript unknown 类型 unknown 字面理解和 any 其实没差，任何类型都可赋值给它，但有一点， Anything is assignable to unknown, but unknown isn’t assignable to anything but itself and any without a type assertion or a control flow based narrowing --TypeScript 3.0 Release notes - New unknown top type unknown 类型不能赋值给除了 unknown 或 any 的其他任何类型，使用前必需显式进行指定类型，或是在有条件判断情况下能够隐式地进行类型推断的情况。 下面代码是合法的： let a: unknown; const b: unknown = a; const c: any = a; 因为 unknown 是可以赋值给 unknown 的，而下面的代码则不行， let a: unknown; // 🚨Type &#39;unknown&#39; is not assignable to type &#39;number&#39;.ts(2322) const b: number = a; 但是如果使用时，明确知道了类型，则可以这样来修正： let a: unknown; // 🚨Type &#39;unknown&#39; is not assignable to type &#39;number&#39;.ts(2322) const b: number = a; 或者在条件语句中，已经可以明确推断出类型： let a: unknown; let b: number = &lt;number&gt;a; function isNumber(val: any): val is number { return typeof val === &quot;number&quot;; } if (isNumber(a)) { b = a; } 所以在使用时，unknown 类型会比 any 更加安全。这个安全体现在，虽然它和 any 一样存储了任意类型的值，但是具体使用的时候，这个类型需要显式确定，由使用者进行指定将 unknown 转换成某一确定类型。 优先级 与正交类型的搭配 正交类型（intersection type）中，unknown 不起作用： type T00 = unknown &amp; null; // null type T01 = unknown &amp; undefined; // undefined type T02 = unknown &amp; null &amp; undefined; // null &amp; undefined (which becomes never) type T03 = unknown &amp; string; // string type T04 = unknown &amp; string[]; // string[] type T05 = unknown &amp; unknown; // unknown type T06 = unknown &amp; any; // any 与联合类型的搭配 联合类型（union type）中 unknown 起绝对作用： type T10 = unknown | null; // unknown type T11 = unknown | undefined; // unknown type T12 = unknown | null | undefined; // unknown type T13 = unknown | string; // unknown type T14 = unknown | string[]; // unknown type T15 = unknown | unknown; // unknown type T16 = unknown | any; // any 上面仅一个例外，及和 any 组成的联合类型，最终结果是 any。 使用在条件类型中 条件类型（conditional type）中， type T30&lt;T&gt; = unknown extends T ? true : false; // Deferred type T31&lt;T&gt; = T extends unknown ? true : false; // Deferred (so it distributes) 对于上面的条件类型，进行以下测试： // `unknown` 不能赋值给 `number` type foo = T30&lt;number&gt;; // false // `unknown` 可以赋值给 `any` type bar = T30&lt;any&gt;; // true // 任何类型都可赋值给 `unknown`，所以都为 true type a = T31&lt;number&gt;; // true type b = T31&lt;any&gt;; // true 可进行的操作 只能进行等于的判断，其他操作则会报错。 function f10(x: unknown) { x == 5; x !== 10; x &gt;= 0; // Error x + 1; // Error x * 2; // Error -x; // Error +x; // Error } 属性字段获取，方法调用等，也是不允许的： function f11(x: unknown) { x.foo; // Error x[5]; // Error x(); // Error new x(); // Error } 当解构中有 unknown 类型时，会导致解构出来的结果也是 unknown。 function f26(x: {}, y: unknown, z: any) { let o1 = { a: 42, ...x }; // { a: number } let o2 = { a: 42, ...x, ...y }; // unknown let o3 = { a: 42, ...x, ...y, ...z }; // any } 具体使用场景 unknown 用于变量类型不确定，但肯定可以确定的情形下，比如下面这个示例中，入参总归会有个值，根据这个值的类型进行不同的处理，这里使用 unknown 替代 any 则会更加类型安全。 function prettyPrint(x: unknown): string { if (Array.isArray(x)) { return &quot;[&quot; + x.map(prettyPrint).join(&quot;, &quot;) + &quot;]&quot; } if (typeof x === &quot;string&quot;) { return `&quot;${x}&quot;` } if (typeof x === &quot;number&quot;) { return String(x) } return &quot;etc.&quot; } 相关资源 TypeScript 3.0 Release notes - New unknown top type When to use never and unknown in TypeScript" />
+<meta property="og:description" content="TypeScript unknown 类型 unknown 字面理解和 any 其实没差，任何类型都可赋值给它，但有一点， Anything is assignable to unknown, but unknown isn’t assignable to anything but itself and any without a type assertion or a control flow based narrowing --TypeScript 3.0 Release notes - New unknown top type unknown 类型不能赋值给除了 unknown 或 any 的其他任何类型，使用前必需显式进行指定类型，或是在有条件判断情况下能够隐式地进行类型推断的情况。 下面代码是合法的： let a: unknown; const b: unknown = a; const c: any = a; 因为 unknown 是可以赋值给 unknown 的，而下面的代码则不行， let a: unknown; // 🚨Type &#39;unknown&#39; is not assignable to type &#39;number&#39;.ts(2322) const b: number = a; 但是如果使用时，明确知道了类型，则可以这样来修正： let a: unknown; // 🚨Type &#39;unknown&#39; is not assignable to type &#39;number&#39;.ts(2322) const b: number = a; 或者在条件语句中，已经可以明确推断出类型： let a: unknown; let b: number = &lt;number&gt;a; function isNumber(val: any): val is number { return typeof val === &quot;number&quot;; } if (isNumber(a)) { b = a; } 所以在使用时，unknown 类型会比 any 更加安全。这个安全体现在，虽然它和 any 一样存储了任意类型的值，但是具体使用的时候，这个类型需要显式确定，由使用者进行指定将 unknown 转换成某一确定类型。 优先级 与正交类型的搭配 正交类型（intersection type）中，unknown 不起作用： type T00 = unknown &amp; null; // null type T01 = unknown &amp; undefined; // undefined type T02 = unknown &amp; null &amp; undefined; // null &amp; undefined (which becomes never) type T03 = unknown &amp; string; // string type T04 = unknown &amp; string[]; // string[] type T05 = unknown &amp; unknown; // unknown type T06 = unknown &amp; any; // any 与联合类型的搭配 联合类型（union type）中 unknown 起绝对作用： type T10 = unknown | null; // unknown type T11 = unknown | undefined; // unknown type T12 = unknown | null | undefined; // unknown type T13 = unknown | string; // unknown type T14 = unknown | string[]; // unknown type T15 = unknown | unknown; // unknown type T16 = unknown | any; // any 上面仅一个例外，及和 any 组成的联合类型，最终结果是 any。 使用在条件类型中 条件类型（conditional type）中， type T30&lt;T&gt; = unknown extends T ? true : false; // Deferred type T31&lt;T&gt; = T extends unknown ? true : false; // Deferred (so it distributes) 对于上面的条件类型，进行以下测试： // `unknown` 不能赋值给 `number` type foo = T30&lt;number&gt;; // false // `unknown` 可以赋值给 `any` type bar = T30&lt;any&gt;; // true // 任何类型都可赋值给 `unknown`，所以都为 true type a = T31&lt;number&gt;; // true type b = T31&lt;any&gt;; // true 可进行的操作 只能进行等于的判断，其他操作则会报错。 function f10(x: unknown) { x == 5; x !== 10; x &gt;= 0; // Error x + 1; // Error x * 2; // Error -x; // Error +x; // Error } 属性字段获取，方法调用等，也是不允许的： function f11(x: unknown) { x.foo; // Error x[5]; // Error x(); // Error new x(); // Error } 当解构中有 unknown 类型时，会导致解构出来的结果也是 unknown。 function f26(x: {}, y: unknown, z: any) { let o1 = { a: 42, ...x }; // { a: number } let o2 = { a: 42, ...x, ...y }; // unknown let o3 = { a: 42, ...x, ...y, ...z }; // any } 具体使用场景 unknown 用于变量类型不确定，但肯定可以确定的情形下，比如下面这个示例中，入参总归会有个值，根据这个值的类型进行不同的处理，这里使用 unknown 替代 any 则会更加类型安全。 function prettyPrint(x: unknown): string { if (Array.isArray(x)) { return &quot;[&quot; + x.map(prettyPrint).join(&quot;, &quot;) + &quot;]&quot; } if (typeof x === &quot;string&quot;) { return `&quot;${x}&quot;` } if (typeof x === &quot;number&quot;) { return String(x) } return &quot;etc.&quot; } 相关资源 TypeScript 3.0 Release notes - New unknown top type When to use never and unknown in TypeScript" />
+<link rel="canonical" href="http://localhost:4000/2019/06/05/TypeScript-unknown-%E7%B1%BB%E5%9E%8B.html" />
+<meta property="og:url" content="http://localhost:4000/2019/06/05/TypeScript-unknown-%E7%B1%BB%E5%9E%8B.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-05T23:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/06/05/TypeScript-unknown-%E7%B1%BB%E5%9E%8B.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/05/TypeScript-unknown-%E7%B1%BB%E5%9E%8B.html"},"description":"TypeScript unknown 类型 unknown 字面理解和 any 其实没差，任何类型都可赋值给它，但有一点， Anything is assignable to unknown, but unknown isn’t assignable to anything but itself and any without a type assertion or a control flow based narrowing --TypeScript 3.0 Release notes - New unknown top type unknown 类型不能赋值给除了 unknown 或 any 的其他任何类型，使用前必需显式进行指定类型，或是在有条件判断情况下能够隐式地进行类型推断的情况。 下面代码是合法的： let a: unknown; const b: unknown = a; const c: any = a; 因为 unknown 是可以赋值给 unknown 的，而下面的代码则不行， let a: unknown; // 🚨Type &#39;unknown&#39; is not assignable to type &#39;number&#39;.ts(2322) const b: number = a; 但是如果使用时，明确知道了类型，则可以这样来修正： let a: unknown; // 🚨Type &#39;unknown&#39; is not assignable to type &#39;number&#39;.ts(2322) const b: number = a; 或者在条件语句中，已经可以明确推断出类型： let a: unknown; let b: number = &lt;number&gt;a; function isNumber(val: any): val is number { return typeof val === &quot;number&quot;; } if (isNumber(a)) { b = a; } 所以在使用时，unknown 类型会比 any 更加安全。这个安全体现在，虽然它和 any 一样存储了任意类型的值，但是具体使用的时候，这个类型需要显式确定，由使用者进行指定将 unknown 转换成某一确定类型。 优先级 与正交类型的搭配 正交类型（intersection type）中，unknown 不起作用： type T00 = unknown &amp; null; // null type T01 = unknown &amp; undefined; // undefined type T02 = unknown &amp; null &amp; undefined; // null &amp; undefined (which becomes never) type T03 = unknown &amp; string; // string type T04 = unknown &amp; string[]; // string[] type T05 = unknown &amp; unknown; // unknown type T06 = unknown &amp; any; // any 与联合类型的搭配 联合类型（union type）中 unknown 起绝对作用： type T10 = unknown | null; // unknown type T11 = unknown | undefined; // unknown type T12 = unknown | null | undefined; // unknown type T13 = unknown | string; // unknown type T14 = unknown | string[]; // unknown type T15 = unknown | unknown; // unknown type T16 = unknown | any; // any 上面仅一个例外，及和 any 组成的联合类型，最终结果是 any。 使用在条件类型中 条件类型（conditional type）中， type T30&lt;T&gt; = unknown extends T ? true : false; // Deferred type T31&lt;T&gt; = T extends unknown ? true : false; // Deferred (so it distributes) 对于上面的条件类型，进行以下测试： // `unknown` 不能赋值给 `number` type foo = T30&lt;number&gt;; // false // `unknown` 可以赋值给 `any` type bar = T30&lt;any&gt;; // true // 任何类型都可赋值给 `unknown`，所以都为 true type a = T31&lt;number&gt;; // true type b = T31&lt;any&gt;; // true 可进行的操作 只能进行等于的判断，其他操作则会报错。 function f10(x: unknown) { x == 5; x !== 10; x &gt;= 0; // Error x + 1; // Error x * 2; // Error -x; // Error +x; // Error } 属性字段获取，方法调用等，也是不允许的： function f11(x: unknown) { x.foo; // Error x[5]; // Error x(); // Error new x(); // Error } 当解构中有 unknown 类型时，会导致解构出来的结果也是 unknown。 function f26(x: {}, y: unknown, z: any) { let o1 = { a: 42, ...x }; // { a: number } let o2 = { a: 42, ...x, ...y }; // unknown let o3 = { a: 42, ...x, ...y, ...z }; // any } 具体使用场景 unknown 用于变量类型不确定，但肯定可以确定的情形下，比如下面这个示例中，入参总归会有个值，根据这个值的类型进行不同的处理，这里使用 unknown 替代 any 则会更加类型安全。 function prettyPrint(x: unknown): string { if (Array.isArray(x)) { return &quot;[&quot; + x.map(prettyPrint).join(&quot;, &quot;) + &quot;]&quot; } if (typeof x === &quot;string&quot;) { return `&quot;${x}&quot;` } if (typeof x === &quot;number&quot;) { return String(x) } return &quot;etc.&quot; } 相关资源 TypeScript 3.0 Release notes - New unknown top type When to use never and unknown in TypeScript","@type":"BlogPosting","headline":"TypeScript unknown 类型","dateModified":"2019-06-05T23:06:00+08:00","datePublished":"2019-06-05T23:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">TypeScript unknown 类型</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-05T23:06:00+08:00" itemprop="datePublished">Jun 5, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="typescript--unknown-类型">TypeScript  <code class="language-plaintext highlighter-rouge">unknown</code> 类型</h1>
+
+<p><code class="language-plaintext highlighter-rouge">unknown</code> 字面理解和 <code class="language-plaintext highlighter-rouge">any</code> 其实没差，任何类型都可赋值给它，但有一点，</p>
+
+<blockquote>
+  <p>Anything is assignable to unknown, but unknown isn’t assignable to anything but itself and any without a type assertion or a control flow based narrowing</p>
+
+  <p><em>--<a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html">TypeScript 3.0 Release notes - New unknown top type</a></em></p>
+</blockquote>
+
+<p><code class="language-plaintext highlighter-rouge">unknown</code> 类型不能赋值给除了 <code class="language-plaintext highlighter-rouge">unknown</code> 或 <code class="language-plaintext highlighter-rouge">any</code> 的其他任何类型，使用前必需显式进行指定类型，或是在有条件判断情况下能够隐式地进行类型推断的情况。</p>
+
+<p>下面代码是合法的：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">a</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">b</span><span class="p">:</span> <span class="nx">unknown</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">c</span><span class="p">:</span> <span class="kr">any</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>因为 <code class="language-plaintext highlighter-rouge">unknown</code> 是可以赋值给 <code class="language-plaintext highlighter-rouge">unknown</code> 的，而下面的代码则不行，</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">a</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">;</span>
+<span class="c1">// 🚨Type 'unknown' is not assignable to type 'number'.ts(2322)</span>
+<span class="kd">const</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>但是如果使用时，明确知道了类型，则可以这样来修正：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">a</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">;</span>
+<span class="c1">// 🚨Type 'unknown' is not assignable to type 'number'.ts(2322)</span>
+<span class="kd">const</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>或者在条件语句中，已经可以明确推断出类型：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">a</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="o">&lt;</span><span class="kr">number</span><span class="o">&gt;</span><span class="nx">a</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">isNumber</span><span class="p">(</span><span class="nx">val</span><span class="p">:</span> <span class="kr">any</span><span class="p">):</span> <span class="nx">val</span> <span class="k">is</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">typeof</span> <span class="nx">val</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">number</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">a</span><span class="p">))</span> <span class="p">{</span>
+  <span class="nx">b</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>所以在使用时，<code class="language-plaintext highlighter-rouge">unknown</code> 类型会比 <code class="language-plaintext highlighter-rouge">any</code> 更加安全。这个安全体现在，虽然它和 <code class="language-plaintext highlighter-rouge">any</code> 一样存储了任意类型的值，但是具体使用的时候，这个类型需要显式确定，由使用者进行指定将 <code class="language-plaintext highlighter-rouge">unknown</code> 转换成某一确定类型。</p>
+
+<h2 id="优先级">优先级</h2>
+
+<h3 id="与正交类型的搭配">与正交类型的搭配</h3>
+
+<p>正交类型（intersection type）中，<code class="language-plaintext highlighter-rouge">unknown</code> 不起作用：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">T00</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kc">null</span><span class="p">;</span>  <span class="c1">// null</span>
+<span class="kd">type</span> <span class="nx">T01</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kc">undefined</span><span class="p">;</span>  <span class="c1">// undefined</span>
+<span class="kd">type</span> <span class="nx">T02</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kc">null</span> <span class="o">&amp;</span> <span class="kc">undefined</span><span class="p">;</span>  <span class="c1">// null &amp; undefined (which becomes never)</span>
+<span class="kd">type</span> <span class="nx">T03</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kr">string</span><span class="p">;</span>  <span class="c1">// string</span>
+<span class="kd">type</span> <span class="nx">T04</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kr">string</span><span class="p">[];</span>  <span class="c1">// string[]</span>
+<span class="kd">type</span> <span class="nx">T05</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="nx">unknown</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T06</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kr">any</span><span class="p">;</span>  <span class="c1">// any</span>
+</code></pre></div></div>
+
+<h3 id="与联合类型的搭配">与联合类型的搭配</h3>
+
+<p>联合类型（union type）中 <code class="language-plaintext highlighter-rouge">unknown</code> 起绝对作用：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">T10</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T11</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T12</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T13</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kr">string</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T14</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kr">string</span><span class="p">[];</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T15</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="nx">unknown</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T16</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kr">any</span><span class="p">;</span>  <span class="c1">// any</span>
+</code></pre></div></div>
+
+<p>上面仅一个例外，及和 <code class="language-plaintext highlighter-rouge">any</code> 组成的联合类型，最终结果是 <code class="language-plaintext highlighter-rouge">any</code>。</p>
+
+<h3 id="使用在条件类型中">使用在条件类型中</h3>
+
+<p>条件类型（conditional type）中，</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">T30</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="kd">extends</span> <span class="nx">T</span> <span class="p">?</span> <span class="kc">true</span> <span class="p">:</span> <span class="kc">false</span><span class="p">;</span>  <span class="c1">// Deferred</span>
+<span class="kd">type</span> <span class="nx">T31</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">T</span> <span class="kd">extends</span> <span class="nx">unknown</span> <span class="p">?</span> <span class="kc">true</span> <span class="p">:</span> <span class="kc">false</span><span class="p">;</span>  <span class="c1">// Deferred (so it distributes)</span>
+</code></pre></div></div>
+
+<p>对于上面的条件类型，进行以下测试：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// `unknown` 不能赋值给 `number`</span>
+<span class="kd">type</span> <span class="nx">foo</span> <span class="o">=</span> <span class="nx">T30</span><span class="o">&lt;</span><span class="kr">number</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// false</span>
+<span class="c1">// `unknown` 可以赋值给 `any`</span>
+<span class="kd">type</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">T30</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// true</span>
+
+<span class="c1">// 任何类型都可赋值给 `unknown`，所以都为 true</span>
+<span class="kd">type</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">T31</span><span class="o">&lt;</span><span class="kr">number</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// true</span>
+<span class="kd">type</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">T31</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// true</span>
+</code></pre></div></div>
+
+<h2 id="可进行的操作">可进行的操作</h2>
+
+<p>只能进行等于的判断，其他操作则会报错。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f10</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">x</span> <span class="o">==</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="nx">x</span> <span class="o">!==</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="nx">x</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="nx">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="o">-</span><span class="nx">x</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="o">+</span><span class="nx">x</span><span class="p">;</span>  <span class="c1">// Error</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>属性字段获取，方法调用等，也是不允许的：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f11</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">x</span><span class="p">.</span><span class="nx">foo</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="nx">x</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>  <span class="c1">// Error</span>
+    <span class="nx">x</span><span class="p">();</span>  <span class="c1">// Error</span>
+    <span class="k">new</span> <span class="nx">x</span><span class="p">();</span>  <span class="c1">// Error</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>当解构中有 <code class="language-plaintext highlighter-rouge">unknown</code> 类型时，会导致解构出来的结果也是 <code class="language-plaintext highlighter-rouge">unknown</code>。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f26</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="p">{},</span> <span class="nx">y</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">,</span> <span class="nx">z</span><span class="p">:</span> <span class="kr">any</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">o1</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="p">...</span><span class="nx">x</span> <span class="p">};</span>  <span class="c1">// { a: number }</span>
+    <span class="kd">let</span> <span class="nx">o2</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="p">...</span><span class="nx">x</span><span class="p">,</span> <span class="p">...</span><span class="nx">y</span> <span class="p">};</span>  <span class="c1">// unknown</span>
+    <span class="kd">let</span> <span class="nx">o3</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="p">...</span><span class="nx">x</span><span class="p">,</span> <span class="p">...</span><span class="nx">y</span><span class="p">,</span> <span class="p">...</span><span class="nx">z</span> <span class="p">};</span>  <span class="c1">// any</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="具体使用场景">具体使用场景</h2>
+
+<p><code class="language-plaintext highlighter-rouge">unknown</code> 用于变量类型不确定，但肯定可以确定的情形下，比如下面这个示例中，入参总归会有个值，根据这个值的类型进行不同的处理，这里使用 <code class="language-plaintext highlighter-rouge">unknown</code> 替代 <code class="language-plaintext highlighter-rouge">any</code> 则会更加类型安全。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">prettyPrint</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">):</span> <span class="kr">string</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">x</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="dl">"</span><span class="s2">[</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">x</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">prettyPrint</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">, </span><span class="dl">"</span><span class="p">)</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">]</span><span class="dl">"</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">x</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">string</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s2">`"</span><span class="p">${</span><span class="nx">x</span><span class="p">}</span><span class="s2">"`</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">x</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">number</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">String</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+  <span class="p">}</span> 
+  <span class="k">return</span> <span class="dl">"</span><span class="s2">etc.</span><span class="dl">"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html">TypeScript 3.0 Release notes - New unknown top type</a></li>
+  <li><a href="https://blog.logrocket.com/when-to-use-never-and-unknown-in-typescript-5e4d6c5799ad/">When to use <code class="language-plaintext highlighter-rouge">never</code> and <code class="language-plaintext highlighter-rouge">unknown</code> in TypeScript</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/06/05/TypeScript-unknown-%E7%B1%BB%E5%9E%8B.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

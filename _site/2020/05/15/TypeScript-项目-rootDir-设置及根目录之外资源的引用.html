@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>TypeScript 项目 rootDir 设置及根目录之外资源的引用 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="TypeScript 项目 rootDir 设置及根目录之外资源的引用" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TypeScript 项目 rootDir 设置及根目录之外资源的引用 控制输出目录的层级 假设项目目录结构如下： . ├── dest ├── node_modules ├── package.json ├── src │   ├── index.ts ├── tsconfig.json └── yarn.lock 在 &quot;outDir&quot;: &quot;./dest&quot; 配置情况下，src/index.ts 编译后输出位置为 dest/src/index.js。 输出目录带上了的 src 这一层，显然不是那么合理。 解决办法是指定 rootDir: “src”。这样，根目录变成了 src，编译后输出则没有了 src 这一层。 根目录之外资源的引用 但，这样做存在局限性。因为根目录设置为 src 后，就限制了代码使用 src 之外资源的能力。 什么意思呢，假设我们想在 src/index.ts 中引用项目根目录的 package.json 文件， src/index.ts import * as pkg from &quot;../package.json&quot;; TypeScript 中导入 JSON 文件需要添加 resolveJsonModule : true 配置。好的。 加上后发现，会提示如下错误： File ‘/myapp/package.json&#39; is not under &#39;rootDir&#39; ‘/myapp/src&#39;. &#39;rootDir&#39; is expected to contain all source files.ts(6059) 因为前面我们配置了 src 为根目录，而 package.json 并不在 src 下面，所以代码中引用就越界了，这就是前面说的局限性。 自定义声明文件 那为了解决这个问题，把刚刚添加的 resolveJsonModule : true 去掉或者改成 resolveJsonModule : false。 接下来在 src 下添加类型声明文件以支持 JSON 的导入，即，通过自定义声明的方式让 TypeScript 认识 JSON 文件而不用原生的配置。 src/typings.d.ts declare module &quot;*.json&quot;; 这样，完美解决。 最后的项目目录会长这样： . ├── dest │   ├── index.js │   └── package.json ├── node_modules ├── package.json ├── src │   ├── index.ts │   └── typings.d.ts ├── tsconfig.json └── yarn.lock 相关资源 ‘package.json’ is not under ‘rootDir’" />
+<meta property="og:description" content="TypeScript 项目 rootDir 设置及根目录之外资源的引用 控制输出目录的层级 假设项目目录结构如下： . ├── dest ├── node_modules ├── package.json ├── src │   ├── index.ts ├── tsconfig.json └── yarn.lock 在 &quot;outDir&quot;: &quot;./dest&quot; 配置情况下，src/index.ts 编译后输出位置为 dest/src/index.js。 输出目录带上了的 src 这一层，显然不是那么合理。 解决办法是指定 rootDir: “src”。这样，根目录变成了 src，编译后输出则没有了 src 这一层。 根目录之外资源的引用 但，这样做存在局限性。因为根目录设置为 src 后，就限制了代码使用 src 之外资源的能力。 什么意思呢，假设我们想在 src/index.ts 中引用项目根目录的 package.json 文件， src/index.ts import * as pkg from &quot;../package.json&quot;; TypeScript 中导入 JSON 文件需要添加 resolveJsonModule : true 配置。好的。 加上后发现，会提示如下错误： File ‘/myapp/package.json&#39; is not under &#39;rootDir&#39; ‘/myapp/src&#39;. &#39;rootDir&#39; is expected to contain all source files.ts(6059) 因为前面我们配置了 src 为根目录，而 package.json 并不在 src 下面，所以代码中引用就越界了，这就是前面说的局限性。 自定义声明文件 那为了解决这个问题，把刚刚添加的 resolveJsonModule : true 去掉或者改成 resolveJsonModule : false。 接下来在 src 下添加类型声明文件以支持 JSON 的导入，即，通过自定义声明的方式让 TypeScript 认识 JSON 文件而不用原生的配置。 src/typings.d.ts declare module &quot;*.json&quot;; 这样，完美解决。 最后的项目目录会长这样： . ├── dest │   ├── index.js │   └── package.json ├── node_modules ├── package.json ├── src │   ├── index.ts │   └── typings.d.ts ├── tsconfig.json └── yarn.lock 相关资源 ‘package.json’ is not under ‘rootDir’" />
+<link rel="canonical" href="http://localhost:4000/2020/05/15/TypeScript-%E9%A1%B9%E7%9B%AE-rootDir-%E8%AE%BE%E7%BD%AE%E5%8F%8A%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B9%8B%E5%A4%96%E8%B5%84%E6%BA%90%E7%9A%84%E5%BC%95%E7%94%A8.html" />
+<meta property="og:url" content="http://localhost:4000/2020/05/15/TypeScript-%E9%A1%B9%E7%9B%AE-rootDir-%E8%AE%BE%E7%BD%AE%E5%8F%8A%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B9%8B%E5%A4%96%E8%B5%84%E6%BA%90%E7%9A%84%E5%BC%95%E7%94%A8.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-15T23:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2020/05/15/TypeScript-%E9%A1%B9%E7%9B%AE-rootDir-%E8%AE%BE%E7%BD%AE%E5%8F%8A%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B9%8B%E5%A4%96%E8%B5%84%E6%BA%90%E7%9A%84%E5%BC%95%E7%94%A8.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2020/05/15/TypeScript-%E9%A1%B9%E7%9B%AE-rootDir-%E8%AE%BE%E7%BD%AE%E5%8F%8A%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B9%8B%E5%A4%96%E8%B5%84%E6%BA%90%E7%9A%84%E5%BC%95%E7%94%A8.html"},"description":"TypeScript 项目 rootDir 设置及根目录之外资源的引用 控制输出目录的层级 假设项目目录结构如下： . ├── dest ├── node_modules ├── package.json ├── src │   ├── index.ts ├── tsconfig.json └── yarn.lock 在 &quot;outDir&quot;: &quot;./dest&quot; 配置情况下，src/index.ts 编译后输出位置为 dest/src/index.js。 输出目录带上了的 src 这一层，显然不是那么合理。 解决办法是指定 rootDir: “src”。这样，根目录变成了 src，编译后输出则没有了 src 这一层。 根目录之外资源的引用 但，这样做存在局限性。因为根目录设置为 src 后，就限制了代码使用 src 之外资源的能力。 什么意思呢，假设我们想在 src/index.ts 中引用项目根目录的 package.json 文件， src/index.ts import * as pkg from &quot;../package.json&quot;; TypeScript 中导入 JSON 文件需要添加 resolveJsonModule : true 配置。好的。 加上后发现，会提示如下错误： File ‘/myapp/package.json&#39; is not under &#39;rootDir&#39; ‘/myapp/src&#39;. &#39;rootDir&#39; is expected to contain all source files.ts(6059) 因为前面我们配置了 src 为根目录，而 package.json 并不在 src 下面，所以代码中引用就越界了，这就是前面说的局限性。 自定义声明文件 那为了解决这个问题，把刚刚添加的 resolveJsonModule : true 去掉或者改成 resolveJsonModule : false。 接下来在 src 下添加类型声明文件以支持 JSON 的导入，即，通过自定义声明的方式让 TypeScript 认识 JSON 文件而不用原生的配置。 src/typings.d.ts declare module &quot;*.json&quot;; 这样，完美解决。 最后的项目目录会长这样： . ├── dest │   ├── index.js │   └── package.json ├── node_modules ├── package.json ├── src │   ├── index.ts │   └── typings.d.ts ├── tsconfig.json └── yarn.lock 相关资源 ‘package.json’ is not under ‘rootDir’","@type":"BlogPosting","headline":"TypeScript 项目 rootDir 设置及根目录之外资源的引用","dateModified":"2020-05-15T23:05:00+08:00","datePublished":"2020-05-15T23:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">TypeScript 项目 `rootDir` 设置及根目录之外资源的引用</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-05-15T23:05:00+08:00" itemprop="datePublished">May 15, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="typescript-项目-rootdir-设置及根目录之外资源的引用">TypeScript 项目 <code class="language-plaintext highlighter-rouge">rootDir</code> 设置及根目录之外资源的引用</h1>
+
+<h2 id="控制输出目录的层级">控制输出目录的层级</h2>
+
+<p>假设项目目录结构如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── dest
+├── node_modules
+├── package.json
+├── src
+│   ├── index.ts
+├── tsconfig.json
+└── yarn.lock
+</code></pre></div></div>
+
+<p>在 <code class="language-plaintext highlighter-rouge">"outDir": "./dest"</code> 配置情况下，<code class="language-plaintext highlighter-rouge">src/index.ts</code> 编译后输出位置为 <code class="language-plaintext highlighter-rouge">dest/src/index.js</code>。</p>
+
+<p>输出目录带上了的 <code class="language-plaintext highlighter-rouge">src</code> 这一层，显然不是那么合理。</p>
+
+<p>解决办法是指定 <code class="language-plaintext highlighter-rouge">rootDir: “src”</code>。这样，根目录变成了 <code class="language-plaintext highlighter-rouge">src</code>，编译后输出则没有了 <code class="language-plaintext highlighter-rouge">src</code> 这一层。</p>
+
+<h2 id="根目录之外资源的引用">根目录之外资源的引用</h2>
+
+<p>但，这样做存在局限性。因为根目录设置为 <code class="language-plaintext highlighter-rouge">src</code> 后，就限制了代码使用 <code class="language-plaintext highlighter-rouge">src</code> 之外资源的能力。</p>
+
+<p>什么意思呢，假设我们想在 <code class="language-plaintext highlighter-rouge">src/index.ts</code> 中引用项目根目录的 <code class="language-plaintext highlighter-rouge">package.json</code> 文件，</p>
+
+<p>src/index.ts</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">pkg</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../package.json</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>TypeScript 中导入 JSON 文件需要添加 <code class="language-plaintext highlighter-rouge">resolveJsonModule : true</code> 配置。好的。</p>
+
+<p>加上后发现，会提示如下错误：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>File ‘/myapp/package.json' is not under 'rootDir' ‘/myapp/src'. 'rootDir' is expected to contain all source files.ts(6059)
+</code></pre></div></div>
+
+<p>因为前面我们配置了 <code class="language-plaintext highlighter-rouge">src</code> 为根目录，而 <code class="language-plaintext highlighter-rouge">package.json</code> 并不在 <code class="language-plaintext highlighter-rouge">src</code> 下面，所以代码中引用就越界了，这就是前面说的局限性。</p>
+
+<h3 id="自定义声明文件">自定义声明文件</h3>
+
+<p>那为了解决这个问题，把刚刚添加的 <code class="language-plaintext highlighter-rouge">resolveJsonModule : true</code> 去掉或者改成 <code class="language-plaintext highlighter-rouge">resolveJsonModule : false</code>。</p>
+
+<p>接下来在 <code class="language-plaintext highlighter-rouge">src</code> 下添加类型声明文件以支持 JSON 的导入，即，通过自定义声明的方式让 TypeScript 认识 JSON 文件而不用原生的配置。</p>
+
+<p>src/typings.d.ts</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">declare</span> <span class="kr">module</span> <span class="dl">"</span><span class="s2">*.json</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这样，完美解决。</p>
+
+<p>最后的项目目录会长这样：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── dest
+│   ├── index.js
+│   └── package.json
+├── node_modules
+├── package.json
+├── src
+│   ├── index.ts
+│   └── typings.d.ts
+├── tsconfig.json
+└── yarn.lock
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/a/61426303/1553656">‘package.json’ is not under ‘rootDir’</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2020/05/15/TypeScript-%E9%A1%B9%E7%9B%AE-rootDir-%E8%AE%BE%E7%BD%AE%E5%8F%8A%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B9%8B%E5%A4%96%E8%B5%84%E6%BA%90%E7%9A%84%E5%BC%95%E7%94%A8.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

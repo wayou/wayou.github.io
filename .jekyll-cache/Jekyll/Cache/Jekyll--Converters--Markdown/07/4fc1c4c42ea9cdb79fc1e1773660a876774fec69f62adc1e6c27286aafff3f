@@ -1,0 +1,60 @@
+I"�<h1 id="vs-code-中定义可折叠的代码段">VS Code 中定义可折叠的代码段</h1>
+
+<p>不同于正常的代码，根据语义和缩进自带了折叠。在 Visual Studio 中，比如书写 C# 时，是支持通过 <code class="language-plaintext highlighter-rouge"># region [region name]</code> 的方式来定义任意的可折叠代码块，譬如：</p>
+
+<div class="language-c# highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#region MyClass definition
+</span><span class="k">public</span> <span class="k">class</span> <span class="nc">MyClass</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+    <span class="p">{</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="cp">#endregion
+</span></code></pre></div></div>
+
+<p>通过 region 不但可以将原本不能折叠的部分定义成折叠外，在折叠时也会展示对应的标注，在代码管理和 overview 时特别方便。</p>
+
+<p><img src="http://3.bp.blogspot.com/-U3xXd7aOsZY/TvxJbfGIbVI/AAAAAAAACl8/R9c8jvqXq1c/s1600/Regiondiaplay.bmp" alt="Visual Studio 中多个折叠 region 的示例" /></p>
+
+<p align="center">Visual Studio 中多个折叠 region 的示例 - 图片来自 <a href="https://www.codeproject.com/Tips/438830/Make-your-code-Speak-by-using-Csharp-Region">Make your code Speak by using C# Region</a></p>
+
+<h2 id="vs-code-中自定义-region">VS Code 中自定义 region</h2>
+
+<p>这么好用的功能，其实是 <a href="https://code.visualstudio.com/updates/vFebruary">VS Code version 0.10.11</a> 中已经引入。</p>
+
+<p>不同语言定义的语法如下：</p>
+
+<ul>
+  <li>TypeScript/JavaScript: <code class="language-plaintext highlighter-rouge">//#region</code> 和 <code class="language-plaintext highlighter-rouge">//#endregion</code> 或 <code class="language-plaintext highlighter-rouge">//region</code> 搭配 <code class="language-plaintext highlighter-rouge">//endregion</code></li>
+  <li>C#: <code class="language-plaintext highlighter-rouge">#region</code> 和 <code class="language-plaintext highlighter-rouge">#endregion</code></li>
+  <li>C/C++: <code class="language-plaintext highlighter-rouge">#pragma region</code> 和 <code class="language-plaintext highlighter-rouge">#pragma endregion</code></li>
+  <li>F#: <code class="language-plaintext highlighter-rouge">//#region</code> 和 <code class="language-plaintext highlighter-rouge">//#endregion</code></li>
+  <li>PowerShell: <code class="language-plaintext highlighter-rouge">#region</code> 和 <code class="language-plaintext highlighter-rouge">#endregion</code></li>
+  <li>VB: <code class="language-plaintext highlighter-rouge">#Region</code> 和 <code class="language-plaintext highlighter-rouge">#End Region</code></li>
+</ul>
+
+<p>VS Code 中，直接输入 <code class="language-plaintext highlighter-rouge">#</code> 后会有 region 的自动补全提示，选择后会根据语言自动使用对应的语法。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/82867604-bf640700-9f5d-11ea-9250-983f2afc9be2.png" alt="region 的自动补全" /></p>
+<p align="center">region 的自动补全</p>
+
+<h2 id="region-折叠展开的快捷键">region 折叠展开的快捷键</h2>
+
+<p>默认情况下，折叠展开 region 的快捷键如下：</p>
+
+<ul>
+  <li>折叠所有 region: <kbd>⌘</kbd> <kbd>K</kbd> <kbd>⌘</kbd> <kbd>8</kbd></li>
+  <li>展开所有 region: <kbd>⌘</kbd> <kbd>K</kbd> <kbd>⌘</kbd> <kbd>9</kbd></li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/82867681-db67a880-9f5d-11ea-9a45-c474c1aaba96.gif" alt="region 的折叠展开" /></p>
+<p align="center">region 的折叠展开</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/preprocessor-directives/preprocessor-region">#region (C# Reference)</a></li>
+  <li><a href="https://code.visualstudio.com/updates/v1_17#_folding-regions">Folding regions</a></li>
+</ul>
+
+:ET

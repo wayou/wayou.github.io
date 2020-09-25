@@ -1,0 +1,110 @@
+I"U<h1 id="objective-c-中不带加减号的方法">Objective-C 中不带加减号的方法</h1>
+
+<p>显而易见的事实是，Objective-C 中，<code class="language-plaintext highlighter-rouge">+</code> 表示类方法，<code class="language-plaintext highlighter-rouge">-</code> 表示实例方法。</p>
+
+<p>但看别人代码过程中，还会发现一种，不带加减号的方法。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">@implementation</span> <span class="nc">MyViewController</span>
+
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(){</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"msg from foo..."</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">loadView</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">super</span> <span class="nf">loadView</span><span class="p">];</span>
+  <span class="n">foo</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+</code></pre></div></div>
+
+<p>这种是混搭的 C 代码。</p>
+
+<p>当然当 C 方法写在 <code class="language-plaintext highlighter-rouge">@implementation</code> 内也是可以的，编译器会正确地处理。因为 C 方法严格来说不隶属于类，好的做法是始终写在类实现的外部。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">foo</span><span class="p">(){</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"msg from foo..."</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">@implementation</span> <span class="nc">MyViewController</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">loadView</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">super</span> <span class="nf">loadView</span><span class="p">];</span>
+  <span class="n">foo</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+</code></pre></div></div>
+
+<h2 id="c-中获取-objective-c-的数据">C 中获取 Objective-C 的数据</h2>
+
+<p>但如果你以为将 C 代码写在 <code class="language-plaintext highlighter-rouge">@implementation</code> 内部就可以获取到类里面的数据，那是不现实的。</p>
+
+<p><em>MyViewController.h</em></p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">@interface</span> <span class="nc">MyViewController</span> <span class="p">()</span>
+<span class="k">@property</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">someStr</span><span class="p">;</span>
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p><em>MyViewController.m</em></p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">@implementation</span> <span class="nc">MyViewController</span>
+<span class="c1">// void foo() { printf(self.someStr); } // 🚨 Use of undeclared identifier '_someStr'</span>
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">()</span> <span class="p">{</span> <span class="n">printf</span><span class="p">(</span><span class="n">_someStr</span><span class="p">);</span> <span class="p">}</span> <span class="c1">// 🚨 Use of undeclared identifier '_someStr'</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">loadView</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">super</span> <span class="nf">loadView</span><span class="p">];</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">someStr</span> <span class="o">=</span> <span class="s">@"some string..."</span><span class="p">;</span>
+  <span class="n">foo</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+</code></pre></div></div>
+
+<p>正确的做法是将 Objective-C 的对象传递给 C 代码，这样在 C 中便有了一个对象的引用，数据就可以正常获取了。</p>
+
+<p><em>MyViewController.h</em></p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@interface</span> <span class="nc">MyViewController</span> <span class="p">:</span> <span class="nc">UIViewController</span>
+
+<span class="k">@property</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">someStr</span><span class="p">;</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">myObjcMethod</span><span class="p">;</span>
+
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p><em>MyViewController.m</em></p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="n">MyViewController</span><span class="o">*</span> <span class="n">obj</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">[</span><span class="n">obj</span><span class="p">.</span><span class="n">someStr</span> <span class="nf">UTF8String</span><span class="p">]);</span>
+  <span class="p">[</span><span class="n">obj</span> <span class="nf">myObjcMethod</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">@implementation</span> <span class="nc">MyViewController</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">loadView</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">super</span> <span class="nf">loadView</span><span class="p">];</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">someStr</span> <span class="o">=</span> <span class="s">@"some string..."</span><span class="p">;</span>
+  <span class="n">foo</span><span class="p">(</span><span class="n">self</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">myObjcMethod</span> <span class="p">{</span>
+  <span class="n">NSLog</span><span class="p">(</span><span class="s">@"msg from my objc method"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/801976/mixing-c-functions-in-an-objective-c-class">Mixing C functions in an Objective-C class</a></li>
+  <li><a href="https://stackoverflow.com/questions/14535660/accessing-objective-c-variable-from-c-function">accessing objective c variable from c function</a></li>
+</ul>
+
+:ET

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>JS 中创建给定长度的数组 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="JS 中创建给定长度的数组" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="JS 中创建给定长度的数组 最佳直观的方式莫非使用字面量。 const arr = [1,2,3]; 缺点很明显，元素多的时候就捉襟见肘了。我们需要更加便捷地创建给定长度的数组。 首先了解下，数组以数组的形式存在时，其存储和读取是非常高效的，也就是说，数组还有以非数组的形式存在的情况。 与其他语言中数组是连续元素组成的数据类型不同，JS 中数组序列中是允许存在间隔，即数组中可以有「洞」。 const arr_with_hole = [1,,2]; // arr_with_hole[1] =&gt; undefined 注意这里之所以说数组存在洞，而不是说空的地方是 undefined，是因为 undefined 是实实在在的数据类型，而数组中存在洞的地方，其并不是被初始化了一个实实在在的 undefined，而是只有我们在访问的时候，才得到了一个确切的 undefined 值。联想薛定谔的猫。 此时 V8 引擎中其不是以数组形式存在，而是一个以数字为键的键值对。对该数据的操作是没有正规数组那样高效的。且一旦有洞，后续将数组补全也无法恢复到真实的数组。也就是说，这个性能的损失是不可挽回的。 所以，JS 中尽量避免创建不连续数组。 另外，如果元素全为数字的数组操作起来性能会好些。 数组构造器 通过数组构造器可以很方便地创建指定长度的数组。 const arr = new Array(3); // arr =&gt; [empty × 3] // arr[1] =&gt; undefined 如你所见，这个数组全是洞。尝试访问其元素将会得到 undefined。所以， 其性能差 undefined 不是一个友好的初始值 如果为了解决初始值的问题，数组身上的 fill() 方法能派上用场。 const arr = new Array(3).fill(0); // arr =&gt; [0,0,0] // arr.fill(&#39;hello&#39;) =&gt; [&#39;hello&#39;,&#39;hello&#39;,&#39;hello&#39;] 注意：如果使用对象填充数组，数组所有元素指向的是同一对象。这点不难理解，但是很坑爹。 const arr = new Array(3).fill({}); arr[0].name = &quot;张三&quot;; // a[1] =&gt; {name:&#39;张三&#39;} 使用循环 既然字面量方式无法满足任意长度的情况，那明直接的办法就是 for 循环了。 const NUM = 3; const arr = []; for (let i = 0; i &lt; NUM; i++) { arr.push(0); } // arr =&gt; [0,0,0] 此种方式创建的数组没有洞，原生高效，但创建过程并不高效，因为在内部实现上，每次元素的添加都需要重新分配空间。 Array.from Array.from 可以从数组创建数组。特别地，它可以将类数组（array-like）转成真·数组。 类数组最著名代表人物有: 函数内部获取到的参数对象 arguments， document.querSelector(&#39;p&#39;) 返回的 DOM 节点列表 类数组只是呈现上像数组，因为是假的，其身上并没有数组该有的原型方法比如 sort()，filter()。 Array.from 也会将数组中薛定谔的洞塌缩成具体的值，于是我们可以通过它轻松得到一个全是 undefined 的数组。 Array.from(new Array(3)); // [undefined,undefined,undefined] 此外，.from() 可以传递一个 map 方法作为第二个参数，这样在创建新数组时会运用上这个映射函数。 Array.from(new Array(3), (v, i) =&gt; i); // [0,1,2] Array.from(new Array(3), () =&gt; &quot;矢泽妮可&quot;); // [&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;] Bonus 若不真的看见，我大概不会相信还可以这样操作： Array.from({ length: 3 }, () =&gt; &quot;矢泽妮可&quot;); // [&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;] 缘何上面的代码也能给我们三个可爱的「矢泽妮可」。魔法在于 {length: 3} 被当作类数组处理了，天秀！ keys() keys() 返回 iterable，通过将其解构可以得到数组： [...new Array(3).keys()]; // [ 0, 1, 2 ] Tips 关注代码的可读性而不是微小的性能差异，因为现今的 JS 引擎可以很好地处理性能了 如果处理的是大量数字类型的数组，使用 Typed Arrays 参考 Creating and filling Arrays of arbitrary lengths in JavaScript" />
+<meta property="og:description" content="JS 中创建给定长度的数组 最佳直观的方式莫非使用字面量。 const arr = [1,2,3]; 缺点很明显，元素多的时候就捉襟见肘了。我们需要更加便捷地创建给定长度的数组。 首先了解下，数组以数组的形式存在时，其存储和读取是非常高效的，也就是说，数组还有以非数组的形式存在的情况。 与其他语言中数组是连续元素组成的数据类型不同，JS 中数组序列中是允许存在间隔，即数组中可以有「洞」。 const arr_with_hole = [1,,2]; // arr_with_hole[1] =&gt; undefined 注意这里之所以说数组存在洞，而不是说空的地方是 undefined，是因为 undefined 是实实在在的数据类型，而数组中存在洞的地方，其并不是被初始化了一个实实在在的 undefined，而是只有我们在访问的时候，才得到了一个确切的 undefined 值。联想薛定谔的猫。 此时 V8 引擎中其不是以数组形式存在，而是一个以数字为键的键值对。对该数据的操作是没有正规数组那样高效的。且一旦有洞，后续将数组补全也无法恢复到真实的数组。也就是说，这个性能的损失是不可挽回的。 所以，JS 中尽量避免创建不连续数组。 另外，如果元素全为数字的数组操作起来性能会好些。 数组构造器 通过数组构造器可以很方便地创建指定长度的数组。 const arr = new Array(3); // arr =&gt; [empty × 3] // arr[1] =&gt; undefined 如你所见，这个数组全是洞。尝试访问其元素将会得到 undefined。所以， 其性能差 undefined 不是一个友好的初始值 如果为了解决初始值的问题，数组身上的 fill() 方法能派上用场。 const arr = new Array(3).fill(0); // arr =&gt; [0,0,0] // arr.fill(&#39;hello&#39;) =&gt; [&#39;hello&#39;,&#39;hello&#39;,&#39;hello&#39;] 注意：如果使用对象填充数组，数组所有元素指向的是同一对象。这点不难理解，但是很坑爹。 const arr = new Array(3).fill({}); arr[0].name = &quot;张三&quot;; // a[1] =&gt; {name:&#39;张三&#39;} 使用循环 既然字面量方式无法满足任意长度的情况，那明直接的办法就是 for 循环了。 const NUM = 3; const arr = []; for (let i = 0; i &lt; NUM; i++) { arr.push(0); } // arr =&gt; [0,0,0] 此种方式创建的数组没有洞，原生高效，但创建过程并不高效，因为在内部实现上，每次元素的添加都需要重新分配空间。 Array.from Array.from 可以从数组创建数组。特别地，它可以将类数组（array-like）转成真·数组。 类数组最著名代表人物有: 函数内部获取到的参数对象 arguments， document.querSelector(&#39;p&#39;) 返回的 DOM 节点列表 类数组只是呈现上像数组，因为是假的，其身上并没有数组该有的原型方法比如 sort()，filter()。 Array.from 也会将数组中薛定谔的洞塌缩成具体的值，于是我们可以通过它轻松得到一个全是 undefined 的数组。 Array.from(new Array(3)); // [undefined,undefined,undefined] 此外，.from() 可以传递一个 map 方法作为第二个参数，这样在创建新数组时会运用上这个映射函数。 Array.from(new Array(3), (v, i) =&gt; i); // [0,1,2] Array.from(new Array(3), () =&gt; &quot;矢泽妮可&quot;); // [&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;] Bonus 若不真的看见，我大概不会相信还可以这样操作： Array.from({ length: 3 }, () =&gt; &quot;矢泽妮可&quot;); // [&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;] 缘何上面的代码也能给我们三个可爱的「矢泽妮可」。魔法在于 {length: 3} 被当作类数组处理了，天秀！ keys() keys() 返回 iterable，通过将其解构可以得到数组： [...new Array(3).keys()]; // [ 0, 1, 2 ] Tips 关注代码的可读性而不是微小的性能差异，因为现今的 JS 引擎可以很好地处理性能了 如果处理的是大量数字类型的数组，使用 Typed Arrays 参考 Creating and filling Arrays of arbitrary lengths in JavaScript" />
+<link rel="canonical" href="http://localhost:4000/2018/12/25/JS-%E4%B8%AD%E5%88%9B%E5%BB%BA%E7%BB%99%E5%AE%9A%E9%95%BF%E5%BA%A6%E7%9A%84%E6%95%B0%E7%BB%84.html" />
+<meta property="og:url" content="http://localhost:4000/2018/12/25/JS-%E4%B8%AD%E5%88%9B%E5%BB%BA%E7%BB%99%E5%AE%9A%E9%95%BF%E5%BA%A6%E7%9A%84%E6%95%B0%E7%BB%84.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-12-25T23:12:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2018/12/25/JS-%E4%B8%AD%E5%88%9B%E5%BB%BA%E7%BB%99%E5%AE%9A%E9%95%BF%E5%BA%A6%E7%9A%84%E6%95%B0%E7%BB%84.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2018/12/25/JS-%E4%B8%AD%E5%88%9B%E5%BB%BA%E7%BB%99%E5%AE%9A%E9%95%BF%E5%BA%A6%E7%9A%84%E6%95%B0%E7%BB%84.html"},"description":"JS 中创建给定长度的数组 最佳直观的方式莫非使用字面量。 const arr = [1,2,3]; 缺点很明显，元素多的时候就捉襟见肘了。我们需要更加便捷地创建给定长度的数组。 首先了解下，数组以数组的形式存在时，其存储和读取是非常高效的，也就是说，数组还有以非数组的形式存在的情况。 与其他语言中数组是连续元素组成的数据类型不同，JS 中数组序列中是允许存在间隔，即数组中可以有「洞」。 const arr_with_hole = [1,,2]; // arr_with_hole[1] =&gt; undefined 注意这里之所以说数组存在洞，而不是说空的地方是 undefined，是因为 undefined 是实实在在的数据类型，而数组中存在洞的地方，其并不是被初始化了一个实实在在的 undefined，而是只有我们在访问的时候，才得到了一个确切的 undefined 值。联想薛定谔的猫。 此时 V8 引擎中其不是以数组形式存在，而是一个以数字为键的键值对。对该数据的操作是没有正规数组那样高效的。且一旦有洞，后续将数组补全也无法恢复到真实的数组。也就是说，这个性能的损失是不可挽回的。 所以，JS 中尽量避免创建不连续数组。 另外，如果元素全为数字的数组操作起来性能会好些。 数组构造器 通过数组构造器可以很方便地创建指定长度的数组。 const arr = new Array(3); // arr =&gt; [empty × 3] // arr[1] =&gt; undefined 如你所见，这个数组全是洞。尝试访问其元素将会得到 undefined。所以， 其性能差 undefined 不是一个友好的初始值 如果为了解决初始值的问题，数组身上的 fill() 方法能派上用场。 const arr = new Array(3).fill(0); // arr =&gt; [0,0,0] // arr.fill(&#39;hello&#39;) =&gt; [&#39;hello&#39;,&#39;hello&#39;,&#39;hello&#39;] 注意：如果使用对象填充数组，数组所有元素指向的是同一对象。这点不难理解，但是很坑爹。 const arr = new Array(3).fill({}); arr[0].name = &quot;张三&quot;; // a[1] =&gt; {name:&#39;张三&#39;} 使用循环 既然字面量方式无法满足任意长度的情况，那明直接的办法就是 for 循环了。 const NUM = 3; const arr = []; for (let i = 0; i &lt; NUM; i++) { arr.push(0); } // arr =&gt; [0,0,0] 此种方式创建的数组没有洞，原生高效，但创建过程并不高效，因为在内部实现上，每次元素的添加都需要重新分配空间。 Array.from Array.from 可以从数组创建数组。特别地，它可以将类数组（array-like）转成真·数组。 类数组最著名代表人物有: 函数内部获取到的参数对象 arguments， document.querSelector(&#39;p&#39;) 返回的 DOM 节点列表 类数组只是呈现上像数组，因为是假的，其身上并没有数组该有的原型方法比如 sort()，filter()。 Array.from 也会将数组中薛定谔的洞塌缩成具体的值，于是我们可以通过它轻松得到一个全是 undefined 的数组。 Array.from(new Array(3)); // [undefined,undefined,undefined] 此外，.from() 可以传递一个 map 方法作为第二个参数，这样在创建新数组时会运用上这个映射函数。 Array.from(new Array(3), (v, i) =&gt; i); // [0,1,2] Array.from(new Array(3), () =&gt; &quot;矢泽妮可&quot;); // [&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;] Bonus 若不真的看见，我大概不会相信还可以这样操作： Array.from({ length: 3 }, () =&gt; &quot;矢泽妮可&quot;); // [&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;,&#39;矢泽妮可&#39;] 缘何上面的代码也能给我们三个可爱的「矢泽妮可」。魔法在于 {length: 3} 被当作类数组处理了，天秀！ keys() keys() 返回 iterable，通过将其解构可以得到数组： [...new Array(3).keys()]; // [ 0, 1, 2 ] Tips 关注代码的可读性而不是微小的性能差异，因为现今的 JS 引擎可以很好地处理性能了 如果处理的是大量数字类型的数组，使用 Typed Arrays 参考 Creating and filling Arrays of arbitrary lengths in JavaScript","@type":"BlogPosting","headline":"JS 中创建给定长度的数组","dateModified":"2018-12-25T23:12:00+08:00","datePublished":"2018-12-25T23:12:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JS 中创建给定长度的数组</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-12-25T23:12:00+08:00" itemprop="datePublished">Dec 25, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="js-中创建给定长度的数组">JS 中创建给定长度的数组</h2>
+
+<p>最佳直观的方式莫非使用字面量。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>缺点很明显，元素多的时候就捉襟见肘了。我们需要更加便捷地创建给定长度的数组。</p>
+
+<p>首先了解下，数组以数组的形式存在时，其存储和读取是非常高效的，也就是说，数组还有以非数组的形式存在的情况。</p>
+
+<p>与其他语言中数组是连续元素组成的数据类型不同，JS 中数组序列中是允许存在间隔，即数组中可以有「洞」。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">arr_with_hole</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,,</span><span class="mi">2</span><span class="p">];</span>
+<span class="c1">// arr_with_hole[1] =&gt; undefined</span>
+</code></pre></div></div>
+
+<p>注意这里之所以说数组存在洞，而不是说空的地方是 <code class="language-plaintext highlighter-rouge">undefined</code>，是因为 <code class="language-plaintext highlighter-rouge">undefined</code> 是实实在在的数据类型，而数组中存在洞的地方，其并不是被初始化了一个实实在在的 <code class="language-plaintext highlighter-rouge">undefined</code>，而是只有我们在访问的时候，才得到了一个确切的 <code class="language-plaintext highlighter-rouge">undefined</code> 值。联想薛定谔的猫。</p>
+
+<p>此时 V8 引擎中其不是以数组形式存在，而是一个以数字为键的键值对。对该数据的操作是没有正规数组那样高效的。且一旦有洞，后续将数组补全也无法恢复到真实的数组。也就是说，这个性能的损失是不可挽回的。</p>
+
+<p>所以，JS 中尽量避免创建不连续数组。</p>
+
+<p>另外，如果元素全为数字的数组操作起来性能会好些。</p>
+
+<h3 id="数组构造器">数组构造器</h3>
+
+<p>通过数组构造器可以很方便地创建指定长度的数组。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">arr</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+<span class="c1">// arr =&gt; [empty × 3]</span>
+<span class="c1">// arr[1] =&gt; undefined</span>
+</code></pre></div></div>
+
+<p>如你所见，这个数组全是洞。尝试访问其元素将会得到 <code class="language-plaintext highlighter-rouge">undefined</code>。所以，</p>
+
+<ul>
+  <li>其性能差</li>
+  <li><code class="language-plaintext highlighter-rouge">undefined</code> 不是一个友好的初始值</li>
+</ul>
+
+<p>如果为了解决初始值的问题，数组身上的 <code class="language-plaintext highlighter-rouge">fill()</code> 方法能派上用场。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">arr</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nx">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="c1">// arr =&gt; [0,0,0]</span>
+<span class="c1">// arr.fill('hello') =&gt; ['hello','hello','hello']</span>
+</code></pre></div></div>
+
+<p><em>注意</em>：如果使用对象填充数组，数组所有元素指向的是同一对象。这点不难理解，但是很坑爹。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">arr</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nx">fill</span><span class="p">({});</span>
+<span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">张三</span><span class="dl">"</span><span class="p">;</span>
+<span class="c1">// a[1] =&gt; {name:'张三'}</span>
+</code></pre></div></div>
+
+<h3 id="使用循环">使用循环</h3>
+
+<p>既然字面量方式无法满足任意长度的情况，那明直接的办法就是 <code class="language-plaintext highlighter-rouge">for</code> 循环了。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">NUM</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">NUM</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">arr</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// arr =&gt; [0,0,0]</span>
+</code></pre></div></div>
+
+<p>此种方式创建的数组没有洞，原生高效，但创建过程并不高效，因为在内部实现上，每次元素的添加都需要重新分配空间。</p>
+
+<h3 id="arrayfrom"><code class="language-plaintext highlighter-rouge">Array.from</code></h3>
+
+<p><code class="language-plaintext highlighter-rouge">Array.from</code> 可以从数组创建数组。特别地，它可以将类数组（array-like）转成真·数组。</p>
+
+<p>类数组最著名代表人物有:</p>
+
+<ul>
+  <li>函数内部获取到的参数对象 <code class="language-plaintext highlighter-rouge">arguments</code>，</li>
+  <li><code class="language-plaintext highlighter-rouge">document.querSelector('p')</code> 返回的 DOM 节点列表</li>
+</ul>
+
+<p>类数组只是呈现上像数组，因为是假的，其身上并没有数组该有的原型方法比如 <code class="language-plaintext highlighter-rouge">sort()</code>，<code class="language-plaintext highlighter-rouge">filter()</code>。</p>
+
+<p><code class="language-plaintext highlighter-rouge">Array.from</code> 也会将数组中薛定谔的洞塌缩成具体的值，于是我们可以通过它轻松得到一个全是 <code class="language-plaintext highlighter-rouge">undefined</code> 的数组。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">(</span><span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">3</span><span class="p">));</span> <span class="c1">// [undefined,undefined,undefined]</span>
+</code></pre></div></div>
+
+<p>此外，<code class="language-plaintext highlighter-rouge">.from()</code> 可以传递一个 <code class="language-plaintext highlighter-rouge">map</code> 方法作为第二个参数，这样在创建新数组时会运用上这个映射函数。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">(</span><span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">i</span><span class="p">);</span> <span class="c1">// [0,1,2]</span>
+<span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">(</span><span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="dl">"</span><span class="s2">矢泽妮可</span><span class="dl">"</span><span class="p">);</span> <span class="c1">// ['矢泽妮可','矢泽妮可','矢泽妮可']</span>
+</code></pre></div></div>
+
+<p><em>Bonus</em></p>
+
+<p>若不真的看见，我大概不会相信还可以这样操作：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">({</span> <span class="na">length</span><span class="p">:</span> <span class="mi">3</span> <span class="p">},</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="dl">"</span><span class="s2">矢泽妮可</span><span class="dl">"</span><span class="p">);</span> <span class="c1">// ['矢泽妮可','矢泽妮可','矢泽妮可']</span>
+</code></pre></div></div>
+
+<p>缘何上面的代码也能给我们三个可爱的「矢泽妮可」。魔法在于 <code class="language-plaintext highlighter-rouge">{length: 3}</code> 被当作类数组处理了，天秀！</p>
+
+<h3 id="keys"><code class="language-plaintext highlighter-rouge">keys()</code></h3>
+
+<p><code class="language-plaintext highlighter-rouge">keys()</code> 返回 iterable，通过将其解构可以得到数组：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[...</span><span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nx">keys</span><span class="p">()];</span> <span class="c1">// [ 0, 1, 2 ]</span>
+</code></pre></div></div>
+
+<h3 id="tips">Tips</h3>
+
+<ul>
+  <li>关注代码的可读性而不是微小的性能差异，因为现今的 JS 引擎可以很好地处理性能了</li>
+  <li>如果处理的是大量数字类型的数组，使用 <a href="http://exploringjs.com/es6/ch_typed-arrays.html"><code class="language-plaintext highlighter-rouge">Typed Arrays</code></a></li>
+</ul>
+
+<h3 id="参考">参考</h3>
+
+<ul>
+  <li><a href="http://2ality.com/2018/12/creating-arrays.html#cheat-sheet-creating-arrays">Creating and filling Arrays of arbitrary lengths in JavaScript</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2018/12/25/JS-%E4%B8%AD%E5%88%9B%E5%BB%BA%E7%BB%99%E5%AE%9A%E9%95%BF%E5%BA%A6%E7%9A%84%E6%95%B0%E7%BB%84.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

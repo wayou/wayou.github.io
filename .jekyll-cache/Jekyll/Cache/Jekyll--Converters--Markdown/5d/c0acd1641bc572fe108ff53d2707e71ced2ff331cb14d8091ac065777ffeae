@@ -1,0 +1,278 @@
+I"�6<h1 id="cc-中-printf-格式化">C/C++ 中 <code class="language-plaintext highlighter-rouge">printf</code> 格式化</h1>
+
+<p>作为强类型静态语言，类型不仅规定了可以对数据进行的操作，还决定了应该怎样在 <code class="language-plaintext highlighter-rouge">printf</code> 中输出。</p>
+
+<p><code class="language-plaintext highlighter-rouge">printf</code> 的签名是：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">printf</span> <span class="p">(</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">format</span><span class="p">,</span> <span class="p">...</span> <span class="p">);</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">format</code> 为可以参参数格式化的输出内容。具体格式化形式为：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>%[flags][width][.precision][length]specifier
+</code></pre></div></div>
+
+<p>以 <code class="language-plaintext highlighter-rouge">%</code> 开头，紧跟一些用于格式化的修饰符，其中 <code class="language-plaintext highlighter-rouge">[flags][width][.precision][length]</code> 这些为可选部分，称为 <code class="language-plaintext highlighter-rouge">sub-specifier</code>，重点是 <code class="language-plaintext highlighter-rouge">specifier</code>，它与数据类型便有对应关系了。</p>
+
+<p>一些简单示例：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 打印整形</span>
+<span class="kt">int</span> <span class="n">age</span><span class="o">=</span><span class="mi">20</span><span class="p">;</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"My age is %d"</span><span class="p">,</span><span class="n">age</span><span class="p">);</span>
+
+<span class="c1">// 打印字符串</span>
+<span class="kt">char</span><span class="p">[]</span> <span class="n">name</span><span class="o">=</span><span class="s">"poftut"</span><span class="p">;</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"Name: %s"</span><span class="p">,</span><span class="n">name</span><span class="p">);</span>
+
+<span class="c1">// 同时打印多个变量</span>
+<span class="kt">char</span><span class="p">[]</span> <span class="n">name</span><span class="o">=</span><span class="s">"poftut"</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">age</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+<span class="kt">char</span><span class="p">[]</span> <span class="n">city</span> <span class="o">=</span> <span class="s">"ankara"</span><span class="p">;</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"Name:%s , Age:%d , City:%s"</span><span class="p">,</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">city</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="specifier">specifier</h2>
+
+<p>可选的 <code class="language-plaintext highlighter-rouge">specifier</code> 以及对应的数据类型见如下来自 <a href="http://www.cplusplus.com/reference/cstdio/printf/">C++ Reference</a> 的表格：</p>
+
+<p>|specifier|输出描述|输出示例|
+|--- |--- |--- |
+|d or i|Signed decimal integer|392|
+|u|Unsigned decimal integer|7235|
+|o|Unsigned octal|610|
+|x|Unsigned hexadecimal integer|7fa|
+|X|Unsigned hexadecimal integer (uppercase)|7FA|
+|f|Decimal floating point, lowercase|392.65|
+|F|Decimal floating point, uppercase|392.65|
+|e|Scientific notation (mantissa/exponent), lowercase|3.9265e+2|
+|E|Scientific notation (mantissa/exponent), uppercase|3.9265E+2|
+|g|Use the shortest representation: %e or %f|392.65|
+|G|Use the shortest representation: %E or %F|392.65|
+|a|Hexadecimal floating point, lowercase|-0xc.90fep-2|
+|A|Hexadecimal floating point, uppercase|-0XC.90FEP-2|
+|c|Character|a|
+|s|String of characters|sample|
+|p|Pointer address|b8000000|
+|n|Nothing printed.
+The corresponding argument must be a pointer to a signed int.
+The number of characters written so far is stored in the pointed location.||
+|%|A % followed by another % character will write a single % to the stream.|%|</p>
+
+<h2 id="flag">flag</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>flags</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>-</td>
+      <td>Left-justify within the given field width; Right justification is the default (see width sub-specifier).</td>
+    </tr>
+    <tr>
+      <td>+</td>
+      <td>Forces to preceed the result with a plus or minus sign (+ or -) even for positive numbers. By default, only negative numbers are preceded with a - sign.</td>
+    </tr>
+    <tr>
+      <td>(space)</td>
+      <td>If no sign is going to be written, a blank space is inserted before the value.</td>
+    </tr>
+    <tr>
+      <td>#</td>
+      <td>Used with o, x or X specifiers the value is preceeded with 0, 0x or 0X respectively for values different than zero.</td>
+    </tr>
+    <tr>
+      <td>Used with a, A, e, E, f, F, g or G it forces the written output to contain a decimal point even if no more digits follow. By default, if no digits follow, no decimal point is written.</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>Left-pads the number with zeroes (0) instead of spaces when padding is specified (see width sub-specifier).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="width">width</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>width</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>(number)</td>
+      <td>Minimum number of characters to be printed. If the value to be printed is shorter than this number, the result is padded with blank spaces. The value is not truncated even if the result is larger.</td>
+    </tr>
+    <tr>
+      <td>*</td>
+      <td>The width is not specified in the format string, but as an additional integer value argument preceding the argument that has to be formatted.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="precision">precision</h2>
+
+<p>|.precision|description|
+|--- |--- |
+|.number|For integer specifiers (d, i, o, u, x, X): precision specifies the minimum number of digits to be written. If the value to be written is shorter than this number, the result is padded with leading zeros. The value is not truncated even if the result is longer. A precision of 0 means that no character is written for the value 0.
+For a, A, e, E, f and F specifiers: this is the number of digits to be printed after the decimal point (by default, this is 6).
+For g and G specifiers: This is the maximum number of significant digits to be printed.
+For s: this is the maximum number of characters to be printed. By default all characters are printed until the ending null character is encountered.
+If the period is specified without an explicit value for precision, 0 is assumed.|
+|.*|The precision is not specified in the format string, but as an additional integer value argument preceding the argument that has to be formatted.|</p>
+
+<h2 id="length">length</h2>
+
+<p><code class="language-plaintext highlighter-rouge">length</code> 长度 <code class="language-plaintext highlighter-rouge">sub-specifier</code>用来补充修饰数据类型的长度。部分数据类型会有长度的变种，便可用此 sub-specifier 来标识。它与 <code class="language-plaintext highlighter-rouge">spcifier</code> 的组合所表示的数据类型见下表：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>length</th>
+      <th>int</th>
+      <th>unsigned int</th>
+      <th>double</th>
+      <th>int</th>
+      <th>char*</th>
+      <th>void*</th>
+      <th>int*</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>hh</td>
+      <td>signed char</td>
+      <td>unsigned char</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>signed char*</td>
+    </tr>
+    <tr>
+      <td>h</td>
+      <td>short int</td>
+      <td>unsigned short int</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>short int*</td>
+    </tr>
+    <tr>
+      <td>l</td>
+      <td>long int</td>
+      <td>unsigned long int</td>
+      <td> </td>
+      <td>wint_t</td>
+      <td>wchar_t*</td>
+      <td> </td>
+      <td>long int*</td>
+    </tr>
+    <tr>
+      <td>ll</td>
+      <td>long long int</td>
+      <td>unsigned long long int</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>long long int*</td>
+    </tr>
+    <tr>
+      <td>j</td>
+      <td>intmax_t</td>
+      <td>uintmax_t</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>intmax_t*</td>
+    </tr>
+    <tr>
+      <td>z</td>
+      <td>size_t</td>
+      <td>size_t</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>size_t*</td>
+    </tr>
+    <tr>
+      <td>t</td>
+      <td>ptrdiff_t</td>
+      <td>ptrdiff_t</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>ptrdiff_t*</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td> </td>
+      <td> </td>
+      <td>long double</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="另外一些示例">另外一些示例</h2>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">encode</span><span class="p">(</span><span class="k">const</span> <span class="kt">short</span><span class="o">*</span> <span class="n">buffer_l</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mp3buf_size</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"addr is %p ,size is %i</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">buffer_l</span><span class="p">,</span><span class="n">mp3buf_size</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>注意这里 <code class="language-plaintext highlighter-rouge">%p</code>，对照上面 <code class="language-plaintext highlighter-rouge">specifier</code> 表格可知它代表指针，这里用其他类型都不能匹配。</p>
+
+<p>来自的示例：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* printf example */</span>
+<span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+   <span class="n">printf</span> <span class="p">(</span><span class="s">"Characters: %c %c </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="sc">'a'</span><span class="p">,</span> <span class="mi">65</span><span class="p">);</span>
+   <span class="n">printf</span> <span class="p">(</span><span class="s">"Decimals: %d %ld</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">1977</span><span class="p">,</span> <span class="mi">650000L</span><span class="p">);</span>
+   <span class="n">printf</span> <span class="p">(</span><span class="s">"Preceding with blanks: %10d </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">1977</span><span class="p">);</span>
+   <span class="n">printf</span> <span class="p">(</span><span class="s">"Preceding with zeros: %010d </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">1977</span><span class="p">);</span>
+   <span class="n">printf</span> <span class="p">(</span><span class="s">"Some different radices: %d %x %o %#x %#o </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+   <span class="n">printf</span> <span class="p">(</span><span class="s">"floats: %4.2f %+.0e %E </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mf">3.1416</span><span class="p">,</span> <span class="mf">3.1416</span><span class="p">,</span> <span class="mf">3.1416</span><span class="p">);</span>
+   <span class="n">printf</span> <span class="p">(</span><span class="s">"Width trick: %*d </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+   <span class="n">printf</span> <span class="p">(</span><span class="s">"%s </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="s">"A string"</span><span class="p">);</span>
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Characters: a A
+Decimals: 1977 650000
+Preceding with blanks:       1977
+Preceding with zeros: 0000001977
+Some different radices: 100 64 144 0x64 0144
+floats: 3.14 +3e+000 3.141600E+000
+Width trick:    10
+A string
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="http://www.cplusplus.com/reference/cstdio/printf/">C++ Reference - printf</a></li>
+  <li><a href="https://www.poftut.com/c-printf-tutorial-examples/">C – Printf Tutorial with Examples</a></li>
+</ul>
+
+:ET

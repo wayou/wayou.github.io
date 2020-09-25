@@ -1,0 +1,27 @@
+I"-<h1 id="iterm2-安装-sf-mono-字体">iTerm2 安装 SF Mono 字体</h1>
+
+<p>细看 iTerm2 和 mac 自带的 Terminal 总感觉哪里不对，前者少点灵魂。</p>
+
+<p>最后发现，应该是字体问题，查看 Terminal 所用字体，为 <code class="language-plaintext highlighter-rouge">SF Mono</code>:</p>
+
+<p><img width="779" alt="Man Page" src="https://user-images.githubusercontent.com/3783096/93361208-2ee86400-f877-11ea-9eb5-1dd13d72c6e4.png" /></p>
+<p align="center">mac 自带 Terminal 的设置</p>
+
+<p>这就简单了，但当我准备去 iTerm2 字段设成一样时，发现候选中并没有该字体。</p>
+
+<p>原来该字体为 Terminal 自带，不在系统 字体里。</p>
+
+<p>接下来的工作就是把它复制出来，安装到系统字体中，这样 iTerm2 就能适用上了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /Applications/Utilities/Terminal.app/Contents/Resources/Fonts/
+<span class="nb">cp</span> <span class="k">*</span>.otf ~/Library/Fonts/
+</code></pre></div></div>
+
+<p>如果发现无法直接 cd 进入 <code class="language-plaintext highlighter-rouge">/Applications/Utilities/Terminal.app/Contents</code>，可手动去 <code class="language-plaintext highlighter-rouge">/Applications/Utilities/</code> 找到 Terminal.app，右键 “Show Package Contents”。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://gist.github.com/songouyang/ad044926f4db2df83a533766fc701afc">iterm2安装 SF Mono 字体</a></li>
+</ul>
+:ET

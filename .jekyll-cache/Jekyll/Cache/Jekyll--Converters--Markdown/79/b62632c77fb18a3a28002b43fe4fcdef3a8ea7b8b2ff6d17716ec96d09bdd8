@@ -1,0 +1,107 @@
+I"�/<h1 id="koa-中的错误处理">koa 中的错误处理</h1>
+
+<p>不像 express 中在末尾处注册一个声明为 <code class="language-plaintext highlighter-rouge">(err, req, res, next)</code> 中间件的方式，koa 刚好相反，在开头进行注册。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="k">await</span> <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">||</span> <span class="mi">500</span><span class="p">;</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="dl">"</span><span class="s2">error</span><span class="dl">"</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>这样程序中任何报错都会收敛到此处。此时可以方便地将错误打印到页面，开发时非常便捷。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gi">+     ctx.app.emit('error', err, ctx);
+</span></code></pre></div></div>
+
+<p>koa 也建议通过 app 来派发错误，然后通过监听 app 上的 <code class="language-plaintext highlighter-rouge">error</code> 事件对这些错误做进一步的统一处理和集中管理。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">error</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="cm">/* 错误的集中处理:
+   *  log 出来
+   *  写入日志
+   *  写入数据库
+   *   ...
+   */</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>一个错误捕获并打印到页面的示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">Koa</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">koa</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Koa</span><span class="p">();</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="k">await</span> <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">status</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">||</span> <span class="mi">500</span><span class="p">;</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="nx">status</span><span class="p">;</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">html</span><span class="dl">"</span><span class="p">;</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="s2">`
+    &lt;b&gt;</span><span class="p">${</span><span class="nx">status</span><span class="p">}</span><span class="s2">&lt;/b&gt; </span><span class="p">${</span><span class="nx">err</span><span class="p">}</span><span class="s2">
+    `</span><span class="p">;</span>
+    <span class="c1">// emmit</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="dl">"</span><span class="s2">error</span><span class="dl">"</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">hello</span><span class="dl">"</span><span class="p">;</span>
+  <span class="nx">a</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">hello world!</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// TypeError: Assignment to constant variable.</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">error</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Ooops..</span><span class="se">\n</span><span class="dl">"</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">node server.js</code> 启动后访问页面可看到命令行的错误输出。
+如果使用 pm2，可通过 <code class="language-plaintext highlighter-rouge">—no-daemon</code> 参数使其停留在在命令行以查看输出。
+如果不使用上述参数，可通过 <code class="language-plaintext highlighter-rouge">pm2 logs [app-name]</code> 来查看。</p>
+
+<h3 id="ctxthrow"><code class="language-plaintext highlighter-rouge">ctx.throw</code></h3>
+
+<p>朴素的抛错方式需要手动设置状态码及信息对客户端的可见性。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">err</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">err msg</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">401</span><span class="p">;</span>
+<span class="nx">err</span><span class="p">.</span><span class="nx">expose</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">expose</code> 决定是否会返回错误详情给客户端，否则只展示状态对应的错误文案，比如 500 会在浏览器中展示为 <code class="language-plaintext highlighter-rouge">Internal Server Error</code>。</p>
+
+<p>而通过 <a href="https://github.com/koajs/koa/blob/master/docs/api/context.md#ctxthrowstatus-msg-properties"><code class="language-plaintext highlighter-rouge">ctx.throw</code></a> 这个 helper 方法会更加简洁。
+上面的代码片段等价于:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">ctx</span><span class="p">.</span><span class="k">throw</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="dl">"</span><span class="s2">err msg</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>如果不指定状态码，默认为 500。5xx 类错误 <code class="language-plaintext highlighter-rouge">expose</code> 默认为 <code class="language-plaintext highlighter-rouge">false</code>，即不会将错误信息返回到 response。</p>
+
+<p>抛错时还可以传递一些额外数据，这些数据会合并到错误对象上，在处理错误的地方可以从 <code class="language-plaintext highlighter-rouge">error</code> 上获取。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="k">throw</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="dl">"</span><span class="s2">access_denied</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span> <span class="na">user</span><span class="p">:</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">foo</span><span class="dl">"</span> <span class="p">}</span> <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">error</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Ooops..</span><span class="se">\n</span><span class="dl">"</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">user</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h3 id="参考">参考</h3>
+
+<ul>
+  <li><a href="https://github.com/koajs/koa/wiki/Error-Handling">Error Handling</a></li>
+  <li><a href="https://github.com/koajs/koa/blob/master/docs/api/context.md#ctxthrowstatus-msg-properties"><code class="language-plaintext highlighter-rouge">ctx.throw</code></a></li>
+</ul>
+:ET

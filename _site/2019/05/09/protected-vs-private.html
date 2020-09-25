@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>protected vs private | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="protected vs private" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="protected vs private private 标识为 private 的属性为私有属性，不能在除自己外的地方进行访问。 protected 标识为 protected 的属性为受保护的属性，与私有属性类似，但还可以在继承类中进行访问。 示例 以 TypeScript 为例，比如一个 Base 类，其中包含一个受保护的年龄属性 age，以及一个私有的工资 _salary 属性。 class Base { constructor(protected age: number, private _salary: number) {} } 同时定义一个 Derived 类继承自 Base 类： class Derived extends Base { constructor(public name: string, age, salary) { super(age, salary); } get Age() { // ✅ 保护的属性可以从继承类中获取到 return this.age; } get Salary() { // 🚨 Property &#39;_salary&#39; is private and only accessible within class &#39;Base&#39;.ts(2341) return this._salary; } } 然后分别实例化这两个类： const base = new Base(18, 999); const derived = new Derived(&quot;derived&quot;, 20, 1000); 然后通过他们的实例尝试访问这些属性。 // 🚨Property &#39;_salary&#39; is private and only accessible within class &#39;Base&#39;.ts(2341) console.log(base._salary); // 🚨Property &#39;age&#39; is protected and only accessible within class &#39;Base&#39; and its subclasses.ts(2445) console.log(base.age); 对于 base，其两个属性都无法通过实例进行访问。 // ✅ console.log(derived.name); // 🚨 虽然继承类中可以获取到父类的保护属性，但不能通过实例直接进行访问 console.log(derived.age); // ✅ 只能在继承类的实例方法中访问，这里 `Age` 是继承类提供的获取器，该方法里访问并返回了父类的保护属性 `age` console.log(derived.Age); 对于 derived，其中 name 因为是 public 公有的，所以可通过实例直接访问。 age 继承自父类 Base，只能在 Derived 类中的实例方法，比如这里定义的 get Age 获取器中进行访问。但无法通过 Derived 的实例直接访问。 Age 在这里为 Derived 类上面的一个获取器，其默认有 public 属性，通过访问它我们间接在类外面访问到了这个在父类中标识为受保护的属性 age。 相关资源 Classes - Public, private, and protected modifiers TypeScript - Difference between Private and Protected Variables" />
+<meta property="og:description" content="protected vs private private 标识为 private 的属性为私有属性，不能在除自己外的地方进行访问。 protected 标识为 protected 的属性为受保护的属性，与私有属性类似，但还可以在继承类中进行访问。 示例 以 TypeScript 为例，比如一个 Base 类，其中包含一个受保护的年龄属性 age，以及一个私有的工资 _salary 属性。 class Base { constructor(protected age: number, private _salary: number) {} } 同时定义一个 Derived 类继承自 Base 类： class Derived extends Base { constructor(public name: string, age, salary) { super(age, salary); } get Age() { // ✅ 保护的属性可以从继承类中获取到 return this.age; } get Salary() { // 🚨 Property &#39;_salary&#39; is private and only accessible within class &#39;Base&#39;.ts(2341) return this._salary; } } 然后分别实例化这两个类： const base = new Base(18, 999); const derived = new Derived(&quot;derived&quot;, 20, 1000); 然后通过他们的实例尝试访问这些属性。 // 🚨Property &#39;_salary&#39; is private and only accessible within class &#39;Base&#39;.ts(2341) console.log(base._salary); // 🚨Property &#39;age&#39; is protected and only accessible within class &#39;Base&#39; and its subclasses.ts(2445) console.log(base.age); 对于 base，其两个属性都无法通过实例进行访问。 // ✅ console.log(derived.name); // 🚨 虽然继承类中可以获取到父类的保护属性，但不能通过实例直接进行访问 console.log(derived.age); // ✅ 只能在继承类的实例方法中访问，这里 `Age` 是继承类提供的获取器，该方法里访问并返回了父类的保护属性 `age` console.log(derived.Age); 对于 derived，其中 name 因为是 public 公有的，所以可通过实例直接访问。 age 继承自父类 Base，只能在 Derived 类中的实例方法，比如这里定义的 get Age 获取器中进行访问。但无法通过 Derived 的实例直接访问。 Age 在这里为 Derived 类上面的一个获取器，其默认有 public 属性，通过访问它我们间接在类外面访问到了这个在父类中标识为受保护的属性 age。 相关资源 Classes - Public, private, and protected modifiers TypeScript - Difference between Private and Protected Variables" />
+<link rel="canonical" href="http://localhost:4000/2019/05/09/protected-vs-private.html" />
+<meta property="og:url" content="http://localhost:4000/2019/05/09/protected-vs-private.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-09T23:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/05/09/protected-vs-private.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/05/09/protected-vs-private.html"},"description":"protected vs private private 标识为 private 的属性为私有属性，不能在除自己外的地方进行访问。 protected 标识为 protected 的属性为受保护的属性，与私有属性类似，但还可以在继承类中进行访问。 示例 以 TypeScript 为例，比如一个 Base 类，其中包含一个受保护的年龄属性 age，以及一个私有的工资 _salary 属性。 class Base { constructor(protected age: number, private _salary: number) {} } 同时定义一个 Derived 类继承自 Base 类： class Derived extends Base { constructor(public name: string, age, salary) { super(age, salary); } get Age() { // ✅ 保护的属性可以从继承类中获取到 return this.age; } get Salary() { // 🚨 Property &#39;_salary&#39; is private and only accessible within class &#39;Base&#39;.ts(2341) return this._salary; } } 然后分别实例化这两个类： const base = new Base(18, 999); const derived = new Derived(&quot;derived&quot;, 20, 1000); 然后通过他们的实例尝试访问这些属性。 // 🚨Property &#39;_salary&#39; is private and only accessible within class &#39;Base&#39;.ts(2341) console.log(base._salary); // 🚨Property &#39;age&#39; is protected and only accessible within class &#39;Base&#39; and its subclasses.ts(2445) console.log(base.age); 对于 base，其两个属性都无法通过实例进行访问。 // ✅ console.log(derived.name); // 🚨 虽然继承类中可以获取到父类的保护属性，但不能通过实例直接进行访问 console.log(derived.age); // ✅ 只能在继承类的实例方法中访问，这里 `Age` 是继承类提供的获取器，该方法里访问并返回了父类的保护属性 `age` console.log(derived.Age); 对于 derived，其中 name 因为是 public 公有的，所以可通过实例直接访问。 age 继承自父类 Base，只能在 Derived 类中的实例方法，比如这里定义的 get Age 获取器中进行访问。但无法通过 Derived 的实例直接访问。 Age 在这里为 Derived 类上面的一个获取器，其默认有 public 属性，通过访问它我们间接在类外面访问到了这个在父类中标识为受保护的属性 age。 相关资源 Classes - Public, private, and protected modifiers TypeScript - Difference between Private and Protected Variables","@type":"BlogPosting","headline":"protected vs private","dateModified":"2019-05-09T23:05:00+08:00","datePublished":"2019-05-09T23:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">`protected` vs `private`</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-09T23:05:00+08:00" itemprop="datePublished">May 9, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="protected-vs-private"><code class="language-plaintext highlighter-rouge">protected</code> vs <code class="language-plaintext highlighter-rouge">private</code></h1>
+
+<h2 id="private"><code class="language-plaintext highlighter-rouge">private</code></h2>
+
+<p>标识为 <code class="language-plaintext highlighter-rouge">private</code> 的属性为私有属性，不能在除自己外的地方进行访问。</p>
+
+<h2 id="protected"><code class="language-plaintext highlighter-rouge">protected</code></h2>
+
+<p>标识为 <code class="language-plaintext highlighter-rouge">protected</code> 的属性为受保护的属性，与私有属性类似，但还可以在继承类中进行访问。</p>
+
+<h2 id="示例">示例</h2>
+
+<p>以 TypeScript 为例，比如一个 <code class="language-plaintext highlighter-rouge">Base</code> 类，其中包含一个受保护的年龄属性 <code class="language-plaintext highlighter-rouge">age</code>，以及一个私有的工资 <code class="language-plaintext highlighter-rouge">_salary</code> 属性。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Base</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">protected</span> <span class="nx">age</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="k">private</span> <span class="nx">_salary</span><span class="p">:</span> <span class="kr">number</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>同时定义一个 <code class="language-plaintext highlighter-rouge">Derived</code> 类继承自 <code class="language-plaintext highlighter-rouge">Base</code> 类：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Derived</span> <span class="kd">extends</span> <span class="nx">Base</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">public</span> <span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">age</span><span class="p">,</span> <span class="nx">salary</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">age</span><span class="p">,</span> <span class="nx">salary</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="kd">get</span> <span class="nx">Age</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ✅ 保护的属性可以从继承类中获取到</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">age</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">get</span> <span class="nx">Salary</span><span class="p">()</span> <span class="p">{</span>
+      <span class="c1">// 🚨 Property '_salary' is private and only accessible within class 'Base'.ts(2341)</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_salary</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后分别实例化这两个类：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">base</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Base</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">999</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">derived</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Derived</span><span class="p">(</span><span class="dl">"</span><span class="s2">derived</span><span class="dl">"</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>然后通过他们的实例尝试访问这些属性。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 🚨Property '_salary' is private and only accessible within class 'Base'.ts(2341)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">base</span><span class="p">.</span><span class="nx">_salary</span><span class="p">);</span>
+
+<span class="c1">// 🚨Property 'age' is protected and only accessible within class 'Base' and its subclasses.ts(2445)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">base</span><span class="p">.</span><span class="nx">age</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>对于 <code class="language-plaintext highlighter-rouge">base</code>，其两个属性都无法通过实例进行访问。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// ✅</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">derived</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+
+<span class="c1">// 🚨 虽然继承类中可以获取到父类的保护属性，但不能通过实例直接进行访问</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">derived</span><span class="p">.</span><span class="nx">age</span><span class="p">);</span>
+<span class="c1">// ✅ 只能在继承类的实例方法中访问，这里 `Age` 是继承类提供的获取器，该方法里访问并返回了父类的保护属性 `age`</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">derived</span><span class="p">.</span><span class="nx">Age</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>对于 <code class="language-plaintext highlighter-rouge">derived</code>，其中 <code class="language-plaintext highlighter-rouge">name</code> 因为是 <code class="language-plaintext highlighter-rouge">public</code> 公有的，所以可通过实例直接访问。</p>
+
+<p><code class="language-plaintext highlighter-rouge">age</code> 继承自父类 <code class="language-plaintext highlighter-rouge">Base</code>，只能在 <code class="language-plaintext highlighter-rouge">Derived</code> 类中的实例方法，比如这里定义的 <code class="language-plaintext highlighter-rouge">get Age</code> 获取器中进行访问。但无法通过 <code class="language-plaintext highlighter-rouge">Derived</code> 的实例直接访问。</p>
+
+<p><code class="language-plaintext highlighter-rouge">Age</code> 在这里为 <code class="language-plaintext highlighter-rouge">Derived</code> 类上面的一个获取器，其默认有 <code class="language-plaintext highlighter-rouge">public</code> 属性，通过访问它我们间接在类外面访问到了这个在父类中标识为受保护的属性 <code class="language-plaintext highlighter-rouge">age</code>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/classes.html">Classes - Public, private, and protected modifiers</a></li>
+  <li><a href="https://stackoverflow.com/questions/36843357/typescript-difference-between-private-and-protected-variables">TypeScript - Difference between Private and Protected Variables</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/05/09/protected-vs-private.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

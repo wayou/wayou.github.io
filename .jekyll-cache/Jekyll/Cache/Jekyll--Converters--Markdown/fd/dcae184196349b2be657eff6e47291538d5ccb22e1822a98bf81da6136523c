@@ -1,0 +1,24 @@
+I"c<p>通过如下配置可让 iTerm2 在每次开机时恢复到之前的那些会话窗口。</p>
+
+<ul>
+  <li>确保 iTerm2 高级设置中 <code class="language-plaintext highlighter-rouge">Enable session restoration</code> 为开启状态</li>
+</ul>
+
+<p><img width="1130" alt="Screen Shot 2020-05-09 at 20 11 32" src="https://user-images.githubusercontent.com/3783096/81473498-7e67b500-9231-11ea-9141-f0eed8d1efe9.png" /></p>
+<p align="center">iTerm2 高级设置 `Enable session restoration`</p>
+
+<ul>
+  <li>设置中，常规里 <code class="language-plaintext highlighter-rouge">Window restoration policy</code> 选择 <code class="language-plaintext highlighter-rouge">Use System Window Restoration Setting</code></li>
+</ul>
+
+<p><img width="756" alt="Screen Shot 2020-05-09 at 20 15 11" src="https://user-images.githubusercontent.com/3783096/81473578-fa61fd00-9231-11ea-83b5-b1aa88a1fcda.png" /></p>
+<p align="center">iTerm2 常规设置 `Window restoration policy`</p>
+
+<ul>
+  <li>打开 mac 的系统设置，关闭 <code class="language-plaintext highlighter-rouge">Close windows when quitting an app</code></li>
+</ul>
+
+<p><img width="780" alt="Screen Shot 2020-05-09 at 20 17 27" src="https://user-images.githubusercontent.com/3783096/81473633-5fb5ee00-9232-11ea-8eea-fc523672a256.png" /></p>
+<p align="center">mac 常规设置 `Close windows when quitting an app`</p>
+
+:ET

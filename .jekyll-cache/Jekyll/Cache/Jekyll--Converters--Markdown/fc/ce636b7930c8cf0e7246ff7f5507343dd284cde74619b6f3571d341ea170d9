@@ -1,0 +1,27 @@
+I"�<h1 id="git-解决冲突时指定使用来自谁的变更">Git 解决冲突时指定使用来自谁的变更</h1>
+
+<p><code class="language-plaintext highlighter-rouge">git rebase</code> 出现文件冲突时，正常来讲，该一个一个文件打开对比，检查冲突项然后决定使用哪部分的变更。</p>
+
+<p>但是在明确知道应该使用谁的变更时，可通过 <code class="language-plaintext highlighter-rouge">git checkout --[ours|theirs] /path/to/file.js</code> 直接在命令行里解决。</p>
+
+<h2 id="指定文件谁的变更">指定文件谁的变更</h2>
+
+<p>比如指定 <code class="language-plaintext highlighter-rouge">/path/to/file.js</code> 使用别人的变更，丢弃自己的修改：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git checkout <span class="nt">--ours</span> /path/to/file.js
+</code></pre></div></div>
+
+<h2 id="指定目录使用谁的变更">指定目录使用谁的变更</h2>
+
+<p>当整个目录下的文件都有冲突时，明确知道应该使用谁的变更的情况下，这个命令就更有用了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git checkout <span class="nt">--ours</span> /path/to/dir/
+<span class="nv">$ </span>git checkout <span class="nt">--theirs</span> <span class="nb">.</span> <span class="c"># 指定目录为当前工作区</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://til.hashrocket.com/posts/ce7bff8134-accept-your-own-changes-during-git-rebase">Accept Your Own Changes During Git Rebase</a></li>
+</ul>
+:ET

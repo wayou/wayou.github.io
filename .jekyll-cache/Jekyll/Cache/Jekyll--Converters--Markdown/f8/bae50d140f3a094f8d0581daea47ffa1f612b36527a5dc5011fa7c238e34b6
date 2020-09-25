@@ -1,0 +1,41 @@
+I"U
+<h1 id="mediadevicesgetusermedia-undefined-的问题"><code class="language-plaintext highlighter-rouge">MediaDevices.getUserMedia</code> <code class="language-plaintext highlighter-rouge">undefined</code> 的问题</h1>
+
+<p>通过 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">MediaDevices.getUserMedia()</a> 获取用户多媒体权限时，需要注意其只工作于以下三种环境：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">localhost</code> 域</li>
+  <li>开启了 HTTPS 的域</li>
+  <li>使用 <code class="language-plaintext highlighter-rouge">file:///</code> 协议打开的本地文件</li>
+</ul>
+
+<p>其他情况下，比如在一个 <code class="language-plaintext highlighter-rouge">HTTP</code> 站点上，<code class="language-plaintext highlighter-rouge">navigator.mediaDevices</code> 的值为 <code class="language-plaintext highlighter-rouge">undefined</code>。</p>
+
+<p>如果想要 <code class="language-plaintext highlighter-rouge">HTTP</code> 环境下也能使用和调试 <code class="language-plaintext highlighter-rouge">MediaDevices.getUserMedia()</code>，可通过开启 Chrome 的相应参数。</p>
+
+<h3 id="通过相应参数启动-chrome">通过相应参数启动 Chrome</h3>
+
+<p>传递相应参数来启动 Chrome，以 <code class="language-plaintext highlighter-rouge">http://example.com</code> 为例，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nt">--unsafely-treat-insecure-origin-as-secure</span><span class="o">=</span><span class="s2">"http://example.com"</span>
+</code></pre></div></div>
+
+<h3 id="开启相应-flag">开启相应 flag</h3>
+
+<p>通过传递相应参数来启动 Chrome <code class="language-plaintext highlighter-rouge">Insecure origins treated as secure</code> flag 并填入相应白名单。</p>
+
+<ul>
+  <li>打开 <code class="language-plaintext highlighter-rouge">chrome://flags/#unsafely-treat-insecure-origin-as-secure</code></li>
+  <li>将该 flag 切换成 <code class="language-plaintext highlighter-rouge">enable</code> 状态</li>
+  <li>输入框中填写需要开启的域名，譬如 <code class="language-plaintext highlighter-rouge">http://example.com"</code>，多个以逗号分隔。</li>
+  <li>重启后生效。</li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">MediaDevices.getUserMedia()</a></li>
+  <li><a href="https://stackoverflow.com/a/34198101/1553656">getUserMedia() in chrome 47 without using https</a></li>
+</ul>
+
+:ET

@@ -1,0 +1,76 @@
+I"�<h1 id="cookie-的下发与回传">Cookie 的下发与回传</h1>
+
+<h2 id="服务器下发-cookie">服务器下发 Cookie</h2>
+
+<p>下发通过 <code class="language-plaintext highlighter-rouge">Set-Cookie</code> 响应头设置，后跟需要设置的 cookie 名 <code class="language-plaintext highlighter-rouge">=</code> 连接其值。再后面通过 <code class="language-plaintext highlighter-rouge">;</code> 分隔的其他修改属性。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt; 
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Expires=&lt;date&gt;
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Max-Age=&lt;non-zero-digit&gt;
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Domain=&lt;domain-value&gt;
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Path=&lt;path-value&gt;
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Secure
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; HttpOnly
+
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; SameSite=Strict
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; SameSite=Lax
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; SameSite=None
+
+// Multiple attributes are also possible, for example:
+Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Domain=&lt;domain-value&gt;; Secure; HttpOnly
+</code></pre></div></div>
+
+<h3 id="同时发下多个-cookie">同时发下多个 Cookie</h3>
+
+<p>同时下发多个 Cookie 时，可以像上面那个设置多个 <code class="language-plaintext highlighter-rouge">Set-Cookie</code> 响应头，也可以在一个响应头中完成。多个 Cookie 使用 <code class="language-plaintext highlighter-rouge">,</code> 分隔。</p>
+
+<p>同个 <code class="language-plaintext highlighter-rouge">Set-Cookie</code> header 中设置多个 cookie name 的情况：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Attribute=value, &lt;cookie-name&gt;=&lt;cookie-value&gt;; Attribute=value, ...
+</code></pre></div></div>
+
+<p>示例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: user_id=5; Expires=Fri, 5 Oct 2018 14:28:00 GMT; Secure; HttpOnly, remember_me=true
+</code></pre></div></div>
+
+<p>注意，Cookie 的过期属性 <code class="language-plaintext highlighter-rouge">Expires</code> 其值会带逗号，在解析 Cookie 时需要特别处理，不要和用来分隔多个 Cookie 的逗号混淆。比如 ` Expires=Fri, 5 Oct 2018 14:28:00 GMT;`</p>
+
+<h3 id="cookie-属性">Cookie 属性</h3>
+
+<p>常用的 Cookie 属性：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Expires=&lt;date&gt;</code>：设置 Cookie 过期时间，格式<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Date">见此</a>，示例：<code class="language-plaintext highlighter-rouge">new Date().toUTCString()</code>，JS 中可通过 <code class="language-plaintext highlighter-rouge">new Date().toUTCString()</code> 生成。未设置则与 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Define_the_lifetime_of_a_cookie">Session Cookie</a> 等效，浏览器标签页关闭后失效。</li>
+  <li><code class="language-plaintext highlighter-rouge">Max-Age=&lt;number&gt;</code>：过期时间，按秒算，如果同时设置了 <code class="language-plaintext highlighter-rouge">Expires</code>，此规则优先级更高。设置 0 或负值将使 Cookie 立即失效.</li>
+  <li><code class="language-plaintext highlighter-rouge">Domain=&lt;domain-value&gt;</code>：允许发送 Cookie 的 domain 列表，缺省时为当前页面的 host。</li>
+  <li><code class="language-plaintext highlighter-rouge">Path=&lt;path-value&gt;</code>：设置 Cookie 生效的路径。</li>
+  <li><code class="language-plaintext highlighter-rouge">Secure</code>：只发送到 HTTPS 服务器。</li>
+  <li><code class="language-plaintext highlighter-rouge">HttpOnly</code>：防止代码操作 Cookie，譬如 JavaScript 中通过 <code class="language-plaintext highlighter-rouge">Document.cookie</code> 来访问。</li>
+  <li><code class="language-plaintext highlighter-rouge">SameSite=&lt;samesite-value&gt;</code>：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">Strict</code>：同源情况下浏览器才发送该 Cookie</li>
+      <li><code class="language-plaintext highlighter-rouge">Lax</code>：跨域加载图片或 iframe 时不发送 Cookie，点击链接会发送</li>
+      <li><code class="language-plaintext highlighter-rouge">None</code>：同源与否均发送。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="浏览器回传-cookie">浏览器回传 Cookie</h2>
+
+<p>浏览器通过 <code class="language-plaintext highlighter-rouge">Cookie</code> 请求头回传 Cookie，回传时只回传 Cookie 名称和值，不回传 Cookie 属性。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cookie: user_id=5; remember_me=true
+</code></pre></div></div>
+
+<p>需要注意，<strong>回传时用分号 <code class="language-plaintext highlighter-rouge">;</code> 分隔多个 Cookie，而服务器下发时使用逗号 <code class="language-plaintext highlighter-rouge">,</code></strong> 分隔多个 Cookie。 有点迷。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">MDN - Using HTTP cookies</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie">MDN - Set-Cookie</a></li>
+  <li><a href="https://thoughtbot.com/blog/lucky-cookies">How HTTP Cookies Work</a></li>
+</ul>
+
+:ET

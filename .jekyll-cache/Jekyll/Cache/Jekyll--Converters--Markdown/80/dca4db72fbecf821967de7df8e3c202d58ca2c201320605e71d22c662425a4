@@ -1,0 +1,89 @@
+I"#<h1 id="ios-webview-标题变更的检测">iOS webview 标题变更的检测</h1>
+
+<h2 id="问题">问题</h2>
+
+<p>实测，iOS webview 中通过 js 设置 <code class="language-plaintext highlighter-rouge">document.title</code> 后不会触发 native 导航上标题的更新。安卓上是没问题的。</p>
+
+<h2 id="iframe-方式">iframe 方式</h2>
+
+<p>iOS 的 WKWebview 其标题是在页面 <code class="language-plaintext highlighter-rouge">pageload</code> 事件时设置的。于是有 hack 方式是说在想要变更页面标题时，通过在页面创建一个 iframe 来间接实现。</p>
+
+<p>原理就像刚刚说的，因为 iframe 会触发文档的加载，于是会触发 <code class="language-plaintext highlighter-rouge">pageload</code> 从而更新 native 的标题。代码类似这样：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">changeTitle</span><span class="p">(</span><span class="nx">title</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="nx">title</span><span class="p">;</span>
+    <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">iframe</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">i</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">none</span><span class="dl">'</span><span class="p">;</span>
+    <span class="nx">i</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">xxx</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// 加载当前页面下一个体积小的资源，比如favicon.ico</span>
+    <span class="nx">i</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="p">()</span><span class="o">=&gt;</span><span class="p">{</span>
+        <span class="nx">setTimeout</span><span class="p">(()</span><span class="o">=&gt;</span><span class="p">{</span>
+            <span class="nx">i</span><span class="p">.</span><span class="nx">remove</span><span class="p">()</span>
+        <span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>但，经验证无效。有可能之前是有效的哈，不细跟了。</p>
+
+<h2 id="navite-添加对标题变更的监听">navite 添加对标题变更的监听</h2>
+
+<p>既然从页面本身来说，改变了 title 不生效，只能 native 部分来处理了。两种方式，</p>
+
+<ul>
+  <li>添加相应的通信，比如通过 jsbridge 让页面发送更新标题的指令给 native</li>
+  <li>native 自动监听页面标题的变化</li>
+</ul>
+
+<p>前者有点过，就为标题更新单独添加通信，徒增复杂度。后者是比较科学的方式。具体实施代码如下：</p>
+
+<h3 id="swift">Swift</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">webView</span><span class="o">.</span><span class="nf">addObserver</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">forKeyPath</span><span class="p">:</span> <span class="kd">#keyPath(</span><span class="nf">WKWebView.title</span><span class="kd">)</span><span class="p">,</span> <span class="nv">options</span><span class="p">:</span> <span class="o">.</span><span class="k">new</span><span class="p">,</span> <span class="nv">context</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">override</span> <span class="kd">func</span> <span class="nf">observeValue</span><span class="p">(</span><span class="n">forKeyPath</span> <span class="nv">keyPath</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="n">of</span> <span class="nv">object</span><span class="p">:</span> <span class="kt">Any</span><span class="p">?,</span> <span class="nv">change</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSKeyValueChangeKey</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]?,</span> <span class="nv">context</span><span class="p">:</span> <span class="kt">UnsafeMutableRawPointer</span><span class="p">?)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">keyPath</span> <span class="o">==</span> <span class="s">"title"</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="k">let</span> <span class="nv">title</span> <span class="o">=</span> <span class="n">webView</span><span class="o">.</span><span class="n">title</span> <span class="p">{</span>
+            <span class="nf">print</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="objective-c-版本">Objective-C 版本</h3>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">webView</span> <span class="nf">addObserver</span><span class="p">:</span><span class="n">self</span>
+                 <span class="nl">forKeyPath:</span><span class="s">@"title"</span>
+                    <span class="nl">options:</span><span class="n">NSKeyValueObservingOptionNew</span>
+                    <span class="nl">context:</span><span class="nb">NULL</span><span class="p">];</span>
+</code></pre></div></div>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">observeValueForKeyPath</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">keyPath</span>
+                      <span class="nf">ofObject</span><span class="p">:(</span><span class="n">id</span><span class="p">)</span><span class="nv">object</span>
+                        <span class="nf">change</span><span class="p">:(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">change</span>
+                       <span class="nf">context</span><span class="p">:(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="nv">context</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">([</span><span class="n">keyPath</span> <span class="nf">isEqualToString</span><span class="p">:</span><span class="s">@"title"</span><span class="p">])</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">reactTitleChange</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">self</span><span class="p">.</span><span class="n">navigationItem</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">webView</span><span class="p">.</span><span class="n">title</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="后记">后记</h2>
+
+<p>另外，别忘了页面销毁时清理掉该监听。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">_webView</span> <span class="nf">removeObserver</span><span class="p">:</span><span class="n">self</span> <span class="nf">forKeyPath</span><span class="p">:</span><span class="s">@"title"</span><span class="p">];</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www.hackingwithswift.com/articles/112/the-ultimate-guide-to-wkwebview">The Ultimate Guide to WKWebView</a></li>
+  <li><a href="https://juejin.im/post/5a241ac751882555cc41adac">iOS 下实现 webview 标题修改</a></li>
+</ul>
+
+:ET

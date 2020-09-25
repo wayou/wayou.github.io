@@ -1,0 +1,105 @@
+I"2/<h2 id="事件的冒泡与捕获">事件的冒泡与捕获</h2>
+
+<h3 id="事件绑定">事件绑定</h3>
+
+<p>给元素绑定事件可以通过属性 <code class="language-plaintext highlighter-rouge">onclick</code>，也可以使用 <code class="language-plaintext highlighter-rouge">addEventListner</code>。<code class="language-plaintext highlighter-rouge">addEventListner</code> 被大多数主流浏览器及 IE9 之后的 IE 所支持，IE8及以下使用 <code class="language-plaintext highlighter-rouge">attachEvent</code>。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">element</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">handler</span><span class="p">(</span><span class="nx">e</span><span class="p">){...}</span>
+<span class="nx">element</span><span class="p">.</span><span class="nx">addEventListner</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">handler</span><span class="p">(</span><span class="nx">e</span><span class="p">){...})</span>
+<span class="nx">element</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">handler</span><span class="p">(</span><span class="nx">e</span><span class="p">){...})</span> <span class="cm">/*for IE&lt;9*/</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">addEventListner</code> 第三个参数 <code class="language-plaintext highlighter-rouge">useCapture</code> 可以指定事件处理器在何时被执行，事件的捕获阶段（capture）还是冒泡阶段（bubble）。</p>
+
+<h3 id="事件发生的时机问题">事件发生的时机问题</h3>
+
+<p>先看个示例。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span><span class="nx">alert</span><span class="p">(</span><span class="mi">1</span><span class="p">)},</span> <span class="kc">false</span><span class="p">);</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span><span class="nx">alert</span><span class="p">(</span><span class="mi">2</span><span class="p">)},</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span><span class="nx">alert</span><span class="p">(</span><span class="mi">3</span><span class="p">)},</span> <span class="kc">false</span><span class="p">);</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span><span class="nx">alert</span><span class="p">(</span><span class="mi">4</span><span class="p">)},</span> <span class="kc">true</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>执行结果是:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">2</code>  事件捕获，先绑定</li>
+  <li><code class="language-plaintext highlighter-rouge">4</code>  事件捕获，后绑定</li>
+  <li><code class="language-plaintext highlighter-rouge">1</code>  事件冒泡，先绑定</li>
+  <li><code class="language-plaintext highlighter-rouge">3</code>  事件冒泡，后绑定</li>
+</ul>
+
+<p>从上面可以看出，事件的触发顺序是先捕获，再冒泡，先绑定的先执行，即事件的整个传递流程为：</p>
+
+<ul>
+  <li>外层容器的捕获</li>
+  <li>内层元素的捕获</li>
+  <li>内层元素的冒泡</li>
+  <li>外层容器的冒泡</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                  |  A
+ -----------------|--|-----------------
+ | Parent         |  |                |
+ |   -------------|--|-----------     |
+ |   |Children    V  |          |     |
+ |   ----------------------------     |
+ |                                    |
+ --------------------------------------
+</code></pre></div></div>
+
+<p>任一过程中的事件处理器调用 <code class="language-plaintext highlighter-rouge">stopPropagation</code> 都会中断上面这一流程。</p>
+
+<p>那么问题来了，当 onclick 闯入的时候，他与捕获冒泡的顺序是怎样的呢？看下面的测试：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">onclick</span><span class="dl">'</span><span class="p">)}</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">capture</span><span class="dl">'</span><span class="p">)</span> <span class="p">},</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">bubble</span><span class="dl">'</span><span class="p">)</span> <span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>capture
+onclick
+bubble
+</code></pre></div></div>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">capture</span><span class="dl">'</span><span class="p">)</span> <span class="p">},</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">onclick</span><span class="dl">'</span><span class="p">)}</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">bubble</span><span class="dl">'</span><span class="p">)</span> <span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>capture
+onclick
+bubble
+</code></pre></div></div>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">capture</span><span class="dl">'</span><span class="p">)</span> <span class="p">},</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">bubble</span><span class="dl">'</span><span class="p">)</span> <span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">onclick</span><span class="dl">'</span><span class="p">)}</span>
+</code></pre></div></div>
+
+<p>结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>capture
+bubble
+onclick
+</code></pre></div></div>
+
+<p>从上面的示例可以看出，捕获永远是最先执行的，<code class="language-plaintext highlighter-rouge">onclick</code> 与冒泡的顺序与绑定事件的顺序有关，谁先绑定谁先执行。由此推断，<code class="language-plaintext highlighter-rouge">onclick</code> 其实发生在冒泡阶段。</p>
+
+<h3 id="事件代理">事件代理</h3>
+
+<p>正是利用上面的事件冒泡，衍生出了「事件代理」。即不将事件处理器直接绑定在目标身上，而是绑定在容器上，这样就不用为每个元素绑定事件处理器，节省了资源，也解决了动态生成的元素的事件绑定问题及元素删除后事件的清理问题。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/4616694/what-is-event-bubbling-and-capturing">What is event bubbling and capturing?</a></li>
+  <li><a href="https://stackoverflow.com/questions/6348494/addeventlistener-vs-onclick">addEventListener vs onclick</a></li>
+</ul>
+
+:ET

@@ -1,0 +1,137 @@
+I"<h1 id="sql_mode-的设置">SQL_MODE 的设置</h1>
+
+<h2 id="查看当前的-sql_mode">查看当前的 SQL_MODE</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">@@</span><span class="n">sql_mode</span>
+</code></pre></div></div>
+
+<details>
+<summary>
+SELECT @@sql_mode 的执行结果
+</summary>
+
+```sh
+mysql&gt; SELECT @@sql_mode;
++-----------------------------------------------------------------------------------------------------------------------+
+| @@sql_mode                                                                                                            |
++-----------------------------------------------------------------------------------------------------------------------+
+| ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION |
++-----------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
+</details>
+
+<h2 id="设置-sql_mode">设置 SQL_MODE</h2>
+
+<p>设置 SQL_MODE 是通过 <code class="language-plaintext highlighter-rouge">SET</code> 关键词进行的，其他参数值也可通过该关键词进行修改。可通过 <code class="language-plaintext highlighter-rouge">SHOW VARIABLES</code> 查看到所有可用配置项。</p>
+
+<p>设置系统变量时，可指定所设置的作用域，也可通过 <code class="language-plaintext highlighter-rouge">@@</code> 前缀来获取变量，甚至也可以没有任何前缀，以下写法都是合法的：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="k">SESSION</span> <span class="n">sql_mode</span> <span class="o">=</span> <span class="s1">'TRADITIONAL'</span><span class="p">;</span>
+<span class="k">SET</span> <span class="k">LOCAL</span> <span class="n">sql_mode</span> <span class="o">=</span> <span class="s1">'TRADITIONAL'</span><span class="p">;</span>
+<span class="k">SET</span> <span class="o">@@</span><span class="k">SESSION</span><span class="p">.</span><span class="n">sql_mode</span> <span class="o">=</span> <span class="s1">'TRADITIONAL'</span><span class="p">;</span>
+<span class="k">SET</span> <span class="o">@@</span><span class="k">LOCAL</span><span class="p">.</span><span class="n">sql_mode</span> <span class="o">=</span> <span class="s1">'TRADITIONAL'</span><span class="p">;</span>
+<span class="k">SET</span> <span class="o">@@</span><span class="n">sql_mode</span> <span class="o">=</span> <span class="s1">'TRADITIONAL'</span><span class="p">;</span>
+<span class="k">SET</span> <span class="n">sql_mode</span> <span class="o">=</span> <span class="s1">'TRADITIONAL'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>可用的 SQL 模式可在官方文档中查询到 <a href="https://dev.mysql.com/doc/refman/5.6/en/sql-mode.html">5.1.10 Server SQL Modes</a>。</p>
+
+<h3 id="系统变量的作用域">系统变量的作用域</h3>
+
+<blockquote>
+  <p>There are two scopes in which system variables exist. Global variables affect the overall operation of the server. Session variables affect its operation for individual client connections. A given system variable can have both a global and a session value.</p>
+
+  <p><em>--<a href="https://dev.mysql.com/doc/refman/8.0/en/using-system-variables.html">5.1.9 Using System Variables</a></em></p>
+</blockquote>
+
+<p>系统的这些配置项有其作用项，是分开进行管理的。</p>
+
+<p>其中，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">GLOBAL</code> 类型会对每次连接生效。</li>
+  <li><code class="language-plaintext highlighter-rouge">SESSION</code> 类型只对当前连接生效，<code class="language-plaintext highlighter-rouge">LOCAL</code> 关键词等效。</li>
+</ul>
+
+<p>两者皆为运行时变量，可随时修改。</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">PERSIST</code> 类型不影响运行时，会将设置结果写入 <code class="language-plaintext highlighter-rouge">mysqld-auto.cnf</code> 这个 MySQL 配置文件。</li>
+</ul>
+
+<p>所以，设置时可通过在 <code class="language-plaintext highlighter-rouge">SET</code> 后加相应作用域的修饰词，像这样</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="k">GLOBAL</span> <span class="n">sql_mode</span> <span class="o">=</span> <span class="s1">'NO_ENGINE_SUBSTITUTION'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>也可以通过 <code class="language-plaintext highlighter-rouge">@@</code> 加上作用域进行变量访问的方式：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="o">@@</span><span class="k">GLOBAL</span><span class="p">.</span><span class="n">sql_mode</span> <span class="o">=</span> <span class="s1">'NO_ENGINE_SUBSTITUTION'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>两者是等效的。</p>
+
+<p>作用域缺省情况下为 <code class="language-plaintext highlighter-rouge">SESSION</code> 类型，即只对当前连接生效。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="o">@@</span><span class="n">sql_mode</span> <span class="o">=</span> <span class="s1">'NO_ENGINE_SUBSTITUTION'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="mysql-中的配置文件">MySQL 中的配置文件</h3>
+
+<p>下面表格来自官方文档 <a href="https://dev.mysql.com/doc/refman/8.0/en/option-files.html">Table 4.2 Option Files Read on Unix and Unix-Like Systems</a> 部分。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>文件</th>
+      <th>用途</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>/etc/my.cnf</td>
+      <td>全局配置项</td>
+    </tr>
+    <tr>
+      <td>/etc/mysql/my.cnf</td>
+      <td>全局配置项</td>
+    </tr>
+    <tr>
+      <td>SYSCONFDIR/my.cnf</td>
+      <td>全局配置项</td>
+    </tr>
+    <tr>
+      <td>$MYSQL_HOME/my.cnf</td>
+      <td>服务器相关配置项，有于服务端</td>
+    </tr>
+    <tr>
+      <td>defaults-extra-file</td>
+      <td>如果存在该文件的话，通过<a href="https://dev.mysql.com/doc/refman/8.0/en/option-file-options.html#option_general_defaults-extra-file"><code class="language-plaintext highlighter-rouge">--defaults-extra-file</code></a> 参数启用程序时会读取该配置项</td>
+    </tr>
+    <tr>
+      <td>~/.my.cnf</td>
+      <td>用户配置项</td>
+    </tr>
+    <tr>
+      <td>~/.mylogin.cnf</td>
+      <td>用户登录路径相关，用于客户端</td>
+    </tr>
+    <tr>
+      <td>DATADIR/mysqld-auto.cnf</td>
+      <td><a href="https://dev.mysql.com/doc/refman/8.0/en/set-variable.html"><code class="language-plaintext highlighter-rouge">SET PERSIST</code></a> 或 <a href="https://dev.mysql.com/doc/refman/8.0/en/set-variable.html"><code class="language-plaintext highlighter-rouge">SE PERSIST_ONLY</code></a> 设置的系统参数会保存到该文件</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="相交资源">相交资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html">5.1.10 Server SQL Modes</a></li>
+  <li><a href="https://stackoverflow.com/questions/2317650/setting-global-sql-mode-in-mysql">setting global sql_mode in mysql</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/using-system-variables.html">5.1.9 Using System Variables</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/option-files.html">4.2.2.2 Using Option Files</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/5.7/en/set-variable.html">13.7.4.1 SET Syntax for Variable Assignment</a></li>
+</ul>
+:ET

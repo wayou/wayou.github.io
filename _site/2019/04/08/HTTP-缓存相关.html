@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>HTTP 缓存相关 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="HTTP 缓存相关" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="HTTP 缓存相关 网络中数据传输是很耗时的，数据要在漫长的路径中奔波，客户端在数据完整到达前只能等待。如果能够复用已经请求过的资源，势必会让整个页面加载高效许多。这可以通过合理地设置服务器的缓存，与浏览器的缓存机制配合以达到最优。 缓存设置得当不但可减少用户等待时间，提升体验，还节省服务器开销省流量带宽。 缓存的配置有两种策略： 稳定的内容 + 长期缓存 经常变动的内容 + 使用前询问 稳定的内容 + 长期缓存 在知道文件内容不太可能变化的情况下，可对该资源进行长期缓存。 Cache-Control: max-age=31536000 这种模式下浏览器获取资源流程如下： 页面：请求资源 a.v1.js,b.v1.css。 缓存：本地没有，向服务器获取。 服务器：找到资源并返回，同时告知浏览器缓存该资源，比如，缓存一年。 页面：一段时间后再次请求 a.v2.js,b.v1.css。 缓存：发现本地有对 b.v1.css 的缓存，直接使用，对于 a.v2.js 则询问服务器。 服务器：找到资源并返回 a.v2.js，同时告知浏览器缓存该资源。 可以看到，这种模式下，我们更新的是文件名，即资源的 URI 地址，而不是直接更新文件内容。因为文件被缓存后，如果文件名没变，浏览器是不会重新去获取的。 经常变动的内容 + 使用前询问 对于经常变动的资源，但地址又不能变，比如静态博客页面，则不能像上面那样缓存。这种情况下可设置缓存为 no-cache。 Cache-Control: no-cache 需要注意的是，缓存 Header 的值不能按照字面意思来解释，需要去理解它，比如： no-cache 并不是表示不要缓存，而是缓存该资源，但使用前先询问服务器该资源是否有更新，而 no-store 才表示完全不缓存。 must-revalidate 不是必需重新验证资源有效性的意思，而是暗含了一个前提，就是资源如果还没有超过设置的缓存时限 max-age 才重新验证。 此模式下，服务器可通过下发 ETag 或 Last-Modified 响应头，浏览器下次再请求时会查检查已缓存的资源，并带上相应的 If-None-Match 或 If-Modified-Since 请求头，然后服务器再决定是否返回新的资源或告知浏览器直接使用本地缓存。 使用 ETag 的场景示例： 浏览器请求资源。 服务器返回资源，并且带上 ETag （可以是 hash 或者其他能够跟随资源内容而变的 id）。 过段时间，浏览器再次请求该资源，通过设置 If-None-Match 请求头带上前面得到的 ETag。 服务器将 ETag 与资源内容进行比较，发现资源没有更新过，返回 304 （not modified）告诉浏览器资源没有变化，可使用本地已经缓存的版本。 浏览器得到 304 响应，直接使用本地缓存。 整个过程没有对资源进行重复下载。 ETag/Last-Modified 不可用的情况下，服务器始终下发完整资源。 相比方式一，这种方式始终会和服务器进行一次沟通。 max-age 的注意事项 对易变的内容设置 max-age 方式的缓存容易引起各资源不一致的问题。  比如设置缓存为如下格式时， Cache-Control: must-revalidate, max-age=600 对于缓存时间小于 10 分钟的资源，浏览器不会重新请求而是直接使用缓存。 假设一个场景，页面 A 包含一个公共脚本 common.js 和页面 A 的业务脚本 a.js。当页面 A 首页加载时，所有资源都正确缓存。 过了一段时间，切换到页面 B，页面 B 也包含公共脚本 common.js，同时有自己的业务脚本 b.js。 在请求页面 B 之前，因为已经缓存过 common.js，所以会使用缓存，但这期间文件有可能已经更新。此时浏览器使用旧的 common.js 运行页面 B 势必会出问题。 所以，对于经常变动的内容设置 max-age 是不推荐的做法。 多数情况下针对上面的问题，一次强刷就解决了，这也是有 bug 时研发会给出的高频回复。 参考内容 Caching best practices &amp; max-age gotchas HTTP Caching" />
+<meta property="og:description" content="HTTP 缓存相关 网络中数据传输是很耗时的，数据要在漫长的路径中奔波，客户端在数据完整到达前只能等待。如果能够复用已经请求过的资源，势必会让整个页面加载高效许多。这可以通过合理地设置服务器的缓存，与浏览器的缓存机制配合以达到最优。 缓存设置得当不但可减少用户等待时间，提升体验，还节省服务器开销省流量带宽。 缓存的配置有两种策略： 稳定的内容 + 长期缓存 经常变动的内容 + 使用前询问 稳定的内容 + 长期缓存 在知道文件内容不太可能变化的情况下，可对该资源进行长期缓存。 Cache-Control: max-age=31536000 这种模式下浏览器获取资源流程如下： 页面：请求资源 a.v1.js,b.v1.css。 缓存：本地没有，向服务器获取。 服务器：找到资源并返回，同时告知浏览器缓存该资源，比如，缓存一年。 页面：一段时间后再次请求 a.v2.js,b.v1.css。 缓存：发现本地有对 b.v1.css 的缓存，直接使用，对于 a.v2.js 则询问服务器。 服务器：找到资源并返回 a.v2.js，同时告知浏览器缓存该资源。 可以看到，这种模式下，我们更新的是文件名，即资源的 URI 地址，而不是直接更新文件内容。因为文件被缓存后，如果文件名没变，浏览器是不会重新去获取的。 经常变动的内容 + 使用前询问 对于经常变动的资源，但地址又不能变，比如静态博客页面，则不能像上面那样缓存。这种情况下可设置缓存为 no-cache。 Cache-Control: no-cache 需要注意的是，缓存 Header 的值不能按照字面意思来解释，需要去理解它，比如： no-cache 并不是表示不要缓存，而是缓存该资源，但使用前先询问服务器该资源是否有更新，而 no-store 才表示完全不缓存。 must-revalidate 不是必需重新验证资源有效性的意思，而是暗含了一个前提，就是资源如果还没有超过设置的缓存时限 max-age 才重新验证。 此模式下，服务器可通过下发 ETag 或 Last-Modified 响应头，浏览器下次再请求时会查检查已缓存的资源，并带上相应的 If-None-Match 或 If-Modified-Since 请求头，然后服务器再决定是否返回新的资源或告知浏览器直接使用本地缓存。 使用 ETag 的场景示例： 浏览器请求资源。 服务器返回资源，并且带上 ETag （可以是 hash 或者其他能够跟随资源内容而变的 id）。 过段时间，浏览器再次请求该资源，通过设置 If-None-Match 请求头带上前面得到的 ETag。 服务器将 ETag 与资源内容进行比较，发现资源没有更新过，返回 304 （not modified）告诉浏览器资源没有变化，可使用本地已经缓存的版本。 浏览器得到 304 响应，直接使用本地缓存。 整个过程没有对资源进行重复下载。 ETag/Last-Modified 不可用的情况下，服务器始终下发完整资源。 相比方式一，这种方式始终会和服务器进行一次沟通。 max-age 的注意事项 对易变的内容设置 max-age 方式的缓存容易引起各资源不一致的问题。  比如设置缓存为如下格式时， Cache-Control: must-revalidate, max-age=600 对于缓存时间小于 10 分钟的资源，浏览器不会重新请求而是直接使用缓存。 假设一个场景，页面 A 包含一个公共脚本 common.js 和页面 A 的业务脚本 a.js。当页面 A 首页加载时，所有资源都正确缓存。 过了一段时间，切换到页面 B，页面 B 也包含公共脚本 common.js，同时有自己的业务脚本 b.js。 在请求页面 B 之前，因为已经缓存过 common.js，所以会使用缓存，但这期间文件有可能已经更新。此时浏览器使用旧的 common.js 运行页面 B 势必会出问题。 所以，对于经常变动的内容设置 max-age 是不推荐的做法。 多数情况下针对上面的问题，一次强刷就解决了，这也是有 bug 时研发会给出的高频回复。 参考内容 Caching best practices &amp; max-age gotchas HTTP Caching" />
+<link rel="canonical" href="http://localhost:4000/2019/04/08/HTTP-%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3.html" />
+<meta property="og:url" content="http://localhost:4000/2019/04/08/HTTP-%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-04-08T23:04:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/04/08/HTTP-%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/04/08/HTTP-%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3.html"},"description":"HTTP 缓存相关 网络中数据传输是很耗时的，数据要在漫长的路径中奔波，客户端在数据完整到达前只能等待。如果能够复用已经请求过的资源，势必会让整个页面加载高效许多。这可以通过合理地设置服务器的缓存，与浏览器的缓存机制配合以达到最优。 缓存设置得当不但可减少用户等待时间，提升体验，还节省服务器开销省流量带宽。 缓存的配置有两种策略： 稳定的内容 + 长期缓存 经常变动的内容 + 使用前询问 稳定的内容 + 长期缓存 在知道文件内容不太可能变化的情况下，可对该资源进行长期缓存。 Cache-Control: max-age=31536000 这种模式下浏览器获取资源流程如下： 页面：请求资源 a.v1.js,b.v1.css。 缓存：本地没有，向服务器获取。 服务器：找到资源并返回，同时告知浏览器缓存该资源，比如，缓存一年。 页面：一段时间后再次请求 a.v2.js,b.v1.css。 缓存：发现本地有对 b.v1.css 的缓存，直接使用，对于 a.v2.js 则询问服务器。 服务器：找到资源并返回 a.v2.js，同时告知浏览器缓存该资源。 可以看到，这种模式下，我们更新的是文件名，即资源的 URI 地址，而不是直接更新文件内容。因为文件被缓存后，如果文件名没变，浏览器是不会重新去获取的。 经常变动的内容 + 使用前询问 对于经常变动的资源，但地址又不能变，比如静态博客页面，则不能像上面那样缓存。这种情况下可设置缓存为 no-cache。 Cache-Control: no-cache 需要注意的是，缓存 Header 的值不能按照字面意思来解释，需要去理解它，比如： no-cache 并不是表示不要缓存，而是缓存该资源，但使用前先询问服务器该资源是否有更新，而 no-store 才表示完全不缓存。 must-revalidate 不是必需重新验证资源有效性的意思，而是暗含了一个前提，就是资源如果还没有超过设置的缓存时限 max-age 才重新验证。 此模式下，服务器可通过下发 ETag 或 Last-Modified 响应头，浏览器下次再请求时会查检查已缓存的资源，并带上相应的 If-None-Match 或 If-Modified-Since 请求头，然后服务器再决定是否返回新的资源或告知浏览器直接使用本地缓存。 使用 ETag 的场景示例： 浏览器请求资源。 服务器返回资源，并且带上 ETag （可以是 hash 或者其他能够跟随资源内容而变的 id）。 过段时间，浏览器再次请求该资源，通过设置 If-None-Match 请求头带上前面得到的 ETag。 服务器将 ETag 与资源内容进行比较，发现资源没有更新过，返回 304 （not modified）告诉浏览器资源没有变化，可使用本地已经缓存的版本。 浏览器得到 304 响应，直接使用本地缓存。 整个过程没有对资源进行重复下载。 ETag/Last-Modified 不可用的情况下，服务器始终下发完整资源。 相比方式一，这种方式始终会和服务器进行一次沟通。 max-age 的注意事项 对易变的内容设置 max-age 方式的缓存容易引起各资源不一致的问题。  比如设置缓存为如下格式时， Cache-Control: must-revalidate, max-age=600 对于缓存时间小于 10 分钟的资源，浏览器不会重新请求而是直接使用缓存。 假设一个场景，页面 A 包含一个公共脚本 common.js 和页面 A 的业务脚本 a.js。当页面 A 首页加载时，所有资源都正确缓存。 过了一段时间，切换到页面 B，页面 B 也包含公共脚本 common.js，同时有自己的业务脚本 b.js。 在请求页面 B 之前，因为已经缓存过 common.js，所以会使用缓存，但这期间文件有可能已经更新。此时浏览器使用旧的 common.js 运行页面 B 势必会出问题。 所以，对于经常变动的内容设置 max-age 是不推荐的做法。 多数情况下针对上面的问题，一次强刷就解决了，这也是有 bug 时研发会给出的高频回复。 参考内容 Caching best practices &amp; max-age gotchas HTTP Caching","@type":"BlogPosting","headline":"HTTP 缓存相关","dateModified":"2019-04-08T23:04:00+08:00","datePublished":"2019-04-08T23:04:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">HTTP 缓存相关</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-04-08T23:04:00+08:00" itemprop="datePublished">Apr 8, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="http-缓存相关">HTTP 缓存相关</h1>
+
+<p>网络中数据传输是很耗时的，数据要在漫长的路径中奔波，客户端在数据完整到达前只能等待。如果能够复用已经请求过的资源，势必会让整个页面加载高效许多。这可以通过合理地设置服务器的缓存，与浏览器的缓存机制配合以达到最优。</p>
+
+<p>缓存设置得当不但可减少用户等待时间，提升体验，还节省服务器开销省流量带宽。</p>
+
+<p>缓存的配置有两种策略：</p>
+
+<ul>
+  <li>稳定的内容 + 长期缓存</li>
+  <li>经常变动的内容 + 使用前询问</li>
+</ul>
+
+<h2 id="稳定的内容--长期缓存">稳定的内容 + 长期缓存</h2>
+
+<p>在知道文件内容不太可能变化的情况下，可对该资源进行长期缓存。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cache-Control: max-age=31536000
+</code></pre></div></div>
+
+<p>这种模式下浏览器获取资源流程如下：</p>
+
+<ol>
+  <li>页面：请求资源 <code class="language-plaintext highlighter-rouge">a.v1.js</code>,<code class="language-plaintext highlighter-rouge">b.v1.css</code>。</li>
+  <li>缓存：本地没有，向服务器获取。</li>
+  <li>服务器：找到资源并返回，同时告知浏览器缓存该资源，比如，缓存一年。</li>
+  <li>页面：一段时间后再次请求 <code class="language-plaintext highlighter-rouge">a.v2.js</code>,<code class="language-plaintext highlighter-rouge">b.v1.css</code>。</li>
+  <li>缓存：发现本地有对 <code class="language-plaintext highlighter-rouge">b.v1.css</code> 的缓存，直接使用，对于 <code class="language-plaintext highlighter-rouge">a.v2.js</code> 则询问服务器。</li>
+  <li>服务器：找到资源并返回 <code class="language-plaintext highlighter-rouge">a.v2.js</code>，同时告知浏览器缓存该资源。</li>
+</ol>
+
+<p>可以看到，这种模式下，我们更新的是文件名，即资源的 URI 地址，而不是直接更新文件内容。因为文件被缓存后，如果文件名没变，浏览器是不会重新去获取的。</p>
+
+<h2 id="经常变动的内容--使用前询问">经常变动的内容 + 使用前询问</h2>
+
+<p>对于经常变动的资源，但地址又不能变，比如静态博客页面，则不能像上面那样缓存。这种情况下可设置缓存为 <code class="language-plaintext highlighter-rouge">no-cache</code>。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cache-Control: no-cache
+</code></pre></div></div>
+
+<p>需要注意的是，缓存 Header 的值不能按照字面意思来解释，需要去理解它，比如：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">no-cache</code> 并不是表示不要缓存，而是缓存该资源，但使用前先询问服务器该资源是否有更新，而 <code class="language-plaintext highlighter-rouge">no-store</code> 才表示完全不缓存。</li>
+  <li><code class="language-plaintext highlighter-rouge">must-revalidate</code> 不是必需重新验证资源有效性的意思，而是暗含了一个前提，就是资源如果还没有超过设置的缓存时限 <code class="language-plaintext highlighter-rouge">max-age</code> 才重新验证。</li>
+</ul>
+
+<p>此模式下，服务器可通过下发 <code class="language-plaintext highlighter-rouge">ETag</code> 或 <code class="language-plaintext highlighter-rouge">Last-Modified</code> 响应头，浏览器下次再请求时会查检查已缓存的资源，并带上相应的 <code class="language-plaintext highlighter-rouge">If-None-Match</code> 或 <code class="language-plaintext highlighter-rouge">If-Modified-Since</code> 请求头，然后服务器再决定是否返回新的资源或告知浏览器直接使用本地缓存。</p>
+
+<p>使用 ETag 的场景示例：</p>
+
+<ol>
+  <li>浏览器请求资源。</li>
+  <li>服务器返回资源，并且带上 ETag （可以是 hash 或者其他能够跟随资源内容而变的 id）。</li>
+  <li>过段时间，浏览器再次请求该资源，通过设置 <code class="language-plaintext highlighter-rouge">If-None-Match</code> 请求头带上前面得到的 ETag。</li>
+  <li>服务器将 ETag 与资源内容进行比较，发现资源没有更新过，返回 304 （not modified）告诉浏览器资源没有变化，可使用本地已经缓存的版本。</li>
+  <li>浏览器得到 304 响应，直接使用本地缓存。</li>
+</ol>
+
+<p>整个过程没有对资源进行重复下载。</p>
+
+<p><code class="language-plaintext highlighter-rouge">ETag</code>/<code class="language-plaintext highlighter-rouge">Last-Modified</code> 不可用的情况下，服务器始终下发完整资源。</p>
+
+<p>相比方式一，这种方式始终会和服务器进行一次沟通。</p>
+
+<h2 id="max-age-的注意事项"><code class="language-plaintext highlighter-rouge">max-age</code> 的注意事项</h2>
+
+<p>对易变的内容设置 <code class="language-plaintext highlighter-rouge">max-age</code> 方式的缓存容易引起各资源不一致的问题。</p>
+
+<p> 比如设置缓存为如下格式时，</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cache-Control: must-revalidate, max-age=600
+</code></pre></div></div>
+
+<p>对于缓存时间小于 10 分钟的资源，浏览器不会重新请求而是直接使用缓存。</p>
+
+<p>假设一个场景，页面 A 包含一个公共脚本 <code class="language-plaintext highlighter-rouge">common.js</code> 和页面 A 的业务脚本 <code class="language-plaintext highlighter-rouge">a.js</code>。当页面 A 首页加载时，所有资源都正确缓存。</p>
+
+<p>过了一段时间，切换到页面 B，页面 B 也包含公共脚本 <code class="language-plaintext highlighter-rouge">common.js</code>，同时有自己的业务脚本 <code class="language-plaintext highlighter-rouge">b.js</code>。</p>
+
+<p>在请求页面 B 之前，因为已经缓存过 <code class="language-plaintext highlighter-rouge">common.js</code>，所以会使用缓存，但这期间文件有可能已经更新。此时浏览器使用旧的 <code class="language-plaintext highlighter-rouge">common.js</code> 运行页面 B 势必会出问题。</p>
+
+<p>所以，对于经常变动的内容设置 <code class="language-plaintext highlighter-rouge">max-age</code> 是不推荐的做法。</p>
+
+<p>多数情况下针对上面的问题，一次强刷就解决了，这也是有 bug 时研发会给出的高频回复。</p>
+
+<h2 id="参考内容">参考内容</h2>
+
+<ul>
+  <li><a href="https://jakearchibald.com/2016/caching-best-practices/">Caching best practices &amp; max-age gotchas</a></li>
+  <li><a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching">HTTP Caching</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/04/08/HTTP-%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

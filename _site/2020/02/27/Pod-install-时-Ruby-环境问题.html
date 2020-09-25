@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Pod install 时 Ruby 环境问题 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Pod install 时 Ruby 环境问题" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Pod install 时 Ruby 环境问题 执行 pod install 时，报类似如下的错误： ... 这里还有一大段堆栈信息省略... ... Error loading RubyGems plugin &quot;/Users/chiang/.rvm/gems/ruby-2.0.0-p247@global/gems/rubygems-bundler-1.2.2/lib/rubygems_plugin.rb&quot;: dlopen(/Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle, 9): Library not loaded: /opt/local/lib/libssl.1.0.0.dylib Referenced from: /Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle Reason: image not found - /Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle (LoadError) 一看便知是 Ruby 环境相关的问题。 Google 后发现有可能是本地执行了 brew upgrade 命令后将 Ruby 环境破坏了。 参考 Stackoverflow 的回答，修正方式是重装 Ruby： brew reinstall openssl brew upgrade ruby-build rbenv rbenv install 2.2.10 # or whatever version you&#39;re using it 相关资源 Error loading RubyGems plugin ，openssl.bundle (LoadError)" />
+<meta property="og:description" content="Pod install 时 Ruby 环境问题 执行 pod install 时，报类似如下的错误： ... 这里还有一大段堆栈信息省略... ... Error loading RubyGems plugin &quot;/Users/chiang/.rvm/gems/ruby-2.0.0-p247@global/gems/rubygems-bundler-1.2.2/lib/rubygems_plugin.rb&quot;: dlopen(/Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle, 9): Library not loaded: /opt/local/lib/libssl.1.0.0.dylib Referenced from: /Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle Reason: image not found - /Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle (LoadError) 一看便知是 Ruby 环境相关的问题。 Google 后发现有可能是本地执行了 brew upgrade 命令后将 Ruby 环境破坏了。 参考 Stackoverflow 的回答，修正方式是重装 Ruby： brew reinstall openssl brew upgrade ruby-build rbenv rbenv install 2.2.10 # or whatever version you&#39;re using it 相关资源 Error loading RubyGems plugin ，openssl.bundle (LoadError)" />
+<link rel="canonical" href="http://localhost:4000/2020/02/27/Pod-install-%E6%97%B6-Ruby-%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98.html" />
+<meta property="og:url" content="http://localhost:4000/2020/02/27/Pod-install-%E6%97%B6-Ruby-%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-02-27T09:02:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2020/02/27/Pod-install-%E6%97%B6-Ruby-%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2020/02/27/Pod-install-%E6%97%B6-Ruby-%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98.html"},"description":"Pod install 时 Ruby 环境问题 执行 pod install 时，报类似如下的错误： ... 这里还有一大段堆栈信息省略... ... Error loading RubyGems plugin &quot;/Users/chiang/.rvm/gems/ruby-2.0.0-p247@global/gems/rubygems-bundler-1.2.2/lib/rubygems_plugin.rb&quot;: dlopen(/Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle, 9): Library not loaded: /opt/local/lib/libssl.1.0.0.dylib Referenced from: /Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle Reason: image not found - /Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle (LoadError) 一看便知是 Ruby 环境相关的问题。 Google 后发现有可能是本地执行了 brew upgrade 命令后将 Ruby 环境破坏了。 参考 Stackoverflow 的回答，修正方式是重装 Ruby： brew reinstall openssl brew upgrade ruby-build rbenv rbenv install 2.2.10 # or whatever version you&#39;re using it 相关资源 Error loading RubyGems plugin ，openssl.bundle (LoadError)","@type":"BlogPosting","headline":"Pod install 时 Ruby 环境问题","dateModified":"2020-02-27T09:02:00+08:00","datePublished":"2020-02-27T09:02:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Pod install 时 Ruby 环境问题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-02-27T09:02:00+08:00" itemprop="datePublished">Feb 27, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="pod-install-时-ruby-环境问题">Pod install 时 Ruby 环境问题</h1>
+
+<p>执行 <code class="language-plaintext highlighter-rouge">pod install</code> 时，报类似如下的错误：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+这里还有一大段堆栈信息省略...
+...
+Error loading RubyGems plugin "/Users/chiang/.rvm/gems/ruby-2.0.0-p247@global/gems/rubygems-bundler-1.2.2/lib/rubygems_plugin.rb": dlopen(/Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle, 9): Library not loaded: /opt/local/lib/libssl.1.0.0.dylib
+  Referenced from: /Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle
+  Reason: image not found - /Users/chiang/.rvm/rubies/ruby-2.0.0-p247/lib/ruby/2.0.0/x86_64-darwin12.3.0/openssl.bundle (LoadError)
+</code></pre></div></div>
+
+<p>一看便知是 Ruby 环境相关的问题。 Google 后发现有可能是本地执行了 <code class="language-plaintext highlighter-rouge">brew upgrade</code> 命令后将 Ruby 环境破坏了。</p>
+
+<p>参考 <a href="https://stackoverflow.com/a/58985452/1553656">Stackoverflow 的回答</a>，修正方式是重装 Ruby：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew reinstall openssl
+brew upgrade ruby-build rbenv
+rbenv <span class="nb">install </span>2.2.10 <span class="c"># or whatever version you're using it</span>
+</code></pre></div></div>
+
+<h1 id="相关资源">相关资源</h1>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/20092600/error-loading-rubygems-plugin-openssl-bundle-loaderror">Error loading RubyGems plugin ，openssl.bundle (LoadError)</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2020/02/27/Pod-install-%E6%97%B6-Ruby-%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

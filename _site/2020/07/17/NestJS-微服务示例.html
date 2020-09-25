@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>NestJS 微服务示例 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="NestJS 微服务示例" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="NestJS 微服务示例 项目生成 $ nest new nest-app -p yarn 该项目将作为主项目使用。 此时的目录结构为： . ├── README.md ├── nest-cli.json ├── package.json ├── src │   ├── app.controller.spec.ts │   ├── app.controller.ts │   ├── app.module.ts │   ├── app.service.ts │   └── main.ts ├── test │   ├── app.e2e-spec.ts │   └── jest-e2e.json ├── tsconfig.build.json ├── tsconfig.json 再生成另一个项目作为微服务项目： $ cd nest-app $ nest g app nest-service 此时的目录结构更新成了： . ├── README.md ├── apps │   ├── nest-app │   │   ├── src │   │   │   ├── app.controller.spec.ts │   │   │   ├── app.controller.ts │   │   │   ├── app.module.ts │   │   │   ├── app.service.ts │   │   │   └── main.ts │   │   ├── test │   │   │   ├── app.e2e-spec.ts │   │   │   └── jest-e2e.json │   │   └── tsconfig.app.json │   └── nest-service │   ├── src │   │   ├── app.controller.spec.ts │   │   ├── app.controller.ts │   │   ├── app.module.ts │   │   ├── app.service.ts │   │   └── main.ts │   ├── test │   │   ├── app.e2e-spec.ts │   │   └── jest-e2e.json │   └── tsconfig.app.json ├── nest-cli.json ├── package.json ├── tsconfig.build.json ├── tsconfig.json nest-cli.json 此时主程序 nest-app 和微服务 nest-service 同在一个仓库中，称为 monorepo，注意到根目录有个 nest-cli.josn 文件，可以配置 monorepo 的参数。 比如其中 root 指定了哪个项目是主项目，也可通过 tsConfigPath 为每个项目指定自己的 tsconfig.json 文件路径等。关于 nest-cli.json 的详细配置参见文档。 { &quot;collection&quot;: &quot;@nestjs/schematics&quot;, &quot;sourceRoot&quot;: &quot;apps/nest-app/src&quot;, &quot;monorepo&quot;: true, &quot;root&quot;: &quot;apps/nest-app&quot;, &quot;compilerOptions&quot;: { &quot;webpack&quot;: true, &quot;tsConfigPath&quot;: &quot;apps/nest-app/tsconfig.app.json&quot; }, &quot;projects&quot;: { &quot;nest-app&quot;: { &quot;type&quot;: &quot;application&quot;, &quot;root&quot;: &quot;apps/nest-app&quot;, &quot;entryFile&quot;: &quot;main&quot;, &quot;sourceRoot&quot;: &quot;apps/nest-app/src&quot;, &quot;compilerOptions&quot;: { &quot;tsConfigPath&quot;: &quot;apps/nest-app/tsconfig.app.json&quot; } }, &quot;nest-service&quot;: { &quot;type&quot;: &quot;application&quot;, &quot;root&quot;: &quot;apps/nest-service&quot;, &quot;entryFile&quot;: &quot;main&quot;, &quot;sourceRoot&quot;: &quot;apps/nest-service/src&quot;, &quot;compilerOptions&quot;: { &quot;tsConfigPath&quot;: &quot;apps/nest-service/tsconfig.app.json&quot; } } } } 微服务开发 下面开始改造 nest-service 项目使其提供微服务被调用的能力。 添加微服务依赖 $ yarn add @nestjs/microservices 创建微服务 修改 nest-service/main.ts 中 NestFactory.create 为 NestFactory.createMicroservice，后者用于创建一个微服务实例。它接收两个参数，第一个和正常创建 nest app 一样，另一个则用于控制要创建的微服务的具体属性，比如端口，地址等。 import { NestFactory } from &#39;@nestjs/core&#39;; import { MicroserviceOptions, Transport } from &#39;@nestjs/microservices&#39;; import { AppModule } from &#39;./app.module&#39;; async function bootstrap() { const app = await NestFactory.createMicroservice&lt;MicroserviceOptions&gt;( AppModule, { transport: Transport.TCP, options: { port: 4000, }, }, ); await app.listen(() =&gt; { console.log(`nest service is listning`); }); } bootstrap(); 添加消息处理器 apps/nest-service/src/app.controller.ts import { Controller } from &#39;@nestjs/common&#39;; import { MessagePattern } from &#39;@nestjs/microservices&#39;; import { AppService } from &#39;./app.service&#39;; @Controller() export class AppController { constructor(private readonly appService: AppService) {} @MessagePattern({ cmd: &#39;getHello&#39; }) getHello(name: string): string { return this.appService.getHello(name); } } 这里 MessagePattern 定义了个消息处理器，它将监听并处理调用方发来的指令为 getHello 的消息。 其依赖的服务： apps/nest-service/src/app.service.ts import { Injectable } from &#39;@nestjs/common&#39;; @Injectable() export class AppService { getHello(name: string): string { return `Hello ${name}!`; } } 修改启动命令 启动单个项目 nest start nest-app nest start nest-service 开发过程中因为需要从主项目调用微服务提供的服务，通过 concurrently 来同时启动两个项目， $ yarn add -D concurrently &quot;start:dev&quot;: &quot;concurrently --kill-others \&quot;nest start nest-app --watch\&quot; \&quot;nest start nest-service --watch\&quot;&quot;, $ yarn start:dev 调用 要调用微服务，需要先初始化一个客户端对象。因为 nest 支持多种类型的微服务，所以提供 ClientProxy 对象作为统一的客户端，完成初始化之后使用者无需关心不同类型微服务的差异，该代理对象对外提供了统一的调用接口。 有多种方式可初始这样的客户端。推荐下方第一种方式，在根模块中注册后，整个模块中通过依赖注入方式使用，高效便捷。而后面两种方式不易共享也难测试。 依赖注入 apps/nest-app/src/app.module.ts import { Module } from &#39;@nestjs/common&#39;; import { ClientsModule, Transport } from &#39;@nestjs/microservices&#39;; import { AppController } from &#39;./app.controller&#39;; import { AppService } from &#39;./app.service&#39;; @Module({ imports: [ ClientsModule.register([ { name: &#39;NEST_SERVICE&#39;, transport: Transport.TCP, options: { port: 4000, }, }, ]), ], controllers: [AppController], providers: [AppService], }) export class AppModule {} 使用时通过 @Inject(&#39;NEST_SERVICE&#39;) 进行注入。 apps/nest-app/src/app.service.ts import { Inject, Injectable } from &#39;@nestjs/common&#39;; import { ClientProxy } from &#39;@nestjs/microservices&#39;; @Injectable() export class AppService { constructor(@Inject(&#39;NEST_SERVICE&#39;) private readonly client: ClientProxy) {} getHello(name: string): Promise&lt;string&gt; { return this.client.send&lt;string&gt;({ cmd: &#39;getHello&#39; }, name).toPromise(); } } 工厂方法 apps/nest-app/src/app.service.ts import { Injectable } from &#39;@nestjs/common&#39;; import { ClientProxy, ClientProxyFactory, Transport, } from &#39;@nestjs/microservices&#39;; @Injectable() export class AppService { private client: ClientProxy; constructor() { this.client = ClientProxyFactory.create({ transport: Transport.TCP, options: { port: 4000, }, }); } getHello(name: string): Promise&lt;string&gt; { return this.client.send&lt;string&gt;({ cmd: &#39;getHello&#39; }, name).toPromise(); } } 装饰器 apps/nest-app/src/app.service.ts import { Injectable } from &#39;@nestjs/common&#39;; import { Client, ClientProxy, Transport } from &#39;@nestjs/microservices&#39;; @Injectable() export class AppService { @Client({ transport: Transport.TCP, options: { port: 4000 } }) private client: ClientProxy; getHello(name: string): Promise&lt;string&gt; { return this.client.send&lt;string&gt;({ cmd: &#39;getHello&#39; }, name).toPromise(); } } 测试 $ curl &quot;localhost:3000?name=niuwayong&quot; Hello niuwayong!⏎ 参考 NestJS documentation - microservices - overview Monorepo and Microservice setup in Nest.js" />
+<meta property="og:description" content="NestJS 微服务示例 项目生成 $ nest new nest-app -p yarn 该项目将作为主项目使用。 此时的目录结构为： . ├── README.md ├── nest-cli.json ├── package.json ├── src │   ├── app.controller.spec.ts │   ├── app.controller.ts │   ├── app.module.ts │   ├── app.service.ts │   └── main.ts ├── test │   ├── app.e2e-spec.ts │   └── jest-e2e.json ├── tsconfig.build.json ├── tsconfig.json 再生成另一个项目作为微服务项目： $ cd nest-app $ nest g app nest-service 此时的目录结构更新成了： . ├── README.md ├── apps │   ├── nest-app │   │   ├── src │   │   │   ├── app.controller.spec.ts │   │   │   ├── app.controller.ts │   │   │   ├── app.module.ts │   │   │   ├── app.service.ts │   │   │   └── main.ts │   │   ├── test │   │   │   ├── app.e2e-spec.ts │   │   │   └── jest-e2e.json │   │   └── tsconfig.app.json │   └── nest-service │   ├── src │   │   ├── app.controller.spec.ts │   │   ├── app.controller.ts │   │   ├── app.module.ts │   │   ├── app.service.ts │   │   └── main.ts │   ├── test │   │   ├── app.e2e-spec.ts │   │   └── jest-e2e.json │   └── tsconfig.app.json ├── nest-cli.json ├── package.json ├── tsconfig.build.json ├── tsconfig.json nest-cli.json 此时主程序 nest-app 和微服务 nest-service 同在一个仓库中，称为 monorepo，注意到根目录有个 nest-cli.josn 文件，可以配置 monorepo 的参数。 比如其中 root 指定了哪个项目是主项目，也可通过 tsConfigPath 为每个项目指定自己的 tsconfig.json 文件路径等。关于 nest-cli.json 的详细配置参见文档。 { &quot;collection&quot;: &quot;@nestjs/schematics&quot;, &quot;sourceRoot&quot;: &quot;apps/nest-app/src&quot;, &quot;monorepo&quot;: true, &quot;root&quot;: &quot;apps/nest-app&quot;, &quot;compilerOptions&quot;: { &quot;webpack&quot;: true, &quot;tsConfigPath&quot;: &quot;apps/nest-app/tsconfig.app.json&quot; }, &quot;projects&quot;: { &quot;nest-app&quot;: { &quot;type&quot;: &quot;application&quot;, &quot;root&quot;: &quot;apps/nest-app&quot;, &quot;entryFile&quot;: &quot;main&quot;, &quot;sourceRoot&quot;: &quot;apps/nest-app/src&quot;, &quot;compilerOptions&quot;: { &quot;tsConfigPath&quot;: &quot;apps/nest-app/tsconfig.app.json&quot; } }, &quot;nest-service&quot;: { &quot;type&quot;: &quot;application&quot;, &quot;root&quot;: &quot;apps/nest-service&quot;, &quot;entryFile&quot;: &quot;main&quot;, &quot;sourceRoot&quot;: &quot;apps/nest-service/src&quot;, &quot;compilerOptions&quot;: { &quot;tsConfigPath&quot;: &quot;apps/nest-service/tsconfig.app.json&quot; } } } } 微服务开发 下面开始改造 nest-service 项目使其提供微服务被调用的能力。 添加微服务依赖 $ yarn add @nestjs/microservices 创建微服务 修改 nest-service/main.ts 中 NestFactory.create 为 NestFactory.createMicroservice，后者用于创建一个微服务实例。它接收两个参数，第一个和正常创建 nest app 一样，另一个则用于控制要创建的微服务的具体属性，比如端口，地址等。 import { NestFactory } from &#39;@nestjs/core&#39;; import { MicroserviceOptions, Transport } from &#39;@nestjs/microservices&#39;; import { AppModule } from &#39;./app.module&#39;; async function bootstrap() { const app = await NestFactory.createMicroservice&lt;MicroserviceOptions&gt;( AppModule, { transport: Transport.TCP, options: { port: 4000, }, }, ); await app.listen(() =&gt; { console.log(`nest service is listning`); }); } bootstrap(); 添加消息处理器 apps/nest-service/src/app.controller.ts import { Controller } from &#39;@nestjs/common&#39;; import { MessagePattern } from &#39;@nestjs/microservices&#39;; import { AppService } from &#39;./app.service&#39;; @Controller() export class AppController { constructor(private readonly appService: AppService) {} @MessagePattern({ cmd: &#39;getHello&#39; }) getHello(name: string): string { return this.appService.getHello(name); } } 这里 MessagePattern 定义了个消息处理器，它将监听并处理调用方发来的指令为 getHello 的消息。 其依赖的服务： apps/nest-service/src/app.service.ts import { Injectable } from &#39;@nestjs/common&#39;; @Injectable() export class AppService { getHello(name: string): string { return `Hello ${name}!`; } } 修改启动命令 启动单个项目 nest start nest-app nest start nest-service 开发过程中因为需要从主项目调用微服务提供的服务，通过 concurrently 来同时启动两个项目， $ yarn add -D concurrently &quot;start:dev&quot;: &quot;concurrently --kill-others \&quot;nest start nest-app --watch\&quot; \&quot;nest start nest-service --watch\&quot;&quot;, $ yarn start:dev 调用 要调用微服务，需要先初始化一个客户端对象。因为 nest 支持多种类型的微服务，所以提供 ClientProxy 对象作为统一的客户端，完成初始化之后使用者无需关心不同类型微服务的差异，该代理对象对外提供了统一的调用接口。 有多种方式可初始这样的客户端。推荐下方第一种方式，在根模块中注册后，整个模块中通过依赖注入方式使用，高效便捷。而后面两种方式不易共享也难测试。 依赖注入 apps/nest-app/src/app.module.ts import { Module } from &#39;@nestjs/common&#39;; import { ClientsModule, Transport } from &#39;@nestjs/microservices&#39;; import { AppController } from &#39;./app.controller&#39;; import { AppService } from &#39;./app.service&#39;; @Module({ imports: [ ClientsModule.register([ { name: &#39;NEST_SERVICE&#39;, transport: Transport.TCP, options: { port: 4000, }, }, ]), ], controllers: [AppController], providers: [AppService], }) export class AppModule {} 使用时通过 @Inject(&#39;NEST_SERVICE&#39;) 进行注入。 apps/nest-app/src/app.service.ts import { Inject, Injectable } from &#39;@nestjs/common&#39;; import { ClientProxy } from &#39;@nestjs/microservices&#39;; @Injectable() export class AppService { constructor(@Inject(&#39;NEST_SERVICE&#39;) private readonly client: ClientProxy) {} getHello(name: string): Promise&lt;string&gt; { return this.client.send&lt;string&gt;({ cmd: &#39;getHello&#39; }, name).toPromise(); } } 工厂方法 apps/nest-app/src/app.service.ts import { Injectable } from &#39;@nestjs/common&#39;; import { ClientProxy, ClientProxyFactory, Transport, } from &#39;@nestjs/microservices&#39;; @Injectable() export class AppService { private client: ClientProxy; constructor() { this.client = ClientProxyFactory.create({ transport: Transport.TCP, options: { port: 4000, }, }); } getHello(name: string): Promise&lt;string&gt; { return this.client.send&lt;string&gt;({ cmd: &#39;getHello&#39; }, name).toPromise(); } } 装饰器 apps/nest-app/src/app.service.ts import { Injectable } from &#39;@nestjs/common&#39;; import { Client, ClientProxy, Transport } from &#39;@nestjs/microservices&#39;; @Injectable() export class AppService { @Client({ transport: Transport.TCP, options: { port: 4000 } }) private client: ClientProxy; getHello(name: string): Promise&lt;string&gt; { return this.client.send&lt;string&gt;({ cmd: &#39;getHello&#39; }, name).toPromise(); } } 测试 $ curl &quot;localhost:3000?name=niuwayong&quot; Hello niuwayong!⏎ 参考 NestJS documentation - microservices - overview Monorepo and Microservice setup in Nest.js" />
+<link rel="canonical" href="http://localhost:4000/2020/07/17/NestJS-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%A4%BA%E4%BE%8B.html" />
+<meta property="og:url" content="http://localhost:4000/2020/07/17/NestJS-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%A4%BA%E4%BE%8B.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-17T23:07:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2020/07/17/NestJS-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%A4%BA%E4%BE%8B.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2020/07/17/NestJS-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%A4%BA%E4%BE%8B.html"},"description":"NestJS 微服务示例 项目生成 $ nest new nest-app -p yarn 该项目将作为主项目使用。 此时的目录结构为： . ├── README.md ├── nest-cli.json ├── package.json ├── src │   ├── app.controller.spec.ts │   ├── app.controller.ts │   ├── app.module.ts │   ├── app.service.ts │   └── main.ts ├── test │   ├── app.e2e-spec.ts │   └── jest-e2e.json ├── tsconfig.build.json ├── tsconfig.json 再生成另一个项目作为微服务项目： $ cd nest-app $ nest g app nest-service 此时的目录结构更新成了： . ├── README.md ├── apps │   ├── nest-app │   │   ├── src │   │   │   ├── app.controller.spec.ts │   │   │   ├── app.controller.ts │   │   │   ├── app.module.ts │   │   │   ├── app.service.ts │   │   │   └── main.ts │   │   ├── test │   │   │   ├── app.e2e-spec.ts │   │   │   └── jest-e2e.json │   │   └── tsconfig.app.json │   └── nest-service │   ├── src │   │   ├── app.controller.spec.ts │   │   ├── app.controller.ts │   │   ├── app.module.ts │   │   ├── app.service.ts │   │   └── main.ts │   ├── test │   │   ├── app.e2e-spec.ts │   │   └── jest-e2e.json │   └── tsconfig.app.json ├── nest-cli.json ├── package.json ├── tsconfig.build.json ├── tsconfig.json nest-cli.json 此时主程序 nest-app 和微服务 nest-service 同在一个仓库中，称为 monorepo，注意到根目录有个 nest-cli.josn 文件，可以配置 monorepo 的参数。 比如其中 root 指定了哪个项目是主项目，也可通过 tsConfigPath 为每个项目指定自己的 tsconfig.json 文件路径等。关于 nest-cli.json 的详细配置参见文档。 { &quot;collection&quot;: &quot;@nestjs/schematics&quot;, &quot;sourceRoot&quot;: &quot;apps/nest-app/src&quot;, &quot;monorepo&quot;: true, &quot;root&quot;: &quot;apps/nest-app&quot;, &quot;compilerOptions&quot;: { &quot;webpack&quot;: true, &quot;tsConfigPath&quot;: &quot;apps/nest-app/tsconfig.app.json&quot; }, &quot;projects&quot;: { &quot;nest-app&quot;: { &quot;type&quot;: &quot;application&quot;, &quot;root&quot;: &quot;apps/nest-app&quot;, &quot;entryFile&quot;: &quot;main&quot;, &quot;sourceRoot&quot;: &quot;apps/nest-app/src&quot;, &quot;compilerOptions&quot;: { &quot;tsConfigPath&quot;: &quot;apps/nest-app/tsconfig.app.json&quot; } }, &quot;nest-service&quot;: { &quot;type&quot;: &quot;application&quot;, &quot;root&quot;: &quot;apps/nest-service&quot;, &quot;entryFile&quot;: &quot;main&quot;, &quot;sourceRoot&quot;: &quot;apps/nest-service/src&quot;, &quot;compilerOptions&quot;: { &quot;tsConfigPath&quot;: &quot;apps/nest-service/tsconfig.app.json&quot; } } } } 微服务开发 下面开始改造 nest-service 项目使其提供微服务被调用的能力。 添加微服务依赖 $ yarn add @nestjs/microservices 创建微服务 修改 nest-service/main.ts 中 NestFactory.create 为 NestFactory.createMicroservice，后者用于创建一个微服务实例。它接收两个参数，第一个和正常创建 nest app 一样，另一个则用于控制要创建的微服务的具体属性，比如端口，地址等。 import { NestFactory } from &#39;@nestjs/core&#39;; import { MicroserviceOptions, Transport } from &#39;@nestjs/microservices&#39;; import { AppModule } from &#39;./app.module&#39;; async function bootstrap() { const app = await NestFactory.createMicroservice&lt;MicroserviceOptions&gt;( AppModule, { transport: Transport.TCP, options: { port: 4000, }, }, ); await app.listen(() =&gt; { console.log(`nest service is listning`); }); } bootstrap(); 添加消息处理器 apps/nest-service/src/app.controller.ts import { Controller } from &#39;@nestjs/common&#39;; import { MessagePattern } from &#39;@nestjs/microservices&#39;; import { AppService } from &#39;./app.service&#39;; @Controller() export class AppController { constructor(private readonly appService: AppService) {} @MessagePattern({ cmd: &#39;getHello&#39; }) getHello(name: string): string { return this.appService.getHello(name); } } 这里 MessagePattern 定义了个消息处理器，它将监听并处理调用方发来的指令为 getHello 的消息。 其依赖的服务： apps/nest-service/src/app.service.ts import { Injectable } from &#39;@nestjs/common&#39;; @Injectable() export class AppService { getHello(name: string): string { return `Hello ${name}!`; } } 修改启动命令 启动单个项目 nest start nest-app nest start nest-service 开发过程中因为需要从主项目调用微服务提供的服务，通过 concurrently 来同时启动两个项目， $ yarn add -D concurrently &quot;start:dev&quot;: &quot;concurrently --kill-others \\&quot;nest start nest-app --watch\\&quot; \\&quot;nest start nest-service --watch\\&quot;&quot;, $ yarn start:dev 调用 要调用微服务，需要先初始化一个客户端对象。因为 nest 支持多种类型的微服务，所以提供 ClientProxy 对象作为统一的客户端，完成初始化之后使用者无需关心不同类型微服务的差异，该代理对象对外提供了统一的调用接口。 有多种方式可初始这样的客户端。推荐下方第一种方式，在根模块中注册后，整个模块中通过依赖注入方式使用，高效便捷。而后面两种方式不易共享也难测试。 依赖注入 apps/nest-app/src/app.module.ts import { Module } from &#39;@nestjs/common&#39;; import { ClientsModule, Transport } from &#39;@nestjs/microservices&#39;; import { AppController } from &#39;./app.controller&#39;; import { AppService } from &#39;./app.service&#39;; @Module({ imports: [ ClientsModule.register([ { name: &#39;NEST_SERVICE&#39;, transport: Transport.TCP, options: { port: 4000, }, }, ]), ], controllers: [AppController], providers: [AppService], }) export class AppModule {} 使用时通过 @Inject(&#39;NEST_SERVICE&#39;) 进行注入。 apps/nest-app/src/app.service.ts import { Inject, Injectable } from &#39;@nestjs/common&#39;; import { ClientProxy } from &#39;@nestjs/microservices&#39;; @Injectable() export class AppService { constructor(@Inject(&#39;NEST_SERVICE&#39;) private readonly client: ClientProxy) {} getHello(name: string): Promise&lt;string&gt; { return this.client.send&lt;string&gt;({ cmd: &#39;getHello&#39; }, name).toPromise(); } } 工厂方法 apps/nest-app/src/app.service.ts import { Injectable } from &#39;@nestjs/common&#39;; import { ClientProxy, ClientProxyFactory, Transport, } from &#39;@nestjs/microservices&#39;; @Injectable() export class AppService { private client: ClientProxy; constructor() { this.client = ClientProxyFactory.create({ transport: Transport.TCP, options: { port: 4000, }, }); } getHello(name: string): Promise&lt;string&gt; { return this.client.send&lt;string&gt;({ cmd: &#39;getHello&#39; }, name).toPromise(); } } 装饰器 apps/nest-app/src/app.service.ts import { Injectable } from &#39;@nestjs/common&#39;; import { Client, ClientProxy, Transport } from &#39;@nestjs/microservices&#39;; @Injectable() export class AppService { @Client({ transport: Transport.TCP, options: { port: 4000 } }) private client: ClientProxy; getHello(name: string): Promise&lt;string&gt; { return this.client.send&lt;string&gt;({ cmd: &#39;getHello&#39; }, name).toPromise(); } } 测试 $ curl &quot;localhost:3000?name=niuwayong&quot; Hello niuwayong!⏎ 参考 NestJS documentation - microservices - overview Monorepo and Microservice setup in Nest.js","@type":"BlogPosting","headline":"NestJS 微服务示例","dateModified":"2020-07-17T23:07:00+08:00","datePublished":"2020-07-17T23:07:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">NestJS 微服务示例</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-07-17T23:07:00+08:00" itemprop="datePublished">Jul 17, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="nestjs-微服务示例">NestJS 微服务示例</h1>
+
+<h2 id="项目生成">项目生成</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nest new nest-app <span class="nt">-p</span> yarn
+</code></pre></div></div>
+
+<p>该项目将作为主项目使用。</p>
+
+<p>此时的目录结构为：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── README.md
+├── nest-cli.json
+├── package.json
+├── src
+│   ├── app.controller.spec.ts
+│   ├── app.controller.ts
+│   ├── app.module.ts
+│   ├── app.service.ts
+│   └── main.ts
+├── test
+│   ├── app.e2e-spec.ts
+│   └── jest-e2e.json
+├── tsconfig.build.json
+├── tsconfig.json
+</code></pre></div></div>
+
+<p>再生成另一个项目作为微服务项目：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cd </span>nest-app
+<span class="nv">$ </span>nest g app nest-service
+</code></pre></div></div>
+
+<p>此时的目录结构更新成了：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── README.md
+├── apps
+│   ├── nest-app
+│   │   ├── src
+│   │   │   ├── app.controller.spec.ts
+│   │   │   ├── app.controller.ts
+│   │   │   ├── app.module.ts
+│   │   │   ├── app.service.ts
+│   │   │   └── main.ts
+│   │   ├── test
+│   │   │   ├── app.e2e-spec.ts
+│   │   │   └── jest-e2e.json
+│   │   └── tsconfig.app.json
+│   └── nest-service
+│       ├── src
+│       │   ├── app.controller.spec.ts
+│       │   ├── app.controller.ts
+│       │   ├── app.module.ts
+│       │   ├── app.service.ts
+│       │   └── main.ts
+│       ├── test
+│       │   ├── app.e2e-spec.ts
+│       │   └── jest-e2e.json
+│       └── tsconfig.app.json
+├── nest-cli.json
+├── package.json
+├── tsconfig.build.json
+├── tsconfig.json
+</code></pre></div></div>
+
+<h2 id="nest-clijson">nest-cli.json</h2>
+
+<p>此时主程序 <code class="language-plaintext highlighter-rouge">nest-app</code> 和微服务 <code class="language-plaintext highlighter-rouge">nest-service</code> 同在一个仓库中，称为 <code class="language-plaintext highlighter-rouge">monorepo</code>，注意到根目录有个 <code class="language-plaintext highlighter-rouge">nest-cli.josn</code> 文件，可以配置 monorepo 的参数。</p>
+
+<p>比如其中 <code class="language-plaintext highlighter-rouge">root</code> 指定了哪个项目是主项目，也可通过 <code class="language-plaintext highlighter-rouge">tsConfigPath</code> 为每个项目指定自己的 tsconfig.json 文件路径等。关于 nest-cli.json 的详细配置参见<a href="https://docs.nestjs.com/cli/monorepo#global-compiler-options">文档</a>。</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"collection"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@nestjs/schematics"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"sourceRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"apps/nest-app/src"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"monorepo"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"root"</span><span class="p">:</span><span class="w"> </span><span class="s2">"apps/nest-app"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"webpack"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"tsConfigPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"apps/nest-app/tsconfig.app.json"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"projects"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"nest-app"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"root"</span><span class="p">:</span><span class="w"> </span><span class="s2">"apps/nest-app"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"entryFile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"main"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"sourceRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"apps/nest-app/src"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"tsConfigPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"apps/nest-app/tsconfig.app.json"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"nest-service"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"root"</span><span class="p">:</span><span class="w"> </span><span class="s2">"apps/nest-service"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"entryFile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"main"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"sourceRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"apps/nest-service/src"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"tsConfigPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"apps/nest-service/tsconfig.app.json"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="微服务开发">微服务开发</h2>
+
+<p>下面开始改造 <code class="language-plaintext highlighter-rouge">nest-service</code> 项目使其提供微服务被调用的能力。</p>
+
+<h3 id="添加微服务依赖">添加微服务依赖</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>yarn add @nestjs/microservices
+</code></pre></div></div>
+
+<h3 id="创建微服务">创建微服务</h3>
+
+<p>修改 nest-service/main.ts 中 <code class="language-plaintext highlighter-rouge">NestFactory.create</code> 为 <code class="language-plaintext highlighter-rouge">NestFactory.createMicroservice</code>，后者用于创建一个微服务实例。它接收两个参数，第一个和正常创建 nest app 一样，另一个则用于控制要创建的微服务的具体属性，比如端口，地址等。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">NestFactory</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/core</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">MicroserviceOptions</span><span class="p">,</span> <span class="nx">Transport</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/microservices</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">AppModule</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./app.module</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">bootstrap</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">NestFactory</span><span class="p">.</span><span class="nx">createMicroservice</span><span class="o">&lt;</span><span class="nx">MicroserviceOptions</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="nx">AppModule</span><span class="p">,</span>
+    <span class="p">{</span>
+      <span class="na">transport</span><span class="p">:</span> <span class="nx">Transport</span><span class="p">.</span><span class="nx">TCP</span><span class="p">,</span>
+      <span class="na">options</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">port</span><span class="p">:</span> <span class="mi">4000</span><span class="p">,</span>
+      <span class="p">},</span>
+    <span class="p">},</span>
+  <span class="p">);</span>
+
+  <span class="k">await</span> <span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`nest service is listning`</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+<span class="nx">bootstrap</span><span class="p">();</span>
+</code></pre></div></div>
+
+<h3 id="添加消息处理器">添加消息处理器</h3>
+
+<p><em>apps/nest-service/src/app.controller.ts</em></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Controller</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/common</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">MessagePattern</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/microservices</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">AppService</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./app.service</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">Controller</span><span class="p">()</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">AppController</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">private</span> <span class="k">readonly</span> <span class="nx">appService</span><span class="p">:</span> <span class="nx">AppService</span><span class="p">)</span> <span class="p">{}</span>
+
+  <span class="p">@</span><span class="nd">MessagePattern</span><span class="p">({</span> <span class="na">cmd</span><span class="p">:</span> <span class="dl">'</span><span class="s1">getHello</span><span class="dl">'</span> <span class="p">})</span>
+  <span class="nx">getHello</span><span class="p">(</span><span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="kr">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">appService</span><span class="p">.</span><span class="nx">getHello</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">MessagePattern</code> 定义了个消息处理器，它将监听并处理调用方发来的指令为 <code class="language-plaintext highlighter-rouge">getHello</code> 的消息。</p>
+
+<p>其依赖的服务：</p>
+
+<p><em>apps/nest-service/src/app.service.ts</em></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Injectable</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/common</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">Injectable</span><span class="p">()</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">AppService</span> <span class="p">{</span>
+  <span class="nx">getHello</span><span class="p">(</span><span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="kr">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s2">`Hello </span><span class="p">${</span><span class="nx">name</span><span class="p">}</span><span class="s2">!`</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="修改启动命令">修改启动命令</h3>
+
+<p>启动单个项目</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">nest start nest-app</code></li>
+  <li><code class="language-plaintext highlighter-rouge">nest start nest-service</code></li>
+</ul>
+
+<p>开发过程中因为需要从主项目调用微服务提供的服务，通过 <code class="language-plaintext highlighter-rouge">concurrently</code> 来同时启动两个项目，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>yarn add <span class="nt">-D</span> concurrently
+</code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"start:dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"concurrently --kill-others </span><span class="se">\"</span><span class="s2">nest start nest-app --watch</span><span class="se">\"</span><span class="s2"> </span><span class="se">\"</span><span class="s2">nest start nest-service --watch</span><span class="se">\"</span><span class="s2">"</span><span class="err">,</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>yarn start:dev
+</code></pre></div></div>
+
+<h2 id="调用">调用</h2>
+
+<p>要调用微服务，需要先初始化一个客户端对象。因为 nest 支持多种类型的微服务，所以提供 ClientProxy 对象作为统一的客户端，完成初始化之后使用者无需关心不同类型微服务的差异，该代理对象对外提供了统一的调用接口。</p>
+
+<p>有多种方式可初始这样的客户端。推荐下方第一种方式，在根模块中注册后，整个模块中通过依赖注入方式使用，高效便捷。而后面两种方式不易共享也难测试。</p>
+
+<h3 id="依赖注入">依赖注入</h3>
+
+<p><em>apps/nest-app/src/app.module.ts</em></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Module</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/common</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">ClientsModule</span><span class="p">,</span> <span class="nx">Transport</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/microservices</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">AppController</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./app.controller</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">AppService</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./app.service</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">Module</span><span class="p">({</span>
+  <span class="na">imports</span><span class="p">:</span> <span class="p">[</span>
+    <span class="nx">ClientsModule</span><span class="p">.</span><span class="nx">register</span><span class="p">([</span>
+      <span class="p">{</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">NEST_SERVICE</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">transport</span><span class="p">:</span> <span class="nx">Transport</span><span class="p">.</span><span class="nx">TCP</span><span class="p">,</span>
+        <span class="na">options</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">port</span><span class="p">:</span> <span class="mi">4000</span><span class="p">,</span>
+        <span class="p">},</span>
+      <span class="p">},</span>
+    <span class="p">]),</span>
+  <span class="p">],</span>
+  <span class="na">controllers</span><span class="p">:</span> <span class="p">[</span><span class="nx">AppController</span><span class="p">],</span>
+  <span class="na">providers</span><span class="p">:</span> <span class="p">[</span><span class="nx">AppService</span><span class="p">],</span>
+<span class="p">})</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">AppModule</span> <span class="p">{}</span>
+</code></pre></div></div>
+
+<p>使用时通过 <code class="language-plaintext highlighter-rouge">@Inject('NEST_SERVICE')</code> 进行注入。</p>
+
+<p><em>apps/nest-app/src/app.service.ts</em></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Inject</span><span class="p">,</span> <span class="nx">Injectable</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/common</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">ClientProxy</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/microservices</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">Injectable</span><span class="p">()</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">AppService</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(@</span><span class="nd">Inject</span><span class="p">(</span><span class="dl">'</span><span class="s1">NEST_SERVICE</span><span class="dl">'</span><span class="p">)</span> <span class="k">private</span> <span class="k">readonly</span> <span class="nx">client</span><span class="p">:</span> <span class="nx">ClientProxy</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="nx">getHello</span><span class="p">(</span><span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">send</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span><span class="p">({</span> <span class="na">cmd</span><span class="p">:</span> <span class="dl">'</span><span class="s1">getHello</span><span class="dl">'</span> <span class="p">},</span> <span class="nx">name</span><span class="p">).</span><span class="nx">toPromise</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="工厂方法">工厂方法</h3>
+
+<p><em>apps/nest-app/src/app.service.ts</em></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Injectable</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/common</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span>
+  <span class="nx">ClientProxy</span><span class="p">,</span>
+  <span class="nx">ClientProxyFactory</span><span class="p">,</span>
+  <span class="nx">Transport</span><span class="p">,</span>
+<span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/microservices</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">Injectable</span><span class="p">()</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">AppService</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="nx">client</span><span class="p">:</span> <span class="nx">ClientProxy</span><span class="p">;</span>
+  <span class="kd">constructor</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">client</span> <span class="o">=</span> <span class="nx">ClientProxyFactory</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+      <span class="na">transport</span><span class="p">:</span> <span class="nx">Transport</span><span class="p">.</span><span class="nx">TCP</span><span class="p">,</span>
+      <span class="na">options</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">port</span><span class="p">:</span> <span class="mi">4000</span><span class="p">,</span>
+      <span class="p">},</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+  <span class="nx">getHello</span><span class="p">(</span><span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">send</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span><span class="p">({</span> <span class="na">cmd</span><span class="p">:</span> <span class="dl">'</span><span class="s1">getHello</span><span class="dl">'</span> <span class="p">},</span> <span class="nx">name</span><span class="p">).</span><span class="nx">toPromise</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="装饰器">装饰器</h3>
+
+<p><em>apps/nest-app/src/app.service.ts</em></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Injectable</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/common</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Client</span><span class="p">,</span> <span class="nx">ClientProxy</span><span class="p">,</span> <span class="nx">Transport</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/microservices</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">Injectable</span><span class="p">()</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">AppService</span> <span class="p">{</span>
+  <span class="p">@</span><span class="nd">Client</span><span class="p">({</span> <span class="na">transport</span><span class="p">:</span> <span class="nx">Transport</span><span class="p">.</span><span class="nx">TCP</span><span class="p">,</span> <span class="na">options</span><span class="p">:</span> <span class="p">{</span> <span class="na">port</span><span class="p">:</span> <span class="mi">4000</span> <span class="p">}</span> <span class="p">})</span>
+  <span class="k">private</span> <span class="nx">client</span><span class="p">:</span> <span class="nx">ClientProxy</span><span class="p">;</span>
+
+  <span class="nx">getHello</span><span class="p">(</span><span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">send</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span><span class="p">({</span> <span class="na">cmd</span><span class="p">:</span> <span class="dl">'</span><span class="s1">getHello</span><span class="dl">'</span> <span class="p">},</span> <span class="nx">name</span><span class="p">).</span><span class="nx">toPromise</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="测试">测试</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="s2">"localhost:3000?name=niuwayong"</span>
+Hello niuwayong!⏎
+</code></pre></div></div>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+  <li><a href="https://docs.nestjs.com/microservices/basics#sending-messages">NestJS documentation - microservices - overview</a></li>
+  <li><a href="https://dev.to/lampewebdev/monorepo-and-microservice-setup-in-nest-js-41n4">Monorepo and Microservice setup in Nest.js</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2020/07/17/NestJS-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%A4%BA%E4%BE%8B.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

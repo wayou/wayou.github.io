@@ -1,0 +1,158 @@
+I"�J<h1 id="typescript--unknown-类型">TypeScript  <code class="language-plaintext highlighter-rouge">unknown</code> 类型</h1>
+
+<p><code class="language-plaintext highlighter-rouge">unknown</code> 字面理解和 <code class="language-plaintext highlighter-rouge">any</code> 其实没差，任何类型都可赋值给它，但有一点，</p>
+
+<blockquote>
+  <p>Anything is assignable to unknown, but unknown isn’t assignable to anything but itself and any without a type assertion or a control flow based narrowing</p>
+
+  <p><em>--<a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html">TypeScript 3.0 Release notes - New unknown top type</a></em></p>
+</blockquote>
+
+<p><code class="language-plaintext highlighter-rouge">unknown</code> 类型不能赋值给除了 <code class="language-plaintext highlighter-rouge">unknown</code> 或 <code class="language-plaintext highlighter-rouge">any</code> 的其他任何类型，使用前必需显式进行指定类型，或是在有条件判断情况下能够隐式地进行类型推断的情况。</p>
+
+<p>下面代码是合法的：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">a</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">b</span><span class="p">:</span> <span class="nx">unknown</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">c</span><span class="p">:</span> <span class="kr">any</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>因为 <code class="language-plaintext highlighter-rouge">unknown</code> 是可以赋值给 <code class="language-plaintext highlighter-rouge">unknown</code> 的，而下面的代码则不行，</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">a</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">;</span>
+<span class="c1">// 🚨Type 'unknown' is not assignable to type 'number'.ts(2322)</span>
+<span class="kd">const</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>但是如果使用时，明确知道了类型，则可以这样来修正：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">a</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">;</span>
+<span class="c1">// 🚨Type 'unknown' is not assignable to type 'number'.ts(2322)</span>
+<span class="kd">const</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>或者在条件语句中，已经可以明确推断出类型：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">a</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="o">&lt;</span><span class="kr">number</span><span class="o">&gt;</span><span class="nx">a</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">isNumber</span><span class="p">(</span><span class="nx">val</span><span class="p">:</span> <span class="kr">any</span><span class="p">):</span> <span class="nx">val</span> <span class="k">is</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">typeof</span> <span class="nx">val</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">number</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">a</span><span class="p">))</span> <span class="p">{</span>
+  <span class="nx">b</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>所以在使用时，<code class="language-plaintext highlighter-rouge">unknown</code> 类型会比 <code class="language-plaintext highlighter-rouge">any</code> 更加安全。这个安全体现在，虽然它和 <code class="language-plaintext highlighter-rouge">any</code> 一样存储了任意类型的值，但是具体使用的时候，这个类型需要显式确定，由使用者进行指定将 <code class="language-plaintext highlighter-rouge">unknown</code> 转换成某一确定类型。</p>
+
+<h2 id="优先级">优先级</h2>
+
+<h3 id="与正交类型的搭配">与正交类型的搭配</h3>
+
+<p>正交类型（intersection type）中，<code class="language-plaintext highlighter-rouge">unknown</code> 不起作用：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">T00</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kc">null</span><span class="p">;</span>  <span class="c1">// null</span>
+<span class="kd">type</span> <span class="nx">T01</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kc">undefined</span><span class="p">;</span>  <span class="c1">// undefined</span>
+<span class="kd">type</span> <span class="nx">T02</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kc">null</span> <span class="o">&amp;</span> <span class="kc">undefined</span><span class="p">;</span>  <span class="c1">// null &amp; undefined (which becomes never)</span>
+<span class="kd">type</span> <span class="nx">T03</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kr">string</span><span class="p">;</span>  <span class="c1">// string</span>
+<span class="kd">type</span> <span class="nx">T04</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kr">string</span><span class="p">[];</span>  <span class="c1">// string[]</span>
+<span class="kd">type</span> <span class="nx">T05</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="nx">unknown</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T06</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">&amp;</span> <span class="kr">any</span><span class="p">;</span>  <span class="c1">// any</span>
+</code></pre></div></div>
+
+<h3 id="与联合类型的搭配">与联合类型的搭配</h3>
+
+<p>联合类型（union type）中 <code class="language-plaintext highlighter-rouge">unknown</code> 起绝对作用：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">T10</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T11</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T12</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T13</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kr">string</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T14</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kr">string</span><span class="p">[];</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T15</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="nx">unknown</span><span class="p">;</span>  <span class="c1">// unknown</span>
+<span class="kd">type</span> <span class="nx">T16</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="o">|</span> <span class="kr">any</span><span class="p">;</span>  <span class="c1">// any</span>
+</code></pre></div></div>
+
+<p>上面仅一个例外，及和 <code class="language-plaintext highlighter-rouge">any</code> 组成的联合类型，最终结果是 <code class="language-plaintext highlighter-rouge">any</code>。</p>
+
+<h3 id="使用在条件类型中">使用在条件类型中</h3>
+
+<p>条件类型（conditional type）中，</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">T30</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">unknown</span> <span class="kd">extends</span> <span class="nx">T</span> <span class="p">?</span> <span class="kc">true</span> <span class="p">:</span> <span class="kc">false</span><span class="p">;</span>  <span class="c1">// Deferred</span>
+<span class="kd">type</span> <span class="nx">T31</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">T</span> <span class="kd">extends</span> <span class="nx">unknown</span> <span class="p">?</span> <span class="kc">true</span> <span class="p">:</span> <span class="kc">false</span><span class="p">;</span>  <span class="c1">// Deferred (so it distributes)</span>
+</code></pre></div></div>
+
+<p>对于上面的条件类型，进行以下测试：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// `unknown` 不能赋值给 `number`</span>
+<span class="kd">type</span> <span class="nx">foo</span> <span class="o">=</span> <span class="nx">T30</span><span class="o">&lt;</span><span class="kr">number</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// false</span>
+<span class="c1">// `unknown` 可以赋值给 `any`</span>
+<span class="kd">type</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">T30</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// true</span>
+
+<span class="c1">// 任何类型都可赋值给 `unknown`，所以都为 true</span>
+<span class="kd">type</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">T31</span><span class="o">&lt;</span><span class="kr">number</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// true</span>
+<span class="kd">type</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">T31</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// true</span>
+</code></pre></div></div>
+
+<h2 id="可进行的操作">可进行的操作</h2>
+
+<p>只能进行等于的判断，其他操作则会报错。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f10</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">x</span> <span class="o">==</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="nx">x</span> <span class="o">!==</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="nx">x</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="nx">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="o">-</span><span class="nx">x</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="o">+</span><span class="nx">x</span><span class="p">;</span>  <span class="c1">// Error</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>属性字段获取，方法调用等，也是不允许的：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f11</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">x</span><span class="p">.</span><span class="nx">foo</span><span class="p">;</span>  <span class="c1">// Error</span>
+    <span class="nx">x</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>  <span class="c1">// Error</span>
+    <span class="nx">x</span><span class="p">();</span>  <span class="c1">// Error</span>
+    <span class="k">new</span> <span class="nx">x</span><span class="p">();</span>  <span class="c1">// Error</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>当解构中有 <code class="language-plaintext highlighter-rouge">unknown</code> 类型时，会导致解构出来的结果也是 <code class="language-plaintext highlighter-rouge">unknown</code>。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f26</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="p">{},</span> <span class="nx">y</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">,</span> <span class="nx">z</span><span class="p">:</span> <span class="kr">any</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">o1</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="p">...</span><span class="nx">x</span> <span class="p">};</span>  <span class="c1">// { a: number }</span>
+    <span class="kd">let</span> <span class="nx">o2</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="p">...</span><span class="nx">x</span><span class="p">,</span> <span class="p">...</span><span class="nx">y</span> <span class="p">};</span>  <span class="c1">// unknown</span>
+    <span class="kd">let</span> <span class="nx">o3</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="p">...</span><span class="nx">x</span><span class="p">,</span> <span class="p">...</span><span class="nx">y</span><span class="p">,</span> <span class="p">...</span><span class="nx">z</span> <span class="p">};</span>  <span class="c1">// any</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="具体使用场景">具体使用场景</h2>
+
+<p><code class="language-plaintext highlighter-rouge">unknown</code> 用于变量类型不确定，但肯定可以确定的情形下，比如下面这个示例中，入参总归会有个值，根据这个值的类型进行不同的处理，这里使用 <code class="language-plaintext highlighter-rouge">unknown</code> 替代 <code class="language-plaintext highlighter-rouge">any</code> 则会更加类型安全。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">prettyPrint</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">unknown</span><span class="p">):</span> <span class="kr">string</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">x</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="dl">"</span><span class="s2">[</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">x</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">prettyPrint</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">, </span><span class="dl">"</span><span class="p">)</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">]</span><span class="dl">"</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">x</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">string</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s2">`"</span><span class="p">${</span><span class="nx">x</span><span class="p">}</span><span class="s2">"`</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">x</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">number</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">String</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+  <span class="p">}</span> 
+  <span class="k">return</span> <span class="dl">"</span><span class="s2">etc.</span><span class="dl">"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html">TypeScript 3.0 Release notes - New unknown top type</a></li>
+  <li><a href="https://blog.logrocket.com/when-to-use-never-and-unknown-in-typescript-5e4d6c5799ad/">When to use <code class="language-plaintext highlighter-rouge">never</code> and <code class="language-plaintext highlighter-rouge">unknown</code> in TypeScript</a></li>
+</ul>
+:ET

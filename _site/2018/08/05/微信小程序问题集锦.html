@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>微信小程序问题集锦 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="微信小程序问题集锦" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="微信小程序问题集锦 #0 Canvas 绘制不生效 原因有可能是 canvas context 的创建方式不对。 通过 wx.createCanvasContext(canvasId, this) 创建 canvas 绘图上下文时，第后个参数是指自定义组件的实例。如果 canvas 位于自定义组件中，这个参数是必传的，否则绘制不生效，界面没显示任何东西。 来看官方文档关于 wx.createCanvasContext 的介绍： 自定义组件实例 this ，表示在这个自定义组件下查找拥有 canvas-id 的  ，如果省略，则不在任何自定义组件内查找 components/paint.json { &quot;component&quot;: true } components/paint.js Component({ ready: function() { const ctx = wx.createCanvasContext(&quot;myCanvas&quot;, this /* 它很重要 */); ctx.setFontSize(20); ctx.fillText(&quot;Hello&quot;, 20, 20); ctx.fillText(&quot;MINA&quot;, 100, 100); ctx.draw(); } }); #1 Canvas API 与 DOM 中不一样 部分 API 与 DOM 中 canvas 有差异，体现在方法名与参数上。 比如 ： context.createRadialGradient(x0, y0, r0, x1, y1, r1);, 微信中我能找到对应的，至少从名称上来看，应该是 context.createCircularGradient(x,y,r) 该 API 创建放射状的渐变，渐变由两个圓形边界确定。微信小程序中提供的对应 API 少了一个圆，一如文档中所说，起点从圆心开始。可以理解为缺少的那组参数所确定的圆，其圆心与外围圆心一致，只是半径为0。 像这种不与我们所熟知的 API 靠拢，进而设计出相近参数不同的 API，不太明白其用意和初衷。只是我们在写码时需要勤看文档，否则会困绕很久。 Component({ ready: function() { const ctx = wx.createCanvasContext(&quot;myCanvas&quot;); // const grd = ctx.createRadialGradient(0, 0, 50, 75, 50, 50); const grd = ctx.createCircularGradient(75, 50, 50); grd.addColorStop(0, &quot;red&quot;); grd.addColorStop(1, &quot;white&quot;); // Fill with gradient ctx.setFillStyle(grd); ctx.fillRect(10, 10, 150, 80); ctx.draw(); } }); #2 真机上图片绘制不生效 与 DOM 中 canvas 的图片绘制不同，小程序提供于向画布绘制图片的 API canvasContext.drawImage 其所需的图片资源为图片的地址。 特别地，如果发现绘制后没展示，多半是因为绘制的图片来自远端，需要使用先下载到本地。这其实跟原生 DOM canvas 绘制网络图片时一样，先 new Image() 等加载完后在 img.onload 回调中再绘制。 wx.downloadFile({ url: &#39;https://example.com/foo.jpg&#39;, success: function (res) { const ctx = wx.createCanvasContext(&#39;myCanvas&#39;) ctx.drawImage(res.tempFilePath, 0, 0, 150, 100) ctx.draw() } }) 因为小程序内对外部资源的使用的严格限制，这里使用 wx.downloadFile API 下载的图片地址需要添加到 downloadFile 合法域名 中。 #3 cover-view 中文本样式的兼容性问题 像 &lt;live-player&gt; 这种运行时是 native 元素的组件，其上要盖东西有严格限制，可操作的空间不多，样式操控起来也捉襟见肘。 虽然官方文档说其只能嵌套 &lt;cover-view&gt; 和 &lt;cover-image&gt;，实测放入文本也是可以的。真机上发现视频上盖的文本在 iOS 与 安卓端样式上有差异。比如在视频上盖一个 「静音」标签。 mute_badge.wxml &lt;live-player&gt; &lt;cover-view class=&quot;mute-badge&quot;&gt; 静音模式 &lt;/cover-view&gt; &lt;/live-player&gt; mute_badge.wxss .mute-badge { color: #fff; background: rgba(0, 0, 0, 0.5); display: inline-block; vertical-align: top; + padding: 0px 4px; font-size: 24rpx; line-height: 48rpx; height: 48rpx; margin: 20rpx; } 因为想要文本与背景间有留白，所以左右给了 4px 间距。不给的话默认是紧贴着的。模拟器上没问题，真机测试问题便来了。 iOS 左右依然无留白，安卓正常。审查元素后可发现，iOS 中 padding 部分是没有背景色的！ 这决定了如果想要文字左右有边距，得靠东西来填充，靠看不见的字符。当然空格键打的空格是不会起作用的，会被忽略掉，好在 \b 是可以起到填充作用的。所以文案前后加 \b。 mute_badge.js data:{ text: `\b\b 静音模式 \b\b` } mute_badge.wxml &lt;live-player&gt; &lt;cover-view class=&quot;mute-badge&quot;&gt; &lt;/cover-view&gt; &lt;/live-player&gt; 这样 iOS 上是生效了。但安卓上出新问题了。因为 \b 在安卓上的表现是虽然会占空间，但不会撑开容器，所以容器还是文案那么宽，因为 \b 的加入，原来的文案便显示不下了，被挤掉了一部分。 ￼ 如果想尝试文本外再包一层东西来写样式增加留白的话，会得到以下的结果： ￼ 既然难两全，那就分开处理喽。 data:{ txt:’\b\b 静音模式 \b\b’ }, ready:function() { try { const systemInfo = wx.getSystemInfoSync(); if (systemInfo.platform === &#39;android&#39;) { this.setData({ txt: &#39;静音模式&#39;, }); } } catch (error) { // } }" />
+<meta property="og:description" content="微信小程序问题集锦 #0 Canvas 绘制不生效 原因有可能是 canvas context 的创建方式不对。 通过 wx.createCanvasContext(canvasId, this) 创建 canvas 绘图上下文时，第后个参数是指自定义组件的实例。如果 canvas 位于自定义组件中，这个参数是必传的，否则绘制不生效，界面没显示任何东西。 来看官方文档关于 wx.createCanvasContext 的介绍： 自定义组件实例 this ，表示在这个自定义组件下查找拥有 canvas-id 的  ，如果省略，则不在任何自定义组件内查找 components/paint.json { &quot;component&quot;: true } components/paint.js Component({ ready: function() { const ctx = wx.createCanvasContext(&quot;myCanvas&quot;, this /* 它很重要 */); ctx.setFontSize(20); ctx.fillText(&quot;Hello&quot;, 20, 20); ctx.fillText(&quot;MINA&quot;, 100, 100); ctx.draw(); } }); #1 Canvas API 与 DOM 中不一样 部分 API 与 DOM 中 canvas 有差异，体现在方法名与参数上。 比如 ： context.createRadialGradient(x0, y0, r0, x1, y1, r1);, 微信中我能找到对应的，至少从名称上来看，应该是 context.createCircularGradient(x,y,r) 该 API 创建放射状的渐变，渐变由两个圓形边界确定。微信小程序中提供的对应 API 少了一个圆，一如文档中所说，起点从圆心开始。可以理解为缺少的那组参数所确定的圆，其圆心与外围圆心一致，只是半径为0。 像这种不与我们所熟知的 API 靠拢，进而设计出相近参数不同的 API，不太明白其用意和初衷。只是我们在写码时需要勤看文档，否则会困绕很久。 Component({ ready: function() { const ctx = wx.createCanvasContext(&quot;myCanvas&quot;); // const grd = ctx.createRadialGradient(0, 0, 50, 75, 50, 50); const grd = ctx.createCircularGradient(75, 50, 50); grd.addColorStop(0, &quot;red&quot;); grd.addColorStop(1, &quot;white&quot;); // Fill with gradient ctx.setFillStyle(grd); ctx.fillRect(10, 10, 150, 80); ctx.draw(); } }); #2 真机上图片绘制不生效 与 DOM 中 canvas 的图片绘制不同，小程序提供于向画布绘制图片的 API canvasContext.drawImage 其所需的图片资源为图片的地址。 特别地，如果发现绘制后没展示，多半是因为绘制的图片来自远端，需要使用先下载到本地。这其实跟原生 DOM canvas 绘制网络图片时一样，先 new Image() 等加载完后在 img.onload 回调中再绘制。 wx.downloadFile({ url: &#39;https://example.com/foo.jpg&#39;, success: function (res) { const ctx = wx.createCanvasContext(&#39;myCanvas&#39;) ctx.drawImage(res.tempFilePath, 0, 0, 150, 100) ctx.draw() } }) 因为小程序内对外部资源的使用的严格限制，这里使用 wx.downloadFile API 下载的图片地址需要添加到 downloadFile 合法域名 中。 #3 cover-view 中文本样式的兼容性问题 像 &lt;live-player&gt; 这种运行时是 native 元素的组件，其上要盖东西有严格限制，可操作的空间不多，样式操控起来也捉襟见肘。 虽然官方文档说其只能嵌套 &lt;cover-view&gt; 和 &lt;cover-image&gt;，实测放入文本也是可以的。真机上发现视频上盖的文本在 iOS 与 安卓端样式上有差异。比如在视频上盖一个 「静音」标签。 mute_badge.wxml &lt;live-player&gt; &lt;cover-view class=&quot;mute-badge&quot;&gt; 静音模式 &lt;/cover-view&gt; &lt;/live-player&gt; mute_badge.wxss .mute-badge { color: #fff; background: rgba(0, 0, 0, 0.5); display: inline-block; vertical-align: top; + padding: 0px 4px; font-size: 24rpx; line-height: 48rpx; height: 48rpx; margin: 20rpx; } 因为想要文本与背景间有留白，所以左右给了 4px 间距。不给的话默认是紧贴着的。模拟器上没问题，真机测试问题便来了。 iOS 左右依然无留白，安卓正常。审查元素后可发现，iOS 中 padding 部分是没有背景色的！ 这决定了如果想要文字左右有边距，得靠东西来填充，靠看不见的字符。当然空格键打的空格是不会起作用的，会被忽略掉，好在 \b 是可以起到填充作用的。所以文案前后加 \b。 mute_badge.js data:{ text: `\b\b 静音模式 \b\b` } mute_badge.wxml &lt;live-player&gt; &lt;cover-view class=&quot;mute-badge&quot;&gt; &lt;/cover-view&gt; &lt;/live-player&gt; 这样 iOS 上是生效了。但安卓上出新问题了。因为 \b 在安卓上的表现是虽然会占空间，但不会撑开容器，所以容器还是文案那么宽，因为 \b 的加入，原来的文案便显示不下了，被挤掉了一部分。 ￼ 如果想尝试文本外再包一层东西来写样式增加留白的话，会得到以下的结果： ￼ 既然难两全，那就分开处理喽。 data:{ txt:’\b\b 静音模式 \b\b’ }, ready:function() { try { const systemInfo = wx.getSystemInfoSync(); if (systemInfo.platform === &#39;android&#39;) { this.setData({ txt: &#39;静音模式&#39;, }); } } catch (error) { // } }" />
+<link rel="canonical" href="http://localhost:4000/2018/08/05/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%97%AE%E9%A2%98%E9%9B%86%E9%94%A6.html" />
+<meta property="og:url" content="http://localhost:4000/2018/08/05/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%97%AE%E9%A2%98%E9%9B%86%E9%94%A6.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-08-05T10:08:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2018/08/05/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%97%AE%E9%A2%98%E9%9B%86%E9%94%A6.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2018/08/05/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%97%AE%E9%A2%98%E9%9B%86%E9%94%A6.html"},"description":"微信小程序问题集锦 #0 Canvas 绘制不生效 原因有可能是 canvas context 的创建方式不对。 通过 wx.createCanvasContext(canvasId, this) 创建 canvas 绘图上下文时，第后个参数是指自定义组件的实例。如果 canvas 位于自定义组件中，这个参数是必传的，否则绘制不生效，界面没显示任何东西。 来看官方文档关于 wx.createCanvasContext 的介绍： 自定义组件实例 this ，表示在这个自定义组件下查找拥有 canvas-id 的  ，如果省略，则不在任何自定义组件内查找 components/paint.json { &quot;component&quot;: true } components/paint.js Component({ ready: function() { const ctx = wx.createCanvasContext(&quot;myCanvas&quot;, this /* 它很重要 */); ctx.setFontSize(20); ctx.fillText(&quot;Hello&quot;, 20, 20); ctx.fillText(&quot;MINA&quot;, 100, 100); ctx.draw(); } }); #1 Canvas API 与 DOM 中不一样 部分 API 与 DOM 中 canvas 有差异，体现在方法名与参数上。 比如 ： context.createRadialGradient(x0, y0, r0, x1, y1, r1);, 微信中我能找到对应的，至少从名称上来看，应该是 context.createCircularGradient(x,y,r) 该 API 创建放射状的渐变，渐变由两个圓形边界确定。微信小程序中提供的对应 API 少了一个圆，一如文档中所说，起点从圆心开始。可以理解为缺少的那组参数所确定的圆，其圆心与外围圆心一致，只是半径为0。 像这种不与我们所熟知的 API 靠拢，进而设计出相近参数不同的 API，不太明白其用意和初衷。只是我们在写码时需要勤看文档，否则会困绕很久。 Component({ ready: function() { const ctx = wx.createCanvasContext(&quot;myCanvas&quot;); // const grd = ctx.createRadialGradient(0, 0, 50, 75, 50, 50); const grd = ctx.createCircularGradient(75, 50, 50); grd.addColorStop(0, &quot;red&quot;); grd.addColorStop(1, &quot;white&quot;); // Fill with gradient ctx.setFillStyle(grd); ctx.fillRect(10, 10, 150, 80); ctx.draw(); } }); #2 真机上图片绘制不生效 与 DOM 中 canvas 的图片绘制不同，小程序提供于向画布绘制图片的 API canvasContext.drawImage 其所需的图片资源为图片的地址。 特别地，如果发现绘制后没展示，多半是因为绘制的图片来自远端，需要使用先下载到本地。这其实跟原生 DOM canvas 绘制网络图片时一样，先 new Image() 等加载完后在 img.onload 回调中再绘制。 wx.downloadFile({ url: &#39;https://example.com/foo.jpg&#39;, success: function (res) { const ctx = wx.createCanvasContext(&#39;myCanvas&#39;) ctx.drawImage(res.tempFilePath, 0, 0, 150, 100) ctx.draw() } }) 因为小程序内对外部资源的使用的严格限制，这里使用 wx.downloadFile API 下载的图片地址需要添加到 downloadFile 合法域名 中。 #3 cover-view 中文本样式的兼容性问题 像 &lt;live-player&gt; 这种运行时是 native 元素的组件，其上要盖东西有严格限制，可操作的空间不多，样式操控起来也捉襟见肘。 虽然官方文档说其只能嵌套 &lt;cover-view&gt; 和 &lt;cover-image&gt;，实测放入文本也是可以的。真机上发现视频上盖的文本在 iOS 与 安卓端样式上有差异。比如在视频上盖一个 「静音」标签。 mute_badge.wxml &lt;live-player&gt; &lt;cover-view class=&quot;mute-badge&quot;&gt; 静音模式 &lt;/cover-view&gt; &lt;/live-player&gt; mute_badge.wxss .mute-badge { color: #fff; background: rgba(0, 0, 0, 0.5); display: inline-block; vertical-align: top; + padding: 0px 4px; font-size: 24rpx; line-height: 48rpx; height: 48rpx; margin: 20rpx; } 因为想要文本与背景间有留白，所以左右给了 4px 间距。不给的话默认是紧贴着的。模拟器上没问题，真机测试问题便来了。 iOS 左右依然无留白，安卓正常。审查元素后可发现，iOS 中 padding 部分是没有背景色的！ 这决定了如果想要文字左右有边距，得靠东西来填充，靠看不见的字符。当然空格键打的空格是不会起作用的，会被忽略掉，好在 \\b 是可以起到填充作用的。所以文案前后加 \\b。 mute_badge.js data:{ text: `\\b\\b 静音模式 \\b\\b` } mute_badge.wxml &lt;live-player&gt; &lt;cover-view class=&quot;mute-badge&quot;&gt; &lt;/cover-view&gt; &lt;/live-player&gt; 这样 iOS 上是生效了。但安卓上出新问题了。因为 \\b 在安卓上的表现是虽然会占空间，但不会撑开容器，所以容器还是文案那么宽，因为 \\b 的加入，原来的文案便显示不下了，被挤掉了一部分。 ￼ 如果想尝试文本外再包一层东西来写样式增加留白的话，会得到以下的结果： ￼ 既然难两全，那就分开处理喽。 data:{ txt:’\\b\\b 静音模式 \\b\\b’ }, ready:function() { try { const systemInfo = wx.getSystemInfoSync(); if (systemInfo.platform === &#39;android&#39;) { this.setData({ txt: &#39;静音模式&#39;, }); } } catch (error) { // } }","@type":"BlogPosting","headline":"微信小程序问题集锦","dateModified":"2018-08-05T10:08:00+08:00","datePublished":"2018-08-05T10:08:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">微信小程序问题集锦</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-08-05T10:08:00+08:00" itemprop="datePublished">Aug 5, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="微信小程序问题集锦">微信小程序问题集锦</h1>
+
+<h3 id="0-canvas-绘制不生效">#<span>0 Canvas 绘制不生效</span></h3>
+
+<p>原因有可能是 canvas context 的创建方式不对。</p>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">wx.createCanvasContext(canvasId, this)</code> 创建 canvas 绘图上下文时，第后个参数是指自定义组件的实例。如果 canvas 位于自定义组件中，这个参数是必传的，否则绘制不生效，界面没显示任何东西。</p>
+
+<p>来看官方文档关于 <a href="https://developers.weixin.qq.com/miniprogram/dev/api/canvas/create-canvas-context.html">wx.createCanvasContext</a> 的介绍：</p>
+
+<blockquote>
+  <p>自定义组件实例 this ，表示在这个自定义组件下查找拥有 canvas-id 的 <canvas></canvas> ，<strong>如果省略，则不在任何自定义组件内查找</strong></p>
+</blockquote>
+
+<p><em>components/paint.json</em></p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"component"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<p><br /></p>
+
+<p><em>components/paint.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Component</span><span class="p">({</span>
+  <span class="na">ready</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">wx</span><span class="p">.</span><span class="nx">createCanvasContext</span><span class="p">(</span><span class="dl">"</span><span class="s2">myCanvas</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span> <span class="cm">/* 它很重要 */</span><span class="p">);</span>
+
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">setFontSize</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillText</span><span class="p">(</span><span class="dl">"</span><span class="s2">Hello</span><span class="dl">"</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillText</span><span class="p">(</span><span class="dl">"</span><span class="s2">MINA</span><span class="dl">"</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">draw</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h3 id="1--canvas-api-与-dom-中不一样">#<span>1  Canvas API 与 DOM 中不一样</span></h3>
+
+<p>部分 API 与 DOM 中 canvas 有差异，体现在方法名与参数上。</p>
+
+<p>比如 ：</p>
+
+<p><code class="language-plaintext highlighter-rouge">context.createRadialGradient(x0, y0, r0, x1, y1, r1);</code>,</p>
+
+<p>微信中我能找到对应的，至少从名称上来看，应该是 <code class="language-plaintext highlighter-rouge">context.createCircularGradient(x,y,r)</code></p>
+
+<p>该 API 创建放射状的渐变，渐变由两个圓形边界确定。微信小程序中提供的对应 API 少了一个圆，一如文档中所说，起点从圆心开始。可以理解为缺少的那组参数所确定的圆，其圆心与外围圆心一致，只是半径为0。</p>
+
+<p>像这种不与我们所熟知的 API 靠拢，进而设计出相近参数不同的 API，不太明白其用意和初衷。只是我们在写码时需要勤看文档，否则会困绕很久。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Component</span><span class="p">({</span>
+  <span class="na">ready</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">wx</span><span class="p">.</span><span class="nx">createCanvasContext</span><span class="p">(</span><span class="dl">"</span><span class="s2">myCanvas</span><span class="dl">"</span><span class="p">);</span>
+
+    <span class="c1">// const grd = ctx.createRadialGradient(0, 0, 50, 75, 50, 50);</span>
+    <span class="kd">const</span> <span class="nx">grd</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">createCircularGradient</span><span class="p">(</span><span class="mi">75</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">);</span>
+
+    <span class="nx">grd</span><span class="p">.</span><span class="nx">addColorStop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="dl">"</span><span class="s2">red</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">grd</span><span class="p">.</span><span class="nx">addColorStop</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="dl">"</span><span class="s2">white</span><span class="dl">"</span><span class="p">);</span>
+
+    <span class="c1">// Fill with gradient</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">setFillStyle</span><span class="p">(</span><span class="nx">grd</span><span class="p">);</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">80</span><span class="p">);</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">draw</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h3 id="2-真机上图片绘制不生效">#<span>2 真机上图片绘制不生效</span></h3>
+
+<p>与 DOM 中 canvas 的图片绘制不同，小程序提供于向画布绘制图片的 API <code class="language-plaintext highlighter-rouge">canvasContext.drawImage</code> 其所需的图片资源为图片的地址。</p>
+
+<p>特别地，如果发现绘制后没展示，多半是因为绘制的图片来自远端，需要使用先下载到本地。这其实跟原生 DOM canvas 绘制网络图片时一样，先 <code class="language-plaintext highlighter-rouge">new Image()</code> 等加载完后在 <code class="language-plaintext highlighter-rouge">img.onload</code> 回调中再绘制。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">wx</span><span class="p">.</span><span class="nx">downloadFile</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="dl">'</span><span class="s1">https://example.com/foo.jpg</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">success</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">wx</span><span class="p">.</span><span class="nx">createCanvasContext</span><span class="p">(</span><span class="dl">'</span><span class="s1">myCanvas</span><span class="dl">'</span><span class="p">)</span>
+        <span class="nx">ctx</span><span class="p">.</span><span class="nx">drawImage</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">tempFilePath</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="nx">ctx</span><span class="p">.</span><span class="nx">draw</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>因为小程序内对外部资源的使用的严格限制，这里使用 <code class="language-plaintext highlighter-rouge">wx.downloadFile</code> API 下载的图片地址需要添加到 <code class="language-plaintext highlighter-rouge">downloadFile 合法域名</code> 中。</p>
+
+<h3 id="3-cover-view-中文本样式的兼容性问题">#<span>3 <code class="language-plaintext highlighter-rouge">cover-view</code> 中文本样式的兼容性问题</span></h3>
+
+<p>像 <code class="language-plaintext highlighter-rouge">&lt;live-player&gt;</code> 这种运行时是 native 元素的组件，其上要盖东西有严格限制，可操作的空间不多，样式操控起来也捉襟见肘。</p>
+
+<p>虽然官方文档说其只能嵌套 <code class="language-plaintext highlighter-rouge">&lt;cover-view&gt;</code> 和 <code class="language-plaintext highlighter-rouge">&lt;cover-image&gt;</code>，实测放入文本也是可以的。真机上发现视频上盖的文本在 iOS 与 安卓端样式上有差异。比如在视频上盖一个 「静音」标签。</p>
+
+<p><em>mute_badge.wxml</em></p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;live-player&gt;</span>
+  <span class="nt">&lt;cover-view</span>
+    <span class="na">class=</span><span class="s">"mute-badge"</span><span class="nt">&gt;</span>
+    静音模式
+  <span class="nt">&lt;/cover-view&gt;</span>
+<span class="nt">&lt;/live-player&gt;</span>
+</code></pre></div></div>
+
+<p><em>mute_badge.wxss</em></p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">.mute-badge</span> {
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    vertical-align: top;
+<span class="gi">+    padding: 0px 4px;
+</span>    font-size: 24rpx;
+    line-height: 48rpx;
+    height: 48rpx;
+    margin: 20rpx;
+<span class="err">}</span>
+</code></pre></div></div>
+<p>因为想要文本与背景间有留白，所以左右给了 4px 间距。不给的话默认是紧贴着的。模拟器上没问题，真机测试问题便来了。</p>
+
+<p>iOS 左右依然无留白，安卓正常。审查元素后可发现，iOS 中 padding 部分是没有背景色的！</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/44103313-708fa3d6-a01e-11e8-976c-46530fbe985d.png" alt="image" /></p>
+
+<p>这决定了如果想要文字左右有边距，得靠东西来填充，靠看不见的字符。当然空格键打的空格是不会起作用的，会被忽略掉，好在 <code class="language-plaintext highlighter-rouge">\b</code> 是可以起到填充作用的。所以文案前后加 <code class="language-plaintext highlighter-rouge">\b</code>。</p>
+
+<p><em>mute_badge.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">data</span><span class="p">:{</span>
+    <span class="nl">text</span><span class="p">:</span> <span class="s2">`\b\b 静音模式 \b\b`</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><em>mute_badge.wxml</em></p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;live-player&gt;</span>
+  <span class="nt">&lt;cover-view</span>
+    <span class="na">class=</span><span class="s">"mute-badge"</span><span class="nt">&gt;</span>
+    
+  <span class="nt">&lt;/cover-view&gt;</span>
+<span class="nt">&lt;/live-player&gt;</span>
+</code></pre></div></div>
+
+<p>这样 iOS 上是生效了。但安卓上出新问题了。因为 <code class="language-plaintext highlighter-rouge">\b</code> 在安卓上的表现是虽然会占空间，但不会撑开容器，所以容器还是文案那么宽，因为 <code class="language-plaintext highlighter-rouge">\b</code> 的加入，原来的文案便显示不下了，被挤掉了一部分。
+￼
+<img src="https://user-images.githubusercontent.com/3783096/44103283-612a001c-a01e-11e8-8b9e-bfa5f5f53e11.png" alt="image" /></p>
+
+<p>如果想尝试文本外再包一层东西来写样式增加留白的话，会得到以下的结果：
+￼
+<img src="https://user-images.githubusercontent.com/3783096/44103262-52f3aef8-a01e-11e8-8886-0f0dd04dac59.png" alt="image" /></p>
+
+<p>既然难两全，那就分开处理喽。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">data</span><span class="p">:{</span>
+<span class="nl">txt</span><span class="p">:</span><span class="err">’\</span><span class="nx">b</span><span class="err">\</span><span class="nx">b</span> <span class="nx">静音模式</span> <span class="err">\</span><span class="nx">b</span><span class="err">\</span><span class="nx">b</span><span class="err">’</span>
+<span class="p">},</span>
+<span class="nx">ready</span><span class="p">:</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">systemInfo</span> <span class="o">=</span> <span class="nx">wx</span><span class="p">.</span><span class="nx">getSystemInfoSync</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">systemInfo</span><span class="p">.</span><span class="nx">platform</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">android</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">setData</span><span class="p">({</span>
+                    <span class="na">txt</span><span class="p">:</span> <span class="dl">'</span><span class="s1">静音模式</span><span class="dl">'</span><span class="p">,</span>
+                <span class="p">});</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+
+  </div><a class="u-url" href="/2018/08/05/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%97%AE%E9%A2%98%E9%9B%86%E9%94%A6.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

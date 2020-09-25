@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>字符串遮罩的问题 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="字符串遮罩的问题" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="字符串遮罩的问题 对于 substr 与 substring，slice 与 splice 这种名字相近，功能也相近的函数，着实容易搞混，不太方便记住其区别。这还不算，参数如果是负数的情况，表现又不一样。这里也不是要提供一种牢靠可记的方法，只是通过一个面试题目来顺便讨论和区分一下这些函数。 问题 将给定的字符串除最后四位外，转成以 # 代替的掩码。 示例： mask(&quot;123456789&quot;) // &quot;#####6789&quot; 方案 方案一: 方案一也是比较直观的做法，将输入的字符串分成两部分，将需要转换的前一部分替换后与最后四位拼接。 所以第一步是从原始字符串中取出这两部分。一如文章开头所说，可通过 substr/substring 来截取字符串的部分，也可通过 slice/splice 来选取字符串的部分。 先分别看看他们的功能及语法。 substr 语法：str.substr(start[, length]) 返回 start 开始的 length 个字符，如果指定的起始索引为负，则从字符串末尾开始。 其结果通过集合可表示为 [start, start + length) 示例： &#39;1234&#39;.substr(1,1) // &#39;2&#39; &#39;1234&#39;.substr(-1,1) // &#39;4&#39; 对于负数的情况，先用字符串总长度与之做加法运算，上面第二个示例中，字符串总长 4，与 -1 想加后得 3，最终相当于 &#39;1234&#39;.substr(3,1) // &#39;4&#39; ^ 0123 从第三个开始选一个，第三个字符是 4，所以最终结果是 4。 substring 语法：str.substring(indexStart[, indexEnd]) 返回 indexEnd 开始到 indexEnd 的这部分字符串。 其结果通过集合可表示为 [indexStart, indexEnd)。 特别地，如果起始索引大于结束索引，效果相当于交换他们的值。与 substr 不同，它不支持索引为负时从末尾开始计算。 字符串的 slice 方法 语法：str.slice(beginIndex[, endIndex]) 从方法签名上来看，其与 substring 是很类似的。返回的结果也一样。 他们的区分在于： - 起始索引大于结束索引时， slice 不会调换参数 - 对于负数的索引，substring 当0处理，而 slice 从末尾开始处理 数组的 slice/splice 两个方法也是类似功能，只不过操作的是数组，选取的是数组中部分元素。因为字符串是类数组的（array-like），所以可以考虑这两个方法来获取部分字符串。 slice 语法：arr.slice([begin[, end]]) 从原数组中选取 begin 开始到 end 之间的元素，用集合可表示为 [begin, end)。 其中 begin end 都可为负数。 示例： [1,2,3,4].slice(-2) // [3,4] 类似 substr，起始索引为负数表示从末尾开始，理解上可将其与数组长度想加得 4-2=2，最后相当于 [1,2,3,4].slice(-2) // [3,4] ^ 0 1 2 3 与 substring 不同，当起始索引大于结束索引时返回空，而不是交换这两个参数。 splice 语法：array.splice(start[, deleteCount[, item1[, item2[, ...]]]]) 它操作的是原数组，在原数组中进行元素的增删。 了解了上面这些方法后，就可以完成方案一的实现了（简便起见，不考虑字符串总长小于4的情况）。 function mask(str) { return str.substring(0, str.length - 4).split(&#39;&#39;).map((v) =&gt; &#39;#&#39;).join(&#39;&#39;) + str.substr(-4) } 方案二： str.repeat 如果用上 string 的 repeat 方法，则省去了替换的步骤，直接生成需要个数的符号再加上原字符串的最后四位字符。 function mask(str) { return &#39;#&#39;.repeat(str.length - 4) + str.substr(-4) } 缺点是 IE 不支持 string 的这个 repeat 方法。 方案三 上面 repeat 不支持的情况下，可快速生成有指定空元素的数组来达到目的。 function mask(str) { return Array(str.length - 3).join(&#39;#&#39;) + str.substr(-4) } 总结 因为最新的 Chrome Canary 中已经能自动提示 JavaScript 内置方法的参数了，如果记不住这些相似方法的签名也不用每次都查 MDN 了。 相关资料 30 seconds of interviews MDN substr doc MDN substring doc MDN string slice doc What is the difference between String.slice and String.substring? MDN splice doc MDN slice doc What’s the difference between “Array()” and “[]” while declaring a JavaScript array?" />
+<meta property="og:description" content="字符串遮罩的问题 对于 substr 与 substring，slice 与 splice 这种名字相近，功能也相近的函数，着实容易搞混，不太方便记住其区别。这还不算，参数如果是负数的情况，表现又不一样。这里也不是要提供一种牢靠可记的方法，只是通过一个面试题目来顺便讨论和区分一下这些函数。 问题 将给定的字符串除最后四位外，转成以 # 代替的掩码。 示例： mask(&quot;123456789&quot;) // &quot;#####6789&quot; 方案 方案一: 方案一也是比较直观的做法，将输入的字符串分成两部分，将需要转换的前一部分替换后与最后四位拼接。 所以第一步是从原始字符串中取出这两部分。一如文章开头所说，可通过 substr/substring 来截取字符串的部分，也可通过 slice/splice 来选取字符串的部分。 先分别看看他们的功能及语法。 substr 语法：str.substr(start[, length]) 返回 start 开始的 length 个字符，如果指定的起始索引为负，则从字符串末尾开始。 其结果通过集合可表示为 [start, start + length) 示例： &#39;1234&#39;.substr(1,1) // &#39;2&#39; &#39;1234&#39;.substr(-1,1) // &#39;4&#39; 对于负数的情况，先用字符串总长度与之做加法运算，上面第二个示例中，字符串总长 4，与 -1 想加后得 3，最终相当于 &#39;1234&#39;.substr(3,1) // &#39;4&#39; ^ 0123 从第三个开始选一个，第三个字符是 4，所以最终结果是 4。 substring 语法：str.substring(indexStart[, indexEnd]) 返回 indexEnd 开始到 indexEnd 的这部分字符串。 其结果通过集合可表示为 [indexStart, indexEnd)。 特别地，如果起始索引大于结束索引，效果相当于交换他们的值。与 substr 不同，它不支持索引为负时从末尾开始计算。 字符串的 slice 方法 语法：str.slice(beginIndex[, endIndex]) 从方法签名上来看，其与 substring 是很类似的。返回的结果也一样。 他们的区分在于： - 起始索引大于结束索引时， slice 不会调换参数 - 对于负数的索引，substring 当0处理，而 slice 从末尾开始处理 数组的 slice/splice 两个方法也是类似功能，只不过操作的是数组，选取的是数组中部分元素。因为字符串是类数组的（array-like），所以可以考虑这两个方法来获取部分字符串。 slice 语法：arr.slice([begin[, end]]) 从原数组中选取 begin 开始到 end 之间的元素，用集合可表示为 [begin, end)。 其中 begin end 都可为负数。 示例： [1,2,3,4].slice(-2) // [3,4] 类似 substr，起始索引为负数表示从末尾开始，理解上可将其与数组长度想加得 4-2=2，最后相当于 [1,2,3,4].slice(-2) // [3,4] ^ 0 1 2 3 与 substring 不同，当起始索引大于结束索引时返回空，而不是交换这两个参数。 splice 语法：array.splice(start[, deleteCount[, item1[, item2[, ...]]]]) 它操作的是原数组，在原数组中进行元素的增删。 了解了上面这些方法后，就可以完成方案一的实现了（简便起见，不考虑字符串总长小于4的情况）。 function mask(str) { return str.substring(0, str.length - 4).split(&#39;&#39;).map((v) =&gt; &#39;#&#39;).join(&#39;&#39;) + str.substr(-4) } 方案二： str.repeat 如果用上 string 的 repeat 方法，则省去了替换的步骤，直接生成需要个数的符号再加上原字符串的最后四位字符。 function mask(str) { return &#39;#&#39;.repeat(str.length - 4) + str.substr(-4) } 缺点是 IE 不支持 string 的这个 repeat 方法。 方案三 上面 repeat 不支持的情况下，可快速生成有指定空元素的数组来达到目的。 function mask(str) { return Array(str.length - 3).join(&#39;#&#39;) + str.substr(-4) } 总结 因为最新的 Chrome Canary 中已经能自动提示 JavaScript 内置方法的参数了，如果记不住这些相似方法的签名也不用每次都查 MDN 了。 相关资料 30 seconds of interviews MDN substr doc MDN substring doc MDN string slice doc What is the difference between String.slice and String.substring? MDN splice doc MDN slice doc What’s the difference between “Array()” and “[]” while declaring a JavaScript array?" />
+<link rel="canonical" href="http://localhost:4000/2018/06/05/%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%81%AE%E7%BD%A9%E7%9A%84%E9%97%AE%E9%A2%98.html" />
+<meta property="og:url" content="http://localhost:4000/2018/06/05/%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%81%AE%E7%BD%A9%E7%9A%84%E9%97%AE%E9%A2%98.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-06-05T01:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2018/06/05/%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%81%AE%E7%BD%A9%E7%9A%84%E9%97%AE%E9%A2%98.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2018/06/05/%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%81%AE%E7%BD%A9%E7%9A%84%E9%97%AE%E9%A2%98.html"},"description":"字符串遮罩的问题 对于 substr 与 substring，slice 与 splice 这种名字相近，功能也相近的函数，着实容易搞混，不太方便记住其区别。这还不算，参数如果是负数的情况，表现又不一样。这里也不是要提供一种牢靠可记的方法，只是通过一个面试题目来顺便讨论和区分一下这些函数。 问题 将给定的字符串除最后四位外，转成以 # 代替的掩码。 示例： mask(&quot;123456789&quot;) // &quot;#####6789&quot; 方案 方案一: 方案一也是比较直观的做法，将输入的字符串分成两部分，将需要转换的前一部分替换后与最后四位拼接。 所以第一步是从原始字符串中取出这两部分。一如文章开头所说，可通过 substr/substring 来截取字符串的部分，也可通过 slice/splice 来选取字符串的部分。 先分别看看他们的功能及语法。 substr 语法：str.substr(start[, length]) 返回 start 开始的 length 个字符，如果指定的起始索引为负，则从字符串末尾开始。 其结果通过集合可表示为 [start, start + length) 示例： &#39;1234&#39;.substr(1,1) // &#39;2&#39; &#39;1234&#39;.substr(-1,1) // &#39;4&#39; 对于负数的情况，先用字符串总长度与之做加法运算，上面第二个示例中，字符串总长 4，与 -1 想加后得 3，最终相当于 &#39;1234&#39;.substr(3,1) // &#39;4&#39; ^ 0123 从第三个开始选一个，第三个字符是 4，所以最终结果是 4。 substring 语法：str.substring(indexStart[, indexEnd]) 返回 indexEnd 开始到 indexEnd 的这部分字符串。 其结果通过集合可表示为 [indexStart, indexEnd)。 特别地，如果起始索引大于结束索引，效果相当于交换他们的值。与 substr 不同，它不支持索引为负时从末尾开始计算。 字符串的 slice 方法 语法：str.slice(beginIndex[, endIndex]) 从方法签名上来看，其与 substring 是很类似的。返回的结果也一样。 他们的区分在于： - 起始索引大于结束索引时， slice 不会调换参数 - 对于负数的索引，substring 当0处理，而 slice 从末尾开始处理 数组的 slice/splice 两个方法也是类似功能，只不过操作的是数组，选取的是数组中部分元素。因为字符串是类数组的（array-like），所以可以考虑这两个方法来获取部分字符串。 slice 语法：arr.slice([begin[, end]]) 从原数组中选取 begin 开始到 end 之间的元素，用集合可表示为 [begin, end)。 其中 begin end 都可为负数。 示例： [1,2,3,4].slice(-2) // [3,4] 类似 substr，起始索引为负数表示从末尾开始，理解上可将其与数组长度想加得 4-2=2，最后相当于 [1,2,3,4].slice(-2) // [3,4] ^ 0 1 2 3 与 substring 不同，当起始索引大于结束索引时返回空，而不是交换这两个参数。 splice 语法：array.splice(start[, deleteCount[, item1[, item2[, ...]]]]) 它操作的是原数组，在原数组中进行元素的增删。 了解了上面这些方法后，就可以完成方案一的实现了（简便起见，不考虑字符串总长小于4的情况）。 function mask(str) { return str.substring(0, str.length - 4).split(&#39;&#39;).map((v) =&gt; &#39;#&#39;).join(&#39;&#39;) + str.substr(-4) } 方案二： str.repeat 如果用上 string 的 repeat 方法，则省去了替换的步骤，直接生成需要个数的符号再加上原字符串的最后四位字符。 function mask(str) { return &#39;#&#39;.repeat(str.length - 4) + str.substr(-4) } 缺点是 IE 不支持 string 的这个 repeat 方法。 方案三 上面 repeat 不支持的情况下，可快速生成有指定空元素的数组来达到目的。 function mask(str) { return Array(str.length - 3).join(&#39;#&#39;) + str.substr(-4) } 总结 因为最新的 Chrome Canary 中已经能自动提示 JavaScript 内置方法的参数了，如果记不住这些相似方法的签名也不用每次都查 MDN 了。 相关资料 30 seconds of interviews MDN substr doc MDN substring doc MDN string slice doc What is the difference between String.slice and String.substring? MDN splice doc MDN slice doc What’s the difference between “Array()” and “[]” while declaring a JavaScript array?","@type":"BlogPosting","headline":"字符串遮罩的问题","dateModified":"2018-06-05T01:06:00+08:00","datePublished":"2018-06-05T01:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">字符串遮罩的问题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-06-05T01:06:00+08:00" itemprop="datePublished">Jun 5, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="字符串遮罩的问题">字符串遮罩的问题</h2>
+
+<p>对于 <code class="language-plaintext highlighter-rouge">substr</code> 与 <code class="language-plaintext highlighter-rouge">substring</code>，<code class="language-plaintext highlighter-rouge">slice</code> 与 <code class="language-plaintext highlighter-rouge">splice</code> 这种名字相近，功能也相近的函数，着实容易搞混，不太方便记住其区别。这还不算，参数如果是负数的情况，表现又不一样。这里也不是要提供一种牢靠可记的方法，只是通过一个面试题目来顺便讨论和区分一下这些函数。</p>
+
+<h3 id="问题">问题</h3>
+
+<p>将给定的字符串除最后四位外，转成以 <code class="language-plaintext highlighter-rouge">#</code> 代替的掩码。</p>
+
+<p>示例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mask("123456789") // "#####6789"
+</code></pre></div></div>
+
+<h3 id="方案">方案</h3>
+
+<h4 id="方案一">方案一:</h4>
+
+<p>方案一也是比较直观的做法，将输入的字符串分成两部分，将需要转换的前一部分替换后与最后四位拼接。</p>
+
+<p>所以第一步是从原始字符串中取出这两部分。一如文章开头所说，可通过 <code class="language-plaintext highlighter-rouge">substr/substring</code> 来截取字符串的部分，也可通过 <code class="language-plaintext highlighter-rouge">slice/splice</code> 来选取字符串的部分。</p>
+
+<p>先分别看看他们的功能及语法。</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">substr</code></li>
+</ul>
+
+<p>语法：<code class="language-plaintext highlighter-rouge">str.substr(start[, length])</code> 
+返回 <code class="language-plaintext highlighter-rouge">start</code> 开始的 <code class="language-plaintext highlighter-rouge">length</code> 个字符，如果指定的起始索引为负，则从字符串末尾开始。
+其结果通过集合可表示为 <code class="language-plaintext highlighter-rouge">[start, start + length)</code></p>
+
+<p>示例：</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">'</span><span class="s1">1234</span><span class="dl">'</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="c1">// '2'</span>
+<span class="dl">'</span><span class="s1">1234</span><span class="dl">'</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="c1">// '4'</span>
+</code></pre></div></div>
+
+<p>对于负数的情况，先用字符串总长度与之做加法运算，上面第二个示例中，字符串总长 4，与 -1 想加后得 3，最终相当于</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">'</span><span class="s1">1234</span><span class="dl">'</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="c1">// '4'</span>
+    <span class="o">^</span>
+ <span class="mi">0123</span>
+</code></pre></div></div>
+
+<p>从第三个开始选一个，第三个字符是 4，所以最终结果是 4。</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">substring</code></li>
+</ul>
+
+<p>语法：<code class="language-plaintext highlighter-rouge">str.substring(indexStart[, indexEnd])</code>
+返回 <code class="language-plaintext highlighter-rouge">indexEnd</code> 开始到 <code class="language-plaintext highlighter-rouge">indexEnd</code> 的这部分字符串。
+其结果通过集合可表示为 <code class="language-plaintext highlighter-rouge">[indexStart, indexEnd)</code>。</p>
+
+<p>特别地，如果起始索引大于结束索引，效果相当于交换他们的值。与 <code class="language-plaintext highlighter-rouge">substr</code> 不同，<strong>它不支持索引为负时从末尾开始计算</strong>。</p>
+
+<ul>
+  <li>字符串的 <code class="language-plaintext highlighter-rouge">slice</code> 方法</li>
+</ul>
+
+<p>语法：<code class="language-plaintext highlighter-rouge">str.slice(beginIndex[, endIndex])</code></p>
+
+<p>从方法签名上来看，其与 <code class="language-plaintext highlighter-rouge">substring</code> 是很类似的。返回的结果也一样。
+他们的区分在于：
+    - 起始索引大于结束索引时， <code class="language-plaintext highlighter-rouge">slice</code> 不会调换参数
+    - 对于负数的索引，<code class="language-plaintext highlighter-rouge">substring</code> 当0处理，而 <code class="language-plaintext highlighter-rouge">slice</code> 从末尾开始处理</p>
+
+<p>数组的 <code class="language-plaintext highlighter-rouge">slice/splice</code> 两个方法也是类似功能，只不过操作的是数组，选取的是数组中部分元素。因为字符串是类数组的（array-like），所以可以考虑这两个方法来获取部分字符串。</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">slice</code></li>
+</ul>
+
+<p>语法：<code class="language-plaintext highlighter-rouge">arr.slice([begin[, end]])</code>
+从原数组中选取 <code class="language-plaintext highlighter-rouge">begin</code> 开始到 <code class="language-plaintext highlighter-rouge">end</code> 之间的元素，用集合可表示为 [begin, end)。
+其中 <code class="language-plaintext highlighter-rouge">begin</code> <code class="language-plaintext highlighter-rouge">end</code> 都可为负数。</p>
+
+<p>示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">].</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="c1">// [3,4]</span>
+</code></pre></div></div>
+
+<p>类似 <code class="language-plaintext highlighter-rouge">substr</code>，起始索引为负数表示从末尾开始，理解上可将其与数组长度想加得 <code class="language-plaintext highlighter-rouge">4-2=2</code>，最后相当于</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">].</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="c1">// [3,4]</span>
+     <span class="o">^</span>
+ <span class="mi">0</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span>
+</code></pre></div></div>
+
+<p><strong>与 <code class="language-plaintext highlighter-rouge">substring</code> 不同，当起始索引大于结束索引时返回空，而不是交换这两个参数。</strong></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">splice</code></li>
+</ul>
+
+<p>语法：<code class="language-plaintext highlighter-rouge">array.splice(start[, deleteCount[, item1[, item2[, ...]]]])</code>
+它操作的是原数组，在原数组中进行元素的增删。</p>
+
+<p>了解了上面这些方法后，就可以完成方案一的实现了（简便起见，不考虑字符串总长小于4的情况）。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">mask</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">str</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">4</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">map</span><span class="p">((</span><span class="nx">v</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="dl">'</span><span class="s1">#</span><span class="dl">'</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">)</span> <span class="o">+</span> <span class="nx">str</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="方案二-strrepeat">方案二： <code class="language-plaintext highlighter-rouge">str.repeat</code></h4>
+
+<p>如果用上 string 的 repeat 方法，则省去了替换的步骤，直接生成需要个数的符号再加上原字符串的最后四位字符。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">mask</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="dl">'</span><span class="s1">#</span><span class="dl">'</span><span class="p">.</span><span class="nx">repeat</span><span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="nx">str</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>缺点是 IE 不支持 string 的这个 <code class="language-plaintext highlighter-rouge">repeat</code> 方法。</p>
+
+<h4 id="方案三">方案三</h4>
+
+<p>上面 <code class="language-plaintext highlighter-rouge">repeat</code> 不支持的情况下，可快速生成有指定空元素的数组来达到目的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">mask</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Array</span><span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="dl">'</span><span class="s1">#</span><span class="dl">'</span><span class="p">)</span> <span class="o">+</span> <span class="nx">str</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="总结">总结</h3>
+
+<p>因为最新的 Chrome Canary 中已经能自动提示 JavaScript 内置方法的参数了，如果记不住这些相似方法的签名也不用每次都查 MDN 了。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/mask-string/assets/auto-tip-for-native-method.png" alt="Chrome DevTools 中自动提示方法参数" /></p>
+
+<h3 id="相关资料">相关资料</h3>
+
+<ul>
+  <li><a href="https://30secondsofinterviews.org/">30 seconds of interviews</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substr">MDN substr doc</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring">MDN substring doc</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice">MDN string slice doc</a></li>
+  <li><a href="https://stackoverflow.com/a/2243835/1553656">What is the difference between String.slice and String.substring?</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice">MDN splice doc</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice">MDN slice doc</a></li>
+  <li><a href="https://stackoverflow.com/a/932392/1553656">What’s the difference between “Array()” and “[]” while declaring a JavaScript array?</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2018/06/05/%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%81%AE%E7%BD%A9%E7%9A%84%E9%97%AE%E9%A2%98.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

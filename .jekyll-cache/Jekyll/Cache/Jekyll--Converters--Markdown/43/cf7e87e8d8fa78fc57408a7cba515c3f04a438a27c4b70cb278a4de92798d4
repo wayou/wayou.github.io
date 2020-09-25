@@ -1,0 +1,60 @@
+I"�<h1 id="github-图片资源无法加载的解决">GitHub 图片资源无法加载的解决</h1>
+
+<p>打开浏览器的开发者工具，切换到网络面板查看失败资源的地址，比如：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/72772754-c68da800-3c3f-11ea-889b-f2aafb10d108.png" alt="浏览器开发者工具网络面板中查看失败的资源" /></p>
+<p align="center">浏览器开发者工具网络面板中查看失败的资源</p>
+
+<p>这里请求失败的图片统统是 https://user-images.githubusercontent.com 这个域下的。</p>
+
+<p>随便打开一个查询  IP 的网站比如 https://www.ipaddress.com/ 将上面的地址输入后查询其正确的 IP。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/72772788-e755fd80-3c3f-11ea-9350-1a75474feea4.png" alt="查询资源的正确 IP" /></p>
+<p align="center">查询资源的正确 IP</p>
+
+<p>将该 IP 配置到本地的 hosts 文件中。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>vi /etc/hosts
+
+...
+199.232.28.133  user-images.githubusercontent.com
+...
+</code></pre></div></div>
+
+<p>然后刷新一下本机的 hosts 使其立即生效。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>dscacheutil <span class="nt">-flushcache</span>
+</code></pre></div></div>
+
+<p>对于其他域下资源加载失败的情况，可重复上面的步骤，查询到正确的 IP 后配到 hosts 文件。</p>
+
+<p>以下是部分 GitHub 从中国访问时的 ip，可直接粘贴使用：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>192.30.253.112 github.com 
+192.30.253.119 gist.github.com
+151.101.184.133 assets-cdn.github.com
+151.101.184.133 raw.githubusercontent.com
+151.101.184.133 gist.githubusercontent.com
+151.101.184.133 cloud.githubusercontent.com
+151.101.184.133 camo.githubusercontent.com
+151.101.184.133 avatars0.githubusercontent.com
+151.101.184.133 avatars1.githubusercontent.com
+151.101.184.133 avatars2.githubusercontent.com
+151.101.184.133 avatars3.githubusercontent.com
+151.101.184.133 avatars4.githubusercontent.com
+151.101.184.133 avatars5.githubusercontent.com
+151.101.184.133 avatars6.githubusercontent.com
+151.101.184.133 avatars7.githubusercontent.com
+151.101.184.133 avatars8.githubusercontent.com
+199.232.28.133  user-images.githubusercontent.com
+</code></pre></div></div>
+
+<p>另，hosts 增多后，修改和管理本地的 hosts，推荐使用专门的软件，比如 <a href="https://oldj.github.io/SwitchHosts/">SwitchHosts</a>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://superuser.com/questions/346518/how-do-i-refresh-the-hosts-file-on-os-x">How do I refresh the hosts file on OS X?</a></li>
+</ul>
+
+:ET

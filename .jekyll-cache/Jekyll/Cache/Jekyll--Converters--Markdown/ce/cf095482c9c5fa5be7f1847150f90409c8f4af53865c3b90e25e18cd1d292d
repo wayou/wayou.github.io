@@ -1,0 +1,35 @@
+I"+<h1 id="chrome-自动为新开标签页自动打开-devtool">Chrome 自动为新开标签页自动打开 DevTool</h1>
+
+<p>有时候需要在页面一开始的地方就进行调试，比如查看网络面板，控制台信息，如果手动打开 DevTool 可能时机会慢了，即使手快使用快捷键 <kbd>command</kbd> + <kbd>shift</kbd> + <kbd>I</kbd> 也并不能做到页面打开时第一时间看到打开 devtool。</p>
+
+<p>可通过命令行启动 Chrome 并带上 <code class="language-plaintext highlighter-rouge">--auto-open-devtools-for-tabs</code> 参数，这样在新开页面时会自动第一时间打开 DevTool。</p>
+
+<p>通常情况下，加上 <code class="language-plaintext highlighter-rouge">--incognito</code> 参数打开隐身模式更加符合调试的需要，保证没有其他插件的干扰。</p>
+
+<p>Mac 下使用以下命令：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/Applications/Google<span class="se">\ </span>Chrome.app/Contents/MacOS/Google<span class="se">\ </span>Chrome <span class="nt">--incognito</span> <span class="nt">--auto-open-devtools-for-tabs</span>
+</code></pre></div></div>
+
+<p>Windows 下（未测试）：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:<span class="se">\P</span>rogram Files <span class="o">(</span>x86<span class="o">)</span><span class="se">\G</span>oogle<span class="se">\C</span>hrome<span class="se">\A</span>pplication<span class="se">\c</span>hrome.exe<span class="s2">" -incognito -auto-open-devtools-for-tabs
+</span></code></pre></div></div>
+
+<p><strong>需要注意的是，<code class="language-plaintext highlighter-rouge">--auto-open-devtools-for-tabs</code> 参数只对第一个 Chrome 实例生效，所以需要先关闭已经打开的 Chrome 窗口，即退出  Chrome 后再执行。</strong></p>
+
+<p>甚至可以在打开时就指定好需要打开的链接。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/Applications/Google<span class="se">\ </span>Chrome.app/Contents/MacOS/Google<span class="se">\ </span>Chrome <span class="nt">--incognito</span> <span class="nt">--auto-open-devtools-for-tabs</span> https://www.baidu.com
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/auto-open-chrome-dev-tool-for-new-tab/assets/auto_open_chrome_dev_tool_for_new_tab.gif" alt="自动为 Chrome 新开标签页打开 DevTool" /></p>
+
+<h3 id="相关资料">相关资料</h3>
+
+<ul>
+  <li><a href="https://stackoverflow.com/a/50481022/1553656">Chrome’s --auto-open-devtools-for-tabs</a></li>
+  <li><a href="https://umaar.com/dev-tips/111-auto-open-devtools/">Chrome DevTools: Automatically open DevTools in each new tab</a></li>
+</ul>
+
+:ET

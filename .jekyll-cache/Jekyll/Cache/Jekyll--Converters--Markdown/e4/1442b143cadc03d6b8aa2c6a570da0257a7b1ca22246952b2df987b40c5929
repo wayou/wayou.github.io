@@ -1,0 +1,31 @@
+I"�<h1 id="去掉-echo-结尾的换行">去掉 echo 结尾的换行</h1>
+
+<p>考察如下 shell 脚本：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">echo</span> “node <span class="nt">-v</span>:” <span class="o">&amp;&amp;</span> node <span class="nt">-v</span>
+“node <span class="nt">-v</span>:”
+v14.4.0
+</code></pre></div></div>
+
+<p>输出成了现行。</p>
+
+<p>这里可能通过 <code class="language-plaintext highlighter-rouge">echo -e “xxx\c”</code> 来去掉 <code class="language-plaintext highlighter-rouge">echo</code> 中的换行，其中，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">-e</code> 在 man page 中的解释是 <code class="language-plaintext highlighter-rouge">enable interpretation of backslash escapes</code>，即启用转义</li>
+  <li><code class="language-plaintext highlighter-rouge">-c</code> 用于 <code class="language-plaintext highlighter-rouge">echo</code> 中去掉结局的换行。</li>
+</ul>
+
+<p>修改后的脚本及输出结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"node -v:</span><span class="se">\c</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> node <span class="nt">-v</span>
+node <span class="nt">-v</span>:v14.4.0
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/a/11193566/1553656">‘echo’ without newline in a shell script</a></li>
+</ul>
+
+:ET

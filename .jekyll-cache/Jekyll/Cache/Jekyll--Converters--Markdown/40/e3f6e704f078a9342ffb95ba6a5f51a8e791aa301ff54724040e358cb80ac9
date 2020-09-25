@@ -1,0 +1,59 @@
+I"�<h1 id="objective-c-中计时器设置与取消">Objective-C 中计时器设置与取消</h1>
+
+<p>考察这样的场景：进入页面后设置接口轮询更新数据，离开页面时清除掉计时器。</p>
+
+<p>轮询可通过创建延时任务，并且在任务中递归调用自己来生成。Objective-C 中延时任务有多种方式，配合 <code class="language-plaintext highlighter-rouge">viewDidLoad</code> 和 <code class="language-plaintext highlighter-rouge">viewWillDisappear</code> 实现计时器的设置与清除。</p>
+
+<h2 id="performselectorwithobjectafterdelay-与-cancelpreviousperformrequestswithtarget"><code class="language-plaintext highlighter-rouge">performSelector:withObject:afterDelay:</code> 与 <code class="language-plaintext highlighter-rouge">cancelPreviousPerformRequestsWithTarget:</code></h2>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">NSObject</code> 上的 <a href="https://developer.apple.com/documentation/objectivec/nsobject/1416176-performselector?language=objc"><code class="language-plaintext highlighter-rouge">performSelector:withObject:afterDelay:</code></a> 配合 <a href="https://kapeli.com/dash_share?docset_file=Apple_API_Reference&amp;docset_name=Apple%20API%20Reference&amp;path=dash-apple-api://load?request_key=hcVCAfekYt%23&amp;platform=apple&amp;repo=Main&amp;source=https://developer.apple.com/documentation/objectivec/nsobject/1417611-cancelpreviousperformrequestswit?language=objc"><code class="language-plaintext highlighter-rouge">cancelPreviousPerformRequestsWithTarget:</code></a>。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">NSObject</span> <span class="nf">performSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="n">SampleMethod</span><span class="p">)</span> <span class="nf">withObject</span><span class="p">:</span><span class="n">self</span> <span class="n">afterDelay</span><span class="o">:</span><span class="n">delayTime</span><span class="p">];</span>
+<span class="p">[</span><span class="n">NSObject</span> <span class="nf">cancelPreviousPerformRequestsWithTarget</span><span class="p">:</span><span class="n">self</span><span class="p">];</span>
+</code></pre></div></div>
+
+<h2 id="dispatch_after-与-dispatch_block_cancel"><code class="language-plaintext highlighter-rouge">dispatch_after</code> 与 <code class="language-plaintext highlighter-rouge">dispatch_block_cancel</code></h2>
+
+<p>通过 <a href="https://kapeli.com/dash_share?docset_file=Apple_API_Reference&amp;docset_name=Apple%20API%20Reference&amp;path=dash-apple-api://load?request_key=hcogKBJqmQ%23&amp;platform=apple&amp;repo=Main&amp;source=https://developer.apple.com/documentation/dispatch/1452876-dispatch_after?language=objc"><code class="language-plaintext highlighter-rouge">dispatch_after</code></a> 与 <a href="https://developer.apple.com/documentation/dispatch/1431058-dispatch_block_cancel?language=objc#"><code class="language-plaintext highlighter-rouge">dispatch_block_cancel</code></a> 实现任务延迟与取消。</p>
+
+<p>声明一个变量保存需要执行的任务：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">var</span> <span class="n">block</span><span class="o">:</span> <span class="n">dispatch_block_t</span><span class="p">?</span>
+</code></pre></div></div>
+
+<p>初始化 <code class="language-plaintext highlighter-rouge">block</code> 然后通过 <code class="language-plaintext highlighter-rouge">dispatch_after</code> 触发：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">block</span> <span class="o">=</span> <span class="n">dispatch_block_create</span><span class="p">(</span><span class="n">DISPATCH_BLOCK_INHERIT_QOS_CLASS</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">print</span><span class="p">(</span><span class="s">"I executed"</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">let</span> <span class="n">time</span><span class="o">:</span> <span class="n">dispatch_time_t</span> <span class="o">=</span> <span class="n">dispatch_time</span><span class="p">(</span><span class="n">DISPATCH_TIME_NOW</span><span class="p">,</span> <span class="n">Int64</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">NSEC_PER_SEC</span><span class="p">))</span>
+<span class="n">dispatch_after</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dispatch_get_main_queue</span><span class="p">(),</span> <span class="n">block</span><span class="o">!</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>最后在合适的时机通过 <code class="language-plaintext highlighter-rouge">dispatch_block_cancel</code> 取消任务：</p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dispatch_block_cancel</span><span class="p">(</span><span class="n">block</span><span class="o">!</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="dispatchworkitem"><code class="language-plaintext highlighter-rouge">DispatchWorkItem</code></h2>
+
+<p>Swift 中可使用 <a href="https://developer.apple.com/documentation/dispatch/dispatchworkitem"><code class="language-plaintext highlighter-rouge">DispatchWorkItem</code></a> 与 <a href="https://developer.apple.com/documentation/dispatch/dispatchworkitem/1780910-cancel"><code class="language-plaintext highlighter-rouge">cancel()</code></a>。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">let</span> <span class="n">queue</span> <span class="o">=</span> <span class="n">DispatchQueue</span><span class="p">(</span><span class="n">label</span><span class="o">:</span> <span class="s">"queue"</span><span class="p">,</span> <span class="n">attributes</span><span class="o">:</span> <span class="p">.</span><span class="n">concurrent</span><span class="p">)</span>
+<span class="n">let</span> <span class="n">workItem</span> <span class="o">=</span> <span class="n">DispatchWorkItem</span> <span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="s">"done"</span><span class="p">)</span>
+<span class="p">}</span>
+    
+<span class="n">DispatchQueue</span><span class="p">.</span><span class="n">main</span><span class="p">.</span><span class="n">asyncAfter</span><span class="p">(</span><span class="n">deadline</span><span class="o">:</span> <span class="p">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="p">.</span><span class="n">seconds</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">queue</span><span class="p">.</span><span class="n">async</span><span class="p">(</span><span class="n">execute</span><span class="o">:</span> <span class="n">workItem</span><span class="p">)</span> <span class="c1">// not work</span>
+<span class="p">}</span>
+<span class="n">workItem</span><span class="p">.</span><span class="n">cancel</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://coderwall.com/p/ochica/ios-canceling-delayed-performselector">iOS - Canceling delayed performSelector</a></li>
+  <li><a href="https://stackoverflow.com/a/37829673/1553656">Stop dispatch_after</a></li>
+  <li><a href="https://stackoverflow.com/questions/38370035/how-to-stop-a-dispatchworkitem-in-gcd">How to stop a DispatchWorkItem in GCD?</a></li>
+</ul>
+:ET

@@ -1,0 +1,138 @@
+I":'<h1 id="objective-c-中使用-swift-代码">Objective-C 中使用 Swift 代码</h1>
+
+<p>因为 Apple 强推 Swift，后者势头不减，社区各种优秀的配套也都跟上来，比如做动画的 <a href="https://github.com/MengTo/Spring">Spring</a>，是用 Swfit 写的。</p>
+
+<p>所以，就会有需求是 Objective-C 中使用这些优秀的库。</p>
+
+<h2 id="创建桥接声明文件">创建桥接声明文件</h2>
+
+<p>默认情况下，当你在一个 Objective-C 项目中创建 Swfit 文件时，Xcode 会自动创建两种语言间的桥接声明文件（Bridging Header），通过这个桥接文件使得两者可互调。</p>
+
+<p>这里只看 Objective-C 中调用 Swift 的情况。</p>
+
+<p>有文章指将需要使用的 Swift 代码挺入打开 Objective-C 项目的 Xocde 时，这个互相调用的环境就会自动创建，实测无效。还是要手动来。</p>
+
+<ul>
+  <li>为了使 Xcode 自动配置互调的环境，在 Objective-C 项目中新建一个 Swfit 文件，名称随便，内容随便。点击完成时，会得到一个是否创建桥接声明文件的提示，当然选择创建了。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70340258-69a28200-188b-11ea-8b08-00b84bbe5ebe.png" alt="创建桥接声明文件" /></p>
+<p align="center">创建桥接声明文件</p>
+
+<p>顺利的话，就不用折腾额外的配置了。</p>
+
+<p>后面在需要使用 Swift 代码的地方，引入 <code class="language-plaintext highlighter-rouge">&lt;项目名&gt;-Swift.h</code> 声明文件即可。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#import "ProductModuleName-Swift.h"
+</span></code></pre></div></div>
+
+<p>这里的项目名实际上是工程的 <code class="language-plaintext highlighter-rouge">Product Module Name</code>，默认情况下即创建工程时输入的那个名称，可在工程的 “Build Settings” - “Packaging” 中找到。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70340256-6909eb80-188b-11ea-94eb-55eef2c964da.png" alt="项目的 Product Module Name" /></p>
+<p align="center">项目的 Product Module Name</p>
+
+<h2 id="测试">测试</h2>
+
+<p>在刚刚创建的 Swift 文件中添加示例代码，以在 Objective-C 中调用：</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">Foo</span><span class="p">:</span> <span class="kt">NSObject</span> <span class="p">{</span>
+    <span class="kd">@objc</span> <span class="kd">public</span> <span class="kd">func</span> <span class="nf">greeting</span><span class="p">(){</span>
+        <span class="kt">NSLog</span><span class="p">(</span><span class="s">"hello %@"</span><span class="p">,</span> <span class="s">"world!"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p><strong>注意</strong>：在完成 Swfit 代码编写后，执行一次清理重新编译一遍，这是为了更新桥接声明文件，以便 Objective-C 中能够正常使用，否则会报找不到的错误。</p>
+
+<p>调用：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@implementation</span> <span class="nc">ViewController</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">viewDidLoad</span> <span class="p">{</span>
+    <span class="p">[</span><span class="n">super</span> <span class="nf">viewDidLoad</span><span class="p">];</span>
+    <span class="n">Foo</span> <span class="o">*</span><span class="n">foo</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Foo</span> <span class="nf">alloc</span><span class="p">]</span><span class="nf">init</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">foo</span> <span class="nf">greeting</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p>运行效果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70340254-6909eb80-188b-11ea-8046-a77c7339de03.png" alt="Objective-C 中调用 Swift" /></p>
+<p align="center">Objective-C 中调用 Swift</p>
+
+<h2 id="引入-spring-动画库并使用">引入 Spring 动画库并使用</h2>
+
+<ul>
+  <li>
+    <p>Clone <a href="https://github.com/MengTo/Spring">Spring</a> 到本地并在 finder 中打开。</p>
+  </li>
+  <li>
+    <p>将 “Spring” 这个文件夹整个拖进项目。</p>
+  </li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70340250-68715500-188b-11ea-9c15-4915c7b13ec7.png" alt="添加 Swfit 库到 Objective-C 项目中" /></p>
+<p align="center">添加 Swfit 库到 Objective-C 项目中</p>
+
+<ul>
+  <li>同样，因为添加了新的 Swift 文件，在使用前，先走一遍编译。但需要先删掉刚刚拖进来文件夹中的 info.plist 文件，否则会报错</li>
+</ul>
+
+<details>
+<summary>添加 Spring 的 Swift 文件后编译报错信息</summary>
+
+```
+Multiple commands produce '/some/path/Library/Developer/Xcode/DerivedData/AnimationDemo-fhnpmfdgpuonqdevdvdysbcfjivn/Build/Products/Debug-iphonesimulator/AnimationDemo.app/Info.plist':
+1) Target 'AnimationDemo' (project 'AnimationDemo') has copy command from '/some/path/work/dev/github/AnimationDemo/AnimationDemo/Spring/Info.plist' to '/some/path/Library/Developer/Xcode/DerivedData/AnimationDemo-fhnpmfdgpuonqdevdvdysbcfjivn/Build/Products/Debug-iphonesimulator/AnimationDemo.app/Info.plist'
+2) Target 'AnimationDemo' (project 'AnimationDemo') has process command with output '/some/path/Library/Developer/Xcode/DerivedData/AnimationDemo-fhnpmfdgpuonqdevdvdysbcfjivn/Build/Products/Debug-iphonesimulator/AnimationDemo.app/Info.plist'
+```
+</details>
+
+<ul>
+  <li>创建动画</li>
+</ul>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@implementation</span> <span class="nc">ViewController</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">viewDidLoad</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">super</span> <span class="nf">viewDidLoad</span><span class="p">];</span>
+
+  <span class="n">CGSize</span> <span class="n">screenSize</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+  <span class="n">CGFloat</span> <span class="n">cubeSize</span> <span class="o">=</span> <span class="mi">50</span><span class="p">.</span><span class="mi">0</span><span class="n">f</span><span class="p">;</span>
+  <span class="n">SpringView</span> <span class="o">*</span><span class="n">springView</span> <span class="o">=</span> <span class="p">[[</span><span class="n">SpringView</span> <span class="nf">alloc</span><span class="p">]</span>
+      <span class="nl">initWithFrame:</span><span class="n">CGRectMake</span><span class="p">((</span><span class="n">screenSize</span><span class="p">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">cubeSize</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                               <span class="p">(</span><span class="n">screenSize</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">cubeSize</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cubeSize</span><span class="p">,</span> <span class="n">cubeSize</span><span class="p">)];</span>
+  <span class="n">springView</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIColor</span> <span class="nf">redColor</span><span class="p">];</span>
+  <span class="n">springView</span><span class="p">.</span><span class="n">animation</span> <span class="o">=</span> <span class="s">@"flipX"</span><span class="p">;</span>
+  <span class="n">springView</span><span class="p">.</span><span class="n">autostart</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+  <span class="n">springView</span><span class="p">.</span><span class="n">duration</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">0</span><span class="n">f</span><span class="p">;</span>
+  <span class="n">springView</span><span class="p">.</span><span class="n">repeatCount</span> <span class="o">=</span> <span class="n">INFINITY</span><span class="p">;</span>
+  <span class="p">[</span><span class="n">springView</span> <span class="nf">animate</span><span class="p">];</span>
+  <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nf">addSubview</span><span class="p">:</span><span class="n">springView</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p>动画效果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70340252-6909eb80-188b-11ea-9d54-98ade26f3105.gif" alt="Spring 动画运行效果" /></p>
+<p align="center">Spring 动画运行效果</p>
+
+<h2 id="代码">代码</h2>
+
+<p>一个可工作的项目代码可在 <a href="https://github.com/wayou/AnimationDemo">wayou/AnimationDemo</a> 找到。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.apple.com/documentation/swift/imported_c_and_objective-c_apis/importing_swift_into_objective-c">Importing Swift into Objective-C</a></li>
+</ul>
+
+:ET

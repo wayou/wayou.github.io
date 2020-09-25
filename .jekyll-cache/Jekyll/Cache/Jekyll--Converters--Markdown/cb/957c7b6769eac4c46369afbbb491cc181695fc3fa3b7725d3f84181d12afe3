@@ -1,0 +1,426 @@
+I"fi<h1 id="nest-静态文件服务与-404-的处理">Nest 静态文件服务与 404 的处理</h1>
+
+<h2 id="准备工作">准备工作</h2>
+
+<h3 id="创建项目">创建项目</h3>
+
+<p>为了更好地展示问题及解决方案，先创建个示例项目。</p>
+
+<ul>
+  <li>安装工具</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm i <span class="nt">-g</span> @nestjs/cli
+</code></pre></div></div>
+
+<ul>
+  <li>生成项目</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nest new nest-404-issue
+</code></pre></div></div>
+
+<ul>
+  <li>安装依赖</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$ </span><span class="nb">cd </span>nest-404-issue <span class="o">&amp;&amp;</span> yarn
+</code></pre></div></div>
+
+<ul>
+  <li>启动项目</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>yarn start:dev
+</code></pre></div></div>
+
+<h3 id="查看-nest-正常的-404-返回">查看 Nest 正常的 404 返回</h3>
+
+<p>先来观察正常情况下，没做任何多余配置时，Nest 是如何处理 404 的。</p>
+
+<p>创建示例接口：</p>
+
+<p><strong>src/app.controller.ts</strong></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Controller</span><span class="p">,</span> <span class="nx">Get</span><span class="p">,</span> <span class="nx">HttpException</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/common</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">AppService</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./app.service</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">Controller</span><span class="p">(</span><span class="dl">'</span><span class="s1">api</span><span class="dl">'</span><span class="p">)</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">AppController</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">private</span> <span class="k">readonly</span> <span class="nx">appService</span><span class="p">:</span> <span class="nx">AppService</span><span class="p">)</span> <span class="p">{}</span>
+
+  <span class="p">@</span><span class="nd">Get</span><span class="p">(</span><span class="dl">'</span><span class="s1">test</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">getHello</span><span class="p">():</span> <span class="kr">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">appService</span><span class="p">.</span><span class="nx">getHello</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="p">@</span><span class="nd">Get</span><span class="p">(</span><span class="dl">'</span><span class="s1">exception</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">exception</span><span class="p">():</span> <span class="kr">string</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nx">HttpException</span><span class="p">(</span><span class="dl">'</span><span class="s1">custom exception message</span><span class="dl">'</span><span class="p">,</span> <span class="mi">403</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>测试上面的接口，以及测试一个不存在的地址，观察返回：</p>
+
+<ul>
+  <li>接口正常返回</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/api/test'</span>
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: text/html<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Content-Length: 12
+ETag: W/<span class="s2">"c-Lve95gjOVATpfV8EL5X4nxwjKHE"</span>
+Date: Fri, 04 Sep 2020 09:38:40 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+Hello World!⏎
+</code></pre></div></div>
+
+<ul>
+  <li>接口返回自定义异常</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/api/exception'</span>
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Content-Type: application/json<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Content-Length: 55
+ETag: W/<span class="s2">"37-kvSF4OinnMiOnDYxCscPfTGVb5A"</span>
+Date: Fri, 04 Sep 2020 09:38:35 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+<span class="o">{</span><span class="s2">"statusCode"</span>:403,<span class="s2">"message"</span>:<span class="s2">"custom exception message"</span><span class="o">}</span>⏎
+</code></pre></div></div>
+
+<ul>
+  <li>访问不存在的地址，返回预期的 404</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/api/xxx'</span>
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Content-Type: application/json<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Content-Length: 70
+ETag: W/<span class="s2">"46-MS/Zos7foeL1e/ldRUquWMPU3a0"</span>
+Date: Fri, 04 Sep 2020 09:38:54 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+<span class="o">{</span><span class="s2">"statusCode"</span>:404,<span class="s2">"message"</span>:<span class="s2">"Cannot GET /api/xxx"</span>,<span class="s2">"error"</span>:<span class="s2">"Not Found"</span><span class="o">}</span>⏎
+</code></pre></div></div>
+
+<p>So far so good!</p>
+
+<h3 id="添加静态文件服务的能力">添加静态文件服务的能力</h3>
+
+<p>服务端，免不了需要 serve 静态文件。参考<a href="https://docs.nestjs.com/recipes/serve-static#serve-static">官方文档</a> 不难开启。</p>
+
+<p>先创建一个和 <code class="language-plaintext highlighter-rouge">src</code> 目录平级 <code class="language-plaintext highlighter-rouge">public</code> 目录，在其中放置静态文件，比如 <code class="language-plaintext highlighter-rouge">public/foo.txt</code>.</p>
+
+<p>安装依赖：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>yarn add @nestjs/serve-static
+</code></pre></div></div>
+
+<p>注册并配置静态文件服务的模块：</p>
+
+<p><strong>src/app.module.ts</strong></p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">import { Module } from '@nestjs/common';
+</span><span class="gi">+ import { ServeStaticModule } from '@nestjs/serve-static';
++ import { join } from 'path';
+</span><span class="p">import { AppController } from './app.controller';
+import { AppService } from './app.service';
+</span>
+@Module({
+  imports: [
+<span class="gi">+    ServeStaticModule.forRoot({
++      rootPath: join(__dirname, '..', 'public'),
++    }),
+</span>  ],
+  controllers: [AppController],
+  providers: [AppService],
+<span class="err">})</span>
+export class AppModule {}
+</code></pre></div></div>
+
+<p>到此文档里描述的就结束了，重启编译并启动，访问 <code class="language-plaintext highlighter-rouge">localhost:3000/foo.txt</code> 就能访问对应文件了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/foo.txt'</span>
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Accept-Ranges: bytes
+Cache-Control: public, max-age<span class="o">=</span>0
+Last-Modified: Fri, 04 Sep 2020 10:16:13 GMT
+ETag: W/<span class="s2">"14-174589dd6c4"</span>
+Content-Type: text/plain<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>UTF-8
+Content-Length: 20
+Date: Fri, 04 Sep 2020 10:16:38 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+content from foo.txt⏎
+</code></pre></div></div>
+
+<p>不过，如果静态文件目录不在根目录，比如，我们的静态文件是放置在 <code class="language-plaintext highlighter-rouge">src/static</code> 下，这种情况一般是希望静态文件也作为源码的一部分进行打包发布，即编译到 <code class="language-plaintext highlighter-rouge">dist</code> 目录中。</p>
+
+<p>如下的目录结构展示了静态文件所在的位置：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .
+  ├── README.md
+  ├── nest-cli.json
+  ├── package.json
+<span class="gd">- ├── public
+- │   └── foo.txt
+</span>  ├── src
+  │   ├── app.controller.spec.ts
+  │   ├── app.controller.ts
+  │   ├── app.module.ts
+  │   ├── app.service.ts
+  │   ├── main.ts
+<span class="gi">+ │   └── static
++ │       └── blah.txt
+</span>  ├── test
+  │   ├── app.e2e-spec.ts
+  │   └── jest-e2e.json
+  ├── tsconfig.build.json
+  ├── tsconfig.json
+  └── yarn.lock
+</code></pre></div></div>
+
+<p><strong>src/app.module.ts</strong></p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+</span>
+@Module({
+  imports: [
+    ServeStaticModule.forRoot({
+<span class="gd">-     rootPath: join(__dirname, '..', 'public'),
+</span><span class="gi">+     rootPath: join(__dirname, 'static'),
+</span>    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+<span class="err">})</span>
+export class AppModule {}
+</code></pre></div></div>
+
+<p>尝试访问该静态文件：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/blah.txt'</span>
+HTTP/1.1 500 Internal Server Error
+X-Powered-By: Express
+Content-Type: application/json<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Content-Length: 52
+ETag: W/<span class="s2">"34-rlKccw1E+/fV8niQk4oFitDfPro"</span>
+Date: Fri, 04 Sep 2020 10:20:17 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+<span class="o">{</span><span class="s2">"statusCode"</span>:500,<span class="s2">"message"</span>:<span class="s2">"Internal server error"</span><span class="o">}</span>⏎
+</code></pre></div></div>
+
+<p>同时日志中出现如下错误：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Nest] 16319   - 09/04/2020, 6:20:17 PM   [ExceptionsHandler] ENOENT: no such file or directory, stat '/Users/wayou/Documents/dev/github/static-404-issue/dist/static/index.html' +7729ms
+Error: ENOENT: no such file or directory, stat '/Users/wayou/Documents/dev/github/static-404-issue/dist/static/index.html'
+</code></pre></div></div>
+
+<p>注意，这里开始 Nest 已经没有展示 404 错误了，而是 500，这不是我们期望的。</p>
+
+<p>这种情况下，需要做一些额外的工作才能正常访问静态文件。</p>
+
+<p>配置 <code class="language-plaintext highlighter-rouge">nest-cli.json</code>，编译时将静态文件目录复制到 <code class="language-plaintext highlighter-rouge">dist</code> 下。</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"collection"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@nestjs/schematics"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"sourceRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"src"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"assets"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"static/**/*"</span><span class="p">],</span><span class="w">
+    </span><span class="nl">"watchAssets"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>注意这里 <code class="language-plaintext highlighter-rouge">assets</code> 中的路径是相对于上面 <code class="language-plaintext highlighter-rouge">sourceRoot</code> 的。</p>
+
+<p>再次访问，成功了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/blah.txt'</span>
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Accept-Ranges: bytes
+Cache-Control: public, max-age<span class="o">=</span>0
+Last-Modified: Fri, 04 Sep 2020 10:23:27 GMT
+ETag: W/<span class="s2">"15-17458a47849"</span>
+Content-Type: text/plain<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>UTF-8
+Content-Length: 21
+Date: Fri, 04 Sep 2020 10:23:30 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+content form blah.txt⏎
+</code></pre></div></div>
+
+<h2 id="404-问题">404 问题</h2>
+
+<p>上面已经看到，在添加了静态文件服务后，访问不存在的地址时，服务端会报 500 而不是 404，同时会生产一条错误日志。</p>
+
+<p>访问一个不存在的地址：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/xxx'</span>
+HTTP/1.1 500 Internal Server Error
+X-Powered-By: Express
+Content-Type: application/json<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Content-Length: 52
+ETag: W/<span class="s2">"34-rlKccw1E+/fV8niQk4oFitDfPro"</span>
+Date: Fri, 04 Sep 2020 10:28:21 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+<span class="o">{</span><span class="s2">"statusCode"</span>:500,<span class="s2">"message"</span>:<span class="s2">"Internal server error"</span><span class="o">}</span>⏎
+</code></pre></div></div>
+
+<p>Nest 日志：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Nest] 16626   - 09/04/2020, 6:28:21 PM   [ExceptionsHandler] ENOENT: no such file or directory, stat '/Users/wayou/Documents/dev/github/static-404-issue/dist/static/index.html' +326110ms
+Error: ENOENT: no such file or directory, stat '/Users/wayou/Documents/dev/github/static-404-issue/dist/static/index.html'
+</code></pre></div></div>
+
+<p>这里可以简单地补上该 <code class="language-plaintext highlighter-rouge">index.html</code> 文件，充当出错时的展示页面，但 http 状态码却是不够恰当的。</p>
+
+<p>再比如现上机器被负载均衡进行健康检查时会访问 <code class="language-plaintext highlighter-rouge">/</code> 路径，如果程序中没有提供该路径，也会产生上述错误日志，但功能并不影响。</p>
+
+<h2 id="添加自定义-filter-解决-404-问题">添加自定义 filter 解决 404 问题</h2>
+
+<p>为了解决上述问题，可以添加自定义的 filter，在该 filter 中捕获所有异常。</p>
+
+<p>创建 filter 文件：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nest g filter not-found
+CREATE src/not-found.filter.spec.ts <span class="o">(</span>160 bytes<span class="o">)</span>
+CREATE src/not-found.filter.ts <span class="o">(</span>185 bytes<span class="o">)</span>
+</code></pre></div></div>
+
+<p><em>src/not-found.filter.ts</em></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span>
+  <span class="nx">ArgumentsHost</span><span class="p">,</span>
+  <span class="nx">Catch</span><span class="p">,</span>
+  <span class="nx">ExceptionFilter</span><span class="p">,</span>
+  <span class="nx">HttpException</span><span class="p">,</span>
+  <span class="nx">HttpStatus</span><span class="p">,</span>
+  <span class="nx">Logger</span><span class="p">,</span>
+<span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/common</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Response</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">express</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">Catch</span><span class="p">()</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">NotFoundFilter</span> <span class="k">implements</span> <span class="nx">ExceptionFilter</span> <span class="p">{</span>
+  <span class="k">catch</span><span class="p">(</span><span class="nx">exception</span><span class="p">:</span> <span class="kr">any</span><span class="p">,</span> <span class="nx">host</span><span class="p">:</span> <span class="nx">ArgumentsHost</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">host</span><span class="p">.</span><span class="nx">switchToHttp</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">getResponse</span><span class="o">&lt;</span><span class="nx">Response</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">getRequest</span><span class="o">&lt;</span><span class="nx">Request</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">status</span> <span class="o">=</span>
+      <span class="nx">exception</span> <span class="k">instanceof</span> <span class="nx">HttpException</span>
+        <span class="p">?</span> <span class="nx">exception</span><span class="p">.</span><span class="nx">getStatus</span><span class="p">()</span>
+        <span class="p">:</span> <span class="nx">HttpStatus</span><span class="p">.</span><span class="nx">INTERNAL_SERVER_ERROR</span><span class="p">;</span>
+
+    <span class="kd">const</span> <span class="nx">statusCode</span> <span class="o">=</span> <span class="nx">HttpStatus</span><span class="p">.</span><span class="nx">NOT_FOUND</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">exception</span><span class="p">.</span><span class="nx">code</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">ENOENT</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">Logger</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">exception</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="nx">statusCode</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span>
+        <span class="nx">statusCode</span><span class="p">,</span>
+        <span class="na">message</span><span class="p">:</span> <span class="s2">`Cannot </span><span class="p">${</span><span class="nx">request</span><span class="p">.</span><span class="nx">method</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+        <span class="na">error</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Not Found</span><span class="dl">'</span><span class="p">,</span>
+      <span class="p">});</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">sendStatus</span><span class="p">(</span><span class="nx">status</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>使用该 filter:</p>
+
+<p><strong>src/main.ts</strong></p>
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">NestFactory</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@nestjs/core</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">AppModule</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./app.module</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">NotFoundFilter</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./not-found.filter</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">bootstrap</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">NestFactory</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">AppModule</span><span class="p">);</span>
+  <span class="nx">app</span><span class="p">.</span><span class="nx">useGlobalFilters</span><span class="p">(</span><span class="k">new</span> <span class="nx">NotFoundFilter</span><span class="p">());</span>
+  <span class="k">await</span> <span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">bootstrap</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>测试一个不存在的地址，404 正常返回：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/xxx'</span>
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Content-Type: application/json<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Content-Length: 66
+ETag: W/<span class="s2">"42-jFXjxTPwH3beSsrwe7cwiYAuVqg"</span>
+Date: Fri, 04 Sep 2020 10:37:59 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+<span class="o">{</span><span class="s2">"statusCode"</span>:404,<span class="s2">"message"</span>:<span class="s2">"Cannot GET /xxx"</span>,<span class="s2">"error"</span>:<span class="s2">"Not Found"</span><span class="o">}</span>⏎
+</code></pre></div></div>
+
+<p>查看自定义的异常是否正常返回：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/api/exception'</span>
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Content-Type: text/plain<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Content-Length: 9
+ETag: W/<span class="s2">"9-PatfYBLj4Um1qTm5zrukoLhNyPU"</span>
+Date: Fri, 04 Sep 2020 10:40:01 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+Forbidden⏎
+</code></pre></div></div>
+
+<p>注意到这里在添加了自定义 filter 之后，返回的 body 和之前有区别，即没有错误信息了。可以修改上述 filter 把错误信息进行返回，不过线上环境不建议将服务端异常详情进行返回。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">- response.sendStatus(status);
+</span><span class="gi">+ response.status(status).send(exception);
+</span></code></pre></div></div>
+
+<p>测试返回：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-i</span> <span class="s1">'localhost:3000/api/exception'</span>
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Content-Type: application/json<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Content-Length: 89
+ETag: W/<span class="s2">"59-F2LsY9fA/4AwT+tZ4AN3mM6WbzA"</span>
+Date: Fri, 04 Sep 2020 10:42:57 GMT
+Connection: keep-alive
+Keep-Alive: <span class="nb">timeout</span><span class="o">=</span>5
+
+<span class="o">{</span><span class="s2">"response"</span>:<span class="s2">"custom exception message"</span>,<span class="s2">"status"</span>:403,<span class="s2">"message"</span>:<span class="s2">"custom exception message"</span><span class="o">}</span>⏎
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://github.com/nestjs/serve-static/issues/139#issuecomment-612429557">There is not good way to catch “File not found” errors on static assets #139</a></li>
+  <li><a href="https://docs.nestjs.com/recipes/serve-static#serve-static">Nest Doc - Serve Static</a></li>
+</ul>
+
+:ET

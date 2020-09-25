@@ -1,0 +1,264 @@
+I"nr<h1 id="koa-中间件的执行">Koa 中间件的执行</h1>
+
+<h2 id="nodejs-中请求的处理">Node.js 中请求的处理</h2>
+
+<p>讨论 Koa 中间件前，先看原生 Node.js 中是如何创建 server 和处理请求的。</p>
+
+<p><em>node_server.js</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">http</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">PORT</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">((</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="dl">"</span><span class="s2">hello world!</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">PORT</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`server started at http://localhost:</span><span class="p">${</span><span class="nx">PORT</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="koa-中请求的处理">Koa 中请求的处理</h2>
+
+<p>Koa 也是通过上面的 <code class="language-plaintext highlighter-rouge">http.createServer</code> 创建服务器处理请求的返回 <code class="language-plaintext highlighter-rouge">res</code>。 但在 Koa 的封装体系下，其提供了十分好用的中间件系统，可对请求 <code class="language-plaintext highlighter-rouge">req</code> 及返回 <code class="language-plaintext highlighter-rouge">res</code> 进行便捷地处理。</p>
+
+<p><em><a href="https://github.com/koajs/koa/blob/75233d974a30af6e3b8ab38a73e5ede67172fc1c/lib/application.js#L64">koa/lib/application.js#L64</a></em></p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  listen(...args) {
+    debug('listen');
+<span class="gi">+    const server = http.createServer(this.callback());
+</span>    return server.listen(...args);
+  }
+</code></pre></div></div>
+
+<p>Koa 中的 hello world:</p>
+
+<p><em>server.js</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">Koa</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">koa</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Koa</span><span class="p">();</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Hello World</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Koa 中，涉及到对请求返回处理都是通过中间件完成的，像上面为样，返回页面一个 <code class="language-plaintext highlighter-rouge">Hello World</code> 文本，也是调用 <code class="language-plaintext highlighter-rouge">app.use</code> 向 <code class="language-plaintext highlighter-rouge">Application</code> 对象注册了个中间件来完成。</p>
+
+<h2 id="koa-中间件编写及使用">Koa 中间件编写及使用</h2>
+
+<p>Koa 中中间件即一个处理请求的方法，通过调用 <code class="language-plaintext highlighter-rouge">app.use(fn)</code> 后，中间件 <code class="language-plaintext highlighter-rouge">fn</code> 被保存到了内部一个中间件数组中。</p>
+
+<p><em><a href="https://github.com/koajs/koa/blob/75233d974a30af6e3b8ab38a73e5ede67172fc1c/lib/application.js#L105">koa/lib/application.js#L105</a></em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">use</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">fn</span> <span class="o">!==</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">'</span><span class="s1">middleware must be a function!</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isGeneratorFunction</span><span class="p">(</span><span class="nx">fn</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">deprecate</span><span class="p">(</span><span class="dl">'</span><span class="s1">Support for generators will be removed in v3. </span><span class="dl">'</span> <span class="o">+</span>
+                <span class="dl">'</span><span class="s1">See the documentation for examples of how to convert old middleware </span><span class="dl">'</span> <span class="o">+</span>
+                <span class="dl">'</span><span class="s1">https://github.com/koajs/koa/blob/master/docs/migration.md</span><span class="dl">'</span><span class="p">);</span>
+      <span class="nx">fn</span> <span class="o">=</span> <span class="nx">convert</span><span class="p">(</span><span class="nx">fn</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">debug</span><span class="p">(</span><span class="dl">'</span><span class="s1">use %s</span><span class="dl">'</span><span class="p">,</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">_name</span> <span class="o">||</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">name</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">-</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">middleware</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">fn</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+  <span class="p">}</span>
+</code></pre></div></div>
+
+<p>通过上面的代码可看到，注册的中间件被压入 <code class="language-plaintext highlighter-rouge">Application</code> 对象的 <code class="language-plaintext highlighter-rouge">this.middleware</code> 数组。这里有对传入的方法进行判断，区分是否为生成器（[generator]）方法，因为较早版本的 Koa 其中间件是通过生成器来实现的，后面有 <code class="language-plaintext highlighter-rouge">async/await</code> 语法后转向了后者，所以更推荐使用后者，因此这里有废弃生成器方式的提示。</p>
+
+<p>因为中间件中需要进行的操作是不可控的，完全有可能涉及异步操作，比如从远端获取数据或从数据库查询数据后返回到 <code class="language-plaintext highlighter-rouge">ctx.body</code>，所以理论上中间件必需是异步函数。</p>
+
+<p>比如实现计算一个请求耗时的中间件，以下分别是通过普通函数配合 Promise 以及使用 <code class="language-plaintext highlighter-rouge">async/await</code> 方式实现的版本：</p>
+
+<p><em>来自官方 README 中使用 Promise 实现中间件的示例代码</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Middleware normally takes two parameters (ctx, next), ctx is the context for one request,</span>
+<span class="c1">// next is a function that is invoked to execute the downstream middleware. It returns a Promise with a then function for running code after completion.</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">((</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+  <span class="k">return</span> <span class="nx">next</span><span class="p">().</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">method</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">url</span><span class="p">}</span><span class="s2"> - </span><span class="p">${</span><span class="nx">ms</span><span class="p">}</span><span class="s2">ms`</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p><em>来自官方 README 中使用 <code class="language-plaintext highlighter-rouge">async/await</code> 实现中间件的示例代码</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+  <span class="k">await</span> <span class="nx">next</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span><span class="p">;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">method</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">url</span><span class="p">}</span><span class="s2"> - </span><span class="p">${</span><span class="nx">ms</span><span class="p">}</span><span class="s2">ms`</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>可以看到，一个中间件其签名是 <code class="language-plaintext highlighter-rouge">(ctx,next)=&gt;Promise</code>，其中 <code class="language-plaintext highlighter-rouge">ctx</code> 为请求上下文对象，而 <code class="language-plaintext highlighter-rouge">next</code> 是这样一个函数，调用后将执行流程转入下一个中间件，如果当前中间件中没有调用 <code class="language-plaintext highlighter-rouge">next</code>，整个中间件的执行流程则会在这里终止，后续中间件不会得到执行。以下是一个测试。</p>
+
+<p><em>server.js</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="nx">next</span><span class="p">();</span>
+<span class="p">});</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Hello, world!</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>执行后控制台输出：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>node server.js
+1
+2
+</code></pre></div></div>
+
+<p>访问页面也不会看到 <code class="language-plaintext highlighter-rouge">Hello, world!</code> 因为设置响应的代码 <code class="language-plaintext highlighter-rouge">ctx.body = "Hello, world!";</code> 所在的中间件没有被执行。</p>
+
+<h2 id="compose"><code class="language-plaintext highlighter-rouge">compose</code></h2>
+
+<p>下面来看当多次调用 <code class="language-plaintext highlighter-rouge">app.use</code> 注册中间件后，这些中间件是如何被<strong>顺次</strong>执行的。</p>
+
+<p>中间件的执行是跟随一次请求的。当一个请求来到后台，中间件被顺次执行，在各中间件中对请求 <code class="language-plaintext highlighter-rouge">request</code> 及 <code class="language-plaintext highlighter-rouge">resposne</code> 进行各种处理。</p>
+
+<p>所以从 Koa 中处理请求的地方出发，找到中间件执行的源头。</p>
+
+<p>通过查看 <a href="https://github.com/koajs/koa/blob/75233d974a30af6e3b8ab38a73e5ede67172fc1c/lib/application.js#L127">lib/application.js</a> 中相关代码：</p>
+
+<p><em><a href="https://github.com/koajs/koa/blob/75233d974a30af6e3b8ab38a73e5ede67172fc1c/lib/application.js#L127">lib/application.js#L127</a></em></p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  callback() {
+<span class="gi">+    const fn = compose(this.middleware);
+</span>
+    if (!this.listenerCount('error')) this.on('error', this.onerror);
+
+    const handleRequest = (req, res) =&gt; {
+      const ctx = this.createContext(req, res);
+      return this.handleRequest(ctx, fn);
+    };
+
+    return handleRequest;
+  }
+</code></pre></div></div>
+
+<p>可定位到存储在 <code class="language-plaintext highlighter-rouge">this.middleware</code> 中的中间件数组会传递给 <code class="language-plaintext highlighter-rouge">compose</code> 方法来处理，处理后得到一个函数 <code class="language-plaintext highlighter-rouge">fn</code>，即这个 <code class="language-plaintext highlighter-rouge">compose</code> 方法处理后，将一组中间件函数处理成了一个函数，最终在 <a href="https://github.com/koajs/koa/blob/75233d974a30af6e3b8ab38a73e5ede67172fc1c/lib/application.js#L151">handleRequest</a> 处被调用，开启了中间件的执行流程。</p>
+
+<p><em><a href="https://github.com/koajs/koa/blob/75233d974a30af6e3b8ab38a73e5ede67172fc1c/lib/application.js#L151">lib/application.js#L151</a></em></p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  handleRequest(ctx, fnMiddleware) {
+    const res = ctx.res;
+    res.statusCode = 404;
+    const onerror = err =&gt; ctx.onerror(err);
+    const handleResponse = () =&gt; respond(ctx);
+    onFinished(res, onerror);
+<span class="gi">+    return fnMiddleware(ctx).then(handleResponse).catch(onerror);
+</span>  }
+</code></pre></div></div>
+
+<p>即 <code class="language-plaintext highlighter-rouge">compose</code> 的签名长这样：<code class="language-plaintext highlighter-rouge">compose([a, b, c, ...])</code>，它来自另一个单独的仓库 <a href="https://github.com/koajs/compose">koajs/compose</a>，其代码也不复杂：</p>
+
+<p><em><a href="https://github.com/koajs/compose/blob/master/index.js">koajs/compose/index.js</a></em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">compose</span><span class="p">(</span><span class="nx">middleware</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">middleware</span><span class="p">))</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Middleware stack must be an array!</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">fn</span> <span class="k">of</span> <span class="nx">middleware</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">fn</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">function</span><span class="dl">"</span><span class="p">)</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Middleware must be composed of functions!</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * @param {Object} context
+   * @return {Promise}
+   * @api public
+   */</span>
+
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// last called middleware #</span>
+    <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">dispatch</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="kd">function</span> <span class="nx">dispatch</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">next() called multiple times</span><span class="dl">"</span><span class="p">));</span>
+      <span class="nx">index</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+      <span class="kd">let</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">middleware</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="nx">middleware</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">next</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">fn</span><span class="p">)</span> <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+      <span class="k">try</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">fn</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">dispatch</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)));</span>
+      <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这个方法只做了两件事，</p>
+
+<ul>
+  <li>定义了一个 <code class="language-plaintext highlighter-rouge">dispatch</code> 方法，</li>
+  <li>然后调用它 <code class="language-plaintext highlighter-rouge">dispatch(0)</code></li>
+</ul>
+
+<p>这里中间件从数组中取出并顺次执行的逻辑便在 <code class="language-plaintext highlighter-rouge">dispatch</code> 函数中。</p>
+
+<p>整体方法体中维护了一个索引 <code class="language-plaintext highlighter-rouge">index</code> 其初始值为 <code class="language-plaintext highlighter-rouge">-1</code>，后面每调用一次 <code class="language-plaintext highlighter-rouge">dispatch</code> 会加 1。当执行 <code class="language-plaintext highlighter-rouge">dispatch(0)</code> 时，从中间件数组 <code class="language-plaintext highlighter-rouge">middleware</code> 中取出第 0 个中间件并执行，同时将 <code class="language-plaintext highlighter-rouge">dispatch(i+1)</code> 作为 <code class="language-plaintext highlighter-rouge">next</code> 传递到下一次执行。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">middleware</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+<span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">fn</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">dispatch</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)));</span>
+</code></pre></div></div>
+
+<p>所以这里就能理解，为什么中间件中必需调用 <code class="language-plaintext highlighter-rouge">next</code>，否则后续中间件不会执行。</p>
+
+<p>这样一直进行下去直到所有中间件执行完毕，此时 <code class="language-plaintext highlighter-rouge">i === middleware.length</code>，最后一个中间件已经执行完毕，<code class="language-plaintext highlighter-rouge">next</code> 是没有值的，所以直接 <code class="language-plaintext highlighter-rouge">resolve</code> 掉结束中间件执行流程。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="nx">middleware</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">next</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">fn</span><span class="p">)</span> <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>回到中间件被唤起的地方：</p>
+
+<p><em><a href="https://github.com/koajs/koa/blob/75233d974a30af6e3b8ab38a73e5ede67172fc1c/lib/application.js#L127">lib/application.js</a></em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">fnMiddleware</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">handleResponse</span><span class="p">)</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">onerror</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>中间件完成后，流程到了 <code class="language-plaintext highlighter-rouge">handleResponse</code>。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>从中间件执行流程可知道：</p>
+
+<ul>
+  <li>中间件之间存在顺序的问题，先注册的先执行。</li>
+  <li>中间件中需要调用 <code class="language-plaintext highlighter-rouge">next</code> 以保证后续中间件的执行。当然，如果你的中间件会根据一些情况阻止掉后续中间件的执行，那可以不调用 <code class="language-plaintext highlighter-rouge">next</code>，比如一个对请求进行权限校验的中间件可以这么写：</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// 获取权限数据相关的操作...</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">valid</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">await</span> <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="k">throw</span><span class="p">(</span><span class="mi">403</span><span class="p">,</span> <span class="dl">"</span><span class="s2">没有权限！</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://koajs.com">Koa documentation</a></li>
+  <li><a href="https://nodejs.org/api/http.html#http_class_http_server">Node.js Documentation - HTTP Class: http.Server</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*">MDN - function*</a></li>
+  <li><a href="https://github.com/koajs/compose">koajs/compose</a></li>
+</ul>
+:ET

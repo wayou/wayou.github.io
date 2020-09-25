@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>k-sum 问题 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="k-sum 问题" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="k-sum 问题 问题描述 给定一个数组及数字 k ，从数组中找出所有相加结果为 k 的组合。 示例: 给定数组 [1,1,1] 令 k=2，输出： [[1,1]] 给定数组 [10, 1, 2, 7, 6, 1, 5] 令 k=8，输出： [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ] 分析 这里的思路是把 k 逐步拆解。既然要找出相加等于 k 的元素，那根据递归的思想，不难想到假如已经找到了数组中一个有效的元素，那么接下来就是从剩余的元素中继续去找，相加等于 k 减去该元素的那些组合，形成了一个新的子问题。 所以对于第一个结果的查找，可以从索引为 0 的位置开始遍历数组： 从候选数据 arr 中取出第一个元素 item0，这样得到了一个取出该元素后的新数组 arr1， 从 k 中减去该元素 item0 得到一个新的 k0。 如此往复，接下来任务就是需要在新的数组 arr1 中找出一个组合，其相加结果为 k0。 最后必然会进行到 k 为零的时候，此时将前面取出的数组合一起便得到了一个结果。 如果数组都遍历完了，但 K 最终没有变成零，说明本次查找没有结果。 第二个结果： 上面查找结束，开始从原数组中第二个位置开始重复上面的步骤。 ... 直到进行到数组的最后一个元素。将前面得到的结果组合后返回。 实现 根据上面的分析得出如下的实现： /** * k-sum 实现，从候选数组中找出所有相加结果为 k 的组合 * @param {*} arr 候选数组 * @param {*} k 目标数字 */ function ksum(arr, k) { var result = []; function process(input, tmpK, tmpResult) { tmpResult = tmpResult || []; if (tmpK === 0 &amp;&amp; tmpResult.length &gt; 0) { tmpResult.sort((a, b) =&gt; a - b); var hasDuplicate = result.some(v =&gt; { return v.join(&quot;&quot;) === tmpResult.join(&quot;&quot;); }); if (!hasDuplicate) { result.push(tmpResult); } } else if (tmpK &gt; 0) { for (let i = 0; i &lt; input.length; i++) { const num = input[i]; process(input.slice(i + 1), tmpK - num, tmpResult.concat(num)); } } } process(arr, k); return result; } 测试： console.log(ksum([1,1,1], 2)); // [ [ 1, 1 ] ] console.log(ksum([10, 1, 2, 7, 6, 1, 5], 8)); // [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ] 相关资源 LeetCode 上类型的问题：Subarray Sum Equals K" />
+<meta property="og:description" content="k-sum 问题 问题描述 给定一个数组及数字 k ，从数组中找出所有相加结果为 k 的组合。 示例: 给定数组 [1,1,1] 令 k=2，输出： [[1,1]] 给定数组 [10, 1, 2, 7, 6, 1, 5] 令 k=8，输出： [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ] 分析 这里的思路是把 k 逐步拆解。既然要找出相加等于 k 的元素，那根据递归的思想，不难想到假如已经找到了数组中一个有效的元素，那么接下来就是从剩余的元素中继续去找，相加等于 k 减去该元素的那些组合，形成了一个新的子问题。 所以对于第一个结果的查找，可以从索引为 0 的位置开始遍历数组： 从候选数据 arr 中取出第一个元素 item0，这样得到了一个取出该元素后的新数组 arr1， 从 k 中减去该元素 item0 得到一个新的 k0。 如此往复，接下来任务就是需要在新的数组 arr1 中找出一个组合，其相加结果为 k0。 最后必然会进行到 k 为零的时候，此时将前面取出的数组合一起便得到了一个结果。 如果数组都遍历完了，但 K 最终没有变成零，说明本次查找没有结果。 第二个结果： 上面查找结束，开始从原数组中第二个位置开始重复上面的步骤。 ... 直到进行到数组的最后一个元素。将前面得到的结果组合后返回。 实现 根据上面的分析得出如下的实现： /** * k-sum 实现，从候选数组中找出所有相加结果为 k 的组合 * @param {*} arr 候选数组 * @param {*} k 目标数字 */ function ksum(arr, k) { var result = []; function process(input, tmpK, tmpResult) { tmpResult = tmpResult || []; if (tmpK === 0 &amp;&amp; tmpResult.length &gt; 0) { tmpResult.sort((a, b) =&gt; a - b); var hasDuplicate = result.some(v =&gt; { return v.join(&quot;&quot;) === tmpResult.join(&quot;&quot;); }); if (!hasDuplicate) { result.push(tmpResult); } } else if (tmpK &gt; 0) { for (let i = 0; i &lt; input.length; i++) { const num = input[i]; process(input.slice(i + 1), tmpK - num, tmpResult.concat(num)); } } } process(arr, k); return result; } 测试： console.log(ksum([1,1,1], 2)); // [ [ 1, 1 ] ] console.log(ksum([10, 1, 2, 7, 6, 1, 5], 8)); // [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ] 相关资源 LeetCode 上类型的问题：Subarray Sum Equals K" />
+<link rel="canonical" href="http://localhost:4000/2019/05/02/k-sum-%E9%97%AE%E9%A2%98.html" />
+<meta property="og:url" content="http://localhost:4000/2019/05/02/k-sum-%E9%97%AE%E9%A2%98.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-02T19:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/05/02/k-sum-%E9%97%AE%E9%A2%98.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/05/02/k-sum-%E9%97%AE%E9%A2%98.html"},"description":"k-sum 问题 问题描述 给定一个数组及数字 k ，从数组中找出所有相加结果为 k 的组合。 示例: 给定数组 [1,1,1] 令 k=2，输出： [[1,1]] 给定数组 [10, 1, 2, 7, 6, 1, 5] 令 k=8，输出： [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ] 分析 这里的思路是把 k 逐步拆解。既然要找出相加等于 k 的元素，那根据递归的思想，不难想到假如已经找到了数组中一个有效的元素，那么接下来就是从剩余的元素中继续去找，相加等于 k 减去该元素的那些组合，形成了一个新的子问题。 所以对于第一个结果的查找，可以从索引为 0 的位置开始遍历数组： 从候选数据 arr 中取出第一个元素 item0，这样得到了一个取出该元素后的新数组 arr1， 从 k 中减去该元素 item0 得到一个新的 k0。 如此往复，接下来任务就是需要在新的数组 arr1 中找出一个组合，其相加结果为 k0。 最后必然会进行到 k 为零的时候，此时将前面取出的数组合一起便得到了一个结果。 如果数组都遍历完了，但 K 最终没有变成零，说明本次查找没有结果。 第二个结果： 上面查找结束，开始从原数组中第二个位置开始重复上面的步骤。 ... 直到进行到数组的最后一个元素。将前面得到的结果组合后返回。 实现 根据上面的分析得出如下的实现： /** * k-sum 实现，从候选数组中找出所有相加结果为 k 的组合 * @param {*} arr 候选数组 * @param {*} k 目标数字 */ function ksum(arr, k) { var result = []; function process(input, tmpK, tmpResult) { tmpResult = tmpResult || []; if (tmpK === 0 &amp;&amp; tmpResult.length &gt; 0) { tmpResult.sort((a, b) =&gt; a - b); var hasDuplicate = result.some(v =&gt; { return v.join(&quot;&quot;) === tmpResult.join(&quot;&quot;); }); if (!hasDuplicate) { result.push(tmpResult); } } else if (tmpK &gt; 0) { for (let i = 0; i &lt; input.length; i++) { const num = input[i]; process(input.slice(i + 1), tmpK - num, tmpResult.concat(num)); } } } process(arr, k); return result; } 测试： console.log(ksum([1,1,1], 2)); // [ [ 1, 1 ] ] console.log(ksum([10, 1, 2, 7, 6, 1, 5], 8)); // [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ] 相关资源 LeetCode 上类型的问题：Subarray Sum Equals K","@type":"BlogPosting","headline":"k-sum 问题","dateModified":"2019-05-02T19:05:00+08:00","datePublished":"2019-05-02T19:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">k-sum 问题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-02T19:05:00+08:00" itemprop="datePublished">May 2, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="k-sum-问题">k-sum 问题</h1>
+
+<h2 id="问题描述">问题描述</h2>
+
+<p>给定一个数组及数字 k ，从数组中找出所有相加结果为 k 的组合。</p>
+
+<p>示例:</p>
+
+<p>给定数组 <code class="language-plaintext highlighter-rouge">[1,1,1]</code> 令 <code class="language-plaintext highlighter-rouge">k=2</code>，输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> [[1,1]]
+</code></pre></div></div>
+<p>给定数组 <code class="language-plaintext highlighter-rouge">[10, 1, 2, 7, 6, 1, 5]</code> 令 <code class="language-plaintext highlighter-rouge">k=8</code>，输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ]
+</code></pre></div></div>
+
+<h2 id="分析">分析</h2>
+
+<p>这里的思路是把 <code class="language-plaintext highlighter-rouge">k</code> 逐步拆解。既然要找出相加等于 <code class="language-plaintext highlighter-rouge">k</code> 的元素，那根据递归的思想，不难想到假如已经找到了数组中一个有效的元素，那么接下来就是从剩余的元素中继续去找，相加等于 <code class="language-plaintext highlighter-rouge">k</code> 减去该元素的那些组合，形成了一个新的子问题。</p>
+
+<p>所以对于第一个结果的查找，可以从索引为 0 的位置开始遍历数组：</p>
+<ul>
+  <li>从候选数据 <code class="language-plaintext highlighter-rouge">arr</code> 中取出第一个元素 <code class="language-plaintext highlighter-rouge">item0</code>，这样得到了一个取出该元素后的新数组 <code class="language-plaintext highlighter-rouge">arr1</code>，</li>
+  <li>从 <code class="language-plaintext highlighter-rouge">k</code> 中减去该元素 <code class="language-plaintext highlighter-rouge">item0</code> 得到一个新的 <code class="language-plaintext highlighter-rouge">k0</code>。</li>
+  <li>如此往复，接下来任务就是需要在新的数组 <code class="language-plaintext highlighter-rouge">arr1</code> 中找出一个组合，其相加结果为 <code class="language-plaintext highlighter-rouge">k0</code>。</li>
+  <li>最后必然会进行到 <code class="language-plaintext highlighter-rouge">k</code> 为零的时候，此时将前面取出的数组合一起便得到了一个结果。</li>
+  <li>如果数组都遍历完了，但 K 最终没有变成零，说明本次查找没有结果。</li>
+</ul>
+
+<p>第二个结果：</p>
+<ul>
+  <li>上面查找结束，开始从原数组中第二个位置开始重复上面的步骤。</li>
+</ul>
+
+<p>...</p>
+
+<p>直到进行到数组的最后一个元素。将前面得到的结果组合后返回。</p>
+
+<h2 id="实现">实现</h2>
+
+<p>根据上面的分析得出如下的实现：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * k-sum 实现，从候选数组中找出所有相加结果为 k 的组合
+ * @param {*} arr 候选数组
+ * @param {*} k 目标数字
+ */</span>
+<span class="kd">function</span> <span class="nx">ksum</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
+
+  <span class="kd">function</span> <span class="nx">process</span><span class="p">(</span><span class="nx">input</span><span class="p">,</span> <span class="nx">tmpK</span><span class="p">,</span> <span class="nx">tmpResult</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">tmpResult</span> <span class="o">=</span> <span class="nx">tmpResult</span> <span class="o">||</span> <span class="p">[];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">tmpK</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">tmpResult</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">tmpResult</span><span class="p">.</span><span class="nx">sort</span><span class="p">((</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">a</span> <span class="o">-</span> <span class="nx">b</span><span class="p">);</span>
+      <span class="kd">var</span> <span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="nx">v</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">v</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">""</span><span class="p">)</span> <span class="o">===</span> <span class="nx">tmpResult</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">""</span><span class="p">);</span>
+      <span class="p">});</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasDuplicate</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">tmpResult</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">tmpK</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">input</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">num</span> <span class="o">=</span> <span class="nx">input</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+        <span class="nx">process</span><span class="p">(</span><span class="nx">input</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nx">tmpK</span> <span class="o">-</span> <span class="nx">num</span><span class="p">,</span> <span class="nx">tmpResult</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">num</span><span class="p">));</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="nx">process</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">k</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>测试：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">ksum</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">));</span>
+<span class="c1">// [ [ 1, 1 ] ]</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">ksum</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="mi">8</span><span class="p">));</span>
+<span class="c1">// [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ]</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://leetcode.com/problems/subarray-sum-equals-k/">LeetCode 上类型的问题：Subarray Sum Equals K</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/05/02/k-sum-%E9%97%AE%E9%A2%98.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

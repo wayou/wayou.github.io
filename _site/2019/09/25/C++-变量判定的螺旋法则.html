@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>C++ 变量判定的螺旋法则 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="C++ 变量判定的螺旋法则" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="C++ 变量判定的螺旋法则 C++ 中一个标识符配合着各种修饰界定符，使得标识符的本意不那么直观一眼就能看出，甚至需要仔细分析，才能知道该标识符的具体你含义。 比如： void (*signal(int, void (*fp)(int)))(int); 其中 signal 是什么？ 螺旋法则 对于如何进行变量的辩识，有个非官方的 “顺时针/螺旋法则（Clockwise/Spiral Rule）” 可用来帮助辩识。 该法则的内容，简单来说，为了搞清楚一个未知标识符的含义，我们可以： 从我们需要判定的标识符开始，顺时针画圈，遇到如下符号时，用对应的语义替换： [x] 或 [] =&gt; 容量为 x 的数组或数组 (type1,type2...) =&gt; 接收 type1、type2... 的函数，返回值为（待定） * =&gt; 指向（类型待定）的指针 重复上面的步骤直到语句中所有符号都被遍历过。 始终优先解析括号括起来的部分。 实地演练 一个简单的示例 先从一个简单的开始，判定如下语句中 str 的含义： +-------+ | +-+ | | ^ | | char *str[10]; ^ ^ | | | +---+ | +-----------+ 根据螺旋法则，如上面线图标识所示， 从 str 这个需要被判定的对象出发。 螺旋路径上第一次遇到的是 [ 左方括号，由此我们知道，str 是一个尺寸为 10 的数组。 继续旋转，遇到 *，所以 str 是一个尺寸为 10 的数组，数组元素为指针。 继续，遇到 ; 标识语句的结束。 再继续，遇到 char，所以 str 是一个尺寸为 10 的数组，数组元素为指向 char 类型的指针。 进阶 回到文章开头那个语句，来判定其中 signal 的含义。 +-----------------------------+ | +---+ | | +---+ |+-+| | | ^ | |^ || | void (*signal(int, void (*fp)(int)))(int); ^ ^ | ^ ^ || | | +------+ | +--+| | | +--------+ | +----------------------------------+ 由螺旋法则画出如上的线图，进而可分析： 从要判定的 signal 出发首次遇到 ( 左括号，表示 signal 是一个函数，入参为 int 和 ... 此处需要需要进一步运用螺旋法则先确定 fp 的含义，才能进而确认 signal 这个函数的完整入参。所以从 fp 了发进行一次子螺旋。 因为需要优先解析括号括起来的部分，所以转一圈回来首次遇到的是 *，由此 fp 是一个指针。 继续解析 fp，遇到 (，所以 fp 是一个指向函数的指针，这个函数接收一个 int 类型的入参。 继续下去，遇到 void，所以 fp 是一个指向函数的指针，这个函数接收一个 int 类型的入参并且返回值为空。 至此完成了 fp 的解析，可以知道 signal 的类型为： 是一个函数，入参为： 一个 int 类型 一个指向函数的指针，这个函数接收一个 int 类型的入参并且返回值为空 路径跑到 signal 的螺旋中，遇到 *（紧邻 signal 左边），所以 signal 是 一个函数，入参为： 一个 int 类型 一个指向函数的指针，这个函数接收一个 int 类型的入参并且返回值为空 返回值为指针 再继续，遇到 (，接上面，返回值为指向另一函数的指针，被指向的这个函数接收一个 int 入参。 最后，遇到 void，signal 返回值指向的这个函数的返回值为空。 最后捋一下 signal 的完整类型为：接收一个 int，一个指向接收一个 int 并且返回值为空的函数的指针，这两个参数的函数，并且返回值为指向一个接收 int 型返回为空的函数...Orz。 成员函数的判定 螺旋施法没有给出在 const 参与的情况下的判定，不过因为 const 默认修饰紧邻其左边的元素，如果右边无元素，则修饰左边的元素。因此只需要将 const 和它修饰的元素作为整体来看，就还是可以使用螺旋法则的。 考察如下语句： const int*const Method3(const int*const&amp;) const; 当函数后面紧跟一个 const 时，表示该成员函数的作用域内 *this 是常量，即无法在该函数体内对所类的实体进行修改。 下面对上面的语句进行分析： 从 Method3 出发，遇到 (，所以 Method3 是一个函数，接收一个引用作为入参 const int*const&amp; 部分。 该引用的类型是 const int*const，指向整形常量的常量指针。 继续遇到 *const，所以函数的返回值为常量指针。指针指向的类型为 const int 整形常量。 函数末尾的 const 如前所述，标识函数体内不修改实例。 相关资源 The ``Clockwise/Spiral Rule’’ The C++ ‘const’ Declaration: Why &amp; How" />
+<meta property="og:description" content="C++ 变量判定的螺旋法则 C++ 中一个标识符配合着各种修饰界定符，使得标识符的本意不那么直观一眼就能看出，甚至需要仔细分析，才能知道该标识符的具体你含义。 比如： void (*signal(int, void (*fp)(int)))(int); 其中 signal 是什么？ 螺旋法则 对于如何进行变量的辩识，有个非官方的 “顺时针/螺旋法则（Clockwise/Spiral Rule）” 可用来帮助辩识。 该法则的内容，简单来说，为了搞清楚一个未知标识符的含义，我们可以： 从我们需要判定的标识符开始，顺时针画圈，遇到如下符号时，用对应的语义替换： [x] 或 [] =&gt; 容量为 x 的数组或数组 (type1,type2...) =&gt; 接收 type1、type2... 的函数，返回值为（待定） * =&gt; 指向（类型待定）的指针 重复上面的步骤直到语句中所有符号都被遍历过。 始终优先解析括号括起来的部分。 实地演练 一个简单的示例 先从一个简单的开始，判定如下语句中 str 的含义： +-------+ | +-+ | | ^ | | char *str[10]; ^ ^ | | | +---+ | +-----------+ 根据螺旋法则，如上面线图标识所示， 从 str 这个需要被判定的对象出发。 螺旋路径上第一次遇到的是 [ 左方括号，由此我们知道，str 是一个尺寸为 10 的数组。 继续旋转，遇到 *，所以 str 是一个尺寸为 10 的数组，数组元素为指针。 继续，遇到 ; 标识语句的结束。 再继续，遇到 char，所以 str 是一个尺寸为 10 的数组，数组元素为指向 char 类型的指针。 进阶 回到文章开头那个语句，来判定其中 signal 的含义。 +-----------------------------+ | +---+ | | +---+ |+-+| | | ^ | |^ || | void (*signal(int, void (*fp)(int)))(int); ^ ^ | ^ ^ || | | +------+ | +--+| | | +--------+ | +----------------------------------+ 由螺旋法则画出如上的线图，进而可分析： 从要判定的 signal 出发首次遇到 ( 左括号，表示 signal 是一个函数，入参为 int 和 ... 此处需要需要进一步运用螺旋法则先确定 fp 的含义，才能进而确认 signal 这个函数的完整入参。所以从 fp 了发进行一次子螺旋。 因为需要优先解析括号括起来的部分，所以转一圈回来首次遇到的是 *，由此 fp 是一个指针。 继续解析 fp，遇到 (，所以 fp 是一个指向函数的指针，这个函数接收一个 int 类型的入参。 继续下去，遇到 void，所以 fp 是一个指向函数的指针，这个函数接收一个 int 类型的入参并且返回值为空。 至此完成了 fp 的解析，可以知道 signal 的类型为： 是一个函数，入参为： 一个 int 类型 一个指向函数的指针，这个函数接收一个 int 类型的入参并且返回值为空 路径跑到 signal 的螺旋中，遇到 *（紧邻 signal 左边），所以 signal 是 一个函数，入参为： 一个 int 类型 一个指向函数的指针，这个函数接收一个 int 类型的入参并且返回值为空 返回值为指针 再继续，遇到 (，接上面，返回值为指向另一函数的指针，被指向的这个函数接收一个 int 入参。 最后，遇到 void，signal 返回值指向的这个函数的返回值为空。 最后捋一下 signal 的完整类型为：接收一个 int，一个指向接收一个 int 并且返回值为空的函数的指针，这两个参数的函数，并且返回值为指向一个接收 int 型返回为空的函数...Orz。 成员函数的判定 螺旋施法没有给出在 const 参与的情况下的判定，不过因为 const 默认修饰紧邻其左边的元素，如果右边无元素，则修饰左边的元素。因此只需要将 const 和它修饰的元素作为整体来看，就还是可以使用螺旋法则的。 考察如下语句： const int*const Method3(const int*const&amp;) const; 当函数后面紧跟一个 const 时，表示该成员函数的作用域内 *this 是常量，即无法在该函数体内对所类的实体进行修改。 下面对上面的语句进行分析： 从 Method3 出发，遇到 (，所以 Method3 是一个函数，接收一个引用作为入参 const int*const&amp; 部分。 该引用的类型是 const int*const，指向整形常量的常量指针。 继续遇到 *const，所以函数的返回值为常量指针。指针指向的类型为 const int 整形常量。 函数末尾的 const 如前所述，标识函数体内不修改实例。 相关资源 The ``Clockwise/Spiral Rule’’ The C++ ‘const’ Declaration: Why &amp; How" />
+<link rel="canonical" href="http://localhost:4000/2019/09/25/C++-%E5%8F%98%E9%87%8F%E5%88%A4%E5%AE%9A%E7%9A%84%E8%9E%BA%E6%97%8B%E6%B3%95%E5%88%99.html" />
+<meta property="og:url" content="http://localhost:4000/2019/09/25/C++-%E5%8F%98%E9%87%8F%E5%88%A4%E5%AE%9A%E7%9A%84%E8%9E%BA%E6%97%8B%E6%B3%95%E5%88%99.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-09-25T23:09:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/09/25/C++-%E5%8F%98%E9%87%8F%E5%88%A4%E5%AE%9A%E7%9A%84%E8%9E%BA%E6%97%8B%E6%B3%95%E5%88%99.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/09/25/C++-%E5%8F%98%E9%87%8F%E5%88%A4%E5%AE%9A%E7%9A%84%E8%9E%BA%E6%97%8B%E6%B3%95%E5%88%99.html"},"description":"C++ 变量判定的螺旋法则 C++ 中一个标识符配合着各种修饰界定符，使得标识符的本意不那么直观一眼就能看出，甚至需要仔细分析，才能知道该标识符的具体你含义。 比如： void (*signal(int, void (*fp)(int)))(int); 其中 signal 是什么？ 螺旋法则 对于如何进行变量的辩识，有个非官方的 “顺时针/螺旋法则（Clockwise/Spiral Rule）” 可用来帮助辩识。 该法则的内容，简单来说，为了搞清楚一个未知标识符的含义，我们可以： 从我们需要判定的标识符开始，顺时针画圈，遇到如下符号时，用对应的语义替换： [x] 或 [] =&gt; 容量为 x 的数组或数组 (type1,type2...) =&gt; 接收 type1、type2... 的函数，返回值为（待定） * =&gt; 指向（类型待定）的指针 重复上面的步骤直到语句中所有符号都被遍历过。 始终优先解析括号括起来的部分。 实地演练 一个简单的示例 先从一个简单的开始，判定如下语句中 str 的含义： +-------+ | +-+ | | ^ | | char *str[10]; ^ ^ | | | +---+ | +-----------+ 根据螺旋法则，如上面线图标识所示， 从 str 这个需要被判定的对象出发。 螺旋路径上第一次遇到的是 [ 左方括号，由此我们知道，str 是一个尺寸为 10 的数组。 继续旋转，遇到 *，所以 str 是一个尺寸为 10 的数组，数组元素为指针。 继续，遇到 ; 标识语句的结束。 再继续，遇到 char，所以 str 是一个尺寸为 10 的数组，数组元素为指向 char 类型的指针。 进阶 回到文章开头那个语句，来判定其中 signal 的含义。 +-----------------------------+ | +---+ | | +---+ |+-+| | | ^ | |^ || | void (*signal(int, void (*fp)(int)))(int); ^ ^ | ^ ^ || | | +------+ | +--+| | | +--------+ | +----------------------------------+ 由螺旋法则画出如上的线图，进而可分析： 从要判定的 signal 出发首次遇到 ( 左括号，表示 signal 是一个函数，入参为 int 和 ... 此处需要需要进一步运用螺旋法则先确定 fp 的含义，才能进而确认 signal 这个函数的完整入参。所以从 fp 了发进行一次子螺旋。 因为需要优先解析括号括起来的部分，所以转一圈回来首次遇到的是 *，由此 fp 是一个指针。 继续解析 fp，遇到 (，所以 fp 是一个指向函数的指针，这个函数接收一个 int 类型的入参。 继续下去，遇到 void，所以 fp 是一个指向函数的指针，这个函数接收一个 int 类型的入参并且返回值为空。 至此完成了 fp 的解析，可以知道 signal 的类型为： 是一个函数，入参为： 一个 int 类型 一个指向函数的指针，这个函数接收一个 int 类型的入参并且返回值为空 路径跑到 signal 的螺旋中，遇到 *（紧邻 signal 左边），所以 signal 是 一个函数，入参为： 一个 int 类型 一个指向函数的指针，这个函数接收一个 int 类型的入参并且返回值为空 返回值为指针 再继续，遇到 (，接上面，返回值为指向另一函数的指针，被指向的这个函数接收一个 int 入参。 最后，遇到 void，signal 返回值指向的这个函数的返回值为空。 最后捋一下 signal 的完整类型为：接收一个 int，一个指向接收一个 int 并且返回值为空的函数的指针，这两个参数的函数，并且返回值为指向一个接收 int 型返回为空的函数...Orz。 成员函数的判定 螺旋施法没有给出在 const 参与的情况下的判定，不过因为 const 默认修饰紧邻其左边的元素，如果右边无元素，则修饰左边的元素。因此只需要将 const 和它修饰的元素作为整体来看，就还是可以使用螺旋法则的。 考察如下语句： const int*const Method3(const int*const&amp;) const; 当函数后面紧跟一个 const 时，表示该成员函数的作用域内 *this 是常量，即无法在该函数体内对所类的实体进行修改。 下面对上面的语句进行分析： 从 Method3 出发，遇到 (，所以 Method3 是一个函数，接收一个引用作为入参 const int*const&amp; 部分。 该引用的类型是 const int*const，指向整形常量的常量指针。 继续遇到 *const，所以函数的返回值为常量指针。指针指向的类型为 const int 整形常量。 函数末尾的 const 如前所述，标识函数体内不修改实例。 相关资源 The ``Clockwise/Spiral Rule’’ The C++ ‘const’ Declaration: Why &amp; How","@type":"BlogPosting","headline":"C++ 变量判定的螺旋法则","dateModified":"2019-09-25T23:09:00+08:00","datePublished":"2019-09-25T23:09:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">C++ 变量判定的螺旋法则</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-09-25T23:09:00+08:00" itemprop="datePublished">Sep 25, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="c-变量判定的螺旋法则">C++ 变量判定的螺旋法则</h1>
+
+<p>C++ 中一个标识符配合着各种修饰界定符，使得标识符的本意不那么直观一眼就能看出，甚至需要仔细分析，才能知道该标识符的具体你含义。</p>
+
+<p>比如：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">signal</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)(</span><span class="kt">int</span><span class="p">)))(</span><span class="kt">int</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">signal</code> 是什么？</p>
+
+<h2 id="螺旋法则">螺旋法则</h2>
+
+<p>对于如何进行变量的辩识，有个非官方的 “顺时针/螺旋法则（Clockwise/Spiral Rule）” 可用来帮助辩识。</p>
+
+<p>该法则的内容，简单来说，为了搞清楚一个未知标识符的含义，我们可以：</p>
+
+<ol>
+  <li>从我们需要判定的标识符开始，顺时针画圈，遇到如下符号时，用对应的语义替换：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">[x]</code> 或 <code class="language-plaintext highlighter-rouge">[]</code> =&gt; 容量为 <code class="language-plaintext highlighter-rouge">x</code> 的数组或数组</li>
+      <li><code class="language-plaintext highlighter-rouge">(type1,type2...)</code> =&gt; 接收 <code class="language-plaintext highlighter-rouge">type1</code>、<code class="language-plaintext highlighter-rouge">type2</code>... 的函数，返回值为（待定）</li>
+      <li><code class="language-plaintext highlighter-rouge">*</code> =&gt; 指向（类型待定）的指针</li>
+    </ul>
+  </li>
+  <li>重复上面的步骤直到语句中所有符号都被遍历过。</li>
+  <li>始终优先解析括号括起来的部分。</li>
+</ol>
+
+<h2 id="实地演练">实地演练</h2>
+
+<h3 id="一个简单的示例">一个简单的示例</h3>
+
+<p>先从一个简单的开始，判定如下语句中 <code class="language-plaintext highlighter-rouge">str</code> 的含义：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                     <span class="o">+-------+</span>
+                     <span class="o">|</span> <span class="o">+-+</span>   <span class="o">|</span>
+                     <span class="o">|</span> <span class="o">^</span> <span class="o">|</span>   <span class="o">|</span>
+                <span class="kt">char</span> <span class="o">*</span><span class="n">str</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+                 <span class="o">^</span>   <span class="o">^</span>   <span class="o">|</span>   <span class="o">|</span>
+                 <span class="o">|</span>   <span class="o">+---+</span>   <span class="o">|</span>
+                 <span class="o">+-----------+</span>
+</code></pre></div></div>
+
+<p>根据螺旋法则，如上面线图标识所示，</p>
+<ul>
+  <li>从 <code class="language-plaintext highlighter-rouge">str</code> 这个需要被判定的对象出发。</li>
+  <li>螺旋路径上第一次遇到的是 <code class="language-plaintext highlighter-rouge">[</code> 左方括号，由此我们知道，<code class="language-plaintext highlighter-rouge">str</code> 是一个尺寸为 10 的数组。</li>
+  <li>继续旋转，遇到 <code class="language-plaintext highlighter-rouge">*</code>，所以 <code class="language-plaintext highlighter-rouge">str</code> 是一个尺寸为 10 的数组，数组元素为指针。</li>
+  <li>继续，遇到 <code class="language-plaintext highlighter-rouge">;</code> 标识语句的结束。</li>
+  <li>再继续，遇到 <code class="language-plaintext highlighter-rouge">char</code>，所以 <code class="language-plaintext highlighter-rouge">str</code> 是一个尺寸为 10 的数组，数组元素为指向 <code class="language-plaintext highlighter-rouge">char</code> 类型的指针。</li>
+</ul>
+
+<h3 id="进阶">进阶</h3>
+
+<p>回到文章开头那个语句，来判定其中 <code class="language-plaintext highlighter-rouge">signal</code> 的含义。</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                      <span class="o">+-----------------------------+</span>
+                      <span class="o">|</span>                  <span class="o">+---+</span>      <span class="o">|</span>
+                      <span class="o">|</span>  <span class="o">+---+</span>           <span class="o">|+-+|</span>      <span class="o">|</span>
+                      <span class="o">|</span>  <span class="o">^</span>   <span class="o">|</span>           <span class="o">|^</span> <span class="o">||</span>      <span class="o">|</span>
+                <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">signal</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)(</span><span class="kt">int</span><span class="p">)))(</span><span class="kt">int</span><span class="p">);</span>
+                 <span class="o">^</span>    <span class="o">^</span>      <span class="o">|</span>      <span class="o">^</span>    <span class="o">^</span>  <span class="o">||</span>      <span class="o">|</span>
+                 <span class="o">|</span>    <span class="o">+------+</span>      <span class="o">|</span>    <span class="o">+--+|</span>      <span class="o">|</span>
+                 <span class="o">|</span>                  <span class="o">+--------+</span>      <span class="o">|</span>
+                 <span class="o">+----------------------------------+</span>
+</code></pre></div></div>
+
+<p>由螺旋法则画出如上的线图，进而可分析：</p>
+
+<ul>
+  <li>从要判定的 <code class="language-plaintext highlighter-rouge">signal</code> 出发首次遇到 <code class="language-plaintext highlighter-rouge">(</code> 左括号，表示 <code class="language-plaintext highlighter-rouge">signal</code> 是一个函数，入参为 <code class="language-plaintext highlighter-rouge">int</code> 和 ...</li>
+  <li>此处需要需要进一步运用螺旋法则先确定 <code class="language-plaintext highlighter-rouge">fp</code> 的含义，才能进而确认 <code class="language-plaintext highlighter-rouge">signal</code> 这个函数的完整入参。所以从 <code class="language-plaintext highlighter-rouge">fp</code> 了发进行一次子螺旋。</li>
+  <li>因为需要优先解析括号括起来的部分，所以转一圈回来首次遇到的是 <code class="language-plaintext highlighter-rouge">*</code>，由此 <code class="language-plaintext highlighter-rouge">fp</code> 是一个指针。</li>
+  <li>继续解析 <code class="language-plaintext highlighter-rouge">fp</code>，遇到 <code class="language-plaintext highlighter-rouge">(</code>，所以 <code class="language-plaintext highlighter-rouge">fp</code> 是一个指向函数的指针，这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 类型的入参。</li>
+  <li>继续下去，遇到 <code class="language-plaintext highlighter-rouge">void</code>，所以 <code class="language-plaintext highlighter-rouge">fp</code> 是一个指向函数的指针，这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 类型的入参并且返回值为空。</li>
+  <li>至此完成了 <code class="language-plaintext highlighter-rouge">fp</code> 的解析，可以知道 <code class="language-plaintext highlighter-rouge">signal</code> 的类型为：
+    <ul>
+      <li>是一个函数，入参为：
+        <ul>
+          <li>一个 int 类型</li>
+          <li>一个指向函数的指针，这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 类型的入参并且返回值为空</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>路径跑到 <code class="language-plaintext highlighter-rouge">signal</code> 的螺旋中，遇到 <code class="language-plaintext highlighter-rouge">*</code>（紧邻 <code class="language-plaintext highlighter-rouge">signal</code> 左边），所以 <code class="language-plaintext highlighter-rouge">signal</code> 是
+    <ul>
+      <li>一个函数，入参为：
+        <ul>
+          <li>一个 int 类型</li>
+          <li>一个指向函数的指针，这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 类型的入参并且返回值为空</li>
+        </ul>
+      </li>
+      <li>返回值为指针</li>
+    </ul>
+  </li>
+  <li>再继续，遇到 <code class="language-plaintext highlighter-rouge">(</code>，接上面，返回值为指向另一函数的指针，被指向的这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 入参。</li>
+  <li>最后，遇到 <code class="language-plaintext highlighter-rouge">void</code>，<code class="language-plaintext highlighter-rouge">signal</code> 返回值指向的这个函数的返回值为空。</li>
+</ul>
+
+<p>最后捋一下 <code class="language-plaintext highlighter-rouge">signal</code> 的完整类型为：接收一个 <code class="language-plaintext highlighter-rouge">int</code>，一个指向接收一个 <code class="language-plaintext highlighter-rouge">int</code> 并且返回值为空的函数的指针，这两个参数的函数，并且返回值为指向一个接收 <code class="language-plaintext highlighter-rouge">int</code> 型返回为空的函数...Orz。</p>
+
+<h3 id="成员函数的判定">成员函数的判定</h3>
+
+<p>螺旋施法没有给出在 <code class="language-plaintext highlighter-rouge">const</code> 参与的情况下的判定，不过<strong>因为 <code class="language-plaintext highlighter-rouge">const</code> 默认修饰紧邻其左边的元素，如果右边无元素，则修饰左边的元素</strong>。因此只需要将 const 和它修饰的元素作为整体来看，就还是可以使用螺旋法则的。</p>
+
+<p>考察如下语句：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="kt">int</span><span class="o">*</span><span class="k">const</span> <span class="n">Method3</span><span class="p">(</span><span class="k">const</span> <span class="kt">int</span><span class="o">*</span><span class="k">const</span><span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</code></pre></div></div>
+<p>当函数后面紧跟一个 <code class="language-plaintext highlighter-rouge">const</code> 时，表示该成员函数的作用域内 <code class="language-plaintext highlighter-rouge">*this</code> 是常量，即无法在该函数体内对所类的实体进行修改。</p>
+
+<p>下面对上面的语句进行分析：</p>
+
+<ul>
+  <li>从 <code class="language-plaintext highlighter-rouge">Method3</code> 出发，遇到 <code class="language-plaintext highlighter-rouge">(</code>，所以 <code class="language-plaintext highlighter-rouge">Method3</code> 是一个函数，接收一个引用作为入参 <code class="language-plaintext highlighter-rouge">const int*const&amp;</code> 部分。</li>
+  <li>该引用的类型是 <code class="language-plaintext highlighter-rouge">const int*const</code>，指向整形常量的常量指针。</li>
+  <li>继续遇到 <code class="language-plaintext highlighter-rouge">*const</code>，所以函数的返回值为常量指针。指针指向的类型为 <code class="language-plaintext highlighter-rouge">const int</code> 整形常量。</li>
+  <li>函数末尾的 <code class="language-plaintext highlighter-rouge">const</code> 如前所述，标识函数体内不修改实例。</li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="http://c-faq.com/decl/spiral.anderson.html">The ``Clockwise/Spiral Rule’’</a></li>
+  <li><a href="http://duramecho.com/ComputerInformation/WhyHowCppConst.html">The C++ ‘const’ Declaration: Why &amp; How</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/09/25/C++-%E5%8F%98%E9%87%8F%E5%88%A4%E5%AE%9A%E7%9A%84%E8%9E%BA%E6%97%8B%E6%B3%95%E5%88%99.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

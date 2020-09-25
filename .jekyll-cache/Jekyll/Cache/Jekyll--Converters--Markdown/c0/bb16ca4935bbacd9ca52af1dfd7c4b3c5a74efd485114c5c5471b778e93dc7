@@ -1,0 +1,86 @@
+I"�<h1 id="利用-css-的-prefers-color-scheme-适配-mac-黑色模式">利用 CSS 的 <code class="language-plaintext highlighter-rouge">prefers-color-scheme</code> 适配 mac 黑色模式</h1>
+
+<p>伴随 mac Mojave 发布的系统级别的黑色模式，已经存在很久了。CSS 随之推出了 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme"><code class="language-plaintext highlighter-rouge">prefers-color-scheme</code></a> 的 media 选择器，使得网页能够适配黑色主题。</p>
+
+<h2 id="语法">语法</h2>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@media</span> <span class="p">(</span><span class="n">prefers-color-scheme</span><span class="p">:</span> <span class="err">&lt;</span><span class="n">mode</span><span class="err">&gt;</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c">/* your css goes here... */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>其中 mode 有如下可能的取值：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">no-preference</code>：类似于缺省</li>
+  <li><code class="language-plaintext highlighter-rouge">light</code>：亮色模式下命中</li>
+  <li><code class="language-plaintext highlighter-rouge">dark</code>：黑色模式下命中</li>
+</ul>
+
+<h2 id="示例">示例</h2>
+
+<p>以下是来自 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme">MDN 的示例</a>：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;style&gt;</span>
+  <span class="nc">.day</span> <span class="p">{</span>
+    <span class="nl">background</span><span class="p">:</span> <span class="m">#eee</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">black</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nc">.night</span> <span class="p">{</span>
+    <span class="nl">background</span><span class="p">:</span> <span class="m">#333</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">@media</span> <span class="p">(</span><span class="n">prefers-color-scheme</span><span class="p">:</span> <span class="n">dark</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nc">.day.dark-scheme</span> <span class="p">{</span>
+      <span class="nl">background</span><span class="p">:</span> <span class="m">#333</span><span class="p">;</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nc">.night.dark-scheme</span> <span class="p">{</span>
+      <span class="nl">background</span><span class="p">:</span> <span class="no">black</span><span class="p">;</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="m">#ddd</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">@media</span> <span class="p">(</span><span class="n">prefers-color-scheme</span><span class="p">:</span> <span class="n">light</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nc">.day.light-scheme</span> <span class="p">{</span>
+      <span class="nl">background</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="m">#555</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nc">.night.light-scheme</span> <span class="p">{</span>
+      <span class="nl">background</span><span class="p">:</span> <span class="m">#eee</span><span class="p">;</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="no">black</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="nc">.day</span><span class="o">,</span>
+  <span class="nc">.night</span> <span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">inline-block</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">1em</span><span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">7em</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">2em</span><span class="p">;</span>
+    <span class="nl">vertical-align</span><span class="p">:</span> <span class="nb">middle</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"day"</span><span class="nt">&gt;</span>Day (initial)<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"day light-scheme"</span><span class="nt">&gt;</span>Day (changes in light scheme)<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"day dark-scheme"</span><span class="nt">&gt;</span>Day (changes in dark scheme)<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;br</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"night"</span><span class="nt">&gt;</span>Night (initial)<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"night light-scheme"</span><span class="nt">&gt;</span>Night (changes in light scheme)<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"night dark-scheme"</span><span class="nt">&gt;</span>Night (changes in dark scheme)<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p>实际运行效果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/82897171-cb65be00-9f89-11ea-8a2a-a0ebbd619faa.gif" alt="利用 prefers-color-scheme 适配黑色模式的运行效果" /></p>
+<p align="center">利用 prefers-color-scheme 适配黑色模式的运行效果</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme">MDN - prefers-color-scheme</a></li>
+</ul>
+
+:ET

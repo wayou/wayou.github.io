@@ -1,0 +1,136 @@
+I"&<h1 id="ios-应用的本地化">iOS 应用的本地化</h1>
+
+<h2 id="文案的本地化">文案的本地化</h2>
+
+<ul>
+  <li>项目设置中开启需要支持的本地化语言。项目导航中点击项目名，<code class="language-plaintext highlighter-rouge">PROJECT</code> 中定位到到 <code class="language-plaintext highlighter-rouge">Localizations</code>。点击 “+” 添加想要支持的语言。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70332680-14f80a80-187d-11ea-9daf-2c65bae12527.png" alt="选择需要本地化的语言" /></p>
+<p align="center">选择需要本地化的语言</p>
+
+<p>首次创建，会将项目中已经存在的 Storyboard，xib 等文件列出来，为其创建相应的本地化文件，如果你项目中不使用 IB 进行界面开发，可忽略。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70332679-14f80a80-187d-11ea-8d9f-12011753969f.png" alt="选择现有的文件" /></p>
+<p align="center">选择现有的文件</p>
+
+<ul>
+  <li>创建 strings 文件，命名为 <code class="language-plaintext highlighter-rouge">Localizable.strings</code>，系统默认会从该文件读取多语。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70332677-145f7400-187d-11ea-912c-a8fbd29be19c.png" alt="创建 strings 文件" /></p>
+<p align="center">创建 strings 文件</p>
+
+<ul>
+  <li>为 strings 文件创建本地化版本的副本。在项目导航中选中刚刚创建的 <code class="language-plaintext highlighter-rouge">Localizable.strings</code> 然后在 Inspector 面板的 Localization 中点击 <code class="language-plaintext highlighter-rouge">Localize...</code></li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70332674-13c6dd80-187d-11ea-91ce-99e416fe5d1f.png" alt="为 strings 文件创建本地化副本" /></p>
+<p align="center">为 strings 文件创建本地化副本</p>
+
+<p>添加相应文件。比如选择英文，然后再将需要本地化的语言都勾选上。此时刚刚的 <code class="language-plaintext highlighter-rouge">Localizable.strings</code> 文件变成了一个组，下面包含了每种语言对应的副本。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70332673-13c6dd80-187d-11ea-8f8f-2a83556a5581.png" alt="strings 文件及其本地化副本" /></p>
+<p align="center">strings 文件及其本地化副本</p>
+
+<ul>
+  <li>接下来就是添加多语本身了，编辑每种语言的文件，写上对应的文案 key 及翻译。譬如：</li>
+</ul>
+
+<p><em>简单中文</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"hello" = "Hello";
+"my_name_is" = "My name is %@";
+</code></pre></div></div>
+
+<p><em>英文</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"hello" = "你好";
+"my_name_is" = "我叫 %@";
+</code></pre></div></div>
+
+<p>这里左边是文案对应的 key，在代码中使用，右边则是展示到界面的文案。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70332670-132e4700-187d-11ea-9541-8ec6ef85a794.png" alt="编写多语文案" /></p>
+<p align="center">编写多语文案</p>
+
+<ul>
+  <li>最后便是使用。以下是代码中使用的简单示例：</li>
+</ul>
+
+<p>使用</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">@implementation</span> <span class="nc">ViewController</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">viewDidLoad</span> <span class="p">{</span>
+    <span class="p">[</span><span class="n">super</span> <span class="nf">viewDidLoad</span><span class="p">];</span>
+    
+    <span class="n">UILabel</span> <span class="o">*</span><span class="n">label1</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UILabel</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">initWithFrame</span><span class="p">:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">20</span><span class="p">)];</span>
+    <span class="n">label1</span><span class="p">.</span><span class="n">text</span>  <span class="o">=</span> <span class="n">NSLocalizedString</span><span class="p">(</span><span class="s">@"hello"</span><span class="p">,</span> <span class="s">@""</span><span class="p">);</span>
+    
+    <span class="n">UILabel</span> <span class="o">*</span><span class="n">label2</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UILabel</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">initWithFrame</span><span class="p">:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">20</span><span class="p">)];</span>
+    <span class="n">NSString</span> <span class="o">*</span><span class="n">name</span> <span class="o">=</span> <span class="s">@"niuwayong"</span><span class="p">;</span>
+    <span class="n">NSString</span> <span class="o">*</span><span class="n">localizedStr</span> <span class="o">=</span> <span class="n">NSLocalizedString</span><span class="p">(</span><span class="s">@"my_name_is"</span><span class="p">,</span> <span class="s">@""</span><span class="p">);</span>
+    <span class="n">label2</span><span class="p">.</span><span class="n">text</span>  <span class="o">=</span> <span class="p">[</span><span class="n">NSString</span> <span class="nf">stringWithFormat</span><span class="p">:</span><span class="n">localizedStr</span><span class="p">,</span><span class="n">name</span><span class="p">];</span>
+    
+    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nf">addSubview</span><span class="p">:</span><span class="n">label1</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nf">addSubview</span><span class="p">:</span><span class="n">label2</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p>运行效果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70332672-132e4700-187d-11ea-8dfe-a8f1e0b4087c.png" alt="运行效果" /></p>
+<p align="center">运行效果</p>
+
+<p>前面提到创建 strings 文件时需要命名成 <code class="language-plaintext highlighter-rouge">Localizable.strings</code>，如果是其他名称，则不能使用 <code class="language-plaintext highlighter-rouge">NSLocalizedString</code> 来进行本地化，而需要使用 <code class="language-plaintext highlighter-rouge">NSLocalizedStringFromTable</code> 来指定多语文件名。</p>
+
+<p>假如我们保存成了 <code class="language-plaintext highlighter-rouge">MyI18n.strings</code>，则可以这样来获取和使用：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">label</span> <span class="nf">setText</span><span class="p">:</span><span class="n">NSLocalizedStringFromTable</span><span class="p">(</span><span class="s">@"key"</span><span class="p">,</span> <span class="s">@"MyI18n"</span><span class="p">,</span> <span class="s">@"comment"</span><span class="p">)];</span>
+</code></pre></div></div>
+
+<h2 id="测试其他语言">测试其他语言</h2>
+
+<p>默认应用会跟随系统语言，但也可通过配置来测试指定语言。</p>
+
+<ul>
+  <li>选择顶部项目目标点击 “Edit Scheme...”</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70333721-ff83e000-187e-11ea-9a29-6af14870e614.png" alt="Edit Scheme..." /></p>
+<p align="center">Edit Scheme...</p>
+
+<ul>
+  <li>在 <code class="language-plaintext highlighter-rouge">Run</code> 面板的 “Options” 中找到 “Application Language” 造成想要测试的语言即可</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70333724-014da380-187f-11ea-8b96-44c08b2820c5.png" alt="设置程序应用的语言" /></p>
+<p align="center">设置程序应用的语言</p>
+
+<p>以下是选择简体中文的运行效果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70333794-1c201800-187f-11ea-82ef-6cac51300baa.png" alt="简体中文运行效果" /></p>
+<p align="center">简体中文运行效果</p>
+
+<h2 id="infoplist-的本地化">Info.plist 的本地化</h2>
+
+<p>应用中除了界面上有文案，像应用名称，权限描述等文本则不在代码范围内，这需要本地化项目的 <code class="language-plaintext highlighter-rouge">info.plist</code> 来完成。</p>
+
+<ul>
+  <li>
+    <p>创建 strings 文件，命名为 <code class="language-plaintext highlighter-rouge">InfoPlist.strings</code>。这里的名称很重要，不能是其他名称，且大小写敏感。</p>
+  </li>
+  <li>
+    <p>然后在其中添加需要本地化的字段，这些字段便是 info.plist 里对应的字段。</p>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"CFBundleDisplayName" = "我的应用名";
+"CFBundleName" = "我的应用名";
+"NSLocationWhenInUseUsageDescription" = "开启定位以搜索附近的餐馆";
+</code></pre></div></div>
+:ET

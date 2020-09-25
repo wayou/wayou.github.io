@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>ES 提案的各状态 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="ES 提案的各状态" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="ES 提案的各状态 JavaScrpit，亦即 ECMAScript，新功能的演进是由一个叫 TC39 这么个组织在统筹协调和推进的。 一般新特性会由社区先提案，被采纳后开始进入下一流程。一个提案到最终落地到成为标准，需要经过几个阶段（stage）。 目前采纳进入正式流程中的提案可在 tc39/proposals 查看到。可以看到，装饰器 Decorator 处于 Stage 2 阶段，globalThis 处于 Stage 3 这个阶段。 以下是各阶段及含义的描述： Stage 0/Strawperson： 潜在的可能被纳入规范的一些想法。 Stage 1/Proposal：为该想法设想一些适用场景，可能的 case。提出解决实现方案以及可能的变更。 Stage 2/Draft：经过上一步验证讨论后，这一阶段开始起草语言层面的语义语法，准备正式的规范文档。 Stage 3/Candidate：提案进入到了候选阶段。开始接收一些反馈对提案进行完善。 Stage 4/Finished：可以被纳入到正式的 ECMAScript 语言规范中了。 更加详细的各阶段的描述可通过 The TC39 Process 中的表格来了解。 相关资源 The TC39 Process tc39/proposals ecma262 Decorators proposal" />
+<meta property="og:description" content="ES 提案的各状态 JavaScrpit，亦即 ECMAScript，新功能的演进是由一个叫 TC39 这么个组织在统筹协调和推进的。 一般新特性会由社区先提案，被采纳后开始进入下一流程。一个提案到最终落地到成为标准，需要经过几个阶段（stage）。 目前采纳进入正式流程中的提案可在 tc39/proposals 查看到。可以看到，装饰器 Decorator 处于 Stage 2 阶段，globalThis 处于 Stage 3 这个阶段。 以下是各阶段及含义的描述： Stage 0/Strawperson： 潜在的可能被纳入规范的一些想法。 Stage 1/Proposal：为该想法设想一些适用场景，可能的 case。提出解决实现方案以及可能的变更。 Stage 2/Draft：经过上一步验证讨论后，这一阶段开始起草语言层面的语义语法，准备正式的规范文档。 Stage 3/Candidate：提案进入到了候选阶段。开始接收一些反馈对提案进行完善。 Stage 4/Finished：可以被纳入到正式的 ECMAScript 语言规范中了。 更加详细的各阶段的描述可通过 The TC39 Process 中的表格来了解。 相关资源 The TC39 Process tc39/proposals ecma262 Decorators proposal" />
+<link rel="canonical" href="http://localhost:4000/2019/06/14/ES-%E6%8F%90%E6%A1%88%E7%9A%84%E5%90%84%E7%8A%B6%E6%80%81.html" />
+<meta property="og:url" content="http://localhost:4000/2019/06/14/ES-%E6%8F%90%E6%A1%88%E7%9A%84%E5%90%84%E7%8A%B6%E6%80%81.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-14T23:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/06/14/ES-%E6%8F%90%E6%A1%88%E7%9A%84%E5%90%84%E7%8A%B6%E6%80%81.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/14/ES-%E6%8F%90%E6%A1%88%E7%9A%84%E5%90%84%E7%8A%B6%E6%80%81.html"},"description":"ES 提案的各状态 JavaScrpit，亦即 ECMAScript，新功能的演进是由一个叫 TC39 这么个组织在统筹协调和推进的。 一般新特性会由社区先提案，被采纳后开始进入下一流程。一个提案到最终落地到成为标准，需要经过几个阶段（stage）。 目前采纳进入正式流程中的提案可在 tc39/proposals 查看到。可以看到，装饰器 Decorator 处于 Stage 2 阶段，globalThis 处于 Stage 3 这个阶段。 以下是各阶段及含义的描述： Stage 0/Strawperson： 潜在的可能被纳入规范的一些想法。 Stage 1/Proposal：为该想法设想一些适用场景，可能的 case。提出解决实现方案以及可能的变更。 Stage 2/Draft：经过上一步验证讨论后，这一阶段开始起草语言层面的语义语法，准备正式的规范文档。 Stage 3/Candidate：提案进入到了候选阶段。开始接收一些反馈对提案进行完善。 Stage 4/Finished：可以被纳入到正式的 ECMAScript 语言规范中了。 更加详细的各阶段的描述可通过 The TC39 Process 中的表格来了解。 相关资源 The TC39 Process tc39/proposals ecma262 Decorators proposal","@type":"BlogPosting","headline":"ES 提案的各状态","dateModified":"2019-06-14T23:06:00+08:00","datePublished":"2019-06-14T23:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">ES 提案的各状态</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-14T23:06:00+08:00" itemprop="datePublished">Jun 14, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="es-提案的各状态">ES 提案的各状态</h1>
+
+<p>JavaScrpit，亦即 ECMAScript，新功能的演进是由一个叫 <a href="https://www.ecma-international.org/memento/tc39.htm">TC39</a> 这么个组织在统筹协调和推进的。</p>
+
+<p>一般新特性会由社区先提案，被采纳后开始进入下一流程。一个提案到最终落地到成为标准，需要经过几个阶段（stage）。</p>
+
+<p>目前采纳进入正式流程中的提案可在 <a href="https://github.com/tc39/proposals">tc39/proposals</a> 查看到。可以看到，<a href="http://github.com/tc39/proposal-decorators">装饰器 Decorator</a> 处于 Stage 2 阶段，<a href="https://github.com/tc39/proposal-global"><code class="language-plaintext highlighter-rouge">globalThis</code></a> 处于 Stage 3 这个阶段。</p>
+
+<p>以下是各阶段及含义的描述：</p>
+
+<ul>
+  <li>Stage 0/Strawperson： 潜在的可能被纳入规范的一些想法。</li>
+  <li>Stage 1/Proposal：为该想法设想一些适用场景，可能的 case。提出解决实现方案以及可能的变更。</li>
+  <li>Stage 2/Draft：经过上一步验证讨论后，这一阶段开始起草语言层面的语义语法，准备正式的规范文档。</li>
+  <li>Stage 3/Candidate：提案进入到了候选阶段。开始接收一些反馈对提案进行完善。</li>
+  <li>Stage 4/Finished：可以被纳入到正式的 ECMAScript 语言规范中了。</li>
+</ul>
+
+<p>更加详细的各阶段的描述可通过 <a href="https://tc39.es/process-document/">The TC39 Process</a> 中的表格来了解。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://tc39.es/process-document/">The TC39 Process</a></li>
+  <li><a href="https://github.com/tc39/proposals">tc39/proposals</a></li>
+  <li><a href="https://tc39.es/ecma262/">ecma262</a></li>
+  <li><a href="https://tc39.es/proposal-decorators/">Decorators proposal</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/06/14/ES-%E6%8F%90%E6%A1%88%E7%9A%84%E5%90%84%E7%8A%B6%E6%80%81.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

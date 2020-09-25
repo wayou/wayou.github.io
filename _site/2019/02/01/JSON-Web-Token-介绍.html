@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>JSON Web Token 介绍 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="JSON Web Token 介绍" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="JSON Web Token 介绍 什么是 JSON Web Token JSON Web Token (JWT) 是一个开放协议，通过简洁的 JSON 数据来达到安全交换数据的目的。 它是由逗号分隔的三个部分组成 - Header - Payload - Signature 所以看起来是这种形式 xxx.yyy.zzz。 主要应用场景有身份验证（比如 native app 中）和数据交换。 Header Header 包含两部分： token 类型，JWT 签名算法，比如 HMAC SHA256，RSA 一个 Header 示例： { &quot;alg&quot;: &quot;HS256&quot;, &quot;typ&quot;: &quot;JWT&quot; } Header 经过 Base64Url 编码后形成了 JWT token 中的第一部分。 Payload Payload 包含声明（claims）数据，主要是 user 及其他额外的数据。声明分三种类型： Registered claims：一些非强制但推荐的预设声明，能够提供有用互联的信息，譬如 iss (issuer), exp (expiration time), sub (subject), aud (audience) 等。注意到这些名称都是三个字符，因为 JWT 要求数据简练。 Public claims：具体使用时自由定义的部分。为防止冲突，应该定义在 IANA JSON Web Token Registry 或能够避免冲突的 URI 命名空间下。 Private claims：收发双方约定的私有声明，用来交换数据。 一个 Payload 示例： { &quot;sub&quot;: &quot;1234567890&quot;, &quot;name&quot;: &quot;John Doe&quot;, &quot;admin&quot;: true } Base64Url 编码后形成 JWT token 的第二部分。 备注：对于已经通过签名以防止信息被篡改的 token 中，Payload 和 Header 对任何人都是可见的，所以不要在其中放置私有信息，除非是信息本身已经加密过。 Signature 使用前面编码过的 Header, Payload，及 Header 中指定的签名算法，再加上一个 secret 便可以创建一个签名了 （signature）。 以 HMAC SHA256 算法为例，创建签名的方式会是下面的样子： HMACSHA256( base64UrlEncode(header) + &quot;.&quot; + base64UrlEncode(payload), secret) 该签名可用来保证信息传输过程中没有被篡改，同时，如果使用私有键值进行签名，还可以从 token 中解析出 JWT 的发送者是谁。 上面签名的输出是逗号分隔的三个 Base64-URL 字符串，可在 HTML 及 HTTP 环境下自由使用了。相比基于 XML 的方案，比如 SAML，JWT 可以说是很简练了。 上面的签名指定 secret 为 test 时的结果： eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.sLYApJ08mxtW8hlSqE5zetiscOjzEt361dCUDtGsDxU 调试工具 通过 JWT 官网的 debugger 可在线生成和解析 token。 工作原理 用户登录后会得到一个 token，后续在请求受身份保护的资源时需要将该 token 带上。一般地，在请求头里通过 Authorization 字段以 Bearer 格式发送。 示例： Authorization: Bearer &lt;token&gt; Server 端检查 Header 中的 Authorization 字段以验证身份。 因为 JWT 通过 Header 传递身份，所以规避了跨域资源共享（CORS）的问题。 来自 JWT 官网的图片展示了 Server 如何获取 token 并验证身份 客户端通过验证身份后拿到token 通过该token 再去请求其他受保护的资源 JWT 的优势 与 Simple Web Tokens (SWT) 和 Security Assertion Markup Language Tokens (SAML) 相比，JWT 会有一些优势。 相比 XML 方式，JWT 数据编码后更轻巧，这样便于 HTTP 传输和插入 HTML 中使用。 更加便捷的安全性。SWT 只能通过 HMAC 算法通过公用的 secret 来对称加密，而 JWT 和 SAML 可使用一对 公钥/私钥 进行 X.509  证书形式的签名。 JSON 格式在各编程语言中有广泛支持，而 XML 的解析则更加麻烦一些。 相关资源 Introduction to JSON Web Tokens Get Started with JSON Web Tokens 讲真，别再使用JWT了" />
+<meta property="og:description" content="JSON Web Token 介绍 什么是 JSON Web Token JSON Web Token (JWT) 是一个开放协议，通过简洁的 JSON 数据来达到安全交换数据的目的。 它是由逗号分隔的三个部分组成 - Header - Payload - Signature 所以看起来是这种形式 xxx.yyy.zzz。 主要应用场景有身份验证（比如 native app 中）和数据交换。 Header Header 包含两部分： token 类型，JWT 签名算法，比如 HMAC SHA256，RSA 一个 Header 示例： { &quot;alg&quot;: &quot;HS256&quot;, &quot;typ&quot;: &quot;JWT&quot; } Header 经过 Base64Url 编码后形成了 JWT token 中的第一部分。 Payload Payload 包含声明（claims）数据，主要是 user 及其他额外的数据。声明分三种类型： Registered claims：一些非强制但推荐的预设声明，能够提供有用互联的信息，譬如 iss (issuer), exp (expiration time), sub (subject), aud (audience) 等。注意到这些名称都是三个字符，因为 JWT 要求数据简练。 Public claims：具体使用时自由定义的部分。为防止冲突，应该定义在 IANA JSON Web Token Registry 或能够避免冲突的 URI 命名空间下。 Private claims：收发双方约定的私有声明，用来交换数据。 一个 Payload 示例： { &quot;sub&quot;: &quot;1234567890&quot;, &quot;name&quot;: &quot;John Doe&quot;, &quot;admin&quot;: true } Base64Url 编码后形成 JWT token 的第二部分。 备注：对于已经通过签名以防止信息被篡改的 token 中，Payload 和 Header 对任何人都是可见的，所以不要在其中放置私有信息，除非是信息本身已经加密过。 Signature 使用前面编码过的 Header, Payload，及 Header 中指定的签名算法，再加上一个 secret 便可以创建一个签名了 （signature）。 以 HMAC SHA256 算法为例，创建签名的方式会是下面的样子： HMACSHA256( base64UrlEncode(header) + &quot;.&quot; + base64UrlEncode(payload), secret) 该签名可用来保证信息传输过程中没有被篡改，同时，如果使用私有键值进行签名，还可以从 token 中解析出 JWT 的发送者是谁。 上面签名的输出是逗号分隔的三个 Base64-URL 字符串，可在 HTML 及 HTTP 环境下自由使用了。相比基于 XML 的方案，比如 SAML，JWT 可以说是很简练了。 上面的签名指定 secret 为 test 时的结果： eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.sLYApJ08mxtW8hlSqE5zetiscOjzEt361dCUDtGsDxU 调试工具 通过 JWT 官网的 debugger 可在线生成和解析 token。 工作原理 用户登录后会得到一个 token，后续在请求受身份保护的资源时需要将该 token 带上。一般地，在请求头里通过 Authorization 字段以 Bearer 格式发送。 示例： Authorization: Bearer &lt;token&gt; Server 端检查 Header 中的 Authorization 字段以验证身份。 因为 JWT 通过 Header 传递身份，所以规避了跨域资源共享（CORS）的问题。 来自 JWT 官网的图片展示了 Server 如何获取 token 并验证身份 客户端通过验证身份后拿到token 通过该token 再去请求其他受保护的资源 JWT 的优势 与 Simple Web Tokens (SWT) 和 Security Assertion Markup Language Tokens (SAML) 相比，JWT 会有一些优势。 相比 XML 方式，JWT 数据编码后更轻巧，这样便于 HTTP 传输和插入 HTML 中使用。 更加便捷的安全性。SWT 只能通过 HMAC 算法通过公用的 secret 来对称加密，而 JWT 和 SAML 可使用一对 公钥/私钥 进行 X.509  证书形式的签名。 JSON 格式在各编程语言中有广泛支持，而 XML 的解析则更加麻烦一些。 相关资源 Introduction to JSON Web Tokens Get Started with JSON Web Tokens 讲真，别再使用JWT了" />
+<link rel="canonical" href="http://localhost:4000/2019/02/01/JSON-Web-Token-%E4%BB%8B%E7%BB%8D.html" />
+<meta property="og:url" content="http://localhost:4000/2019/02/01/JSON-Web-Token-%E4%BB%8B%E7%BB%8D.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-02-01T19:02:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/02/01/JSON-Web-Token-%E4%BB%8B%E7%BB%8D.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/02/01/JSON-Web-Token-%E4%BB%8B%E7%BB%8D.html"},"description":"JSON Web Token 介绍 什么是 JSON Web Token JSON Web Token (JWT) 是一个开放协议，通过简洁的 JSON 数据来达到安全交换数据的目的。 它是由逗号分隔的三个部分组成 - Header - Payload - Signature 所以看起来是这种形式 xxx.yyy.zzz。 主要应用场景有身份验证（比如 native app 中）和数据交换。 Header Header 包含两部分： token 类型，JWT 签名算法，比如 HMAC SHA256，RSA 一个 Header 示例： { &quot;alg&quot;: &quot;HS256&quot;, &quot;typ&quot;: &quot;JWT&quot; } Header 经过 Base64Url 编码后形成了 JWT token 中的第一部分。 Payload Payload 包含声明（claims）数据，主要是 user 及其他额外的数据。声明分三种类型： Registered claims：一些非强制但推荐的预设声明，能够提供有用互联的信息，譬如 iss (issuer), exp (expiration time), sub (subject), aud (audience) 等。注意到这些名称都是三个字符，因为 JWT 要求数据简练。 Public claims：具体使用时自由定义的部分。为防止冲突，应该定义在 IANA JSON Web Token Registry 或能够避免冲突的 URI 命名空间下。 Private claims：收发双方约定的私有声明，用来交换数据。 一个 Payload 示例： { &quot;sub&quot;: &quot;1234567890&quot;, &quot;name&quot;: &quot;John Doe&quot;, &quot;admin&quot;: true } Base64Url 编码后形成 JWT token 的第二部分。 备注：对于已经通过签名以防止信息被篡改的 token 中，Payload 和 Header 对任何人都是可见的，所以不要在其中放置私有信息，除非是信息本身已经加密过。 Signature 使用前面编码过的 Header, Payload，及 Header 中指定的签名算法，再加上一个 secret 便可以创建一个签名了 （signature）。 以 HMAC SHA256 算法为例，创建签名的方式会是下面的样子： HMACSHA256( base64UrlEncode(header) + &quot;.&quot; + base64UrlEncode(payload), secret) 该签名可用来保证信息传输过程中没有被篡改，同时，如果使用私有键值进行签名，还可以从 token 中解析出 JWT 的发送者是谁。 上面签名的输出是逗号分隔的三个 Base64-URL 字符串，可在 HTML 及 HTTP 环境下自由使用了。相比基于 XML 的方案，比如 SAML，JWT 可以说是很简练了。 上面的签名指定 secret 为 test 时的结果： eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.sLYApJ08mxtW8hlSqE5zetiscOjzEt361dCUDtGsDxU 调试工具 通过 JWT 官网的 debugger 可在线生成和解析 token。 工作原理 用户登录后会得到一个 token，后续在请求受身份保护的资源时需要将该 token 带上。一般地，在请求头里通过 Authorization 字段以 Bearer 格式发送。 示例： Authorization: Bearer &lt;token&gt; Server 端检查 Header 中的 Authorization 字段以验证身份。 因为 JWT 通过 Header 传递身份，所以规避了跨域资源共享（CORS）的问题。 来自 JWT 官网的图片展示了 Server 如何获取 token 并验证身份 客户端通过验证身份后拿到token 通过该token 再去请求其他受保护的资源 JWT 的优势 与 Simple Web Tokens (SWT) 和 Security Assertion Markup Language Tokens (SAML) 相比，JWT 会有一些优势。 相比 XML 方式，JWT 数据编码后更轻巧，这样便于 HTTP 传输和插入 HTML 中使用。 更加便捷的安全性。SWT 只能通过 HMAC 算法通过公用的 secret 来对称加密，而 JWT 和 SAML 可使用一对 公钥/私钥 进行 X.509  证书形式的签名。 JSON 格式在各编程语言中有广泛支持，而 XML 的解析则更加麻烦一些。 相关资源 Introduction to JSON Web Tokens Get Started with JSON Web Tokens 讲真，别再使用JWT了","@type":"BlogPosting","headline":"JSON Web Token 介绍","dateModified":"2019-02-01T19:02:00+08:00","datePublished":"2019-02-01T19:02:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JSON Web Token 介绍</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-02-01T19:02:00+08:00" itemprop="datePublished">Feb 1, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="json-web-token-介绍">JSON Web Token 介绍</h1>
+
+<h3 id="什么是-json-web-token">什么是 JSON Web Token</h3>
+
+<p><a href="https://jwt.io/introduction/">JSON Web Token (JWT)</a> 是一个开放协议，通过简洁的 JSON 数据来达到安全交换数据的目的。</p>
+
+<p>它是由逗号分隔的三个部分组成
+    - Header
+    - Payload
+    - Signature
+所以看起来是这种形式  <code class="language-plaintext highlighter-rouge">xxx.yyy.zzz</code>。</p>
+
+<p>主要应用场景有身份验证（比如 native app 中）和数据交换。</p>
+
+<h3 id="header">Header</h3>
+
+<p>Header 包含两部分：</p>
+<ul>
+  <li>token 类型，<code class="language-plaintext highlighter-rouge">JWT</code></li>
+  <li>签名算法，比如 <code class="language-plaintext highlighter-rouge">HMAC SHA256</code>，<code class="language-plaintext highlighter-rouge">RSA</code></li>
+</ul>
+
+<p>一个 Header 示例：</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"alg"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HS256"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"typ"</span><span class="p">:</span><span class="w"> </span><span class="s2">"JWT"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Header 经过 Base64Url 编码后形成了 JWT token 中的第一部分。</p>
+
+<h3 id="payload">Payload</h3>
+
+<p>Payload 包含声明（claims）数据，主要是 user 及其他额外的数据。声明分三种类型：</p>
+
+<ul>
+  <li>Registered claims：一些非强制但推荐的预设声明，能够提供有用互联的信息，譬如 iss (issuer), exp (expiration time), sub (subject), aud (audience) 等。注意到这些名称都是三个字符，因为 JWT 要求数据简练。</li>
+  <li>Public claims：具体使用时自由定义的部分。为防止冲突，应该定义在  <a href="https://www.iana.org/assignments/jwt/jwt.xhtml">IANA JSON Web Token Registry</a> 或能够避免冲突的 URI 命名空间下。</li>
+  <li>Private claims：收发双方约定的私有声明，用来交换数据。</li>
+</ul>
+
+<p>一个 Payload 示例：</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"sub"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234567890"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"admin"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Base64Url 编码后形成 JWT token 的第二部分。</p>
+
+<p><em>备注：对于已经通过签名以防止信息被篡改的 token 中，Payload 和 Header 对任何人都是可见的，所以不要在其中放置私有信息，除非是信息本身已经加密过。</em></p>
+
+<h3 id="signature">Signature</h3>
+
+<p>使用前面编码过的 Header, Payload，及 Header 中指定的签名算法，再加上一个 secret 便可以创建一个签名了 （signature）。</p>
+
+<p>以 <code class="language-plaintext highlighter-rouge">HMAC SHA256</code> 算法为例，创建签名的方式会是下面的样子：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HMACSHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  secret)
+</code></pre></div></div>
+
+<p>该签名可用来保证信息传输过程中没有被篡改，同时，如果使用私有键值进行签名，还可以从 token 中解析出 JWT 的发送者是谁。</p>
+
+<p>上面签名的输出是逗号分隔的三个 Base64-URL 字符串，可在 HTML 及 HTTP 环境下自由使用了。相比基于 XML 的方案，比如 SAML，JWT 可以说是很简练了。</p>
+
+<p>上面的签名指定 secret 为 <code class="language-plaintext highlighter-rouge">test</code> 时的结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.sLYApJ08mxtW8hlSqE5zetiscOjzEt361dCUDtGsDxU
+</code></pre></div></div>
+
+<h3 id="调试工具">调试工具</h3>
+
+<p>通过 <a href="http://jwt.io/">JWT 官网的 debugger</a> 可在线生成和解析 token。</p>
+
+<h3 id="工作原理">工作原理</h3>
+
+<p>用户登录后会得到一个 token，后续在请求受身份保护的资源时需要将该 token 带上。一般地，在请求头里通过 <code class="language-plaintext highlighter-rouge">Authorization</code> 字段以 Bearer 格式发送。</p>
+
+<p>示例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Authorization: Bearer &lt;token&gt;
+</code></pre></div></div>
+
+<p>Server 端检查 Header 中的 <code class="language-plaintext highlighter-rouge">Authorization</code> 字段以验证身份。</p>
+
+<p>因为 JWT 通过 Header 传递身份，所以规避了跨域资源共享（CORS）的问题。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/52120460-5addb400-2657-11e9-9e16-519c75f128a1.png" alt="image" /></p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/52120181-73010380-2656-11e9-81a7-554dda5a394f.png" alt="client-credentials-grant" /></p>
+
+<p><em>来自 JWT 官网的图片展示了 Server 如何获取 token 并验证身份</em></p>
+<ol>
+  <li><em>客户端通过验证身份后拿到token</em></li>
+  <li><em>通过该token 再去请求其他受保护的资源</em></li>
+</ol>
+
+<h3 id="jwt-的优势">JWT 的优势</h3>
+
+<p>与 Simple Web Tokens (SWT) 和 Security Assertion Markup Language Tokens (SAML) 相比，JWT 会有一些优势。</p>
+
+<p>相比 XML 方式，JWT 数据编码后更轻巧，这样便于 HTTP 传输和插入 HTML 中使用。</p>
+
+<p>更加便捷的安全性。SWT 只能通过 HMAC 算法通过公用的 secret 来对称加密，而 JWT 和 SAML 可使用一对 公钥/私钥 进行 X.509  证书形式的签名。</p>
+
+<p>JSON 格式在各编程语言中有广泛支持，而 XML 的解析则更加麻烦一些。</p>
+
+<h3 id="相关资源">相关资源</h3>
+<ul>
+  <li><a href="https://jwt.io/introduction/">Introduction to JSON Web Tokens</a></li>
+  <li><a href="https://auth0.com/learn/json-web-tokens/">Get Started with JSON Web Tokens</a></li>
+  <li><a href="http://insights.thoughtworkers.org/do-not-use-jwt-anymore/">讲真，别再使用JWT了</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/02/01/JSON-Web-Token-%E4%BB%8B%E7%BB%8D.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

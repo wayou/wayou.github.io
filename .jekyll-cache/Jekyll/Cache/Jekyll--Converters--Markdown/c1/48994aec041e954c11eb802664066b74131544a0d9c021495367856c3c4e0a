@@ -1,0 +1,124 @@
+I"<h1 id="css-选择器权重计算规则">CSS 选择器权重计算规则</h1>
+
+<p>CSS 选择器（Selector）的权重（Specificity）决定了对于<strong>同一元素</strong>，到底哪一条 CSS 规则会生效。且仅有当多条 CSS 规则都对同一元素声明了相应样式时，才会涉及到权重计算的问题。</p>
+
+<h2 id="选择器的分类">选择器的分类</h2>
+
+<p>正式计算选择器权重之前，先来看选择器是如何被分类的。</p>
+
+<p>因为 CSS 选择器众多，在计算时，这些选择器被归为了三大类，按其权重由大到小依次为：</p>
+
+<ul>
+  <li>ID 选择器：比如 <code class="language-plaintext highlighter-rouge">#dialog</code></li>
+  <li>类名选择器（class selector），属性选择器（attribute selector）及伪类选择器（pseudo class selector） ：比如 <code class="language-plaintext highlighter-rouge">.btn</code>，<code class="language-plaintext highlighter-rouge">[type="radio"]</code>，<code class="language-plaintext highlighter-rouge">:hover</code></li>
+  <li>元素类型选择器（type selector）和伪选择器（pseudo selector）：比如 <code class="language-plaintext highlighter-rouge">h1</code>，<code class="language-plaintext highlighter-rouge">::before</code></li>
+</ul>
+
+<p>其中两类特殊的样式会影响权重的生效，</p>
+
+<ul>
+  <li>一是内联样式：<code class="language-plaintext highlighter-rouge">style="color:red"</code>。内联样式始终拥有最高的权值，会覆盖样式文件的样式。</li>
+  <li>另一个是 <code class="language-plaintext highlighter-rouge">!important</code> 修饰词。应用该修饰词的规则权重会高于正常的规则，但不推荐。</li>
+</ul>
+
+<p>其他选择器，</p>
+
+<ul>
+  <li>全局选择器：<code class="language-plaintext highlighter-rouge">*</code></li>
+  <li>选择连接符：<code class="language-plaintext highlighter-rouge">+</code>,<code class="language-plaintext highlighter-rouge">&gt;</code>,<code class="language-plaintext highlighter-rouge">-</code>,<code class="language-plaintext highlighter-rouge"> </code>,<code class="language-plaintext highlighter-rouge">||</code></li>
+  <li>伪类反向选择器：<code class="language-plaintext highlighter-rouge">:not()</code></li>
+</ul>
+
+<p>以上，对权重的计算没影响，即不参与计算。</p>
+
+<h2 id="权重的计算">权重的计算</h2>
+
+<p>根据以上对选择器的分类，对任意样式规则，可得到 <code class="language-plaintext highlighter-rouge">(W,X,Y,Z)</code> 这么一个值，其中，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">W</code>：标识是否有内联样式</li>
+  <li><code class="language-plaintext highlighter-rouge">X</code>：ID 的数量</li>
+  <li><code class="language-plaintext highlighter-rouge">Y</code>：类名选择器，属性选择器及伪类选择器的数量</li>
+  <li><code class="language-plaintext highlighter-rouge">Z</code>：元素选择器，伪选择器 的数量</li>
+</ul>
+
+<p>对于同一元素身上的多条样式，对第条样式规则计算出上面四个值，然后从左往右逐个比较，数字大的胜出。</p>
+
+<p>如果权重全部一样，后面的规则会生效。</p>
+
+<h2 id="示例">示例</h2>
+
+<h3 id="示例一">示例一</h3>
+
+<p>考察下面的示例代码：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">"list"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"list-item"</span><span class="nt">&gt;</span>item1<span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"list-item"</span><span class="nt">&gt;</span>item2<span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"list-item"</span><span class="nt">&gt;</span>item3<span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</code></pre></div></div>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="o">&gt;</span> <span class="nt">li</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">blue</span>
+<span class="p">}</span>
+
+<span class="nc">.list</span> <span class="o">&gt;</span> <span class="nc">.list-item</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>先来分析第一条规则 <code class="language-plaintext highlighter-rouge">ul &gt; li</code> ，包含 2 个元素类型选择器，得到的权值为 <code class="language-plaintext highlighter-rouge">(0,0,0,2)</code>。</p>
+  </li>
+  <li>
+    <p>再看 <code class="language-plaintext highlighter-rouge">.list &gt; .list-item</code>，包含 2 个类名选择器，权值为 <code class="language-plaintext highlighter-rouge">(0,0,2,0)</code>。</p>
+  </li>
+</ul>
+
+<p>两者一对比，在进行到第三位时，后面的 2&gt;0，所以后者胜出，它的样式将生效，列表颜色为红色。</p>
+
+<h3 id="示例二">示例二</h3>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;nav</span> <span class="na">id=</span><span class="s">"nav"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ul&gt;</span>
+        <span class="nt">&lt;li&gt;</span>1<span class="nt">&lt;/li&gt;</span>
+        <span class="nt">&lt;li&gt;</span>2<span class="nt">&lt;/li&gt;</span>
+        <span class="nt">&lt;li&gt;</span>3<span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;/ul&gt;</span>
+<span class="nt">&lt;/nav&gt;</span>
+</code></pre></div></div>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">nav</span><span class="nf">#nav</span> <span class="o">&gt;</span> <span class="nt">li</span><span class="nd">:hover</span><span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">purple</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">li</span><span class="o">:</span> <span class="nt">nth-child</span><span class="o">(</span><span class="err">2</span><span class="o">)</span><span class="nd">:hover</span><span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span><span class="no">pink</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>首先 <code class="language-plaintext highlighter-rouge">nav#nav &gt; li:hover</code> 规则中有 1 个 ID 选择器，2 个元素选择器以及 1 个伪类选择器，权值为 <code class="language-plaintext highlighter-rouge">(0,1,1,2)</code></p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">li: nth-child(2):hover</code> 中，2 个伪类选择器和 1 个类型选择器，权值为 <code class="language-plaintext highlighter-rouge">(0,0,2,1)</code></p>
+  </li>
+</ul>
+
+<p>一对比，前者胜出，因为比较到第二位时，前者是 1 后者是 0。只要有大于的情况，后面的值就不用比较了。</p>
+
+<p>因此列表中元素在 hover 时，会是紫色（purple）。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity">MDN - Specificity</a></li>
+  <li><a href="https://specifishity.com">Specifishity :: Specificity with Fish</a></li>
+  <li><a href="https://www.w3schools.com/css/css_specificity.asp">CSS Specificity</a></li>
+  <li><a href="https://css-tricks.com/specifics-on-css-specificity/">Specifics on CSS Specificity</a></li>
+</ul>
+
+:ET

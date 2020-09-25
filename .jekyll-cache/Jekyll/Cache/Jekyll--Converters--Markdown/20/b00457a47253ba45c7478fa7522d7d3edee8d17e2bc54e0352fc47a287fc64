@@ -1,0 +1,50 @@
+I"�<h1 id="nest-在日志中打印对象">Nest 在日志中打印对象</h1>
+
+<p>Nest 自带的日志方法 <code class="language-plaintext highlighter-rouge">Logger.log</code> 签名如下：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">:</span> <span class="kr">any</span><span class="p">,</span> <span class="nx">context</span><span class="p">?:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">isTimeDiffEnabled</span><span class="p">?:</span> <span class="nx">boolean</span><span class="p">):</span> <span class="k">void</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>只能通过指定期中的 <code class="language-plaintext highlighter-rouge">message</code> 打印文本。</p>
+
+<p>所以它不能像原生的 <code class="language-plaintext highlighter-rouge">console.log</code> 那样直接打印对象，比如：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">var:</span><span class="dl">'</span><span class="p">,</span><span class="nx">someVariable</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>但你可能会说，使用模板字符串就可以解决，像这样：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Logger</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`var: </span><span class="p">${</span><span class="nx">someVariable</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>实际上得到的输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] [Nest] 24911   - 09/16/2020, 2:20:20 PM   var: [object Object] +0ms
+</code></pre></div></div>
+
+<p>所以为了正常打印对象，还需要借助 node 自带的 <a href="https://nodejs.org/api/util.html#util_util_inspect_object_options"><code class="language-plaintext highlighter-rouge">util.inspect</code></a> 将对象拍平：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">inspect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">util</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">Logger</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`var: </span><span class="p">${</span><span class="nx">inspect</span><span class="p">(</span><span class="nx">someVariable</span><span class="p">)}</span><span class="s2">`</span><span class="p">);</span>
+<span class="c1">// 作为对照：</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">var:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">someVariable</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>测试其输出：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>1] <span class="o">[</span>Nest] 24911   - 09/16/2020, 2:20:20 PM   var: <span class="o">{</span> blah: 1, foo: <span class="o">{</span> bar: <span class="s1">'xxx'</span> <span class="o">}</span> <span class="o">}</span> +2282ms
+<span class="o">[</span>1] var: <span class="o">{</span> blah: 1, foo: <span class="o">{</span> bar: <span class="s1">'xxx'</span> <span class="o">}</span> <span class="o">}</span>
+</code></pre></div></div>
+
+<p>输出结果能够正常阅读了。</p>
+
+<p>借助于 <code class="language-plaintext highlighter-rouge">inspect</code>，可以统一收敛日志的打印，而不用在单独需要打印对象的场景切换到 <code class="language-plaintext highlighter-rouge">console.log</code>，对于后面对日志作统一管理，打标签收集都有好处。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://nodejs.org/api/util.html#util_util_inspect_object_options">util.inspect(object[, options])</a></li>
+</ul>
+
+:ET

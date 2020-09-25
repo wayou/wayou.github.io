@@ -1,0 +1,206 @@
+I"\?<h1 id="mysql-事务">MySQL 事务</h1>
+
+<p>多表关联的情况下，一条新记录的生成往往涉及多张表的操作。</p>
+
+<p>一个典型的场景，银行转帐。要完成 A 转帐到 B，</p>
+
+<ul>
+  <li>从 A 帐户减去相应金额</li>
+  <li>给 B 帐户加上相应金额。</li>
+</ul>
+
+<p>这两步要么一起成功，要么都失败，否则就会造成数据不一致。比如 A 的钱少了，但 B 的钱没增加，或者 A 的扣款失败，B 的钱也增加了。</p>
+
+<p>所以需要一种机制来保证这一操作过程中每一步的正确性，当其中任意操作失败时应该将已经进行过的操作回滚，保证整体都失败。</p>
+
+<p>此时这些被绑定的一连串操作便形成了 <strong>事务</strong>。</p>
+
+<p>下面创建一张空表，为后面示例作准备。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test</span><span class="p">(</span><span class="n">idx</span> <span class="nb">int</span><span class="p">);</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="事务的语法">事务的语法</h2>
+
+<ul>
+  <li>MySQL 中，通过 <code class="language-plaintext highlighter-rouge">START TRANSACTION</code> 语句来开始一个事务，也可以使用别名 <code class="language-plaintext highlighter-rouge">BEGIN</code> 和 <code class="language-plaintext highlighter-rouge">BEGIN WORK</code> 语句。</li>
+  <li><code class="language-plaintext highlighter-rouge">COMMIT</code> 语句提交修改。</li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">ROLLBACK</code> 语句回滚。</li>
+</ul>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">COMMIT</code> 或 <code class="language-plaintext highlighter-rouge">ROLLBACK</code> 均可用来结束一个事务。</p>
+
+<p>来看一个简单的示例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; BEGIN<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; INSERT INTO <span class="nb">test </span>values<span class="o">(</span>1<span class="o">)</span><span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+
+mysql&gt; INSERT INTO <span class="nb">test </span>values<span class="o">(</span>2<span class="o">)</span><span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; SELECT <span class="k">*</span> FROM <span class="nb">test</span><span class="p">;</span>
++------+
+| idx  |
++------+
+|    1 |
+|    2 |
++------+
+2 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; ROLLBACK<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; SELECT <span class="k">*</span> FROM <span class="nb">test</span><span class="p">;</span>
+Empty <span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>上面创建了一个名为 <code class="language-plaintext highlighter-rouge">test</code> 的表，开始事务，向其中分两次插入记录。</p>
+
+<p>然后查询刚刚插入的两条记录。因为此时是处于一个事务中，所以这两条记录实际上是可以被回滚的。</p>
+
+<p>调用 <code class="language-plaintext highlighter-rouge">ROLLBACK</code> 后两次查询，表中已经没有了刚刚的两条记录。</p>
+
+<h2 id="autocommit"><code class="language-plaintext highlighter-rouge">autocommit</code></h2>
+
+<p><strong>抛开事务</strong>，MySQL 默认情况下开启了一个自动提交的模式 <code class="language-plaintext highlighter-rouge">autocommit</code>，一条语句被回车执行后该语句便生效了，变更会保存在 MySQL 的文件中，无法撤消。当使用相应语句比如 <code class="language-plaintext highlighter-rouge">BEGIN</code> 显式声明开始一个事务时，<code class="language-plaintext highlighter-rouge">autocommit</code> 默认会是关闭状态。</p>
+
+<p>可通过查询  <code class="language-plaintext highlighter-rouge">@@autocommit</code> 变量来查看当前是否是自动提交的状态，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT @@autocommit<span class="p">;</span>
++--------------+
+| @@autocommit |
++--------------+
+|            1 |
++--------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>通过设置 <code class="language-plaintext highlighter-rouge">autocommit</code> 为 <code class="language-plaintext highlighter-rouge">0</code> 可关闭自动提交，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="n">autocommit</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>无论是否是自动提交模式，语句执行后都会生效，区别在于，非自动模式下，没提交的那些操作是可以回滚的，一旦提交后便不可撤消了。换句话说，当 <code class="language-plaintext highlighter-rouge">autocommit</code> 关闭时，一直是处于事务操作中的，可随时调用 <code class="language-plaintext highlighter-rouge">ROLLBACK</code> 进行回滚。</p>
+
+<p>下面的语句展示了 <code class="language-plaintext highlighter-rouge">autocommit</code> 关闭时 <code class="language-plaintext highlighter-rouge">COMMIT</code> 与否的影响，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; <span class="k">select</span> @@autocommit<span class="p">;</span>
++--------------+
+| @@autocommit |
++--------------+
+|            1 |
++--------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; <span class="nb">set </span><span class="nv">autocommit</span><span class="o">=</span>0<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; <span class="k">select</span> <span class="k">*</span> from <span class="nb">test</span><span class="p">;</span>
+Empty <span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; insert into <span class="nb">test </span>values<span class="o">(</span>1<span class="o">)</span><span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; insert into <span class="nb">test </span>values<span class="o">(</span>2<span class="o">)</span><span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; <span class="k">select</span> <span class="k">*</span> from <span class="nb">test</span><span class="p">;</span>
++------+
+| idx  |
++------+
+|    1 |
+|    2 |
++------+
+2 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; rollback<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; <span class="k">select</span> <span class="k">*</span> from <span class="nb">test</span><span class="p">;</span>
+Empty <span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; insert into <span class="nb">test </span>values<span class="o">(</span>3<span class="o">)</span><span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; commit<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; rollback<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; <span class="k">select</span> <span class="k">*</span> from <span class="nb">test</span><span class="p">;</span>
++------+
+| idx  |
++------+
+|    3 |
++------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="事务中会触发隐式提交的操作">事务中会触发隐式提交的操作</h2>
+
+<p>虽说事务模式下关闭了 <code class="language-plaintext highlighter-rouge">autocommit</code> 必需手动执行 <code class="language-plaintext highlighter-rouge">COMMIT</code> 才能提交，但有些语句和操作是会隐式触发提交的，在进行事务过程中需要注意，这些操作可在官方文档 <a href="https://dev.mysql.com/doc/refman/5.5/en/implicit-commit.html">Statements That Cause an Implicit Commit</a> 中查找到。</p>
+
+<p>所以不能单纯地认为一个事务中所有操作都是绝对安全可回滚的。</p>
+
+<h2 id="nodejs-示例">Node.js 示例</h2>
+
+<p>以下是来自 npm 模块 <a href="https://github.com/mysqljs/mysql#transactions">mysqljs/mysql</a>  关于事务的示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">connection</span><span class="p">.</span><span class="nx">beginTransaction</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span> <span class="p">}</span>
+  <span class="nx">connection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="dl">'</span><span class="s1">INSERT INTO posts SET title=?</span><span class="dl">'</span><span class="p">,</span> <span class="nx">title</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">results</span><span class="p">,</span> <span class="nx">fields</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">rollback</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">log</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Post </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">results</span><span class="p">.</span><span class="nx">insertId</span> <span class="o">+</span> <span class="dl">'</span><span class="s1"> added</span><span class="dl">'</span><span class="p">;</span>
+
+    <span class="nx">connection</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="dl">'</span><span class="s1">INSERT INTO log SET data=?</span><span class="dl">'</span><span class="p">,</span> <span class="nx">log</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">results</span><span class="p">,</span> <span class="nx">fields</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">rollback</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+          <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+      <span class="nx">connection</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">rollback</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+          <span class="p">});</span>
+        <span class="p">}</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">success!</span><span class="dl">'</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>关于 <code class="language-plaintext highlighter-rouge">autocommit</code> 与事务，他们其实是这样的关系：</p>
+
+<ul>
+  <li>MySQL 每一步操作都可看成一个原子操作。</li>
+  <li>默认情况下，<code class="language-plaintext highlighter-rouge">autocommit</code> 是开启状态，所以第一条语句都是执行后自动提交，语句产生的效果被记录保存了下来。</li>
+  <li>关于 <code class="language-plaintext highlighter-rouge">autocommit</code> 后，语句不会自动提交，需要手动调用 <code class="language-plaintext highlighter-rouge">COMMIT</code> 来让效果被持久化。</li>
+  <li>也可通过 <code class="language-plaintext highlighter-rouge">BEGIN</code> 开始一个事务，此时 <code class="language-plaintext highlighter-rouge">autocommit</code> 隐式地被关闭了，因此事务操作过程中也是需要显式调用 <code class="language-plaintext highlighter-rouge">COMMIT</code> 来让效果永久生效。</li>
+  <li><code class="language-plaintext highlighter-rouge">BEGIN</code> 开启事务后，使用 <code class="language-plaintext highlighter-rouge">COMMIT</code> 或 <code class="language-plaintext highlighter-rouge">ROLLBACK</code> 来结束该事务。事务结束后 <code class="language-plaintext highlighter-rouge">autocommit</code> 回到原有的状态。</li>
+</ul>
+
+<p>所以，<code class="language-plaintext highlighter-rouge">autocommit</code> 这个开关相当于一个记录的事务标记，它被关闭时你一直处于一个可回滚的状态。而 <code class="language-plaintext highlighter-rouge">BEGIN</code> 开启的是一次临时事务，一旦 <code class="language-plaintext highlighter-rouge">COMMIT</code> 或 <code class="language-plaintext highlighter-rouge">ROLLBACK</code> 本次事务便结束了。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/5.6/en/sql-syntax-transactions.html">MySQL Reference Manual - 13.3 Transactional and Locking Statements</a></li>
+  <li><a href="http://www.mysqltutorial.org/mysql-transaction.aspx">MySQL Transaction</a></li>
+  <li><a href="https://github.com/mysqljs/mysql#transactions">mysqljs/mysql</a></li>
+</ul>
+
+:ET

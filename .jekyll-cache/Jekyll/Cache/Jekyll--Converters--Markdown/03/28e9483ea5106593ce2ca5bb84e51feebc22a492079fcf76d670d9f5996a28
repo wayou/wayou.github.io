@@ -1,0 +1,42 @@
+I"�<h1 id="项目中私有-npm-源的设置">项目中私有 npm 源的设置</h1>
+
+<p>npm 源的设置比较粗暴的方式是直接配置 npm 或 yarn，</p>
+
+<ul>
+  <li>npm
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ npm config set registry &lt;registry url&gt;
+</code></pre></div>    </div>
+  </li>
+  <li>yarn</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yarn config set registry &lt;registry url&gt;
+</code></pre></div></div>
+
+<p>但这会影响所有包的安装，如果只是为了某些包需要从私有源安装，比如 <code class="language-plaintext highlighter-rouge">@scopename</code> 下的所有包，可以单独配置该 scope 走私有源，其他包走正常的源安装。</p>
+
+<p>项目中创建配置文件，npm 和 yarn 分别为：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.npmrc</code></li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@scopename:registry=&lt;registry url&gt;
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.yarnrc</code></li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"@scopename:registry" "&lt;registry url&gt;"
+</code></pre></div></div>
+
+<p>源的配置通过配置文件来设置，跟随项目，</p>
+
+<ul>
+  <li>好处是将变更依赖收敛到了项目中，不依赖全局的配置，</li>
+  <li>同时也不影响其他项目,</li>
+  <li>你甚至能为不同的 scope 指定不同的 registry，达到多个 registry 同时工作的目的</li>
+</ul>
+
+:ET

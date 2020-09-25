@@ -1,0 +1,119 @@
+I"�<h1 id="macos-禁用程序的黑色模式dark-mode">macOS 禁用程序的黑色模式/Dark Mode</h1>
+
+<p>macOS Mojave 中引入了系统层面的黑色模式，Chrome 73 在应用中支行了这一模式，即系统设置为黑色模式时，Chrome 会自动适应切换到 Dark Mode。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55413010-114c0f80-559b-11e9-9ec1-7080e80ad92a.png" alt="Chrome 跟随系统设置的黑色模式" />
+<em>Chrome 跟随系统设置的黑色模式</em></p>
+
+<p>很酷对不？</p>
+
+<p>但其实黑色模式下标题与顶部系统菜单融为一体，且黑色模式下 Chrome 标签上内容辨识度也不高了，看起来还是有点别扭。更重要的是，这个模式让人很难区分隐身模式。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55413062-2d4fb100-559b-11e9-88f2-3bfe5c5a5b97.png" alt="Chrome 黑色模式下与隐身模式的对比" />
+<em>Chrome 黑色模式下与隐身模式的对比</em></p>
+
+<p>所以决定系统使用 Dark Mode 的情况下将 Chrome 的黑色禁用。</p>
+
+<p>通过命令行中设置 <code class="language-plaintext highlighter-rouge">defaults</code> 值可达到目的。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>defaults write com.google.Chrome NSRequiresAquaSystemAppearance <span class="nt">-bool</span> Yes
+</code></pre></div></div>
+
+<p>如果想恢复默认，只需要将刚才设置的值删掉或者将 <code class="language-plaintext highlighter-rouge">Yes</code> 设置成 <code class="language-plaintext highlighter-rouge">No</code>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>defaults delete com.google.Chrome NSRequiresAquaSystemAppearance
+</code></pre></div></div>
+
+<h2 id="禁用任意-app-的-dark-mode">禁用任意 App 的 Dark Mode</h2>
+
+<p>推而广之，不仅可禁止 Chrome 进入 Dark Mode，还可让其他任意 App 不进入 Dark Mode，如果该应用支持过 Dark Mode 的话。只需要找出该应用的打包发布的 bundle id 即可。这个 id 可通过下面的命令来得到。比如查看 Canary 版本的 Chrome：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>osascript <span class="nt">-e</span> <span class="s1">'id of app "Google Chrome Canary"'</span>
+com.google.Chrome.canary
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">Google Chrome Canary</code> （不区分大小写）是你在程序文件夹下看到的 <code class="language-plaintext highlighter-rouge">.app</code> 后缀的那个文件的文件名，比如这里 <code class="language-plaintext highlighter-rouge">Google Chrome Canary.app</code>。得到的 id 为 <code class="language-plaintext highlighter-rouge">com.google.Chrome.canary</code> 再代入最上面的命令中即可。</p>
+
+<h3 id="程序-bundle-id-的查找">程序 bundle id 的查找</h3>
+
+<p>更为准备的方式，查找 id，是通过右键 <code class="language-plaintext highlighter-rouge">.app</code> 文件选择 <code class="language-plaintext highlighter-rouge">Show Package Contents</code>，然后找到 <code class="language-plaintext highlighter-rouge">Contents&gt;info.plist</code> 文件，搜索 <code class="language-plaintext highlighter-rouge">CFBundleIdentifier</code> 即可看到该程序的 bundle id。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>defaults write com.google.Chrome.canary NSRequiresAquaSystemAppearance <span class="nt">-bool</span> Yes
+</code></pre></div></div>
+
+<p>这里 id 是区分大小写的，写错不生效。</p>
+
+<p>要恢复默认时同理。</p>
+
+<h3 id="一些常用软件">一些常用软件</h3>
+
+<ul>
+  <li>网易云音乐</li>
+</ul>
+
+<p>同理，设置网易云音乐关闭其黑色模式，通过 <code class="language-plaintext highlighter-rouge">plist</code> 文件发现其 bundle id 为 <code class="language-plaintext highlighter-rouge">com.netease.163music</code>，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+&lt;key&gt;CFBundleIdentifier&lt;/key&gt;
+&lt;string&gt;com.netease.163music&lt;/string&gt;
+...
+</code></pre></div></div>
+
+<p>设置：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defaults write com.netease.163music NSRequiresAquaSystemAppearance <span class="nt">-bool</span> Yes
+</code></pre></div></div>
+
+<ul>
+  <li>iBooks:</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defaults write com.apple.iBooksX NSRequiresAquaSystemAppearance <span class="nt">-bool</span> Yes
+</code></pre></div></div>
+
+<ul>
+  <li>Xcode:</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defaults write com.apple.dt.Xcode NSRequiresAquaSystemAppearance <span class="nt">-bool</span> YES
+</code></pre></div></div>
+
+<ul>
+  <li>Notes:</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defaults write com.apple.Notes NSRequiresAquaSystemAppearance <span class="nt">-bool</span> Yes
+</code></pre></div></div>
+
+<h3 id="其他默认值">其他默认值</h3>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">defaults read</code> 可查看到所有应用已经存在的的 defaults 值。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>defaults <span class="nb">read</span> <span class="o">&gt;&gt;</span> defaults.txt
+</code></pre></div></div>
+
+<p>打开 <code class="language-plaintext highlighter-rouge">defaults.txt</code> 后搜索相应 app 的 id 可看到其所有可用值的列表。比如搜索 <code class="language-plaintext highlighter-rouge">com.google.chrome</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+      "com.google.Chrome" =     {
+        KeychainReauthorizeInAppSpring2017 = 2;
+        KeychainReauthorizeInAppSpring2017Success = 1;
+        LastRunAppBundlePath = "/Applications/Google Chrome.app";
+        ...
+    };
+    "com.google.Chrome.canary" =     {
+        KeychainReauthorizeInAppSpring2017 = 1;
+        KeychainReauthorizeInAppSpring2017Success = 1;
+        LastRunAppBundlePath = "/Applications/Google Chrome Canary.app";
+        ...
+    };
+}
+</code></pre></div></div>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://superuser.com/questions/1417973/how-to-disable-google-chrome-dark-mode">How to disable Google Chrome Dark Mode?</a></li>
+  <li><a href="https://apple.stackexchange.com/questions/195244/concise-compact-list-of-all-defaults-currently-configured-and-their-values">Concise, compact list of all ‘defaults’ currently configured and their values?</a></li>
+</ul>
+:ET

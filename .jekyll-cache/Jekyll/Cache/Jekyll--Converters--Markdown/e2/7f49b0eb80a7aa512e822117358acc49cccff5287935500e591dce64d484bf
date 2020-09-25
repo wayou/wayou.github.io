@@ -1,0 +1,113 @@
+I"#,<h1 id="typescript-this-入参">TypeScript <code class="language-plaintext highlighter-rouge">this</code> 入参</h1>
+
+<p>考察下面的示例代码：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">MyClass</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">protected</span> <span class="nx">foo</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{}</span>
+
+  <span class="p">@</span><span class="nd">MyDecorator</span>
+  <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">MyDecorator</span><span class="p">(</span>
+  <span class="nx">_target</span><span class="p">:</span> <span class="kr">any</span><span class="p">,</span>
+  <span class="nx">_key</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span>
+  <span class="nx">descriptor</span><span class="p">:</span> <span class="nx">PropertyDescriptor</span>
+<span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">original</span> <span class="o">=</span> <span class="nx">descriptor</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+  <span class="nx">descriptor</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">[])</span> <span class="p">{</span>
+    <span class="c1">// 🚨Property 'foo' does not exist on type 'PropertyDescriptor'.ts(2339)</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">foo</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">original</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+  <span class="p">};</span>
+  <span class="k">return</span> <span class="nx">descriptor</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">myClass</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyClass</span><span class="p">(</span><span class="dl">"</span><span class="s2">erm</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">myClass</span><span class="p">.</span><span class="nx">bar</span><span class="p">();</span>
+
+</code></pre></div></div>
+
+<p>上面代码定义了一个类 <code class="language-plaintext highlighter-rouge">MyClass</code>，包含一个 <code class="language-plaintext highlighter-rouge">protected</code> 类型的 <code class="language-plaintext highlighter-rouge">foo</code> 属性。</p>
+
+<p>同时定义了一个 <code class="language-plaintext highlighter-rouge">MyDecorator</code> 装饰器，在被装饰方法调用前访问上面的 <code class="language-plaintext highlighter-rouge">protected foo</code> 属性并且打印出来。</p>
+
+<p>可以看到上面示例中，已经将 TypeScript 报错标识了出来，可以看到此时 <code class="language-plaintext highlighter-rouge">this</code> 所指的对象其实不对，指向了 <code class="language-plaintext highlighter-rouge">PropertyDescriptor</code>，所以在装饰器中试图访问 <code class="language-plaintext highlighter-rouge">protected foo</code> 时提示没有 <code class="language-plaintext highlighter-rouge">foo</code> 属性。</p>
+
+<p>首先我们需要修正一下 <code class="language-plaintext highlighter-rouge">this</code> 的类型，因为该装饰器修饰的是类的方法，所以 <code class="language-plaintext highlighter-rouge">descriptor.value</code> 中 <code class="language-plaintext highlighter-rouge">this</code> 应该是被修饰方法所在的类才对。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function MyDecorator(
+</span>  _target: any,
+  _key: string,
+  descriptor: PropertyDescriptor
+<span class="err">)</span> {
+  const original = descriptor.value;
+  descriptor.value = function(...args: any[]) {
+    // 🚨Property 'foo' does not exist on type 'PropertyDescriptor'.ts(2339)
+    console.log((this as MyClass).foo);
+    return original.apply(this, args);
+  };
+  return descriptor;
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>当我们试图通过强制类型转换修正 <code class="language-plaintext highlighter-rouge">this</code> 的类型时，发现新的错误出现了。因为 <code class="language-plaintext highlighter-rouge">foo</code> 被声明成了 <code class="language-plaintext highlighter-rouge">protected</code> 类型，它提示只能在 <code class="language-plaintext highlighter-rouge">MyClass</code> 中或其继承类中访问该属性。但我们明确知道，运行时 <code class="language-plaintext highlighter-rouge">descriptor.value</code> 确实是在这个类当中的。同时 Hover 到强制类型转换后的 <code class="language-plaintext highlighter-rouge">this</code> 上发现其类型还是 <code class="language-plaintext highlighter-rouge">PropertyDescriptor</code>，说明强制类型转换其实没生效。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/59554334-0a4a7000-8fd4-11e9-8c18-24493f082544.png" alt="强制类型转换失败" /></p>
+<p align="center">强制类型转换失败</p>
+
+<h2 id="this-入参"><code class="language-plaintext highlighter-rouge">this</code> 入参</h2>
+
+<p>对于这种需要修正函数中 <code class="language-plaintext highlighter-rouge">this</code> 所指的场景，TypeScript 提供了一种机制，可以在函数入参列表中第一个位置处，手动写入 <code class="language-plaintext highlighter-rouge">this</code> 标识其类型。但这个 <code class="language-plaintext highlighter-rouge">this</code> 入参只作为一个形式上的参数，供 TypeScript 做静态检查时使用，编译后是不会存在于真实代码中的。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f</span><span class="p">(</span><span class="k">this</span><span class="p">:</span> <span class="k">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// make sure `this` is unusable in this standalone function</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>像上面这样，<code class="language-plaintext highlighter-rouge">f</code> 被指定了 <code class="language-plaintext highlighter-rouge">this</code> 类型为 <code class="language-plaintext highlighter-rouge">void</code>，即 <code class="language-plaintext highlighter-rouge">f</code> 这个函数的函数体内，不允许使用 <code class="language-plaintext highlighter-rouge">this</code>。这有什么用呢，请看以下示例：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">UIElement</span> <span class="p">{</span>
+  <span class="nx">addClickListener</span><span class="p">(</span><span class="nx">onclick</span><span class="p">:</span> <span class="p">(</span><span class="k">this</span><span class="p">:</span> <span class="k">void</span><span class="p">,</span> <span class="nx">e</span><span class="p">:</span> <span class="nx">Event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">):</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nx">Handler</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">public</span> <span class="nx">info</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="nx">onClickBad</span><span class="p">(</span><span class="k">this</span><span class="p">:</span> <span class="nx">Handler</span><span class="p">,</span> <span class="nx">e</span><span class="p">:</span> <span class="nx">Event</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">info</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="kd">type</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">let</span> <span class="nx">h</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Handler</span><span class="p">(</span><span class="dl">'</span><span class="s1">foo</span><span class="dl">'</span><span class="p">);</span>
+<span class="c1">// 🚨error</span>
+<span class="nx">uiElement</span><span class="p">.</span><span class="nx">addClickListener</span><span class="p">(</span><span class="nx">h</span><span class="p">.</span><span class="nx">onClickBad</span><span class="p">);</span> 
+</code></pre></div></div>
+
+<p>上面 <code class="language-plaintext highlighter-rouge">uiElement.addClickListener</code> 声明了只接收一个不依赖于 <code class="language-plaintext highlighter-rouge">this</code> 上下文的函数做为回调，但我们传入的 <code class="language-plaintext highlighter-rouge">h.onClickBad</code> 声明为它执行时依赖于 <code class="language-plaintext highlighter-rouge">Handler</code> 这个上下文。因此显式地修正函数的执行上下文可让 TypeScript 检查出相关的错误。</p>
+
+<p>回到文章开头的示例，我们就知道如何修正它了。</p>
+
+<p>只需要将设置 <code class="language-plaintext highlighter-rouge">descriptor.value</code> 地方，为其添加上 <code class="language-plaintext highlighter-rouge">this</code> 入参即可保证正确的上下文了。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function MyDecorator(
+</span>  _target: any,
+  _key: string,
+  descriptor: PropertyDescriptor
+<span class="err">)</span> {
+  const original = descriptor.value;
+<span class="gd">-  descriptor.value = function(..args: any[]) {
+</span><span class="gi">+  descriptor.value = function(this: MyClass, ...args: any[]) {
+</span>    console.log((this as MyClass).foo);
+    return original.apply(this, args);
+  };
+  return descriptor;
+<span class="err">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/functions.html#this-parameters">TypeScript Handbook  - Functions#this parameters</a></li>
+</ul>
+
+:ET

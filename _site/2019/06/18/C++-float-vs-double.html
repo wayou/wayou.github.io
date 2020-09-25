@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>C++ float vs double | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="C++ float vs double" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="C++ float vs double 精度 相比 float ，double 从其名字上已经展示出，它的精度是前者的两倍，他们的精度分别为： float: 7 位数字 double: 15 位数字 可通过如下的示例看出，在重复进行计算时，精度差异开始显现： float a = 1.f / 81; float b = 0; for (int i = 0; i &lt; 729; ++ i) b += a; printf(&quot;%.7g\n&quot;, b); // prints 9.000023 double a = 1.0 / 81; double b = 0; for (int i = 0; i &lt; 729; ++ i) b += a; printf(&quot;%.15g\n&quot;, b); // prints 8.99999999999996 尽管如此，double 也不是十分精确，所以还有 long double 类型，该类型下上面的结果为 9.000000000000000066。所有浮点型都面临精度丢失的问题，所以处理高精度的场景，比如涉及金钱，最好用 int 或单独的分数类（fraction class）。 上限 两者上限不同， float: 3e38 double: 1.7e308 所以使用 float 出现瓶颈的概率会比 double 大些，特别是计算阶乘这种情况下。 选择 而关于两者的选择，《C++ Primer》 是这样描述的： “Use double for floating-point computations; float usually does not have enough precision, and the cost of double-precision calculations versus single-precision is negligible. In fact, on some machines, double-precision operations are faster than single. The precision offered by long double usually is unnecessary and often entails considerable run-time cost.” --Stanley B. Lippman. “C++ Primer, Fifth Edition (Jason Arnold’s Library).” 鉴于 float 精度不够，对于有小数的情况建议使用 double。但考虑到性能， long double 性价比就不高了。 相关资源 What is the difference between float and double?" />
+<meta property="og:description" content="C++ float vs double 精度 相比 float ，double 从其名字上已经展示出，它的精度是前者的两倍，他们的精度分别为： float: 7 位数字 double: 15 位数字 可通过如下的示例看出，在重复进行计算时，精度差异开始显现： float a = 1.f / 81; float b = 0; for (int i = 0; i &lt; 729; ++ i) b += a; printf(&quot;%.7g\n&quot;, b); // prints 9.000023 double a = 1.0 / 81; double b = 0; for (int i = 0; i &lt; 729; ++ i) b += a; printf(&quot;%.15g\n&quot;, b); // prints 8.99999999999996 尽管如此，double 也不是十分精确，所以还有 long double 类型，该类型下上面的结果为 9.000000000000000066。所有浮点型都面临精度丢失的问题，所以处理高精度的场景，比如涉及金钱，最好用 int 或单独的分数类（fraction class）。 上限 两者上限不同， float: 3e38 double: 1.7e308 所以使用 float 出现瓶颈的概率会比 double 大些，特别是计算阶乘这种情况下。 选择 而关于两者的选择，《C++ Primer》 是这样描述的： “Use double for floating-point computations; float usually does not have enough precision, and the cost of double-precision calculations versus single-precision is negligible. In fact, on some machines, double-precision operations are faster than single. The precision offered by long double usually is unnecessary and often entails considerable run-time cost.” --Stanley B. Lippman. “C++ Primer, Fifth Edition (Jason Arnold’s Library).” 鉴于 float 精度不够，对于有小数的情况建议使用 double。但考虑到性能， long double 性价比就不高了。 相关资源 What is the difference between float and double?" />
+<link rel="canonical" href="http://localhost:4000/2019/06/18/C++-float-vs-double.html" />
+<meta property="og:url" content="http://localhost:4000/2019/06/18/C++-float-vs-double.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-18T23:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/06/18/C++-float-vs-double.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/18/C++-float-vs-double.html"},"description":"C++ float vs double 精度 相比 float ，double 从其名字上已经展示出，它的精度是前者的两倍，他们的精度分别为： float: 7 位数字 double: 15 位数字 可通过如下的示例看出，在重复进行计算时，精度差异开始显现： float a = 1.f / 81; float b = 0; for (int i = 0; i &lt; 729; ++ i) b += a; printf(&quot;%.7g\\n&quot;, b); // prints 9.000023 double a = 1.0 / 81; double b = 0; for (int i = 0; i &lt; 729; ++ i) b += a; printf(&quot;%.15g\\n&quot;, b); // prints 8.99999999999996 尽管如此，double 也不是十分精确，所以还有 long double 类型，该类型下上面的结果为 9.000000000000000066。所有浮点型都面临精度丢失的问题，所以处理高精度的场景，比如涉及金钱，最好用 int 或单独的分数类（fraction class）。 上限 两者上限不同， float: 3e38 double: 1.7e308 所以使用 float 出现瓶颈的概率会比 double 大些，特别是计算阶乘这种情况下。 选择 而关于两者的选择，《C++ Primer》 是这样描述的： “Use double for floating-point computations; float usually does not have enough precision, and the cost of double-precision calculations versus single-precision is negligible. In fact, on some machines, double-precision operations are faster than single. The precision offered by long double usually is unnecessary and often entails considerable run-time cost.” --Stanley B. Lippman. “C++ Primer, Fifth Edition (Jason Arnold’s Library).” 鉴于 float 精度不够，对于有小数的情况建议使用 double。但考虑到性能， long double 性价比就不高了。 相关资源 What is the difference between float and double?","@type":"BlogPosting","headline":"C++ float vs double","dateModified":"2019-06-18T23:06:00+08:00","datePublished":"2019-06-18T23:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">C++ `float` vs `double`</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-18T23:06:00+08:00" itemprop="datePublished">Jun 18, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="c-float-vs-double">C++ <code class="language-plaintext highlighter-rouge">float</code> vs <code class="language-plaintext highlighter-rouge">double</code></h1>
+
+<h2 id="精度">精度</h2>
+
+<p>相比 <code class="language-plaintext highlighter-rouge">float</code> ，<code class="language-plaintext highlighter-rouge">double</code> 从其名字上已经展示出，它的精度是前者的两倍，他们的精度分别为：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">float</code>: 7 位数字</li>
+  <li><code class="language-plaintext highlighter-rouge">double</code>: 15 位数字</li>
+</ul>
+
+<p>可通过如下的示例看出，在重复进行计算时，精度差异开始显现：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">a</span> <span class="o">=</span> <span class="mf">1.</span><span class="n">f</span> <span class="o">/</span> <span class="mi">81</span><span class="p">;</span>
+<span class="kt">float</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">729</span><span class="p">;</span> <span class="o">++</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">+=</span> <span class="n">a</span><span class="p">;</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%.7g</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span> <span class="c1">// prints 9.000023</span>
+</code></pre></div></div>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">double</span> <span class="n">a</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mi">81</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">729</span><span class="p">;</span> <span class="o">++</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">+=</span> <span class="n">a</span><span class="p">;</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%.15g</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span> <span class="c1">// prints 8.99999999999996</span>
+</code></pre></div></div>
+
+<p>尽管如此，<code class="language-plaintext highlighter-rouge">double</code> 也不是十分精确，所以还有 <code class="language-plaintext highlighter-rouge">long double</code> 类型，该类型下上面的结果为 <code class="language-plaintext highlighter-rouge">9.000000000000000066</code>。所有浮点型都面临精度丢失的问题，所以处理高精度的场景，比如涉及金钱，最好用 <code class="language-plaintext highlighter-rouge">int</code> 或单独的分数类（fraction class）。</p>
+
+<h2 id="上限">上限</h2>
+
+<p>两者上限不同，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">float</code>: <code class="language-plaintext highlighter-rouge">3e38</code></li>
+  <li><code class="language-plaintext highlighter-rouge">double</code>: <code class="language-plaintext highlighter-rouge">1.7e308</code></li>
+</ul>
+
+<p>所以使用 <code class="language-plaintext highlighter-rouge">float</code> 出现瓶颈的概率会比 <code class="language-plaintext highlighter-rouge">double</code> 大些，特别是计算阶乘这种情况下。</p>
+
+<h2 id="选择">选择</h2>
+
+<p>而关于两者的选择，《C++ Primer》 是这样描述的：</p>
+
+<blockquote>
+  <p>“Use <code class="language-plaintext highlighter-rouge">double</code> for floating-point computations; <code class="language-plaintext highlighter-rouge">float</code> usually does not have enough precision, and the cost of double-precision calculations versus single-precision is negligible. In fact, on some machines, double-precision operations are faster than single. The precision offered by <code class="language-plaintext highlighter-rouge">long double</code> usually is unnecessary and often entails considerable run-time cost.”</p>
+
+  <p><em>--Stanley B. Lippman. “C++ Primer, Fifth Edition (Jason Arnold’s Library).”</em></p>
+</blockquote>
+
+<p>鉴于 <code class="language-plaintext highlighter-rouge">float</code> 精度不够，对于有小数的情况建议使用 <code class="language-plaintext highlighter-rouge">double</code>。但考虑到性能， <code class="language-plaintext highlighter-rouge">long double</code> 性价比就不高了。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/2386772/what-is-the-difference-between-float-and-double">What is the difference between float and double?</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/06/18/C++-float-vs-double.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

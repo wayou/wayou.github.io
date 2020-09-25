@@ -1,0 +1,115 @@
+I"E<h1 id="mysql-示例数据库">MySQL 示例数据库</h1>
+
+<p>微软 SQL Server 自带了一些示例数据库，可用于练习和测试。也可作为自己数据库设计时的参考。这些示例数据库开源在了 GitHub，可在 <a href="https://github.com/Microsoft/sql-server-samples/blob/master/samples/databases/README.md">Microsoft/sql-server-samples</a> 查看和下载。</p>
+
+<p>但因为 SQL 语法略有出入，这些数据库并不能直接通过其中的 SQL 文件来安装导入。</p>
+
+<p>社区能找到一些转换好的版本，比如这个 <a href="https://github.com/tapsey/AdventureWorksMYSQL">AdventureWorks</a>的 MySQL 版本，这个 <a href="https://github.com/jpwhite3/northwind-MySQL">NorthWind</a> 的 MySQL 版本。MySQL 其实有自己的示例数据库，</p>
+
+<h2 id="示例数据库资源">示例数据库资源</h2>
+
+<p>在官网 <a href="https://dev.mysql.com/doc/index-other.html">Other MySQL Documentation</a> 中 Example Databases 部分有提供一些示例数据库资源和相应的获取地址。</p>
+
+<h2 id="导入">导入</h2>
+
+<p>导入是通过执行相应的 <code class="language-plaintext highlighter-rouge">.sql</code> 文件完成的。拿上面资源中提供的第一个示例数据库 <a href="https://github.com/datacharmer/test_db">test_db</a> 为例。下载仓库到本地后，执行以下命令进行导入：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysql <span class="nt">-u</span> &lt;user_name&gt; <span class="nt">-p</span> &lt; ./employees.sql
+</code></pre></div></div>
+
+<p>然后等待其执行完成。</p>
+
+<details>
+<summary>
+执行结果：
+</summary>
+
+```sh
+$ mysql -u wayou -p &lt; ./employees.sql
+Enter password: ******
+INFO
+CREATING DATABASE STRUCTURE
+INFO
+storage engine: InnoDB
+INFO
+LOADING departments
+INFO
+LOADING employees
+INFO
+LOADING dept_emp
+INFO
+LOADING dept_manager
+INFO
+LOADING titles
+INFO
+LOADING salaries
+data_load_time_diff
+00:01:24
+```
+
+</details>
+
+<h2 id="测试">测试</h2>
+
+<p>成功导入后，可查询到相关数据库和里面的表以及数据。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW DATABASES<span class="p">;</span>
++--------------------+
+| Database           |
++--------------------+
+| employees          |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; USE employees<span class="p">;</span>
+Reading table information <span class="k">for </span>completion of table and column names
+You can turn off this feature to get a quicker startup with <span class="nt">-A</span>
+
+Database changed
+
+mysql&gt; SHOW TABLES<span class="p">;</span>
++----------------------+
+| Tables_in_employees  |
++----------------------+
+| current_dept_emp     |
+| departments          |
+| dept_emp             |
+| dept_emp_latest_date |
+| dept_manager         |
+| employees            |
+| salaries             |
+| titles               |
++----------------------+
+8 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+
+mysql&gt; SELECT <span class="k">*</span> FROM employees LIMIT 10<span class="p">;</span>
++--------+------------+------------+-----------+--------+------------+
+| emp_no | birth_date | first_name | last_name | gender | hire_date  |
++--------+------------+------------+-----------+--------+------------+
+|  10001 | 1953-09-02 | Georgi     | Facello   | M      | 1986-06-26 |
+|  10002 | 1964-06-02 | Bezalel    | Simmel    | F      | 1985-11-21 |
+|  10003 | 1959-12-03 | Parto      | Bamford   | M      | 1986-08-28 |
+|  10004 | 1954-05-01 | Chirstian  | Koblick   | M      | 1986-12-01 |
+|  10005 | 1955-01-21 | Kyoichi    | Maliniak  | M      | 1989-09-12 |
+|  10006 | 1953-04-20 | Anneke     | Preusig   | F      | 1989-06-02 |
+|  10007 | 1957-05-23 | Tzvetan    | Zielinski | F      | 1989-02-10 |
+|  10008 | 1958-02-19 | Saniya     | Kalloufi  | M      | 1994-09-15 |
+|  10009 | 1952-04-19 | Sumant     | Peac      | F      | 1985-02-18 |
+|  10010 | 1963-06-01 | Duangkaew  | Piveteau  | F      | 1989-08-24 |
++--------+------------+------------+-----------+--------+------------+
+10 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://github.com/Microsoft/sql-server-samples">microsoft/sql-server-samples</a></li>
+  <li><a href="https://dev.mysql.com/doc/index-other.html">Other MySQL Documentation</a></li>
+  <li><a href="https://stackoverflow.com/questions/2036395/is-there-a-northwind-type-database-available-for-mysql">Is there a “Northwind” type database available for MySQL?</a></li>
+  <li><a href="https://stackoverflow.com/questions/17666249/how-to-import-an-sql-file-using-the-command-line-in-mysql/45998128">How to import an SQL file using the command line in MySQL?</a></li>
+</ul>
+:ET

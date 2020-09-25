@@ -1,0 +1,77 @@
+I"�<h1 id="typescript-项目-rootdir-设置及根目录之外资源的引用">TypeScript 项目 <code class="language-plaintext highlighter-rouge">rootDir</code> 设置及根目录之外资源的引用</h1>
+
+<h2 id="控制输出目录的层级">控制输出目录的层级</h2>
+
+<p>假设项目目录结构如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── dest
+├── node_modules
+├── package.json
+├── src
+│   ├── index.ts
+├── tsconfig.json
+└── yarn.lock
+</code></pre></div></div>
+
+<p>在 <code class="language-plaintext highlighter-rouge">"outDir": "./dest"</code> 配置情况下，<code class="language-plaintext highlighter-rouge">src/index.ts</code> 编译后输出位置为 <code class="language-plaintext highlighter-rouge">dest/src/index.js</code>。</p>
+
+<p>输出目录带上了的 <code class="language-plaintext highlighter-rouge">src</code> 这一层，显然不是那么合理。</p>
+
+<p>解决办法是指定 <code class="language-plaintext highlighter-rouge">rootDir: “src”</code>。这样，根目录变成了 <code class="language-plaintext highlighter-rouge">src</code>，编译后输出则没有了 <code class="language-plaintext highlighter-rouge">src</code> 这一层。</p>
+
+<h2 id="根目录之外资源的引用">根目录之外资源的引用</h2>
+
+<p>但，这样做存在局限性。因为根目录设置为 <code class="language-plaintext highlighter-rouge">src</code> 后，就限制了代码使用 <code class="language-plaintext highlighter-rouge">src</code> 之外资源的能力。</p>
+
+<p>什么意思呢，假设我们想在 <code class="language-plaintext highlighter-rouge">src/index.ts</code> 中引用项目根目录的 <code class="language-plaintext highlighter-rouge">package.json</code> 文件，</p>
+
+<p>src/index.ts</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">pkg</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../package.json</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>TypeScript 中导入 JSON 文件需要添加 <code class="language-plaintext highlighter-rouge">resolveJsonModule : true</code> 配置。好的。</p>
+
+<p>加上后发现，会提示如下错误：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>File ‘/myapp/package.json' is not under 'rootDir' ‘/myapp/src'. 'rootDir' is expected to contain all source files.ts(6059)
+</code></pre></div></div>
+
+<p>因为前面我们配置了 <code class="language-plaintext highlighter-rouge">src</code> 为根目录，而 <code class="language-plaintext highlighter-rouge">package.json</code> 并不在 <code class="language-plaintext highlighter-rouge">src</code> 下面，所以代码中引用就越界了，这就是前面说的局限性。</p>
+
+<h3 id="自定义声明文件">自定义声明文件</h3>
+
+<p>那为了解决这个问题，把刚刚添加的 <code class="language-plaintext highlighter-rouge">resolveJsonModule : true</code> 去掉或者改成 <code class="language-plaintext highlighter-rouge">resolveJsonModule : false</code>。</p>
+
+<p>接下来在 <code class="language-plaintext highlighter-rouge">src</code> 下添加类型声明文件以支持 JSON 的导入，即，通过自定义声明的方式让 TypeScript 认识 JSON 文件而不用原生的配置。</p>
+
+<p>src/typings.d.ts</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">declare</span> <span class="kr">module</span> <span class="dl">"</span><span class="s2">*.json</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这样，完美解决。</p>
+
+<p>最后的项目目录会长这样：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── dest
+│   ├── index.js
+│   └── package.json
+├── node_modules
+├── package.json
+├── src
+│   ├── index.ts
+│   └── typings.d.ts
+├── tsconfig.json
+└── yarn.lock
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/a/61426303/1553656">‘package.json’ is not under ‘rootDir’</a></li>
+</ul>
+
+:ET

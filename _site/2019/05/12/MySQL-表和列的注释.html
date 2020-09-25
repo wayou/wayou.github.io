@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>MySQL 表和列的注释 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="MySQL 表和列的注释" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="MySQL 表和列的注释 像代码一样，可以为表以及表中的列添加注释，方便其他人知晓其功能。对于一些字段，在经过一定时间后，创建者未必也能想起其具体的含意，所以注释显得尤为重要。 注释的添加 注释的添加是通过在定义表或列的时候在末尾加上 COMMENT 关键字来实现的，最长支持 1024 个字符。 可以在创建表的时候为表和列添加相应的注释。 CREATE TABLE test_comment ( id SERIAL PRIMARY KEY, col1 INT comment &#39;列的注释&#39; ) comment &#39;表的注释&#39;; 执行上面的语句后创建了一个名为 test_comment 的表，并且为表和其中的 col1 列指定了相应的注释。 然后可通过 SHOW CREATE TABLE &lt;table_name&gt; 来查看。 mysql&gt; SHOW CREATE TABLE test_comment\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL COMMENT &#39;列的注释&#39;, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT=&#39;表的注释&#39; 1 row in set (0.00 sec) 注释的查看 除了 SHOW CREATE TABLE &lt;table_name&gt; 语法，还有其他一些查看注释的方式。 SHOW TABLE STATUS 能够查看表的注释，其语法为： SHOW TABLE STATUS WHERE name=&#39;table_name&#39;; 以下是通过 SHOW TABLE STATUS 查看的结果： mysql&gt; SHOW TABLE STATUS WHERE name=&#39;test_comment&#39;\G *************************** 1. row *************************** Name: test_comment Engine: InnoDB Version: 10 Row_format: Dynamic Rows: 0 Avg_row_length: 0 Data_length: 16384 Max_data_length: 0 Index_length: 16384 Data_free: 0 Auto_increment: 1 Create_time: 2019-05-11 15:41:01 Update_time: NULL Check_time: NULL Collation: utf8mb4_general_ci Checksum: NULL Create_options: Comment: 表的注释 1 row in set (0.00 sec) 而通过 SHOW FULL COLUMNS 则可查看列的注释，其语法为： SHOW FULL COLUMNS FROM &lt;tablename&gt; 以下是通过 SHOW FULL COLUMNS 查看的结果： mysql&gt;SHOW FULL COLUMNS FROM test_comment\G *************************** 1. row *************************** Field: id Type: bigint(20) unsigned Collation: NULL Null: NO Key: PRI Default: NULL Extra: auto_increment Privileges: select,insert,update,references Comment: *************************** 2. row *************************** Field: col1 Type: int(11) Collation: NULL Null: YES Key: Default: NULL Extra: Privileges: select,insert,update,references Comment: 列的注释 2 rows in set (0.00 sec) 借助 INFORMATION_SCHEMA 中的表 也能查看表或列的注释。 比如查看表的注释： SELECT table_comment FROM information_schema.tables WHERE table_name = &#39;test_comment&#39;; 执行结果： mysql&gt; SELECT table_comment -&gt; FROM information_schema.tables -&gt; WHERE table_name = &#39;test_comment&#39;; +---------------+ | TABLE_COMMENT | +---------------+ | 表的注释 | +---------------+ 1 row in set (0.01 sec) 查看列的注释： SELECT column_comment FROM information_schema.columns WHERE column_name = &#39;col1&#39;; 执行结果： mysql&gt; SELECT column_comment -&gt; FROM information_schema.columns -&gt; WHERE column_name = &#39;col1&#39;; +----------------+ | COLUMN_COMMENT | +----------------+ | 列的注释 | +----------------+ 1 row in set (0.00 sec) 注释的更新 对已经存在的表和列，可通过相应的更新修改操作来添加注释。 列注释的添加，更新 CHANGE 和 MODIFY 等效，区别在于 CHANGE 重写定义列，需要书写完整的列定义，包括新的列名称，即使你并不想修改列的免，而 MODIFY 则不用指定新的列名称。 通过 CHANGE 语法： mysql&gt; ALTER TABLE test_comment CHANGE col1 col1 INT COMMENT &#39;列的注释2&#39;; Query OK, 0 rows affected (0.02 sec) Records: 0 Duplicates: 0 Warnings: 0 通过 MODIFY 语法： mysql&gt; ALTER TABLE test_comment MODIFY col1 INT COMMENT &#39;列的注释2&#39;; Query OK, 0 rows affected (0.02 sec) Records: 0 Duplicates: 0 Warnings: 0 查看修改结果： mysql&gt; SHOW CREATE TABLE test_comment\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL COMMENT &#39;列的注释2&#39;, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT=&#39;表的注释&#39; 1 row in set (0.00 sec) 表注释的添加，更新 通过 ALTER TABLE 来完成对表注释的添加和更新。 mysql&gt; ALTER TABLE test_comment comment &#39;表的注释2&#39;; Query OK, 0 rows affected (0.01 sec) Records: 0 Duplicates: 0 Warnings: 0 查看更新结果： mysql&gt; SHOW CREATE TABLE test_comment\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL COMMENT &#39;列的注释2&#39;, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT=&#39;表的注释2&#39; 1 row in set (0.00 sec) 注释的删除 更新注释时指定为空即可。 mysql&gt; ALTER TABLE test_comment COMMENT &#39;&#39;; Query OK, 0 rows affected (0.01 sec) Records: 0 Duplicates: 0 Warnings: 0 mysql&gt; ALTER TABLE test_comment MODIFY col1 INT COMMENT &#39;&#39;; Query OK, 0 rows affected (0.01 sec) Records: 0 Duplicates: 0 Warnings: 0 查看删除结果： mysql&gt; SHOW CREATE TABLE test_comment\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci 1 row in set (0.00 sec) 相关资源 MySQL Manual - 13.1.20 CREATE TABLE Syntax MySQL Manual - 13.7.6.36 SHOW TABLE STATUS Syntax Alter MySQL table to add comments on columns Changing mysql table comment Chapter 25 INFORMATION_SCHEMA Tables" />
+<meta property="og:description" content="MySQL 表和列的注释 像代码一样，可以为表以及表中的列添加注释，方便其他人知晓其功能。对于一些字段，在经过一定时间后，创建者未必也能想起其具体的含意，所以注释显得尤为重要。 注释的添加 注释的添加是通过在定义表或列的时候在末尾加上 COMMENT 关键字来实现的，最长支持 1024 个字符。 可以在创建表的时候为表和列添加相应的注释。 CREATE TABLE test_comment ( id SERIAL PRIMARY KEY, col1 INT comment &#39;列的注释&#39; ) comment &#39;表的注释&#39;; 执行上面的语句后创建了一个名为 test_comment 的表，并且为表和其中的 col1 列指定了相应的注释。 然后可通过 SHOW CREATE TABLE &lt;table_name&gt; 来查看。 mysql&gt; SHOW CREATE TABLE test_comment\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL COMMENT &#39;列的注释&#39;, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT=&#39;表的注释&#39; 1 row in set (0.00 sec) 注释的查看 除了 SHOW CREATE TABLE &lt;table_name&gt; 语法，还有其他一些查看注释的方式。 SHOW TABLE STATUS 能够查看表的注释，其语法为： SHOW TABLE STATUS WHERE name=&#39;table_name&#39;; 以下是通过 SHOW TABLE STATUS 查看的结果： mysql&gt; SHOW TABLE STATUS WHERE name=&#39;test_comment&#39;\G *************************** 1. row *************************** Name: test_comment Engine: InnoDB Version: 10 Row_format: Dynamic Rows: 0 Avg_row_length: 0 Data_length: 16384 Max_data_length: 0 Index_length: 16384 Data_free: 0 Auto_increment: 1 Create_time: 2019-05-11 15:41:01 Update_time: NULL Check_time: NULL Collation: utf8mb4_general_ci Checksum: NULL Create_options: Comment: 表的注释 1 row in set (0.00 sec) 而通过 SHOW FULL COLUMNS 则可查看列的注释，其语法为： SHOW FULL COLUMNS FROM &lt;tablename&gt; 以下是通过 SHOW FULL COLUMNS 查看的结果： mysql&gt;SHOW FULL COLUMNS FROM test_comment\G *************************** 1. row *************************** Field: id Type: bigint(20) unsigned Collation: NULL Null: NO Key: PRI Default: NULL Extra: auto_increment Privileges: select,insert,update,references Comment: *************************** 2. row *************************** Field: col1 Type: int(11) Collation: NULL Null: YES Key: Default: NULL Extra: Privileges: select,insert,update,references Comment: 列的注释 2 rows in set (0.00 sec) 借助 INFORMATION_SCHEMA 中的表 也能查看表或列的注释。 比如查看表的注释： SELECT table_comment FROM information_schema.tables WHERE table_name = &#39;test_comment&#39;; 执行结果： mysql&gt; SELECT table_comment -&gt; FROM information_schema.tables -&gt; WHERE table_name = &#39;test_comment&#39;; +---------------+ | TABLE_COMMENT | +---------------+ | 表的注释 | +---------------+ 1 row in set (0.01 sec) 查看列的注释： SELECT column_comment FROM information_schema.columns WHERE column_name = &#39;col1&#39;; 执行结果： mysql&gt; SELECT column_comment -&gt; FROM information_schema.columns -&gt; WHERE column_name = &#39;col1&#39;; +----------------+ | COLUMN_COMMENT | +----------------+ | 列的注释 | +----------------+ 1 row in set (0.00 sec) 注释的更新 对已经存在的表和列，可通过相应的更新修改操作来添加注释。 列注释的添加，更新 CHANGE 和 MODIFY 等效，区别在于 CHANGE 重写定义列，需要书写完整的列定义，包括新的列名称，即使你并不想修改列的免，而 MODIFY 则不用指定新的列名称。 通过 CHANGE 语法： mysql&gt; ALTER TABLE test_comment CHANGE col1 col1 INT COMMENT &#39;列的注释2&#39;; Query OK, 0 rows affected (0.02 sec) Records: 0 Duplicates: 0 Warnings: 0 通过 MODIFY 语法： mysql&gt; ALTER TABLE test_comment MODIFY col1 INT COMMENT &#39;列的注释2&#39;; Query OK, 0 rows affected (0.02 sec) Records: 0 Duplicates: 0 Warnings: 0 查看修改结果： mysql&gt; SHOW CREATE TABLE test_comment\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL COMMENT &#39;列的注释2&#39;, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT=&#39;表的注释&#39; 1 row in set (0.00 sec) 表注释的添加，更新 通过 ALTER TABLE 来完成对表注释的添加和更新。 mysql&gt; ALTER TABLE test_comment comment &#39;表的注释2&#39;; Query OK, 0 rows affected (0.01 sec) Records: 0 Duplicates: 0 Warnings: 0 查看更新结果： mysql&gt; SHOW CREATE TABLE test_comment\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL COMMENT &#39;列的注释2&#39;, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT=&#39;表的注释2&#39; 1 row in set (0.00 sec) 注释的删除 更新注释时指定为空即可。 mysql&gt; ALTER TABLE test_comment COMMENT &#39;&#39;; Query OK, 0 rows affected (0.01 sec) Records: 0 Duplicates: 0 Warnings: 0 mysql&gt; ALTER TABLE test_comment MODIFY col1 INT COMMENT &#39;&#39;; Query OK, 0 rows affected (0.01 sec) Records: 0 Duplicates: 0 Warnings: 0 查看删除结果： mysql&gt; SHOW CREATE TABLE test_comment\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci 1 row in set (0.00 sec) 相关资源 MySQL Manual - 13.1.20 CREATE TABLE Syntax MySQL Manual - 13.7.6.36 SHOW TABLE STATUS Syntax Alter MySQL table to add comments on columns Changing mysql table comment Chapter 25 INFORMATION_SCHEMA Tables" />
+<link rel="canonical" href="http://localhost:4000/2019/05/12/MySQL-%E8%A1%A8%E5%92%8C%E5%88%97%E7%9A%84%E6%B3%A8%E9%87%8A.html" />
+<meta property="og:url" content="http://localhost:4000/2019/05/12/MySQL-%E8%A1%A8%E5%92%8C%E5%88%97%E7%9A%84%E6%B3%A8%E9%87%8A.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-12T20:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/05/12/MySQL-%E8%A1%A8%E5%92%8C%E5%88%97%E7%9A%84%E6%B3%A8%E9%87%8A.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/05/12/MySQL-%E8%A1%A8%E5%92%8C%E5%88%97%E7%9A%84%E6%B3%A8%E9%87%8A.html"},"description":"MySQL 表和列的注释 像代码一样，可以为表以及表中的列添加注释，方便其他人知晓其功能。对于一些字段，在经过一定时间后，创建者未必也能想起其具体的含意，所以注释显得尤为重要。 注释的添加 注释的添加是通过在定义表或列的时候在末尾加上 COMMENT 关键字来实现的，最长支持 1024 个字符。 可以在创建表的时候为表和列添加相应的注释。 CREATE TABLE test_comment ( id SERIAL PRIMARY KEY, col1 INT comment &#39;列的注释&#39; ) comment &#39;表的注释&#39;; 执行上面的语句后创建了一个名为 test_comment 的表，并且为表和其中的 col1 列指定了相应的注释。 然后可通过 SHOW CREATE TABLE &lt;table_name&gt; 来查看。 mysql&gt; SHOW CREATE TABLE test_comment\\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL COMMENT &#39;列的注释&#39;, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT=&#39;表的注释&#39; 1 row in set (0.00 sec) 注释的查看 除了 SHOW CREATE TABLE &lt;table_name&gt; 语法，还有其他一些查看注释的方式。 SHOW TABLE STATUS 能够查看表的注释，其语法为： SHOW TABLE STATUS WHERE name=&#39;table_name&#39;; 以下是通过 SHOW TABLE STATUS 查看的结果： mysql&gt; SHOW TABLE STATUS WHERE name=&#39;test_comment&#39;\\G *************************** 1. row *************************** Name: test_comment Engine: InnoDB Version: 10 Row_format: Dynamic Rows: 0 Avg_row_length: 0 Data_length: 16384 Max_data_length: 0 Index_length: 16384 Data_free: 0 Auto_increment: 1 Create_time: 2019-05-11 15:41:01 Update_time: NULL Check_time: NULL Collation: utf8mb4_general_ci Checksum: NULL Create_options: Comment: 表的注释 1 row in set (0.00 sec) 而通过 SHOW FULL COLUMNS 则可查看列的注释，其语法为： SHOW FULL COLUMNS FROM &lt;tablename&gt; 以下是通过 SHOW FULL COLUMNS 查看的结果： mysql&gt;SHOW FULL COLUMNS FROM test_comment\\G *************************** 1. row *************************** Field: id Type: bigint(20) unsigned Collation: NULL Null: NO Key: PRI Default: NULL Extra: auto_increment Privileges: select,insert,update,references Comment: *************************** 2. row *************************** Field: col1 Type: int(11) Collation: NULL Null: YES Key: Default: NULL Extra: Privileges: select,insert,update,references Comment: 列的注释 2 rows in set (0.00 sec) 借助 INFORMATION_SCHEMA 中的表 也能查看表或列的注释。 比如查看表的注释： SELECT table_comment FROM information_schema.tables WHERE table_name = &#39;test_comment&#39;; 执行结果： mysql&gt; SELECT table_comment -&gt; FROM information_schema.tables -&gt; WHERE table_name = &#39;test_comment&#39;; +---------------+ | TABLE_COMMENT | +---------------+ | 表的注释 | +---------------+ 1 row in set (0.01 sec) 查看列的注释： SELECT column_comment FROM information_schema.columns WHERE column_name = &#39;col1&#39;; 执行结果： mysql&gt; SELECT column_comment -&gt; FROM information_schema.columns -&gt; WHERE column_name = &#39;col1&#39;; +----------------+ | COLUMN_COMMENT | +----------------+ | 列的注释 | +----------------+ 1 row in set (0.00 sec) 注释的更新 对已经存在的表和列，可通过相应的更新修改操作来添加注释。 列注释的添加，更新 CHANGE 和 MODIFY 等效，区别在于 CHANGE 重写定义列，需要书写完整的列定义，包括新的列名称，即使你并不想修改列的免，而 MODIFY 则不用指定新的列名称。 通过 CHANGE 语法： mysql&gt; ALTER TABLE test_comment CHANGE col1 col1 INT COMMENT &#39;列的注释2&#39;; Query OK, 0 rows affected (0.02 sec) Records: 0 Duplicates: 0 Warnings: 0 通过 MODIFY 语法： mysql&gt; ALTER TABLE test_comment MODIFY col1 INT COMMENT &#39;列的注释2&#39;; Query OK, 0 rows affected (0.02 sec) Records: 0 Duplicates: 0 Warnings: 0 查看修改结果： mysql&gt; SHOW CREATE TABLE test_comment\\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL COMMENT &#39;列的注释2&#39;, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT=&#39;表的注释&#39; 1 row in set (0.00 sec) 表注释的添加，更新 通过 ALTER TABLE 来完成对表注释的添加和更新。 mysql&gt; ALTER TABLE test_comment comment &#39;表的注释2&#39;; Query OK, 0 rows affected (0.01 sec) Records: 0 Duplicates: 0 Warnings: 0 查看更新结果： mysql&gt; SHOW CREATE TABLE test_comment\\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL COMMENT &#39;列的注释2&#39;, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT=&#39;表的注释2&#39; 1 row in set (0.00 sec) 注释的删除 更新注释时指定为空即可。 mysql&gt; ALTER TABLE test_comment COMMENT &#39;&#39;; Query OK, 0 rows affected (0.01 sec) Records: 0 Duplicates: 0 Warnings: 0 mysql&gt; ALTER TABLE test_comment MODIFY col1 INT COMMENT &#39;&#39;; Query OK, 0 rows affected (0.01 sec) Records: 0 Duplicates: 0 Warnings: 0 查看删除结果： mysql&gt; SHOW CREATE TABLE test_comment\\G *************************** 1. row *************************** Table: test_comment Create Table: CREATE TABLE `test_comment` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `col1` int(11) DEFAULT NULL, PRIMARY KEY (`id`), UNIQUE KEY `id` (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci 1 row in set (0.00 sec) 相关资源 MySQL Manual - 13.1.20 CREATE TABLE Syntax MySQL Manual - 13.7.6.36 SHOW TABLE STATUS Syntax Alter MySQL table to add comments on columns Changing mysql table comment Chapter 25 INFORMATION_SCHEMA Tables","@type":"BlogPosting","headline":"MySQL 表和列的注释","dateModified":"2019-05-12T20:05:00+08:00","datePublished":"2019-05-12T20:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">MySQL 表和列的注释</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-12T20:05:00+08:00" itemprop="datePublished">May 12, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="mysql-表和列的注释">MySQL 表和列的注释</h1>
+
+<p>像代码一样，可以为表以及表中的列添加注释，方便其他人知晓其功能。对于一些字段，在经过一定时间后，创建者未必也能想起其具体的含意，所以注释显得尤为重要。</p>
+
+<h2 id="注释的添加">注释的添加</h2>
+
+<p>注释的添加是通过在定义表或列的时候在末尾加上 <code class="language-plaintext highlighter-rouge">COMMENT</code> 关键字来实现的，最长支持 1024 个字符。</p>
+
+<p>可以在创建表的时候为表和列添加相应的注释。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test_comment</span> 
+  <span class="p">(</span> 
+     <span class="n">id</span>   <span class="nb">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> 
+     <span class="n">col1</span> <span class="nb">INT</span> <span class="k">comment</span> <span class="s1">'列的注释'</span> 
+  <span class="p">)</span> 
+<span class="k">comment</span> <span class="s1">'表的注释'</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<p>执行上面的语句后创建了一个名为 <code class="language-plaintext highlighter-rouge">test_comment</code> 的表，并且为表和其中的 <code class="language-plaintext highlighter-rouge">col1</code> 列指定了相应的注释。</p>
+
+<p>然后可通过 <code class="language-plaintext highlighter-rouge">SHOW CREATE TABLE &lt;table_name&gt;</code> 来查看。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SHOW</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">test_comment</span><span class="err">\</span><span class="k">G</span>
+<span class="o">***************************</span> <span class="mi">1</span><span class="p">.</span> <span class="k">row</span> <span class="o">***************************</span>
+       <span class="k">Table</span><span class="p">:</span> <span class="n">test_comment</span>
+<span class="k">Create</span> <span class="k">Table</span><span class="p">:</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`test_comment`</span> <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="nb">unsigned</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+  <span class="nv">`col1`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'列的注释'</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">),</span>
+  <span class="k">UNIQUE</span> <span class="k">KEY</span> <span class="nv">`id`</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span> <span class="k">COLLATE</span><span class="o">=</span><span class="n">utf8mb4_general_ci</span> <span class="k">COMMENT</span><span class="o">=</span><span class="s1">'表的注释'</span>
+<span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="注释的查看">注释的查看</h2>
+
+<p>除了 <code class="language-plaintext highlighter-rouge">SHOW CREATE TABLE &lt;table_name&gt;</code> 语法，还有其他一些查看注释的方式。</p>
+
+<p><code class="language-plaintext highlighter-rouge">SHOW TABLE STATUS</code> 能够查看表的注释，其语法为：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SHOW</span> <span class="k">TABLE</span> <span class="n">STATUS</span> <span class="k">WHERE</span> <span class="n">name</span><span class="o">=</span><span class="s1">'table_name'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>以下是通过 <code class="language-plaintext highlighter-rouge">SHOW TABLE STATUS</code> 查看的结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW TABLE STATUS WHERE <span class="nv">name</span><span class="o">=</span><span class="s1">'test_comment'</span><span class="se">\G</span>
+<span class="k">***************************</span> 1. row <span class="k">***************************</span>
+           Name: test_comment
+         Engine: InnoDB
+        Version: 10
+     Row_format: Dynamic
+           Rows: 0
+ Avg_row_length: 0
+    Data_length: 16384
+Max_data_length: 0
+   Index_length: 16384
+      Data_free: 0
+ Auto_increment: 1
+    Create_time: 2019-05-11 15:41:01
+    Update_time: NULL
+     Check_time: NULL
+      Collation: utf8mb4_general_ci
+       Checksum: NULL
+ Create_options:
+        Comment: 表的注释
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>而通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/show-columns.html"><code class="language-plaintext highlighter-rouge">SHOW FULL COLUMNS</code></a> 则可查看列的注释，其语法为：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SHOW</span> <span class="k">FULL</span> <span class="n">COLUMNS</span> <span class="k">FROM</span> <span class="o">&lt;</span><span class="n">tablename</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>以下是通过 <code class="language-plaintext highlighter-rouge">SHOW FULL COLUMNS</code> 查看的结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt;SHOW FULL COLUMNS FROM test_comment<span class="se">\G</span>
+<span class="k">***************************</span> 1. row <span class="k">***************************</span>
+     Field: <span class="nb">id
+      </span>Type: bigint<span class="o">(</span>20<span class="o">)</span> unsigned
+ Collation: NULL
+      Null: NO
+       Key: PRI
+   Default: NULL
+     Extra: auto_increment
+Privileges: <span class="k">select</span>,insert,update,references
+   Comment:
+<span class="k">***************************</span> 2. row <span class="k">***************************</span>
+     Field: col1
+      Type: int<span class="o">(</span>11<span class="o">)</span>
+ Collation: NULL
+      Null: YES
+       Key:
+   Default: NULL
+     Extra:
+Privileges: <span class="k">select</span>,insert,update,references
+   Comment: 列的注释
+2 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>借助 <a href="https://dev.mysql.com/doc/refman/8.0/en/information-schema.html">INFORMATION_SCHEMA 中的表</a> 也能查看表或列的注释。</p>
+
+<p>比如查看表的注释：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">table_comment</span> 
+<span class="k">FROM</span>   <span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span> 
+<span class="k">WHERE</span>  <span class="k">table_name</span> <span class="o">=</span> <span class="s1">'test_comment'</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT table_comment
+    -&gt; FROM   information_schema.tables
+    -&gt; WHERE  table_name <span class="o">=</span> <span class="s1">'test_comment'</span><span class="p">;</span>
++---------------+
+| TABLE_COMMENT |
++---------------+
+| 表的注释      |
++---------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>查看列的注释：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">column_comment</span> 
+<span class="k">FROM</span>   <span class="n">information_schema</span><span class="p">.</span><span class="n">columns</span> 
+<span class="k">WHERE</span>  <span class="k">column_name</span> <span class="o">=</span> <span class="s1">'col1'</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT column_comment
+    -&gt; FROM   information_schema.columns
+    -&gt; WHERE  column_name <span class="o">=</span> <span class="s1">'col1'</span><span class="p">;</span>
++----------------+
+| COLUMN_COMMENT |
++----------------+
+| 列的注释       |
++----------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="注释的更新">注释的更新</h2>
+
+<p>对已经存在的表和列，可通过相应的更新修改操作来添加注释。</p>
+
+<h3 id="列注释的添加更新">列注释的添加，更新</h3>
+
+<p><code class="language-plaintext highlighter-rouge">CHANGE</code> 和 <code class="language-plaintext highlighter-rouge">MODIFY</code> 等效，区别在于 <code class="language-plaintext highlighter-rouge">CHANGE</code> 重写定义列，需要书写完整的列定义，包括新的列名称，即使你并不想修改列的免，而 <code class="language-plaintext highlighter-rouge">MODIFY</code> 则不用指定新的列名称。</p>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">CHANGE</code> 语法：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">test_comment</span> <span class="n">CHANGE</span> <span class="n">col1</span> <span class="n">col1</span> <span class="nb">INT</span> <span class="k">COMMENT</span> <span class="s1">'列的注释2'</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span> <span class="n">sec</span><span class="p">)</span>
+<span class="n">Records</span><span class="p">:</span> <span class="mi">0</span>  <span class="n">Duplicates</span><span class="p">:</span> <span class="mi">0</span>  <span class="n">Warnings</span><span class="p">:</span> <span class="mi">0</span>
+</code></pre></div></div>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">MODIFY</code> 语法：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; ALTER TABLE test_comment MODIFY col1 INT COMMENT <span class="s1">'列的注释2'</span><span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.02 sec<span class="o">)</span>
+Records: 0  Duplicates: 0  Warnings: 0
+</code></pre></div></div>
+
+<p>查看修改结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW CREATE TABLE test_comment<span class="se">\G</span>
+<span class="k">***************************</span> 1. row <span class="k">***************************</span>
+       Table: test_comment
+Create Table: CREATE TABLE <span class="sb">`</span>test_comment<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> bigint<span class="o">(</span>20<span class="o">)</span> unsigned NOT NULL AUTO_INCREMENT,
+  <span class="sb">`</span>col1<span class="sb">`</span> int<span class="o">(</span>11<span class="o">)</span> DEFAULT NULL COMMENT <span class="s1">'列的注释2'</span>,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span><span class="nb">id</span><span class="sb">`</span><span class="o">)</span>,
+  UNIQUE KEY <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> <span class="o">(</span><span class="sb">`</span><span class="nb">id</span><span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8mb4 <span class="nv">COLLATE</span><span class="o">=</span>utf8mb4_general_ci <span class="nv">COMMENT</span><span class="o">=</span><span class="s1">'表的注释'</span>
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="表注释的添加更新">表注释的添加，更新</h3>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">ALTER TABLE</code> 来完成对表注释的添加和更新。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; ALTER TABLE test_comment comment <span class="s1">'表的注释2'</span><span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+Records: 0  Duplicates: 0  Warnings: 0
+</code></pre></div></div>
+
+<p>查看更新结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW CREATE TABLE test_comment<span class="se">\G</span>
+<span class="k">***************************</span> 1. row <span class="k">***************************</span>
+       Table: test_comment
+Create Table: CREATE TABLE <span class="sb">`</span>test_comment<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> bigint<span class="o">(</span>20<span class="o">)</span> unsigned NOT NULL AUTO_INCREMENT,
+  <span class="sb">`</span>col1<span class="sb">`</span> int<span class="o">(</span>11<span class="o">)</span> DEFAULT NULL COMMENT <span class="s1">'列的注释2'</span>,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span><span class="nb">id</span><span class="sb">`</span><span class="o">)</span>,
+  UNIQUE KEY <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> <span class="o">(</span><span class="sb">`</span><span class="nb">id</span><span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8mb4 <span class="nv">COLLATE</span><span class="o">=</span>utf8mb4_general_ci <span class="nv">COMMENT</span><span class="o">=</span><span class="s1">'表的注释2'</span>
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="注释的删除">注释的删除</h2>
+
+<p>更新注释时指定为空即可。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; ALTER TABLE test_comment COMMENT <span class="s1">''</span><span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql&gt; ALTER TABLE test_comment MODIFY col1 INT COMMENT <span class="s1">''</span><span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+Records: 0  Duplicates: 0  Warnings: 0
+</code></pre></div></div>
+
+<p>查看删除结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW CREATE TABLE test_comment<span class="se">\G</span>
+<span class="k">***************************</span> 1. row <span class="k">***************************</span>
+       Table: test_comment
+Create Table: CREATE TABLE <span class="sb">`</span>test_comment<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> bigint<span class="o">(</span>20<span class="o">)</span> unsigned NOT NULL AUTO_INCREMENT,
+  <span class="sb">`</span>col1<span class="sb">`</span> int<span class="o">(</span>11<span class="o">)</span> DEFAULT NULL,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span><span class="nb">id</span><span class="sb">`</span><span class="o">)</span>,
+  UNIQUE KEY <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> <span class="o">(</span><span class="sb">`</span><span class="nb">id</span><span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8mb4 <span class="nv">COLLATE</span><span class="o">=</span>utf8mb4_general_ci
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/create-table.html">MySQL Manual - 13.1.20 CREATE TABLE Syntax</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/show-table-status.html">MySQL Manual - 13.7.6.36 SHOW TABLE STATUS Syntax</a></li>
+  <li><a href="https://stackoverflow.com/a/2162456/1553656">Alter MySQL table to add comments on columns</a></li>
+  <li><a href="https://dba.stackexchange.com/a/59590/179164">Changing mysql table comment</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/information-schema.html">Chapter 25 INFORMATION_SCHEMA Tables</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/05/12/MySQL-%E8%A1%A8%E5%92%8C%E5%88%97%E7%9A%84%E6%B3%A8%E9%87%8A.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

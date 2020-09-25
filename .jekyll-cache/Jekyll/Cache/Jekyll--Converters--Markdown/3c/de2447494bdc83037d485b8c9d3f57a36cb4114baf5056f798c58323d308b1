@@ -1,0 +1,57 @@
+I"�<h1 id="使用-shell-命令进行查找替换">使用 shell 命令进行查找替换</h1>
+
+<p>需要使用到 <code class="language-plaintext highlighter-rouge">sed</code> 命令，以下是来自 man page 的介绍：</p>
+
+<blockquote>
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   sed - stream editor for filtering and transforming text
+</code></pre></div>  </div>
+</blockquote>
+
+<p>示例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-i</span> <span class="nt">-e</span> <span class="s1">'s/toreplace/newcontent/g’ somefile.txt 
+</span></code></pre></div></div>
+
+<p>以上脚本将查找 <code class="language-plaintext highlighter-rouge">somefile.txt</code> 中 <code class="language-plaintext highlighter-rouge">toreplace</code> 文本并替换为 <code class="language-plaintext highlighter-rouge">yoursetting</code>。其中这两部分都可以为正则表达式。</p>
+
+<p>其中，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">s</code> 表示 substitute 即替换之意，</li>
+  <li><code class="language-plaintext highlighter-rouge">g</code> 表示 global，进行全局替换而不是只替换一个</li>
+  <li><code class="language-plaintext highlighter-rouge">-i</code> 表示 in-place 即原地替换，而不是创建新文件</li>
+  <li><code class="language-plaintext highlighter-rouge">-e</code> 表示执行随后的命令</li>
+</ul>
+
+<h2 id="多文件或整个目录扫描">多文件或整个目录扫描</h2>
+
+<p>上述命令只扫描单个文件，如果想扫描整个目录，可结合 <code class="language-plaintext highlighter-rouge">find</code> 来实现：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-type</span> f <span class="nt">-exec</span> <span class="nb">sed</span> <span class="nt">-i</span> <span class="nt">-e</span> <span class="s1">'s/foo/xxx/g'</span> <span class="o">{}</span> <span class="se">\;</span>
+</code></pre></div></div>
+
+<p>如果上述命令报如下错误：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sed</span>: RE error: illegal byte sequence
+</code></pre></div></div>
+
+<p>需要设置当前命令行的 <code class="language-plaintext highlighter-rouge">LANG</code> 变量：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export LC_CTYPE=C 
+export LANG=C
+</code></pre></div></div>
+
+<h2 id="结合-grep">结合 grep</h2>
+
+<p>需要批量处理文件时，也可结合 grep 实现。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">grep</span> <span class="nt">-rl</span> foo <span class="nb">.</span> | xargs <span class="nb">sed</span> <span class="nt">-i</span> <span class="nt">-e</span> <span class="s1">'s/foo/xxx/g'</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://coderwall.com/p/2ivpsg/recursive-find-replace-with-sed">Recursive find &amp; replace with sed</a></li>
+  <li><a href="https://stackoverflow.com/a/11287641/1553656">Getting “sed error - illegal byte sequence” (in bash) [duplicate]</a></li>
+</ul>
+:ET

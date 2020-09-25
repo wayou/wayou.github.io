@@ -1,0 +1,21 @@
+I"r<h1 id="c-endl-与-n-的区别">C++ <code class="language-plaintext highlighter-rouge">endl</code> 与 <code class="language-plaintext highlighter-rouge">\n</code> 的区别</h1>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">std::cout &lt;&lt; std::endl</code>  : 插入换行并刷新缓存区 （flush the buffer）</li>
+  <li><code class="language-plaintext highlighter-rouge">std::cout &lt;&lt; "\n"</code>  : 插入换行</li>
+</ul>
+
+<p>其中关于 <code class="language-plaintext highlighter-rouge">std::endl</code>，C++ Primer 中是这样介绍的：</p>
+
+<blockquote>
+  <p>“<code class="language-plaintext highlighter-rouge">endl</code>, which is a special value called a manipulator. Writing <code class="language-plaintext highlighter-rouge">endl</code> has the effect of ending the current line and flushing the buffer associated with that device. Flushing the buffer ensures that all the output the program has generated so far is actually written to the output stream, rather than sitting in memory waiting to be written.”</p>
+
+  <p><em>-- Stanley B. Lippman. “C++ Primer, Fifth Edition (Jason Arnold’s Library).”</em></p>
+</blockquote>
+
+<p>刷新操作能够保证程序中推送到 <code class="language-plaintext highlighter-rouge">cout</code> 的数据全部输出，而不是继续留存在缓存区以 buffer 形式存在。大多数情况下这是最后一步输出操作所期望的结果。如果还没结束输出，那可直接用 <code class="language-plaintext highlighter-rouge">\n</code>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<p>https://www.geeksforgeeks.org/endl-vs-n-in-cpp/</p>
+:ET

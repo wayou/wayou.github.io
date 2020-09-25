@@ -1,0 +1,153 @@
+I"e"<h1 id="命令行中的-vi-模式">命令行中的 vi 模式</h1>
+
+<p>命令行中修改已经输入的命令比较麻烦，如果你不知道一些快捷键的话，只能使用方向键一个一个字符地移动到目标位置进行修改，对于比较复杂且过长的命令来说，效率不高。</p>
+
+<p>以下信息来自 bash 的 man 页面：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>man bash
+<span class="c"># ...</span>
+
+   Commands <span class="k">for </span>Moving
+       beginning-of-line <span class="o">(</span>C-a<span class="o">)</span>
+              Move to the start of the current line.
+       end-of-line <span class="o">(</span>C-e<span class="o">)</span>
+              Move to the end of the line.
+       forward-char <span class="o">(</span>C-f<span class="o">)</span>
+              Move forward a character.
+       backward-char <span class="o">(</span>C-b<span class="o">)</span>
+              Move back a character.
+       forward-word <span class="o">(</span>M-f<span class="o">)</span>
+              Move  forward  to  the end of the next word.  Words are composed of alphanu-
+              meric characters <span class="o">(</span>letters and digits<span class="o">)</span><span class="nb">.</span>
+       backward-word <span class="o">(</span>M-b<span class="o">)</span>
+              Move back to the start of the current or previous word.  Words are  composed
+              of alphanumeric characters <span class="o">(</span>letters and digits<span class="o">)</span><span class="nb">.</span>
+       clear-screen <span class="o">(</span>C-l<span class="o">)</span>
+              Clear the screen leaving the current line at the top of the screen.  With an
+              argument, refresh the current line without clearing the screen.
+       redraw-current-line
+              Refresh the current line.
+
+<span class="c"># ...</span>
+</code></pre></div></div>
+
+<p>可看到 bash 本身提供了一些有用的快捷键可在命令中快速导航，</p>
+
+<ul>
+  <li><kbd>control</kbd> + <kbd>a</kbd> 定位到行首（st<strong>a</strong>rt）</li>
+  <li><kbd>control</kbd> + <kbd>e</kbd> 定位到行末（<strong>e</strong>nd）</li>
+  <li><kbd>control</kbd> + <kbd>f</kbd> 向前移动一个单词（<strong>f</strong>orward）</li>
+  <li><kbd>control</kbd> + <kbd>b</kbd> 向后移动一个单词（<strong>b</strong>ack）</li>
+</ul>
+
+<p>移动光标，大部分情况下，我觉得记住这四个可以满足日常需求。</p>
+
+<p>除了移动光标，还有一些编辑的快捷键，在 man 页面中 Killing and Yanking 部分，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ...</span>
+
+   Killing and Yanking
+       kill-line <span class="o">(</span>C-k<span class="o">)</span>
+              Kill the text from point to the end of the line.
+       backward-kill-line <span class="o">(</span>C-x Rubout<span class="o">)</span>
+              Kill backward to the beginning of the line.
+       unix-line-discard <span class="o">(</span>C-u<span class="o">)</span>
+              Kill  backward  from point to the beginning of the line.  The killed text is
+              saved on the kill-ring.
+       kill-whole-line
+              Kill all characters on the current line, no matter where point is.
+       kill-word <span class="o">(</span>M-d<span class="o">)</span>
+              Kill from point to the end of the current word, or <span class="k">if </span>between words, to  the
+              end  of  the  next word.  Word boundaries are the same as those used by <span class="k">for</span>-
+              ward-word.
+       backward-kill-word <span class="o">(</span>M-Rubout<span class="o">)</span>
+              Kill the word behind point.  Word boundaries are the same as those  used  by
+              backward-word.
+       unix-word-rubout <span class="o">(</span>C-w<span class="o">)</span>
+              Kill  the  word  behind  point,  using  white space as a word boundary.  The
+              killed text is saved on the kill-ring.
+       unix-filename-rubout
+              Kill the word behind point, using white space and the slash character as the
+              word boundaries.  The killed text is saved on the kill-ring.
+       delete-horizontal-space <span class="o">(</span>M-<span class="se">\)</span>
+              Delete all spaces and tabs around point.
+       kill-region
+              Kill the text <span class="k">in </span>the current region.
+       copy-region-as-kill
+              Copy the text <span class="k">in </span>the region to the <span class="nb">kill </span>buffer.
+       copy-backward-word
+              Copy  the word before point to the <span class="nb">kill </span>buffer.  The word boundaries are the
+              same as backward-word.
+       copy-forward-word
+              Copy the word following point to the <span class="nb">kill </span>buffer.  The word  boundaries  are
+              the same as forward-word.
+       yank <span class="o">(</span>C-y<span class="o">)</span>
+              Yank the top of the <span class="nb">kill </span>ring into the buffer at point.
+       yank-pop <span class="o">(</span>M-y<span class="o">)</span>
+              Rotate  the  <span class="nb">kill  </span>ring, and yank the new top.  Only works following yank or
+              yank-pop.
+
+<span class="c"># ...</span>
+</code></pre></div></div>
+
+<p>其中这一个我最常用：</p>
+
+<ul>
+  <li><kbd>control</kbd> + <kbd>u</kbd> 删除当前光标位置到行首的内容，配合着 <kbd>control</kbd> + <kbd>e</kbd> 把光标定位到行末再使用该命令，可实现清空整行的效果</li>
+</ul>
+
+<p>除了这些快捷键，其实命令行还有个 vi 模式，该模式下的表现和在 vi 编辑器里一样，对于 vi 用户来说，进入这种模式后，编辑和修改命令就显得十分得心应手了。</p>
+
+<h2 id="开启-vi-模式">开启 vi 模式</h2>
+
+<p>不同 shell 中开启的命令不一样，我比较偏好 <a href="https://fishshell.com">fish</a>，因为它的自动补全真的好用到无以复加。</p>
+
+<p>运行 <code class="language-plaintext highlighter-rouge">fish_vi_key_bindings</code> 即可进入 vi 模式。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>fish_vi_key_bindings
+</code></pre></div></div>
+
+<p>运行 <code class="language-plaintext highlighter-rouge">fish_default_key_bindings</code> 回到默认。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>fish_default_key_bindings
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56299503-bf90b100-6166-11e9-8c1f-d103a7be9af2.gif" alt="命令行的 vi 模式演示" /></p>
+<p align="center">命令行的 vi 模式演示</p>
+
+<p>如果需要一直开始，可以配置文件中添加上述命令。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>vi ~/.config/fish/config.fish
+
+<span class="c"># 其他代码</span>
+fish_vi_key_bindings
+
+</code></pre></div></div>
+
+<h2 id="选择合适的主题">选择合适的主题</h2>
+
+<p>你可能需要一个可以在命令提示行中显示当前  vi  状态的主题。</p>
+
+<p>推荐 fish 搭配 omf 使用 omf 中的<a href="https://github.com/oh-my-fish/oh-my-fish/blob/master/docs/Themes.md">主题</a>。</p>
+
+<p>fish 有默认的 vi 状态展示(indicator)，和主题很不搭配。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56299552-dafbbc00-6166-11e9-8120-6d67820d85d8.png" alt="fish 默认的 vi 状态展示" /></p>
+<p align="center">fish 默认的 vi 状态展示</p>
+
+<p>需要手动去掉，配置文件中添加如下脚本：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function </span>fish_mode_prompt<span class="p">;</span> end
+</code></pre></div></div>
+
+<h2 id="修正-fish-中的自动补全">修正 fish 中的自动补全</h2>
+
+<p>如果发现 vi 模式下， fish 的自动补全快捷键 <kbd>control</kbd> + <kbd>f</kbd> 不能用了，可在配置文件中添加如下脚本来修复这个快捷键：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function </span>fish_user_key_bindings
+    <span class="k">for </span>mode <span class="k">in </span>insert default visual
+        <span class="nb">bind</span> <span class="nt">-M</span> <span class="nv">$mode</span> <span class="se">\c</span>f forward-char
+    end
+end
+</code></pre></div></div>
+:ET

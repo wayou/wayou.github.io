@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>TypeScript 中 Optional Chaining 和 Nullish Coalescing | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="TypeScript 中 Optional Chaining 和 Nullish Coalescing" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TypeScript 中 Optional Chaining 和 Nullish Coalescing Optional Chaining 解决的问题是重复且无意义的判空，之所以说无意义，是对业务来说它不是必需的，但不判空，程序直接就挂了，比如： let x = foo.bar.baz(); 这里的访问链路上 foo bar baz 任何一个为 undefined，程序就停止工作。 使用 Optional Chaining 修改后： let x = foo?.bar.baz(); 这里 ?. 的句法就是 Optional Chaining，在 TypeScript 3.7 中实现，目前 tc39 提案中处于 Stage 4 阶段。 Optional Chaining 在这里表示，如果 foo 是 null 或 undefined，整个语句不继续往后执行，直接返回 undefined。 作用范围 需要注意的是，这里只对 foo 进行了保障，如果后续的 bar，baz 为空的话，代码仍然报错。?. 只作用于左边的对象。 所以可以这样来修正： let x = foo?.bar?.baz(); 这样可以保障 foo bar 为空的情况下不报错。这体现了 optional property accesses 的功能。 Opptoinal call 对于方法也同样适用。 async function makeRequest(url: string, log?: (msg: string) =&gt; void) { log?.(`Request started at ${new Date().toISOString()}`); // roughly equivalent to // if (log != null) { // log(`Request started at ${new Date().toISOString()}`); // } const result = (await fetch(url)).json(); log?.(`Request finished at at ${new Date().toISOString()}`); return result; } Optional element access 数组也是对象，只不是特殊的对象，通过数字索引作为属性来访问。所以 Optional Chaining 也可作用于数组元素的访问，此时就体现了 optional element access 的功能，请看来自官方文档中的示例： /** * Get the first element of the array if we have an array. * Otherwise return undefined. */ function tryGetFirstElement&lt;T&gt;(arr?: T[]) { return arr?.[0]; // equivalent to // return (arr === null || arr === undefined) ? // undefined : // arr[0]; } 和 &amp;&amp; 的差别 虽说 Optional Chaining 取代了如下通过 &amp;&amp; 来实现的判空操作： // Before if (foo &amp;&amp; foo.bar &amp;&amp; foo.bar.baz) { // ... } 但 Optional Chaining 和 &amp;&amp; 还是有区别，后者利用 JavaScript 中的短路机制，遇到假值时中断执行。而前者只会在被判定对象为 null 或 undefined 时才会中断执行。 请看如下示例： const a: any = 0; console.log(a?.blah); console.log(a &amp;&amp; a.blah); const b: any = false; console.log(b?.blah); console.log(b &amp;&amp; b.blah); const c: any = &quot;&quot;; console.log(c?.blah); console.log(c &amp;&amp; c.blah); 输出： undefined 0 undefined false undefined 可以看到，通过 Optional Chaining 控制的部分全部输出 undefined，因为这里被判定对象并不是 null 或 undefined，所以语句会往后执行，尝试访问 blah，拿到的值是 undefined，最后输出。 而通过 &amp;&amp; 进行判定的语句，因为被判定对象是假值，中断执行并返回当前对象。 Nullish Coalescing Nullish Coalescing 通过 ?? 操作符，为 null 或 undefined 的值提供默认值。 比如： let x = foo ?? bar(); 上面的表达式等价于如果 foo 是 null 或 undefined，则调用 bar()。 同样地，他取代了之前通过 || 操作符达到的默认值效果，但后者同样是通过判断布尔真值达到的，而 Nullish Coalescing 只判断 null 或 undefined。 比如： function initializeAudio() { let volume = localStorage.volume || 0.5; // ... } 这里如果 localStorage.volume 被设置成 0，则最后 volume 得到的是 0.5，也就是说设置在 localStorage.volume 永远也不会生效。而 Nullish Coalescing 就可以避免这种问题。 相关资源 Optional Chaining Nullish Coalescing" />
+<meta property="og:description" content="TypeScript 中 Optional Chaining 和 Nullish Coalescing Optional Chaining 解决的问题是重复且无意义的判空，之所以说无意义，是对业务来说它不是必需的，但不判空，程序直接就挂了，比如： let x = foo.bar.baz(); 这里的访问链路上 foo bar baz 任何一个为 undefined，程序就停止工作。 使用 Optional Chaining 修改后： let x = foo?.bar.baz(); 这里 ?. 的句法就是 Optional Chaining，在 TypeScript 3.7 中实现，目前 tc39 提案中处于 Stage 4 阶段。 Optional Chaining 在这里表示，如果 foo 是 null 或 undefined，整个语句不继续往后执行，直接返回 undefined。 作用范围 需要注意的是，这里只对 foo 进行了保障，如果后续的 bar，baz 为空的话，代码仍然报错。?. 只作用于左边的对象。 所以可以这样来修正： let x = foo?.bar?.baz(); 这样可以保障 foo bar 为空的情况下不报错。这体现了 optional property accesses 的功能。 Opptoinal call 对于方法也同样适用。 async function makeRequest(url: string, log?: (msg: string) =&gt; void) { log?.(`Request started at ${new Date().toISOString()}`); // roughly equivalent to // if (log != null) { // log(`Request started at ${new Date().toISOString()}`); // } const result = (await fetch(url)).json(); log?.(`Request finished at at ${new Date().toISOString()}`); return result; } Optional element access 数组也是对象，只不是特殊的对象，通过数字索引作为属性来访问。所以 Optional Chaining 也可作用于数组元素的访问，此时就体现了 optional element access 的功能，请看来自官方文档中的示例： /** * Get the first element of the array if we have an array. * Otherwise return undefined. */ function tryGetFirstElement&lt;T&gt;(arr?: T[]) { return arr?.[0]; // equivalent to // return (arr === null || arr === undefined) ? // undefined : // arr[0]; } 和 &amp;&amp; 的差别 虽说 Optional Chaining 取代了如下通过 &amp;&amp; 来实现的判空操作： // Before if (foo &amp;&amp; foo.bar &amp;&amp; foo.bar.baz) { // ... } 但 Optional Chaining 和 &amp;&amp; 还是有区别，后者利用 JavaScript 中的短路机制，遇到假值时中断执行。而前者只会在被判定对象为 null 或 undefined 时才会中断执行。 请看如下示例： const a: any = 0; console.log(a?.blah); console.log(a &amp;&amp; a.blah); const b: any = false; console.log(b?.blah); console.log(b &amp;&amp; b.blah); const c: any = &quot;&quot;; console.log(c?.blah); console.log(c &amp;&amp; c.blah); 输出： undefined 0 undefined false undefined 可以看到，通过 Optional Chaining 控制的部分全部输出 undefined，因为这里被判定对象并不是 null 或 undefined，所以语句会往后执行，尝试访问 blah，拿到的值是 undefined，最后输出。 而通过 &amp;&amp; 进行判定的语句，因为被判定对象是假值，中断执行并返回当前对象。 Nullish Coalescing Nullish Coalescing 通过 ?? 操作符，为 null 或 undefined 的值提供默认值。 比如： let x = foo ?? bar(); 上面的表达式等价于如果 foo 是 null 或 undefined，则调用 bar()。 同样地，他取代了之前通过 || 操作符达到的默认值效果，但后者同样是通过判断布尔真值达到的，而 Nullish Coalescing 只判断 null 或 undefined。 比如： function initializeAudio() { let volume = localStorage.volume || 0.5; // ... } 这里如果 localStorage.volume 被设置成 0，则最后 volume 得到的是 0.5，也就是说设置在 localStorage.volume 永远也不会生效。而 Nullish Coalescing 就可以避免这种问题。 相关资源 Optional Chaining Nullish Coalescing" />
+<link rel="canonical" href="http://localhost:4000/2020/05/27/TypeScript-%E4%B8%AD-Optional-Chaining-%E5%92%8C-Nullish-Coalescing.html" />
+<meta property="og:url" content="http://localhost:4000/2020/05/27/TypeScript-%E4%B8%AD-Optional-Chaining-%E5%92%8C-Nullish-Coalescing.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-27T00:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2020/05/27/TypeScript-%E4%B8%AD-Optional-Chaining-%E5%92%8C-Nullish-Coalescing.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2020/05/27/TypeScript-%E4%B8%AD-Optional-Chaining-%E5%92%8C-Nullish-Coalescing.html"},"description":"TypeScript 中 Optional Chaining 和 Nullish Coalescing Optional Chaining 解决的问题是重复且无意义的判空，之所以说无意义，是对业务来说它不是必需的，但不判空，程序直接就挂了，比如： let x = foo.bar.baz(); 这里的访问链路上 foo bar baz 任何一个为 undefined，程序就停止工作。 使用 Optional Chaining 修改后： let x = foo?.bar.baz(); 这里 ?. 的句法就是 Optional Chaining，在 TypeScript 3.7 中实现，目前 tc39 提案中处于 Stage 4 阶段。 Optional Chaining 在这里表示，如果 foo 是 null 或 undefined，整个语句不继续往后执行，直接返回 undefined。 作用范围 需要注意的是，这里只对 foo 进行了保障，如果后续的 bar，baz 为空的话，代码仍然报错。?. 只作用于左边的对象。 所以可以这样来修正： let x = foo?.bar?.baz(); 这样可以保障 foo bar 为空的情况下不报错。这体现了 optional property accesses 的功能。 Opptoinal call 对于方法也同样适用。 async function makeRequest(url: string, log?: (msg: string) =&gt; void) { log?.(`Request started at ${new Date().toISOString()}`); // roughly equivalent to // if (log != null) { // log(`Request started at ${new Date().toISOString()}`); // } const result = (await fetch(url)).json(); log?.(`Request finished at at ${new Date().toISOString()}`); return result; } Optional element access 数组也是对象，只不是特殊的对象，通过数字索引作为属性来访问。所以 Optional Chaining 也可作用于数组元素的访问，此时就体现了 optional element access 的功能，请看来自官方文档中的示例： /** * Get the first element of the array if we have an array. * Otherwise return undefined. */ function tryGetFirstElement&lt;T&gt;(arr?: T[]) { return arr?.[0]; // equivalent to // return (arr === null || arr === undefined) ? // undefined : // arr[0]; } 和 &amp;&amp; 的差别 虽说 Optional Chaining 取代了如下通过 &amp;&amp; 来实现的判空操作： // Before if (foo &amp;&amp; foo.bar &amp;&amp; foo.bar.baz) { // ... } 但 Optional Chaining 和 &amp;&amp; 还是有区别，后者利用 JavaScript 中的短路机制，遇到假值时中断执行。而前者只会在被判定对象为 null 或 undefined 时才会中断执行。 请看如下示例： const a: any = 0; console.log(a?.blah); console.log(a &amp;&amp; a.blah); const b: any = false; console.log(b?.blah); console.log(b &amp;&amp; b.blah); const c: any = &quot;&quot;; console.log(c?.blah); console.log(c &amp;&amp; c.blah); 输出： undefined 0 undefined false undefined 可以看到，通过 Optional Chaining 控制的部分全部输出 undefined，因为这里被判定对象并不是 null 或 undefined，所以语句会往后执行，尝试访问 blah，拿到的值是 undefined，最后输出。 而通过 &amp;&amp; 进行判定的语句，因为被判定对象是假值，中断执行并返回当前对象。 Nullish Coalescing Nullish Coalescing 通过 ?? 操作符，为 null 或 undefined 的值提供默认值。 比如： let x = foo ?? bar(); 上面的表达式等价于如果 foo 是 null 或 undefined，则调用 bar()。 同样地，他取代了之前通过 || 操作符达到的默认值效果，但后者同样是通过判断布尔真值达到的，而 Nullish Coalescing 只判断 null 或 undefined。 比如： function initializeAudio() { let volume = localStorage.volume || 0.5; // ... } 这里如果 localStorage.volume 被设置成 0，则最后 volume 得到的是 0.5，也就是说设置在 localStorage.volume 永远也不会生效。而 Nullish Coalescing 就可以避免这种问题。 相关资源 Optional Chaining Nullish Coalescing","@type":"BlogPosting","headline":"TypeScript 中 Optional Chaining 和 Nullish Coalescing","dateModified":"2020-05-27T00:05:00+08:00","datePublished":"2020-05-27T00:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">TypeScript 中 Optional Chaining 和 Nullish Coalescing</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-05-27T00:05:00+08:00" itemprop="datePublished">May 27, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="typescript-中-optional-chaining-和-nullish-coalescing">TypeScript 中 Optional Chaining 和 Nullish Coalescing</h1>
+
+<p>Optional Chaining 解决的问题是重复且无意义的判空，之所以说无意义，是对业务来说它不是必需的，但不判空，程序直接就挂了，比如：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">.</span><span class="nx">bar</span><span class="p">.</span><span class="nx">baz</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>这里的访问链路上 <code class="language-plaintext highlighter-rouge">foo</code> <code class="language-plaintext highlighter-rouge">bar</code> <code class="language-plaintext highlighter-rouge">baz</code> 任何一个为 <code class="language-plaintext highlighter-rouge">undefined</code>，程序就停止工作。</p>
+
+<p>使用 Optional Chaining 修改后：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">?.</span><span class="nx">bar</span><span class="p">.</span><span class="nx">baz</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">?.</code> 的句法就是 <strong>Optional Chaining</strong>，在 TypeScript 3.7 中实现，目前 tc39 提案中处于 <a href="https://github.com/tc39/proposal-optional-chaining">Stage 4</a> 阶段。</p>
+
+<p>Optional Chaining 在这里表示，如果 <code class="language-plaintext highlighter-rouge">foo</code> 是 <code class="language-plaintext highlighter-rouge">null</code> 或 <code class="language-plaintext highlighter-rouge">undefined</code>，整个语句不继续往后执行，直接返回 <code class="language-plaintext highlighter-rouge">undefined</code>。</p>
+
+<h3 id="作用范围">作用范围</h3>
+
+<p>需要注意的是，这里只对 <code class="language-plaintext highlighter-rouge">foo</code> 进行了保障，如果后续的 <code class="language-plaintext highlighter-rouge">bar</code>，<code class="language-plaintext highlighter-rouge">baz</code> 为空的话，代码仍然报错。<code class="language-plaintext highlighter-rouge">?.</code> 只作用于左边的对象。</p>
+
+<p>所以可以这样来修正：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">?.</span><span class="nx">bar</span><span class="p">?.</span><span class="nx">baz</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>这样可以保障 <code class="language-plaintext highlighter-rouge">foo</code> <code class="language-plaintext highlighter-rouge">bar</code> 为空的情况下不报错。这体现了 <code class="language-plaintext highlighter-rouge">optional property accesses</code> 的功能。</p>
+
+<h3 id="opptoinal-call">Opptoinal call</h3>
+
+<p>对于方法也同样适用。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">makeRequest</span><span class="p">(</span><span class="nx">url</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">log</span><span class="p">?:</span> <span class="p">(</span><span class="nx">msg</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">log</span><span class="p">?.(</span><span class="s2">`Request started at </span><span class="p">${</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">toISOString</span><span class="p">()}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="c1">// roughly equivalent to</span>
+  <span class="c1">//   if (log != null) {</span>
+  <span class="c1">//       log(`Request started at ${new Date().toISOString()}`);</span>
+  <span class="c1">//   }</span>
+
+  <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)).</span><span class="nx">json</span><span class="p">();</span>
+
+  <span class="nx">log</span><span class="p">?.(</span><span class="s2">`Request finished at at </span><span class="p">${</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">toISOString</span><span class="p">()}</span><span class="s2">`</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="optional-element-access">Optional element access</h3>
+
+<p>数组也是对象，只不是特殊的对象，通过数字索引作为属性来访问。所以 Optional Chaining 也可作用于数组元素的访问，此时就体现了 <code class="language-plaintext highlighter-rouge">optional element access</code> 的功能，请看来自官方文档中的示例：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Get the first element of the array if we have an array.
+ * Otherwise return undefined.
+ */</span>
+<span class="kd">function</span> <span class="nx">tryGetFirstElement</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">arr</span><span class="p">?:</span> <span class="nx">T</span><span class="p">[])</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">arr</span><span class="p">?.[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="c1">// equivalent to</span>
+  <span class="c1">//   return (arr === null || arr === undefined) ?</span>
+  <span class="c1">//       undefined :</span>
+  <span class="c1">//       arr[0];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="和--的差别">和 <code class="language-plaintext highlighter-rouge">&amp;&amp;</code> 的差别</h3>
+
+<p>虽说 Optional Chaining 取代了如下通过 <code class="language-plaintext highlighter-rouge">&amp;&amp;</code> 来实现的判空操作：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Before</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">foo</span> <span class="o">&amp;&amp;</span> <span class="nx">foo</span><span class="p">.</span><span class="nx">bar</span> <span class="o">&amp;&amp;</span> <span class="nx">foo</span><span class="p">.</span><span class="nx">bar</span><span class="p">.</span><span class="nx">baz</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>但 Optional Chaining 和 <code class="language-plaintext highlighter-rouge">&amp;&amp;</code> 还是有区别，后者利用 JavaScript 中的短路机制，遇到<strong>假值</strong>时中断执行。而前者只会在被判定对象为 <strong><code class="language-plaintext highlighter-rouge">null</code> 或 <code class="language-plaintext highlighter-rouge">undefined</code></strong> 时才会中断执行。</p>
+
+<p>请看如下示例：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">a</span><span class="p">:</span> <span class="kr">any</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">?.</span><span class="nx">blah</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span> <span class="o">&amp;&amp;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">blah</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">any</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b</span><span class="p">?.</span><span class="nx">blah</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b</span> <span class="o">&amp;&amp;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">blah</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">c</span><span class="p">:</span> <span class="kr">any</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">c</span><span class="p">?.</span><span class="nx">blah</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">c</span> <span class="o">&amp;&amp;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">blah</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>undefined
+0
+undefined
+false
+undefined
+
+</code></pre></div></div>
+
+<p>可以看到，通过 Optional Chaining 控制的部分全部输出 <code class="language-plaintext highlighter-rouge">undefined</code>，因为这里被判定对象并不是 <code class="language-plaintext highlighter-rouge">null</code> 或 <code class="language-plaintext highlighter-rouge">undefined</code>，所以语句会往后执行，尝试访问 <code class="language-plaintext highlighter-rouge">blah</code>，拿到的值是 <code class="language-plaintext highlighter-rouge">undefined</code>，最后输出。</p>
+
+<p>而通过 <code class="language-plaintext highlighter-rouge">&amp;&amp;</code> 进行判定的语句，因为被判定对象是假值，中断执行并返回当前对象。</p>
+
+<h2 id="nullish-coalescing">Nullish Coalescing</h2>
+
+<p>Nullish Coalescing 通过 <code class="language-plaintext highlighter-rouge">??</code> 操作符，为 <code class="language-plaintext highlighter-rouge">null</code> 或 <code class="language-plaintext highlighter-rouge">undefined</code> 的值提供默认值。</p>
+
+<p>比如：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">foo</span> <span class="o">??</span> <span class="nx">bar</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>上面的表达式等价于如果 <code class="language-plaintext highlighter-rouge">foo</code> 是 <code class="language-plaintext highlighter-rouge">null</code> 或 <code class="language-plaintext highlighter-rouge">undefined</code>，则调用 <code class="language-plaintext highlighter-rouge">bar()</code>。</p>
+
+<p>同样地，他取代了之前通过 <code class="language-plaintext highlighter-rouge">||</code> 操作符达到的默认值效果，但后者同样是通过判断布尔真值达到的，而 Nullish Coalescing 只判断 <code class="language-plaintext highlighter-rouge">null</code> 或 <code class="language-plaintext highlighter-rouge">undefined</code>。</p>
+
+<p>比如：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">initializeAudio</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">volume</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">volume</span> <span class="o">||</span> <span class="mf">0.5</span><span class="p">;</span>
+
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这里如果 <code class="language-plaintext highlighter-rouge">localStorage.volume</code> 被设置成 0，则最后 <code class="language-plaintext highlighter-rouge">volume</code> 得到的是 0.5，也就是说设置在 <code class="language-plaintext highlighter-rouge">localStorage.volume</code> 永远也不会生效。而 Nullish Coalescing 就可以避免这种问题。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html">Optional Chaining</a></li>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#nullish-coalescing">Nullish Coalescing</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2020/05/27/TypeScript-%E4%B8%AD-Optional-Chaining-%E5%92%8C-Nullish-Coalescing.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

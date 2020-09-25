@@ -1,0 +1,269 @@
+I""h<h1 id="理解-redux-的中间件">理解 Redux 的中间件</h1>
+
+<p>将该思想抽象出来，其实和 Redux 就无关了。问题变成，怎样实现在截获函数的执行，以在其执行前后添加自己的逻辑。</p>
+
+<p>为了演示，我们准备如下的示例代码来模拟 Redux dispatch action 的场景：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">store</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">dispatch</span><span class="p">:</span> <span class="nx">action</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">dispating action:</span><span class="dl">"</span><span class="p">,</span> <span class="nx">action</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">FOO</span><span class="dl">"</span> <span class="p">});</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">BAR</span><span class="dl">"</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<p>我们最终需要实现的效果是 Redux 中 <code class="language-plaintext highlighter-rouge">applyMiddleware(...middlewares)</code> 的效果，接收一个中间件数据（函数数组），执行真正的 dispatch 前顺次执行这些中间件。</p>
+
+<p>以打日志为例，我们想在调用 dispatch 时进行日志输出。</p>
+
+<h2 id="尝试1---手动">尝试1 - 手动</h2>
+
+<p>直接的做法就是手动进行。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">before dispatch `FOO`</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">FOO</span><span class="dl">"</span> <span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">before dispatch `FOO`</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">before dispatch `BAR`</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">BAR</span><span class="dl">"</span> <span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">before dispatch `BAR`</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>但其实这并不算一个系统的解决方案，至少需要摆脱手动这种方式。</p>
+
+<h2 id="尝试2---包装">尝试2 - 包装</h2>
+
+<p>既然所有 dispatch 操作都会打日志，完全有理由抽取一个方法，将 dispatch 进行包装，在这个方法里来做这些事情。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">dispatchWithLog</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`before dispatch </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`after dispatch </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>但调用的地方也得变，不能直接使用原始的 <code class="language-plaintext highlighter-rouge">store.disatch</code> 而需要使用封装后的 <code class="language-plaintext highlighter-rouge">dispatchWithLog</code>：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">- store.dispatch({ type: "FOO" });
+- store.dispatch({ type: "BAR" });
+</span><span class="gi">+ dispatchWithLog({ type: "FOO" });
++ dispatchWithLog({ type: "BAR" });
+</span></code></pre></div></div>
+
+<h2 id="尝试3---替换实现monkeypatching">尝试3 - 替换实现/Monkeypatching</h2>
+
+<p>如果我们直接替换掉原始函数的实现，便可以做到调用的地方不受影响而实现新增的 log 功能，虽然修改别人提供的方法容易引起 bug 且不太科学。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">original</span> <span class="o">=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">;</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">log</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`before dispatch </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="nx">original</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`after dispatch </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">FOO</span><span class="dl">"</span> <span class="p">});</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">BAR</span><span class="dl">"</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="尝试4---多个函数的截获">尝试4 - 多个函数的截获</h2>
+
+<p>除了添加 log，如果还想对每次 dispatch 进行错误监控，只需要拿到前面已经替换过实现的 dispatch 方法再次进行替换包装即可。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">original</span> <span class="o">=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">;</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">log</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`before dispatch </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="nx">original</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`after dispatch </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">next</span> <span class="o">=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">;</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">report</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">report middleware</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`error while dispatching </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>所以针对单个功能的中间件，我们可以提取出其大概的样子来了：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">store</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">next</span> <span class="o">=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">;</span>
+  <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 中间件中其他逻辑</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+    <span class="c1">// 中间件中其他逻辑</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>改写日志和错误监控为如下：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">log</span><span class="p">(</span><span class="nx">store</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">next</span> <span class="o">=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">;</span>
+  <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`before dispatch </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`after dispatch </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">report</span><span class="p">(</span><span class="nx">store</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">next</span> <span class="o">=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">;</span>
+  <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">report middleware</span><span class="dl">"</span><span class="p">);</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="nx">next</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`error while dispatching </span><span class="p">${</span><span class="nx">action</span><span class="p">.</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后按需要应用上述中间件即可：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">log</span><span class="p">(</span><span class="nx">store</span><span class="p">);</span>
+<span class="nx">report</span><span class="p">(</span><span class="nx">store</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>上面中间件的调用可专门编写一个方法来做：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">applyMiddlewares</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="nx">middlewares</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">middlewares</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">middleware</span> <span class="o">=&gt;</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">store</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="隐藏-monkeypatching">隐藏 Monkeypatching</h2>
+
+<p>真实场景下，各中间件由三方编写，如果每个中间件都直接去篡改 <code class="language-plaintext highlighter-rouge">store.dispatch</code> 不太科学也不安全。如此的话，中间件只需要关注新添加的逻辑，将新的 dispatch 返回即可，由框架层面拿到这些中间件后逐个调用并重写原来的 <code class="language-plaintext highlighter-rouge">dispatch</code>，将篡改的操作收敛。</p>
+
+<p>所以中间件的模式更新成如下：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+function middleware(store) {
+  const next = store.dispatch;
+<span class="gd">-  store.dispatch = function(action) {
+</span><span class="gi">+  return function(action) {
+</span>    // 中间件中其他逻辑
+    next(action);
+    // 中间件中其他逻辑
+  };
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>改写 <code class="language-plaintext highlighter-rouge">log</code> 和 <code class="language-plaintext highlighter-rouge">report</code> 中间件：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function log(store) {
+</span>  const next = store.dispatch;
+<span class="gd">-  store.dispatch = function(action) {
+</span><span class="gi">+  return function(action) {
+</span>    console.log(`before dispatch ${action.type}`);
+    next(action);
+    console.log(`after dispatch ${action.type}`);
+  };
+<span class="err">}</span>
+
+<span class="p">function report(store) {
+</span>  const next = store.dispatch;
+<span class="gd">-  store.dispatch = function(action) {
+</span><span class="gi">+  return function(action) {
+</span>    console.log("report middleware");
+    try {
+      next(action);
+    } catch (error) {
+      console.log(`error while dispatching ${action.type}`);
+    }
+  };
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>更新 <code class="language-plaintext highlighter-rouge">applyMiddlewares</code> 方法：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">applyMiddlewares</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="nx">middlewares</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">middlewares</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">middleware</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span> <span class="o">=</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">store</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>最后，应用中间件：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">applyMiddlewares</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="p">[</span><span class="nx">log</span><span class="p">,</span> <span class="nx">report</span><span class="p">]);</span>
+</code></pre></div></div>
+
+<h2 id="进一步优化">进一步优化</h2>
+
+<p>之所以在应用中间件过程中每次都重新给 <code class="language-plaintext highlighter-rouge">store.dispatch</code> 赋值，是想让后续中间件在通过 <code class="language-plaintext highlighter-rouge">store.dispatch</code> 访问时，能够拿到前面中间件修改过的 <code class="language-plaintext highlighter-rouge">dispatch</code> 函数。</p>
+
+<p>如果中间件中不是直接从 <code class="language-plaintext highlighter-rouge">store</code> 身上去获取  <code class="language-plaintext highlighter-rouge">store.dispatch</code>，而是前面已经执行过的中间件将新的 <code class="language-plaintext highlighter-rouge">dispatch</code> 传递给中间件，则可以避免每次对 <code class="language-plaintext highlighter-rouge">store.dispatch</code> 的赋值。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">applyMiddlewares</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="nx">middlewares</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span> <span class="o">=</span> <span class="nx">middlewares</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span>
+    <span class="p">(</span><span class="nx">next</span><span class="p">,</span> <span class="nx">middleware</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">next</span><span class="p">),</span>
+    <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>忽略掉实际源码中的一些差异，以上，大致就是 Redux 中间件的创建和应用了。</p>
+
+<h2 id="测试">测试</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">m1</span><span class="p">(</span><span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`1 start`</span><span class="p">);</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`1 end`</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">m2</span><span class="p">(</span><span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`2 start`</span><span class="p">);</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`2 end`</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">m3</span><span class="p">(</span><span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`3 start`</span><span class="p">);</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`3 end`</span><span class="p">);</span>
+  <span class="p">};</span>
+
+
+<span class="nx">applyMiddlewares</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="p">[</span><span class="nx">m1</span><span class="p">,</span> <span class="nx">m2</span><span class="p">,</span> <span class="nx">m3</span><span class="p">]);</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">FOO</span><span class="dl">"</span> <span class="p">});</span>
+<span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">({</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">BAR</span><span class="dl">"</span> <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>输出结果：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">3</span> <span class="nx">start</span>
+<span class="mi">2</span> <span class="nx">start</span>
+<span class="mi">1</span> <span class="nx">start</span>
+<span class="nx">dispating</span> <span class="nx">action</span><span class="p">:</span> <span class="p">{</span> <span class="nl">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">FOO</span><span class="dl">'</span> <span class="p">}</span>
+<span class="mi">1</span> <span class="nx">end</span>
+<span class="mi">2</span> <span class="nx">end</span>
+<span class="mi">3</span> <span class="nx">end</span>
+<span class="mi">3</span> <span class="nx">start</span>
+<span class="mi">2</span> <span class="nx">start</span>
+<span class="mi">1</span> <span class="nx">start</span>
+<span class="nx">dispating</span> <span class="nx">action</span><span class="p">:</span> <span class="p">{</span> <span class="nl">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">BAR</span><span class="dl">'</span> <span class="p">}</span>
+<span class="mi">1</span> <span class="nx">end</span>
+<span class="mi">2</span> <span class="nx">end</span>
+<span class="mi">3</span> <span class="nx">end</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://redux.js.org/advanced/middleware">Redux doc - Middleware</a></li>
+</ul>
+
+:ET

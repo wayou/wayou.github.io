@@ -1,0 +1,89 @@
+I"�"<h1 id="k-sum-问题">k-sum 问题</h1>
+
+<h2 id="问题描述">问题描述</h2>
+
+<p>给定一个数组及数字 k ，从数组中找出所有相加结果为 k 的组合。</p>
+
+<p>示例:</p>
+
+<p>给定数组 <code class="language-plaintext highlighter-rouge">[1,1,1]</code> 令 <code class="language-plaintext highlighter-rouge">k=2</code>，输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> [[1,1]]
+</code></pre></div></div>
+<p>给定数组 <code class="language-plaintext highlighter-rouge">[10, 1, 2, 7, 6, 1, 5]</code> 令 <code class="language-plaintext highlighter-rouge">k=8</code>，输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ]
+</code></pre></div></div>
+
+<h2 id="分析">分析</h2>
+
+<p>这里的思路是把 <code class="language-plaintext highlighter-rouge">k</code> 逐步拆解。既然要找出相加等于 <code class="language-plaintext highlighter-rouge">k</code> 的元素，那根据递归的思想，不难想到假如已经找到了数组中一个有效的元素，那么接下来就是从剩余的元素中继续去找，相加等于 <code class="language-plaintext highlighter-rouge">k</code> 减去该元素的那些组合，形成了一个新的子问题。</p>
+
+<p>所以对于第一个结果的查找，可以从索引为 0 的位置开始遍历数组：</p>
+<ul>
+  <li>从候选数据 <code class="language-plaintext highlighter-rouge">arr</code> 中取出第一个元素 <code class="language-plaintext highlighter-rouge">item0</code>，这样得到了一个取出该元素后的新数组 <code class="language-plaintext highlighter-rouge">arr1</code>，</li>
+  <li>从 <code class="language-plaintext highlighter-rouge">k</code> 中减去该元素 <code class="language-plaintext highlighter-rouge">item0</code> 得到一个新的 <code class="language-plaintext highlighter-rouge">k0</code>。</li>
+  <li>如此往复，接下来任务就是需要在新的数组 <code class="language-plaintext highlighter-rouge">arr1</code> 中找出一个组合，其相加结果为 <code class="language-plaintext highlighter-rouge">k0</code>。</li>
+  <li>最后必然会进行到 <code class="language-plaintext highlighter-rouge">k</code> 为零的时候，此时将前面取出的数组合一起便得到了一个结果。</li>
+  <li>如果数组都遍历完了，但 K 最终没有变成零，说明本次查找没有结果。</li>
+</ul>
+
+<p>第二个结果：</p>
+<ul>
+  <li>上面查找结束，开始从原数组中第二个位置开始重复上面的步骤。</li>
+</ul>
+
+<p>...</p>
+
+<p>直到进行到数组的最后一个元素。将前面得到的结果组合后返回。</p>
+
+<h2 id="实现">实现</h2>
+
+<p>根据上面的分析得出如下的实现：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * k-sum 实现，从候选数组中找出所有相加结果为 k 的组合
+ * @param {*} arr 候选数组
+ * @param {*} k 目标数字
+ */</span>
+<span class="kd">function</span> <span class="nx">ksum</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
+
+  <span class="kd">function</span> <span class="nx">process</span><span class="p">(</span><span class="nx">input</span><span class="p">,</span> <span class="nx">tmpK</span><span class="p">,</span> <span class="nx">tmpResult</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">tmpResult</span> <span class="o">=</span> <span class="nx">tmpResult</span> <span class="o">||</span> <span class="p">[];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">tmpK</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">tmpResult</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">tmpResult</span><span class="p">.</span><span class="nx">sort</span><span class="p">((</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">a</span> <span class="o">-</span> <span class="nx">b</span><span class="p">);</span>
+      <span class="kd">var</span> <span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="nx">v</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">v</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">""</span><span class="p">)</span> <span class="o">===</span> <span class="nx">tmpResult</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">""</span><span class="p">);</span>
+      <span class="p">});</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasDuplicate</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">tmpResult</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">tmpK</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">input</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">num</span> <span class="o">=</span> <span class="nx">input</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+        <span class="nx">process</span><span class="p">(</span><span class="nx">input</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nx">tmpK</span> <span class="o">-</span> <span class="nx">num</span><span class="p">,</span> <span class="nx">tmpResult</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">num</span><span class="p">));</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="nx">process</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">k</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>测试：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">ksum</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">));</span>
+<span class="c1">// [ [ 1, 1 ] ]</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">ksum</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="mi">8</span><span class="p">));</span>
+<span class="c1">// [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ]</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://leetcode.com/problems/subarray-sum-equals-k/">LeetCode 上类型的问题：Subarray Sum Equals K</a></li>
+</ul>
+
+:ET

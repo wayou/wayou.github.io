@@ -1,0 +1,40 @@
+I"�<h1 id="下拉框中选项的快速定位">下拉框中选项的快速定位</h1>
+
+<p>对于选项很多的下拉框 <code class="language-plaintext highlighter-rouge">&lt;select&gt;</code>，人工定位到想要的项目是很费劲的。浏览器其实原生支持下拉选择框根据键盘输入自动定位到相应条目的。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56429810-ce0dd280-62f6-11e9-9930-87c443870ae0.gif" alt="通过输入条目字母定位到下拉框中条目的位置" /></p>
+<p align="center">通过输入条目字母定位到下拉框中条目的位置</p>
+
+<p>方便是方便，有个问题是连续输入不能间隔太久，这个间隔实测中感受是非常短的，如果想找的条目比较难输入，就无法在短时间内完成这个操作。</p>
+
+<p>那有没有相应 API 修改这个间隔时间呢？<a href="https://stackoverflow.com/questions/33309866/html-select-keystroke-timeout">不能</a>，至少我还没找到。</p>
+
+<h2 id="datalist"><code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code></h2>
+
+<p>其实 HTML5 中提供了另外一个元素，<a href="https://developer.mozilla.org/en/docs/Web/HTML/Element/datalist"><code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code></a>。用它结合一个文本输入框可实现 Combo box 的效果，即根据输入自动筛选列表中的元素。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">id=</span><span class="s">"names"</span> <span class="na">list=</span><span class="s">"nameList"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;datalist</span> <span class="na">id=</span><span class="s">"nameList"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"Larhonda Trentham"</span><span class="nt">&gt;</span>Larhonda Trentham<span class="nt">&lt;/option&gt;</span>
+  <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"Nicola Madigan"</span><span class="nt">&gt;</span>Nicola Madigan<span class="nt">&lt;/option&gt;</span>
+  ...
+<span class="nt">&lt;/datalist&gt;</span>
+</code></pre></div></div>
+
+<p>创建 <code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code> 元素并指定 <code class="language-plaintext highlighter-rouge">id</code> 值，同时将候选项放入 <code class="language-plaintext highlighter-rouge">&lt;option&gt;</code> 作为其子元素。然后为输入框指定 <code class="language-plaintext highlighter-rouge">list</code> 属性，值便是 <code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code> 的 <code class="language-plaintext highlighter-rouge">id</code>。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56429936-39f03b00-62f7-11e9-8fae-34547af7dcbc.gif" alt="利用 HTML5 datalist 元素实现 combbox" /></p>
+<p align="center">通过输入条目字母定位到下拉框中条目的位置</p>
+
+<h2 id="浏览器兼容性">浏览器兼容性</h2>
+
+<p>IE10+ 可安心食用，详情参见 <a href="https://github.com/mdn/browser-compat-data/blob/master/html/elements/datalist.json">MDN 的数据</a>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en/docs/Web/HTML/Element/datalist">MDN - <code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code></a></li>
+  <li><a href="https://stackoverflow.com/questions/33309866/html-select-keystroke-timeout">StackOverflow - Html select keystroke timeout</a></li>
+</ul>
+
+:ET

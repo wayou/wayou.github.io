@@ -1,0 +1,74 @@
+I"�<h1 id="css-background-的简写">CSS background 的简写</h1>
+
+<p>CSS <code class="language-plaintext highlighter-rouge">background</code> 包含如下属性：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">background-attachment</code>：控制背景是否跟随页面的滚动</li>
+  <li><code class="language-plaintext highlighter-rouge">background-clip</code>：背景生效的区域</li>
+  <li><code class="language-plaintext highlighter-rouge">background-color</code>：背景色，当背景图片为 png 或图片未铺满时可见</li>
+  <li><code class="language-plaintext highlighter-rouge">background-image</code>：	背景图片</li>
+  <li><code class="language-plaintext highlighter-rouge">background-origin</code>：	背景起始的位置，比如从 border，padding 还是元素内容区域开始</li>
+  <li><code class="language-plaintext highlighter-rouge">background-position</code>：背景位置</li>
+  <li><code class="language-plaintext highlighter-rouge">background-repeat</code>：	背景的重复规则</li>
+  <li><code class="language-plaintext highlighter-rouge">background-size</code>：背景尺寸</li>
+</ul>
+
+<h2 id="简写合并的形式shorthand-properties">简写合并的形式/Shorthand properties</h2>
+
+<p>背景其实可以由多层组成，每一层依次包含如下内容：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">background</span><span class="o">:</span> <span class="o">[</span><span class="nt">background-image</span><span class="o">]</span> <span class="o">[</span><span class="nt">background-position</span><span class="o">]</span> <span class="o">/</span> <span class="o">[</span><span class="nt">background-size</span><span class="o">]</span> <span class="o">[</span><span class="nt">background-repeat</span><span class="o">]</span> <span class="o">[</span><span class="nt">background-attachment</span><span class="o">]</span> <span class="o">[</span><span class="nt">background-origin</span><span class="o">]</span> <span class="o">[</span><span class="nt">background-clip</span><span class="o">]</span> <span class="o">[</span><span class="nt">background-color</span><span class="o">];</span>
+</code></pre></div></div>
+
+<p>其中，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">&lt;bg-size&gt;</code> 必需紧跟 <code class="language-plaintext highlighter-rouge">&lt;position&gt;</code> 后且以 <code class="language-plaintext highlighter-rouge">/</code> 分隔，开如 <code class="language-plaintext highlighter-rouge">center/80%</code>。</li>
+  <li><code class="language-plaintext highlighter-rouge">&lt;background-color&gt;</code> 只在最后一层中进行书写和使用。</li>
+</ul>
+
+<p>比如如下包含全部 8 种属性的背景样式：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">body</span> <span class="p">{</span>
+  <span class="nl">background-image</span><span class="p">:</span> <span class="sx">url(photo.jpg)</span><span class="p">;</span>
+  <span class="nl">background-position</span><span class="p">:</span> <span class="nb">center</span> <span class="nb">center</span><span class="p">;</span>
+  <span class="nl">background-size</span><span class="p">:</span> <span class="n">cover</span><span class="p">;</span>
+  <span class="nl">background-repeat</span><span class="p">:</span> <span class="nb">no-repeat</span><span class="p">;</span>
+  <span class="nl">background-attachment</span><span class="p">:</span> <span class="nb">fixed</span><span class="p">;</span>
+  <span class="nl">background-origin</span><span class="p">:</span> <span class="n">padding-box</span><span class="p">;</span>
+  <span class="nl">background-clip</span><span class="p">:</span> <span class="n">border-box</span><span class="p">;</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="m">#ccc</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>可简写成：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">body</span> <span class="p">{</span>
+  <span class="nl">background</span><span class="p">:</span> <span class="sx">url(photo.jpg)</span> <span class="nb">center</span> <span class="nb">center</span><span class="p">/</span><span class="n">cover</span> <span class="nb">no-repeat</span> <span class="nb">fixed</span> <span class="n">padding-box</span> <span class="n">border-box</span> <span class="m">#ccc</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>进一步，因为：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">padding-box</code> 是 <code class="language-plaintext highlighter-rouge">background-origin</code> 的默认值</li>
+  <li><code class="language-plaintext highlighter-rouge">border-box</code> 是 <code class="language-plaintext highlighter-rouge">background-clip</code> 的默认值</li>
+</ul>
+
+<p>上述背景可进一步简写成：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">body</span> <span class="p">{</span>
+  <span class="nl">background</span><span class="p">:</span> <span class="sx">url(photo.jpg)</span> <span class="nb">center</span> <span class="nb">center</span><span class="p">/</span><span class="n">cover</span> <span class="nb">no-repeat</span> <span class="nb">fixed</span> <span class="m">#ccc</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>TODO: 进一步阅读参考中第一个文章</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www.webfx.com/blog/web-design/background-css-shorthand/">CSS Background Shorthand Property</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background">MDN - background</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties">MDN - Shorthand properties</a></li>
+</ul>
+:ET

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Make 编译脚本上手 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Make 编译脚本上手" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Make 编译脚本上手 考察下面的示例代码： main.c #include &lt;stdio.h&gt; int main(){ printf(&quot;hello world!&quot;); return 0; } 正常情况下，通过 gcc 在命令行将其编译后产出相应文件，可执行文件或 object 文件等。 $ gcc -o main.out main.c 上面命令编译后运行 main.out 可执行文件。 $ ./main.out hello world! Make 工具 通过 make 命令，可以将上面的编译进行有效自动化管理。通过将从输入文件到输出文件的编译无则编写成 Makefile 脚本，Make 工具将自动处理文件间依赖及是否需要编译的检测。 make 命令所使用的编译配置文件可以是 Makefile，makefile 或 GUNMake。 其中定义任务的基本语法为： target1 [target2 ...]: [pre-req-1 pre-req-2 ...] [command1 command2 ......] 上面形式也可称作是一条编译规则（rule）。 其中， target 为任务名或文件产出。如果该任务不产出文件，则称该任务为 Phony Targets。make 内置的 phony target 有 all, install 及 clean 等，这些任务都不实际产出文件，一般用来执行一些命令。 pre-req123... 这些是依赖项，即该任务所需要的外部输入，这些输入可以是其他文件，也可以是其他任务产出的文件。 command 为该任务具体需要执行的 shell 命令。 Makefile 示例 比如文章最开始的编译，可通过编写下面的 Makefile 来完成： Makefile all:main.out main.out: main.c gcc -o main.out main.c clean: rm main.out 上面的 Makefile 中定义了三个任务，调用时可通过 make &lt;target name&gt; 形式来调用。 比如: $ make main.out gcc -o main.out main.c 产出 main.out 文件。 再比如： $ make clean rm main.out 该 clean 任务清除刚刚生成的 main.out 文件。 三个任务中，all 为内置的任务名，一般一个 Makefile 中都会包含，当直接调用 make 后面没有跟任务名时，默认执行的就是 all。 $ make gcc -o main.out main.c 命令的换行 如果一条编译规则中所要执行的 shell 命令有单条很长的情况，可通过 \ 来换行。 main.out: main.c gcc \ -o main.out \ main.c 注意 \ 与命令结尾处需要间隔一个空格，否则识别出错。 main.out: main.c gcc\ # 🚨 -o main.out\ # 🚨 main.c 任务间的依赖 前面调用 all 的效果等同于调用 main.out 任务，因为 all 的输入依赖为 main.out 文件。Make 在执行任务前会先检查其输入的依赖项，执行 all 时发现它依赖 main.out 文件，于是本地查找，发现本地没有，再从 Makefile 中查找看是否有相应任务会产生该文件，结果确实有相应任务能产生该文件，所以先执行能够产生依赖项的任务。 增量编译 使用 Makefile 进行编译有个好处是，在执行任务时，它会先检查依赖项是否比需要产出的文件新，如果说依赖项更新新，则说明我们需要产出的目标文件属于过时的产物，需要重新生成。 什么意思。比如上面的示例，当执行 $ make main.out 试图生成 main.out 产出时，会检查这个任务的依赖文件 main.c 是否有修改过。 比如前面我们已经执行过该任务产生过 main.out。再次执行时，会得到如下提示： $ make main.out make: `main.out&#39; is up to date. NOTE: 上面是 Mac 上最新版本的 Make 工具（GNU Make 3.81）的提示语，老版或其他变种工具得到的可能是 Nothing to be done for \main.out` `。 现在对输入文件 main.c 进行修改： #include &lt;stdio.h&gt; int main(){ - printf(&quot;hello world!&quot;); + printf(&quot;hello wayou!&quot;); return 0; } 再次执行 make main.out 会发现任务正常执行并产生了新的输出， $ make main.out gcc -o main.out main.c $ ./main.out hello wayou!⏎ 这里 main.c 修改后，它在文件上来说，就比 main.out 更新了，所以我们说 main.out 这个目标， 过时（out-dated） 了。 过时的任务才会被重新执行，而未过时的会跳过，并输出相应信息。 以上，Makefile 天然实现了增量编译的效果，在大型项目下会节省不少编译时间，因为它只编译过期的任务。 Phony 类型任务的执行 需要注意的是，phony 类型的任务永远都属于过时类型，即，每次 make 都会执行。因为这种类型的任务它没有文件产出，就无所谓检查，它的主体只是调用了另外的命令而以。 拿这里的 all 来说，当我们执行 make 或 make all 时，得到： $ make make: Nothing to be done for `all&#39;. 这里看不出来 all 有没有执行，因为目前它还没有包含任何一句命令，调用 all 后实际执行的是它的依赖文件 main.out 中的任务，而因为后者已经是最新的了，所以无须执行，所以得到了如上的输出。 为了验证 phony 类型任务是否每次都执行，向 all 及 main.out 中添加 echo 命令打印一些信息、 all:main.out + echo &quot;[all] done&quot; main.out: main.c gcc -o main.out main.c + echo &quot;[main.out] done&quot; clean: rm main.out 再次执行： $ make echo &quot;[all] done&quot; [all] done $ make echo &quot;[all] done&quot; [all] done $ make main.out make: `main.out&#39; is up to date. 可以看到，属于 phony 类型的任务 all 每次都会执行其中定义的 shell 命令，而非 phony 类型的任务 main.out 则走了增量编译的逻辑。 变量/宏 Makefile 中可使用变量（宏）来让脚本更加灵活和减少冗余。 其中变量使用 $ 加圆括号或花括号的形式来使用，$(VAR)，定义时类似于 C 中定义宏，所以变量也可叫 Makefile 中的宏， CC=gcc 这里定义 CC 表示 gcc 编译工具。然后在后续编译命令中，就可以使用 $(CC) 代替 gcc 来书写 shell 命令了。 + CC=gcc all:main.out main.out: main.c - gcc -o main.out main.c + $(CC) -o main.out main.c clean: rm main.out 这样做的好处是什么？因为编译工具可能随着平台或环境或需要编译的目标不同，而不同。比如 gcc 只是用来编译 C 代码的，如果是 C++ 你可能要用 g++ 来编译。如果是编译 WebAssembly 则需要使用 emcc。 无论怎样变，我们只需要修改定义在文件开头的 CC 变量即可，无须修改其他地方。这当然只是其中一点好处。 自动变量/Automatic Variables 自动变量/Automatic Variables 是在编译规则匹配后工具进行设置的，具体包括： $@：代表产出文件名 $*：代表产出文件名不包括扩展名 $&lt;：依赖项中第一个文件名 $^：空格分隔的去重后的所有依赖项 $+：同上，但没去重 $?：同上，但只包含比产出更新的那些依赖 这些变量都只有一个符号，区别于正常用字母命名的变量需要使用 $(VAL) 的形式来使用，自动变量无需加括号。 利用自动变量，前面示例可改造成： CC=gcc TARGET=main.out all:$(TARGET) $(TARGET): main.c $(CC) -o $@ $^ clean: rm $(TARGET) 减少了重复代码，更加易于维护，需要修改时，改动比较小。 VPATH &amp; vpath 可通过 VPATH 指定依赖文件及产出文件的搜索目录。 VPATH = src include 通过小写的 vpath 可指定具体的文件名及扩展名类型， vpath %.c src vpath %.h include 此处 % 表示文件名。 依赖规则/Dependency Rules Main.o : Main.h Test1.h Test2.h Test1.o : Test1.h Test2.h Test2.o : Test2.h 像这种，只定义了产出与依赖没包含任务命令的无则，叫作依赖无则。因为它只定义了某个产出依赖哪些输入，故名。 这种规则可达到这种效果，即，右边任何文件有变更，左边的产出便成为过时的了。 匹配规则/Pattern Rules 区别于明确指定了产出与依赖，如果一条规则包含通配符，则称作匹配规则（Pattern Rules）。 比如， %.o: %.c gcc -o $@ $^ 上面定义了这么一条编译规则，将所有匹配到的 c 文件编译成 Object 产出。 有什么用？ 这种规则一般不是直接调用的，是被其他它规则触间接使用。比如上面的依赖规则。 %.o : %.cpp g++ -g -o $@ -c $&lt; Main.o : Main.h Test1.h Test2.h Test1.o : Test1.h Test2.h Test2.o : Test2.h 当右侧这些头文件有变动时，左边的产出会在 make 时被检测到过时，于是会被执行。当执行时匹配规则 %.o 会被匹配到，所以匹配规则里面的命令会执行，从而将 cpp 文件编译成相应 Object 文件。达到了依赖更新后批量更新产出的目的，而不写成这样： Main.o : Main.h Test1.h Test2.h g++ -g -o $@ -c $&lt; Test1.o : Test1.h Test2.h g++ -g -o $@ -c $&lt; Test2.o : Test2.h g++ -g -o $@ -c $&lt; 一个实际一点的示例 添加 lame 依赖到项目并将其编译打包。 首先下载并解压 lame 到项目目录： $ wget https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz $ tar -zxvf lame-3.100.tar.gz 主程序中调用 lame，这只仅简单地打印其版本信息： main.c #include &lt;stdio.h&gt; #include &quot;./lame-3.100/include/lame.h&quot; int main() { const char* ver = get_lame_version(); printf(&quot;lame ver: %s&quot;, *ver); return 0; } 编译项目的 Makefile: Makefile CC=gcc TARGET=main.out ENTRY=main.c LAME_DIR=lame-3.100 all: $(TARGET) $(TARGET): $(ENTRY) $(LAME_DIR)/libmp3lame/.libs/libmp3lame.a $(CC) -o $@ \ $^ $(LAME_DIR)/libmp3lame/.libs/libmp3lame.a: cd $(LAME_DIR); ./configure ; make clean: rm $(TARGET) 编译并运行： $ make $ ./main.out lame ver: 3⏎ 相关资源 GCC and Make Compiling, Linking and Building C/C++ Applications Using Implicit Rules" />
+<meta property="og:description" content="Make 编译脚本上手 考察下面的示例代码： main.c #include &lt;stdio.h&gt; int main(){ printf(&quot;hello world!&quot;); return 0; } 正常情况下，通过 gcc 在命令行将其编译后产出相应文件，可执行文件或 object 文件等。 $ gcc -o main.out main.c 上面命令编译后运行 main.out 可执行文件。 $ ./main.out hello world! Make 工具 通过 make 命令，可以将上面的编译进行有效自动化管理。通过将从输入文件到输出文件的编译无则编写成 Makefile 脚本，Make 工具将自动处理文件间依赖及是否需要编译的检测。 make 命令所使用的编译配置文件可以是 Makefile，makefile 或 GUNMake。 其中定义任务的基本语法为： target1 [target2 ...]: [pre-req-1 pre-req-2 ...] [command1 command2 ......] 上面形式也可称作是一条编译规则（rule）。 其中， target 为任务名或文件产出。如果该任务不产出文件，则称该任务为 Phony Targets。make 内置的 phony target 有 all, install 及 clean 等，这些任务都不实际产出文件，一般用来执行一些命令。 pre-req123... 这些是依赖项，即该任务所需要的外部输入，这些输入可以是其他文件，也可以是其他任务产出的文件。 command 为该任务具体需要执行的 shell 命令。 Makefile 示例 比如文章最开始的编译，可通过编写下面的 Makefile 来完成： Makefile all:main.out main.out: main.c gcc -o main.out main.c clean: rm main.out 上面的 Makefile 中定义了三个任务，调用时可通过 make &lt;target name&gt; 形式来调用。 比如: $ make main.out gcc -o main.out main.c 产出 main.out 文件。 再比如： $ make clean rm main.out 该 clean 任务清除刚刚生成的 main.out 文件。 三个任务中，all 为内置的任务名，一般一个 Makefile 中都会包含，当直接调用 make 后面没有跟任务名时，默认执行的就是 all。 $ make gcc -o main.out main.c 命令的换行 如果一条编译规则中所要执行的 shell 命令有单条很长的情况，可通过 \ 来换行。 main.out: main.c gcc \ -o main.out \ main.c 注意 \ 与命令结尾处需要间隔一个空格，否则识别出错。 main.out: main.c gcc\ # 🚨 -o main.out\ # 🚨 main.c 任务间的依赖 前面调用 all 的效果等同于调用 main.out 任务，因为 all 的输入依赖为 main.out 文件。Make 在执行任务前会先检查其输入的依赖项，执行 all 时发现它依赖 main.out 文件，于是本地查找，发现本地没有，再从 Makefile 中查找看是否有相应任务会产生该文件，结果确实有相应任务能产生该文件，所以先执行能够产生依赖项的任务。 增量编译 使用 Makefile 进行编译有个好处是，在执行任务时，它会先检查依赖项是否比需要产出的文件新，如果说依赖项更新新，则说明我们需要产出的目标文件属于过时的产物，需要重新生成。 什么意思。比如上面的示例，当执行 $ make main.out 试图生成 main.out 产出时，会检查这个任务的依赖文件 main.c 是否有修改过。 比如前面我们已经执行过该任务产生过 main.out。再次执行时，会得到如下提示： $ make main.out make: `main.out&#39; is up to date. NOTE: 上面是 Mac 上最新版本的 Make 工具（GNU Make 3.81）的提示语，老版或其他变种工具得到的可能是 Nothing to be done for \main.out` `。 现在对输入文件 main.c 进行修改： #include &lt;stdio.h&gt; int main(){ - printf(&quot;hello world!&quot;); + printf(&quot;hello wayou!&quot;); return 0; } 再次执行 make main.out 会发现任务正常执行并产生了新的输出， $ make main.out gcc -o main.out main.c $ ./main.out hello wayou!⏎ 这里 main.c 修改后，它在文件上来说，就比 main.out 更新了，所以我们说 main.out 这个目标， 过时（out-dated） 了。 过时的任务才会被重新执行，而未过时的会跳过，并输出相应信息。 以上，Makefile 天然实现了增量编译的效果，在大型项目下会节省不少编译时间，因为它只编译过期的任务。 Phony 类型任务的执行 需要注意的是，phony 类型的任务永远都属于过时类型，即，每次 make 都会执行。因为这种类型的任务它没有文件产出，就无所谓检查，它的主体只是调用了另外的命令而以。 拿这里的 all 来说，当我们执行 make 或 make all 时，得到： $ make make: Nothing to be done for `all&#39;. 这里看不出来 all 有没有执行，因为目前它还没有包含任何一句命令，调用 all 后实际执行的是它的依赖文件 main.out 中的任务，而因为后者已经是最新的了，所以无须执行，所以得到了如上的输出。 为了验证 phony 类型任务是否每次都执行，向 all 及 main.out 中添加 echo 命令打印一些信息、 all:main.out + echo &quot;[all] done&quot; main.out: main.c gcc -o main.out main.c + echo &quot;[main.out] done&quot; clean: rm main.out 再次执行： $ make echo &quot;[all] done&quot; [all] done $ make echo &quot;[all] done&quot; [all] done $ make main.out make: `main.out&#39; is up to date. 可以看到，属于 phony 类型的任务 all 每次都会执行其中定义的 shell 命令，而非 phony 类型的任务 main.out 则走了增量编译的逻辑。 变量/宏 Makefile 中可使用变量（宏）来让脚本更加灵活和减少冗余。 其中变量使用 $ 加圆括号或花括号的形式来使用，$(VAR)，定义时类似于 C 中定义宏，所以变量也可叫 Makefile 中的宏， CC=gcc 这里定义 CC 表示 gcc 编译工具。然后在后续编译命令中，就可以使用 $(CC) 代替 gcc 来书写 shell 命令了。 + CC=gcc all:main.out main.out: main.c - gcc -o main.out main.c + $(CC) -o main.out main.c clean: rm main.out 这样做的好处是什么？因为编译工具可能随着平台或环境或需要编译的目标不同，而不同。比如 gcc 只是用来编译 C 代码的，如果是 C++ 你可能要用 g++ 来编译。如果是编译 WebAssembly 则需要使用 emcc。 无论怎样变，我们只需要修改定义在文件开头的 CC 变量即可，无须修改其他地方。这当然只是其中一点好处。 自动变量/Automatic Variables 自动变量/Automatic Variables 是在编译规则匹配后工具进行设置的，具体包括： $@：代表产出文件名 $*：代表产出文件名不包括扩展名 $&lt;：依赖项中第一个文件名 $^：空格分隔的去重后的所有依赖项 $+：同上，但没去重 $?：同上，但只包含比产出更新的那些依赖 这些变量都只有一个符号，区别于正常用字母命名的变量需要使用 $(VAL) 的形式来使用，自动变量无需加括号。 利用自动变量，前面示例可改造成： CC=gcc TARGET=main.out all:$(TARGET) $(TARGET): main.c $(CC) -o $@ $^ clean: rm $(TARGET) 减少了重复代码，更加易于维护，需要修改时，改动比较小。 VPATH &amp; vpath 可通过 VPATH 指定依赖文件及产出文件的搜索目录。 VPATH = src include 通过小写的 vpath 可指定具体的文件名及扩展名类型， vpath %.c src vpath %.h include 此处 % 表示文件名。 依赖规则/Dependency Rules Main.o : Main.h Test1.h Test2.h Test1.o : Test1.h Test2.h Test2.o : Test2.h 像这种，只定义了产出与依赖没包含任务命令的无则，叫作依赖无则。因为它只定义了某个产出依赖哪些输入，故名。 这种规则可达到这种效果，即，右边任何文件有变更，左边的产出便成为过时的了。 匹配规则/Pattern Rules 区别于明确指定了产出与依赖，如果一条规则包含通配符，则称作匹配规则（Pattern Rules）。 比如， %.o: %.c gcc -o $@ $^ 上面定义了这么一条编译规则，将所有匹配到的 c 文件编译成 Object 产出。 有什么用？ 这种规则一般不是直接调用的，是被其他它规则触间接使用。比如上面的依赖规则。 %.o : %.cpp g++ -g -o $@ -c $&lt; Main.o : Main.h Test1.h Test2.h Test1.o : Test1.h Test2.h Test2.o : Test2.h 当右侧这些头文件有变动时，左边的产出会在 make 时被检测到过时，于是会被执行。当执行时匹配规则 %.o 会被匹配到，所以匹配规则里面的命令会执行，从而将 cpp 文件编译成相应 Object 文件。达到了依赖更新后批量更新产出的目的，而不写成这样： Main.o : Main.h Test1.h Test2.h g++ -g -o $@ -c $&lt; Test1.o : Test1.h Test2.h g++ -g -o $@ -c $&lt; Test2.o : Test2.h g++ -g -o $@ -c $&lt; 一个实际一点的示例 添加 lame 依赖到项目并将其编译打包。 首先下载并解压 lame 到项目目录： $ wget https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz $ tar -zxvf lame-3.100.tar.gz 主程序中调用 lame，这只仅简单地打印其版本信息： main.c #include &lt;stdio.h&gt; #include &quot;./lame-3.100/include/lame.h&quot; int main() { const char* ver = get_lame_version(); printf(&quot;lame ver: %s&quot;, *ver); return 0; } 编译项目的 Makefile: Makefile CC=gcc TARGET=main.out ENTRY=main.c LAME_DIR=lame-3.100 all: $(TARGET) $(TARGET): $(ENTRY) $(LAME_DIR)/libmp3lame/.libs/libmp3lame.a $(CC) -o $@ \ $^ $(LAME_DIR)/libmp3lame/.libs/libmp3lame.a: cd $(LAME_DIR); ./configure ; make clean: rm $(TARGET) 编译并运行： $ make $ ./main.out lame ver: 3⏎ 相关资源 GCC and Make Compiling, Linking and Building C/C++ Applications Using Implicit Rules" />
+<link rel="canonical" href="http://localhost:4000/2019/06/28/Make-%E7%BC%96%E8%AF%91%E8%84%9A%E6%9C%AC%E4%B8%8A%E6%89%8B.html" />
+<meta property="og:url" content="http://localhost:4000/2019/06/28/Make-%E7%BC%96%E8%AF%91%E8%84%9A%E6%9C%AC%E4%B8%8A%E6%89%8B.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-28T00:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/06/28/Make-%E7%BC%96%E8%AF%91%E8%84%9A%E6%9C%AC%E4%B8%8A%E6%89%8B.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/28/Make-%E7%BC%96%E8%AF%91%E8%84%9A%E6%9C%AC%E4%B8%8A%E6%89%8B.html"},"description":"Make 编译脚本上手 考察下面的示例代码： main.c #include &lt;stdio.h&gt; int main(){ printf(&quot;hello world!&quot;); return 0; } 正常情况下，通过 gcc 在命令行将其编译后产出相应文件，可执行文件或 object 文件等。 $ gcc -o main.out main.c 上面命令编译后运行 main.out 可执行文件。 $ ./main.out hello world! Make 工具 通过 make 命令，可以将上面的编译进行有效自动化管理。通过将从输入文件到输出文件的编译无则编写成 Makefile 脚本，Make 工具将自动处理文件间依赖及是否需要编译的检测。 make 命令所使用的编译配置文件可以是 Makefile，makefile 或 GUNMake。 其中定义任务的基本语法为： target1 [target2 ...]: [pre-req-1 pre-req-2 ...] [command1 command2 ......] 上面形式也可称作是一条编译规则（rule）。 其中， target 为任务名或文件产出。如果该任务不产出文件，则称该任务为 Phony Targets。make 内置的 phony target 有 all, install 及 clean 等，这些任务都不实际产出文件，一般用来执行一些命令。 pre-req123... 这些是依赖项，即该任务所需要的外部输入，这些输入可以是其他文件，也可以是其他任务产出的文件。 command 为该任务具体需要执行的 shell 命令。 Makefile 示例 比如文章最开始的编译，可通过编写下面的 Makefile 来完成： Makefile all:main.out main.out: main.c gcc -o main.out main.c clean: rm main.out 上面的 Makefile 中定义了三个任务，调用时可通过 make &lt;target name&gt; 形式来调用。 比如: $ make main.out gcc -o main.out main.c 产出 main.out 文件。 再比如： $ make clean rm main.out 该 clean 任务清除刚刚生成的 main.out 文件。 三个任务中，all 为内置的任务名，一般一个 Makefile 中都会包含，当直接调用 make 后面没有跟任务名时，默认执行的就是 all。 $ make gcc -o main.out main.c 命令的换行 如果一条编译规则中所要执行的 shell 命令有单条很长的情况，可通过 \\ 来换行。 main.out: main.c gcc \\ -o main.out \\ main.c 注意 \\ 与命令结尾处需要间隔一个空格，否则识别出错。 main.out: main.c gcc\\ # 🚨 -o main.out\\ # 🚨 main.c 任务间的依赖 前面调用 all 的效果等同于调用 main.out 任务，因为 all 的输入依赖为 main.out 文件。Make 在执行任务前会先检查其输入的依赖项，执行 all 时发现它依赖 main.out 文件，于是本地查找，发现本地没有，再从 Makefile 中查找看是否有相应任务会产生该文件，结果确实有相应任务能产生该文件，所以先执行能够产生依赖项的任务。 增量编译 使用 Makefile 进行编译有个好处是，在执行任务时，它会先检查依赖项是否比需要产出的文件新，如果说依赖项更新新，则说明我们需要产出的目标文件属于过时的产物，需要重新生成。 什么意思。比如上面的示例，当执行 $ make main.out 试图生成 main.out 产出时，会检查这个任务的依赖文件 main.c 是否有修改过。 比如前面我们已经执行过该任务产生过 main.out。再次执行时，会得到如下提示： $ make main.out make: `main.out&#39; is up to date. NOTE: 上面是 Mac 上最新版本的 Make 工具（GNU Make 3.81）的提示语，老版或其他变种工具得到的可能是 Nothing to be done for \\main.out` `。 现在对输入文件 main.c 进行修改： #include &lt;stdio.h&gt; int main(){ - printf(&quot;hello world!&quot;); + printf(&quot;hello wayou!&quot;); return 0; } 再次执行 make main.out 会发现任务正常执行并产生了新的输出， $ make main.out gcc -o main.out main.c $ ./main.out hello wayou!⏎ 这里 main.c 修改后，它在文件上来说，就比 main.out 更新了，所以我们说 main.out 这个目标， 过时（out-dated） 了。 过时的任务才会被重新执行，而未过时的会跳过，并输出相应信息。 以上，Makefile 天然实现了增量编译的效果，在大型项目下会节省不少编译时间，因为它只编译过期的任务。 Phony 类型任务的执行 需要注意的是，phony 类型的任务永远都属于过时类型，即，每次 make 都会执行。因为这种类型的任务它没有文件产出，就无所谓检查，它的主体只是调用了另外的命令而以。 拿这里的 all 来说，当我们执行 make 或 make all 时，得到： $ make make: Nothing to be done for `all&#39;. 这里看不出来 all 有没有执行，因为目前它还没有包含任何一句命令，调用 all 后实际执行的是它的依赖文件 main.out 中的任务，而因为后者已经是最新的了，所以无须执行，所以得到了如上的输出。 为了验证 phony 类型任务是否每次都执行，向 all 及 main.out 中添加 echo 命令打印一些信息、 all:main.out + echo &quot;[all] done&quot; main.out: main.c gcc -o main.out main.c + echo &quot;[main.out] done&quot; clean: rm main.out 再次执行： $ make echo &quot;[all] done&quot; [all] done $ make echo &quot;[all] done&quot; [all] done $ make main.out make: `main.out&#39; is up to date. 可以看到，属于 phony 类型的任务 all 每次都会执行其中定义的 shell 命令，而非 phony 类型的任务 main.out 则走了增量编译的逻辑。 变量/宏 Makefile 中可使用变量（宏）来让脚本更加灵活和减少冗余。 其中变量使用 $ 加圆括号或花括号的形式来使用，$(VAR)，定义时类似于 C 中定义宏，所以变量也可叫 Makefile 中的宏， CC=gcc 这里定义 CC 表示 gcc 编译工具。然后在后续编译命令中，就可以使用 $(CC) 代替 gcc 来书写 shell 命令了。 + CC=gcc all:main.out main.out: main.c - gcc -o main.out main.c + $(CC) -o main.out main.c clean: rm main.out 这样做的好处是什么？因为编译工具可能随着平台或环境或需要编译的目标不同，而不同。比如 gcc 只是用来编译 C 代码的，如果是 C++ 你可能要用 g++ 来编译。如果是编译 WebAssembly 则需要使用 emcc。 无论怎样变，我们只需要修改定义在文件开头的 CC 变量即可，无须修改其他地方。这当然只是其中一点好处。 自动变量/Automatic Variables 自动变量/Automatic Variables 是在编译规则匹配后工具进行设置的，具体包括： $@：代表产出文件名 $*：代表产出文件名不包括扩展名 $&lt;：依赖项中第一个文件名 $^：空格分隔的去重后的所有依赖项 $+：同上，但没去重 $?：同上，但只包含比产出更新的那些依赖 这些变量都只有一个符号，区别于正常用字母命名的变量需要使用 $(VAL) 的形式来使用，自动变量无需加括号。 利用自动变量，前面示例可改造成： CC=gcc TARGET=main.out all:$(TARGET) $(TARGET): main.c $(CC) -o $@ $^ clean: rm $(TARGET) 减少了重复代码，更加易于维护，需要修改时，改动比较小。 VPATH &amp; vpath 可通过 VPATH 指定依赖文件及产出文件的搜索目录。 VPATH = src include 通过小写的 vpath 可指定具体的文件名及扩展名类型， vpath %.c src vpath %.h include 此处 % 表示文件名。 依赖规则/Dependency Rules Main.o : Main.h Test1.h Test2.h Test1.o : Test1.h Test2.h Test2.o : Test2.h 像这种，只定义了产出与依赖没包含任务命令的无则，叫作依赖无则。因为它只定义了某个产出依赖哪些输入，故名。 这种规则可达到这种效果，即，右边任何文件有变更，左边的产出便成为过时的了。 匹配规则/Pattern Rules 区别于明确指定了产出与依赖，如果一条规则包含通配符，则称作匹配规则（Pattern Rules）。 比如， %.o: %.c gcc -o $@ $^ 上面定义了这么一条编译规则，将所有匹配到的 c 文件编译成 Object 产出。 有什么用？ 这种规则一般不是直接调用的，是被其他它规则触间接使用。比如上面的依赖规则。 %.o : %.cpp g++ -g -o $@ -c $&lt; Main.o : Main.h Test1.h Test2.h Test1.o : Test1.h Test2.h Test2.o : Test2.h 当右侧这些头文件有变动时，左边的产出会在 make 时被检测到过时，于是会被执行。当执行时匹配规则 %.o 会被匹配到，所以匹配规则里面的命令会执行，从而将 cpp 文件编译成相应 Object 文件。达到了依赖更新后批量更新产出的目的，而不写成这样： Main.o : Main.h Test1.h Test2.h g++ -g -o $@ -c $&lt; Test1.o : Test1.h Test2.h g++ -g -o $@ -c $&lt; Test2.o : Test2.h g++ -g -o $@ -c $&lt; 一个实际一点的示例 添加 lame 依赖到项目并将其编译打包。 首先下载并解压 lame 到项目目录： $ wget https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz $ tar -zxvf lame-3.100.tar.gz 主程序中调用 lame，这只仅简单地打印其版本信息： main.c #include &lt;stdio.h&gt; #include &quot;./lame-3.100/include/lame.h&quot; int main() { const char* ver = get_lame_version(); printf(&quot;lame ver: %s&quot;, *ver); return 0; } 编译项目的 Makefile: Makefile CC=gcc TARGET=main.out ENTRY=main.c LAME_DIR=lame-3.100 all: $(TARGET) $(TARGET): $(ENTRY) $(LAME_DIR)/libmp3lame/.libs/libmp3lame.a $(CC) -o $@ \\ $^ $(LAME_DIR)/libmp3lame/.libs/libmp3lame.a: cd $(LAME_DIR); ./configure ; make clean: rm $(TARGET) 编译并运行： $ make $ ./main.out lame ver: 3⏎ 相关资源 GCC and Make Compiling, Linking and Building C/C++ Applications Using Implicit Rules","@type":"BlogPosting","headline":"Make 编译脚本上手","dateModified":"2019-06-28T00:06:00+08:00","datePublished":"2019-06-28T00:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Make 编译脚本上手</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-28T00:06:00+08:00" itemprop="datePublished">Jun 28, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="make-编译脚本上手">Make 编译脚本上手</h1>
+
+<p>考察下面的示例代码：</p>
+
+<p><em>main.c</em></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"hello world!"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>正常情况下，通过 <code class="language-plaintext highlighter-rouge">gcc</code> 在命令行将其编译后产出相应文件，可执行文件或 object 文件等。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-o</span> main.out main.c
+</code></pre></div></div>
+
+<p>上面命令编译后运行 <code class="language-plaintext highlighter-rouge">main.out</code> 可执行文件。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>./main.out
+hello world!
+</code></pre></div></div>
+
+<h2 id="make-工具">Make 工具</h2>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">make</code> 命令，可以将上面的编译进行有效自动化管理。通过将从输入文件到输出文件的编译无则编写成 Makefile 脚本，Make 工具将自动处理文件间依赖及是否需要编译的检测。</p>
+
+<p><code class="language-plaintext highlighter-rouge">make</code> 命令所使用的编译配置文件可以是 <code class="language-plaintext highlighter-rouge">Makefile</code>，<code class="language-plaintext highlighter-rouge">makefile</code> 或 <code class="language-plaintext highlighter-rouge">GUNMake</code>。</p>
+
+<p>其中定义任务的基本语法为：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>target1 <span class="o">[</span>target2 ...]: <span class="o">[</span>pre-req-1 pre-req-2 ...]
+	<span class="o">[</span>command1
+	 command2
+	 ......]
+</code></pre></div></div>
+
+<p>上面形式也可称作是一条编译规则（rule）。</p>
+
+<p>其中，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">target</code> 为任务名或文件产出。如果该任务不产出文件，则称该任务为 <code class="language-plaintext highlighter-rouge">Phony Targets</code>。<code class="language-plaintext highlighter-rouge">make</code> 内置的 phony target 有 <code class="language-plaintext highlighter-rouge">all</code>, <code class="language-plaintext highlighter-rouge">install</code> 及 <code class="language-plaintext highlighter-rouge">clean</code> 等，这些任务都不实际产出文件，一般用来执行一些命令。</li>
+  <li><code class="language-plaintext highlighter-rouge">pre-req123...</code> 这些是依赖项，即该任务所需要的外部输入，这些输入可以是其他文件，也可以是其他任务产出的文件。</li>
+  <li><code class="language-plaintext highlighter-rouge">command</code> 为该任务具体需要执行的 shell 命令。</li>
+</ul>
+
+<h2 id="makefile-示例">Makefile 示例</h2>
+
+<p>比如文章最开始的编译，可通过编写下面的 Makefile 来完成：</p>
+
+<p><em>Makefile</em></p>
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">all</span><span class="o">:</span><span class="nf">main.out</span>
+
+<span class="nl">main.out</span><span class="o">:</span> <span class="nf">main.c</span>
+	gcc <span class="nt">-o</span> main.out main.c
+
+<span class="nl">clean</span><span class="o">:</span>
+	<span class="nb">rm </span>main.out
+</code></pre></div></div>
+
+<p>上面的 Makefile 中定义了三个任务，调用时可通过 <code class="language-plaintext highlighter-rouge">make &lt;target name&gt;</code> 形式来调用。</p>
+
+<p>比如:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make main.out
+gcc <span class="nt">-o</span> main.out main.c
+</code></pre></div></div>
+
+<p>产出 <code class="language-plaintext highlighter-rouge">main.out</code> 文件。</p>
+
+<p>再比如：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make clean
+<span class="nb">rm </span>main.out
+</code></pre></div></div>
+
+<p>该 <code class="language-plaintext highlighter-rouge">clean</code> 任务清除刚刚生成的 <code class="language-plaintext highlighter-rouge">main.out</code> 文件。</p>
+
+<p>三个任务中，<code class="language-plaintext highlighter-rouge">all</code> 为内置的任务名，一般一个 Makefile 中都会包含，当直接调用 <code class="language-plaintext highlighter-rouge">make</code> 后面没有跟任务名时，默认执行的就是 <code class="language-plaintext highlighter-rouge">all</code>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make
+gcc <span class="nt">-o</span> main.out main.c
+</code></pre></div></div>
+
+<h2 id="命令的换行">命令的换行</h2>
+
+<p>如果一条编译规则中所要执行的 shell 命令有单条很长的情况，可通过 <code class="language-plaintext highlighter-rouge">\</code> 来换行。</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">main.out</span><span class="o">:</span> <span class="nf">main.c</span>
+    <span class="err">gcc</span> <span class="err">\</span>
+    <span class="err">-o</span> <span class="err">main.out</span> <span class="err">\</span>
+    <span class="err">main.c</span>
+</code></pre></div></div>
+
+<p>注意 <code class="language-plaintext highlighter-rouge">\</code> 与命令结尾处需要间隔一个空格，否则识别出错。</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">main.out</span><span class="o">:</span> <span class="nf">main.c</span>
+    <span class="err">gcc\</span> <span class="c"># 🚨
+</span>    <span class="err">-o</span> <span class="err">main.out\</span> <span class="c"># 🚨
+</span>    <span class="err">main.c</span>
+</code></pre></div></div>
+
+<h2 id="任务间的依赖">任务间的依赖</h2>
+
+<p>前面调用 <code class="language-plaintext highlighter-rouge">all</code> 的效果等同于调用 <code class="language-plaintext highlighter-rouge">main.out</code> 任务，因为 <code class="language-plaintext highlighter-rouge">all</code> 的输入依赖为 <code class="language-plaintext highlighter-rouge">main.out</code> 文件。Make 在执行任务前会先检查其输入的依赖项，执行 <code class="language-plaintext highlighter-rouge">all</code> 时发现它依赖 <code class="language-plaintext highlighter-rouge">main.out</code> 文件，于是本地查找，发现本地没有，再从 Makefile 中查找看是否有相应任务会产生该文件，结果确实有相应任务能产生该文件，所以先执行能够产生依赖项的任务。</p>
+
+<h2 id="增量编译">增量编译</h2>
+
+<p>使用 Makefile 进行编译有个好处是，在执行任务时，它会先检查依赖项是否比需要产出的文件新，如果说依赖项更新新，则说明我们需要产出的目标文件属于过时的产物，需要重新生成。</p>
+
+<p>什么意思。比如上面的示例，当执行</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make main.out 
+</code></pre></div></div>
+<p>试图生成 <code class="language-plaintext highlighter-rouge">main.out</code> 产出时，会检查这个任务的依赖文件 <code class="language-plaintext highlighter-rouge">main.c</code> 是否有修改过。</p>
+
+<p>比如前面我们已经执行过该任务产生过 <code class="language-plaintext highlighter-rouge">main.out</code>。再次执行时，会得到如下提示：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make main.out 
+make: <span class="sb">`</span>main.out<span class="s1">' is up to date.
+</span></code></pre></div></div>
+
+<p><strong>NOTE:</strong> 上面是 Mac 上最新版本的 Make 工具（GNU Make 3.81）的提示语，老版或其他变种工具得到的可能是 <code class="language-plaintext highlighter-rouge">Nothing to be done for \</code>main.out` `。</p>
+
+<p>现在对输入文件 <code class="language-plaintext highlighter-rouge">main.c</code> 进行修改：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#include</span> &lt;stdio.h&gt;
+
+int main(){
+<span class="gd">-     printf("hello world!");
+</span><span class="gi">+     printf("hello wayou!");
+</span>    return 0;
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>再次执行 <code class="language-plaintext highlighter-rouge">make main.out</code> 会发现任务正常执行并产生了新的输出，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make main.out
+gcc <span class="nt">-o</span> main.out main.c
+
+<span class="nv">$ </span>./main.out
+hello wayou!⏎
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">main.c</code> 修改后，它在文件上来说，就比 <code class="language-plaintext highlighter-rouge">main.out</code> 更新了，所以我们说 <code class="language-plaintext highlighter-rouge">main.out</code> 这个目标， <strong>过时（out-dated）</strong> 了。</p>
+
+<p>过时的任务才会被重新执行，而未过时的会跳过，并输出相应信息。</p>
+
+<p>以上，Makefile 天然实现了增量编译的效果，在大型项目下会节省不少编译时间，因为它只编译过期的任务。</p>
+
+<h2 id="phony-类型任务的执行">Phony 类型任务的执行</h2>
+
+<p>需要注意的是，phony 类型的任务永远都属于过时类型，即，每次 <code class="language-plaintext highlighter-rouge">make</code> 都会执行。因为这种类型的任务它没有文件产出，就无所谓检查，它的主体只是调用了另外的命令而以。</p>
+
+<p>拿这里的 <code class="language-plaintext highlighter-rouge">all</code> 来说，当我们执行 <code class="language-plaintext highlighter-rouge">make</code> 或 <code class="language-plaintext highlighter-rouge">make all</code> 时，得到：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make
+make: Nothing to be <span class="k">done for</span> <span class="sb">`</span>all<span class="s1">'.
+</span></code></pre></div></div>
+
+<p>这里看不出来 <code class="language-plaintext highlighter-rouge">all</code> 有没有执行，因为目前它还没有包含任何一句命令，调用 <code class="language-plaintext highlighter-rouge">all</code> 后实际执行的是它的依赖文件 <code class="language-plaintext highlighter-rouge">main.out</code> 中的任务，而因为后者已经是最新的了，所以无须执行，所以得到了如上的输出。</p>
+
+<p>为了验证 phony 类型任务是否每次都执行，向 <code class="language-plaintext highlighter-rouge">all</code> 及 <code class="language-plaintext highlighter-rouge">main.out</code> 中添加 <code class="language-plaintext highlighter-rouge">echo</code> 命令打印一些信息、</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">all:main.out
+</span><span class="gi">+	echo "[all] done"
+</span>
+main.out: main.c
+	gcc -o main.out main.c
+<span class="gi">+	echo "[main.out] done"
+</span>
+clean:
+	rm main.out
+</code></pre></div></div>
+
+<p>再次执行：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make
+<span class="nb">echo</span> <span class="s2">"[all] done"</span>
+<span class="o">[</span>all] <span class="k">done</span>
+
+<span class="nv">$ </span>make
+<span class="nb">echo</span> <span class="s2">"[all] done"</span>
+<span class="o">[</span>all] <span class="k">done</span>
+
+<span class="nv">$ </span>make main.out
+make: <span class="sb">`</span>main.out<span class="s1">' is up to date.
+</span></code></pre></div></div>
+
+<p>可以看到，属于 phony 类型的任务 <code class="language-plaintext highlighter-rouge">all</code> 每次都会执行其中定义的 shell 命令，而非 phony 类型的任务 <code class="language-plaintext highlighter-rouge">main.out</code> 则走了增量编译的逻辑。</p>
+
+<h2 id="变量宏">变量/宏</h2>
+
+<p>Makefile 中可使用变量（宏）来让脚本更加灵活和减少冗余。</p>
+
+<p>其中变量使用 <code class="language-plaintext highlighter-rouge">$</code> 加圆括号或花括号的形式来使用，<code class="language-plaintext highlighter-rouge">$(VAR)</code>，定义时类似于 C 中定义宏，所以变量也可叫 Makefile 中的宏，</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CC</span><span class="o">=</span>gcc
+</code></pre></div></div>
+
+<p>这里定义 <code class="language-plaintext highlighter-rouge">CC</code> 表示 <code class="language-plaintext highlighter-rouge">gcc</code> 编译工具。然后在后续编译命令中，就可以使用 <code class="language-plaintext highlighter-rouge">$(CC)</code> 代替 <code class="language-plaintext highlighter-rouge">gcc</code> 来书写 shell 命令了。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gi">+ CC=gcc
+</span>
+all:main.out
+
+main.out: main.c
+<span class="gd">-	gcc -o main.out main.c
+</span><span class="gi">+	$(CC) -o main.out main.c
+</span>
+clean:
+	rm main.out
+</code></pre></div></div>
+
+<p>这样做的好处是什么？因为编译工具可能随着平台或环境或需要编译的目标不同，而不同。比如 <code class="language-plaintext highlighter-rouge">gcc</code> 只是用来编译 C 代码的，如果是 C++ 你可能要用 <code class="language-plaintext highlighter-rouge">g++</code> 来编译。如果是编译 WebAssembly 则需要使用 <code class="language-plaintext highlighter-rouge">emcc</code>。</p>
+
+<p>无论怎样变，我们只需要修改定义在文件开头的 <code class="language-plaintext highlighter-rouge">CC</code> 变量即可，无须修改其他地方。这当然只是其中一点好处。</p>
+
+<h2 id="自动变量automatic-variables">自动变量/Automatic Variables</h2>
+
+<p>自动变量/Automatic Variables 是在编译规则匹配后工具进行设置的，具体包括：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">$@</code>：代表产出文件名</li>
+  <li><code class="language-plaintext highlighter-rouge">$*</code>：代表产出文件名不包括扩展名</li>
+  <li><code class="language-plaintext highlighter-rouge">$&lt;</code>：依赖项中第一个文件名</li>
+  <li><code class="language-plaintext highlighter-rouge">$^</code>：空格分隔的去重后的所有依赖项</li>
+  <li><code class="language-plaintext highlighter-rouge">$+</code>：同上，但没去重</li>
+  <li><code class="language-plaintext highlighter-rouge">$?</code>：同上，但只包含比产出更新的那些依赖</li>
+</ul>
+
+<p>这些变量都只有一个符号，区别于正常用字母命名的变量需要使用 <code class="language-plaintext highlighter-rouge">$(VAL)</code> 的形式来使用，自动变量无需加括号。</p>
+
+<p>利用自动变量，前面示例可改造成：</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CC</span><span class="o">=</span>gcc
+
+<span class="nv">TARGET</span><span class="o">=</span>main.out
+
+<span class="nl">all</span><span class="o">:</span><span class="nf">$(TARGET)</span>
+
+<span class="nl">$(TARGET)</span><span class="o">:</span> <span class="nf">main.c</span>
+	<span class="nv">$(CC)</span> <span class="nt">-o</span> <span class="nv">$@</span> <span class="nv">$^</span>
+
+<span class="nl">clean</span><span class="o">:</span>
+	<span class="nb">rm</span> <span class="nv">$(TARGET)</span>
+</code></pre></div></div>
+
+<p>减少了重复代码，更加易于维护，需要修改时，改动比较小。</p>
+
+<h2 id="vpath--vpath">VPATH &amp; vpath</h2>
+
+<p>可通过 <code class="language-plaintext highlighter-rouge">VPATH</code> 指定依赖文件及产出文件的搜索目录。</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">VPATH</span> <span class="o">=</span> src include
+</code></pre></div></div>
+
+<p>通过小写的 <code class="language-plaintext highlighter-rouge">vpath</code> 可指定具体的文件名及扩展名类型，</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">vpath</span> <span class="err">%.c</span> <span class="err">src</span>
+<span class="err">vpath</span> <span class="err">%.h</span> <span class="err">include</span>
+</code></pre></div></div>
+
+<p>此处 <code class="language-plaintext highlighter-rouge">%</code> 表示文件名。</p>
+
+<h2 id="依赖规则dependency-rules">依赖规则/Dependency Rules</h2>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">Main.o </span><span class="o">:</span> <span class="nf">Main.h Test1.h Test2.h</span>
+<span class="nl">Test1.o </span><span class="o">:</span> <span class="nf">Test1.h Test2.h</span>
+<span class="nl">Test2.o </span><span class="o">:</span> <span class="nf">Test2.h</span>
+</code></pre></div></div>
+
+<p>像这种，只定义了产出与依赖没包含任务命令的无则，叫作依赖无则。因为它只定义了某个产出依赖哪些输入，故名。</p>
+
+<p>这种规则可达到这种效果，即，右边任何文件有变更，左边的产出便成为过时的了。</p>
+
+<h2 id="匹配规则pattern-rules">匹配规则/Pattern Rules</h2>
+
+<p>区别于明确指定了产出与依赖，如果一条规则包含通配符，则称作匹配规则（Pattern Rules）。</p>
+
+<p>比如，</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">%.o</span><span class="o">:</span> <span class="nf">%.c</span>
+    <span class="err">gcc</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">$^</span>
+</code></pre></div></div>
+
+<p>上面定义了这么一条编译规则，将所有匹配到的 c 文件编译成 Object 产出。</p>
+
+<p>有什么用？</p>
+
+<p>这种规则一般不是直接调用的，是被其他它规则触间接使用。比如上面的依赖规则。</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">%.o </span><span class="o">:</span> <span class="nf">%.cpp</span>
+  <span class="err">g++</span> <span class="err">-g</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">-c</span> <span class="err">$&lt;</span>
+
+<span class="nl">Main.o </span><span class="o">:</span> <span class="nf">Main.h Test1.h Test2.h</span>
+<span class="nl">Test1.o </span><span class="o">:</span> <span class="nf">Test1.h Test2.h</span>
+<span class="nl">Test2.o </span><span class="o">:</span> <span class="nf">Test2.h</span>
+</code></pre></div></div>
+
+<p>当右侧这些头文件有变动时，左边的产出会在 <code class="language-plaintext highlighter-rouge">make</code> 时被检测到过时，于是会被执行。当执行时匹配规则 <code class="language-plaintext highlighter-rouge">%.o</code> 会被匹配到，所以匹配规则里面的命令会执行，从而将 <code class="language-plaintext highlighter-rouge">cpp</code> 文件编译成相应 Object 文件。达到了依赖更新后批量更新产出的目的，而不写成这样：</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">Main.o </span><span class="o">:</span> <span class="nf">Main.h Test1.h Test2.h</span>
+    <span class="err">g++</span> <span class="err">-g</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">-c</span> <span class="err">$&lt;</span>
+<span class="nl">Test1.o </span><span class="o">:</span> <span class="nf">Test1.h Test2.h</span>
+    <span class="err">g++</span> <span class="err">-g</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">-c</span> <span class="err">$&lt;</span>
+<span class="nl">Test2.o </span><span class="o">:</span> <span class="nf">Test2.h</span>
+    <span class="err">g++</span> <span class="err">-g</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">-c</span> <span class="err">$&lt;</span>
+</code></pre></div></div>
+
+<h2 id="一个实际一点的示例">一个实际一点的示例</h2>
+
+<p>添加 <a href="http://lame.sourceforge.net/using.php">lame</a> 依赖到项目并将其编译打包。</p>
+
+<p>首先下载并解压 lame 到项目目录：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wget https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz
+<span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-zxvf</span> lame-3.100.tar.gz
+</code></pre></div></div>
+
+<p>主程序中调用 lame，这只仅简单地打印其版本信息：</p>
+
+<p><em>main.c</em></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+#include "./lame-3.100/include/lame.h"
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">ver</span> <span class="o">=</span> <span class="n">get_lame_version</span><span class="p">();</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"lame ver: %s"</span><span class="p">,</span> <span class="o">*</span><span class="n">ver</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译项目的 Makefile:</p>
+
+<p><em>Makefile</em></p>
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CC</span><span class="o">=</span>gcc
+
+<span class="nv">TARGET</span><span class="o">=</span>main.out
+<span class="nv">ENTRY</span><span class="o">=</span>main.c
+<span class="nv">LAME_DIR</span><span class="o">=</span>lame-3.100
+
+<span class="nl">all</span><span class="o">:</span> <span class="nf">$(TARGET)</span>
+
+<span class="nl">$(TARGET)</span><span class="o">:</span> <span class="nf">$(ENTRY) $(LAME_DIR)/libmp3lame/.libs/libmp3lame.a</span>
+	<span class="nv">$(CC)</span> <span class="nt">-o</span> <span class="nv">$@</span> <span class="se">\</span>
+	<span class="nv">$^</span>
+
+<span class="nl">$(LAME_DIR)/libmp3lame/.libs/libmp3lame.a</span><span class="o">:</span> 
+	<span class="nb">cd</span> <span class="nv">$(LAME_DIR)</span><span class="p">;</span> ./configure <span class="p">;</span> make
+
+<span class="nl">clean</span><span class="o">:</span>
+	<span class="nb">rm</span> <span class="nv">$(TARGET)</span>
+</code></pre></div></div>
+
+<p>编译并运行：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make
+<span class="nv">$ </span>./main.out
+lame ver: 3⏎
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html#zz-2.">GCC and Make Compiling, Linking and Building C/C++ Applications</a></li>
+  <li><a href="http://kirste.userpage.fu-berlin.de/chemnet/use/info/make/make_10.html">Using Implicit Rules</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/06/28/Make-%E7%BC%96%E8%AF%91%E8%84%9A%E6%9C%AC%E4%B8%8A%E6%89%8B.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

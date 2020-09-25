@@ -1,0 +1,39 @@
+I"�	<h2 id="xcode-真机调试黑屏的问题">Xcode 真机调试黑屏的问题</h2>
+
+<p>使用 Xcode 11.2.1 新建项目默认为将编译运行目标设置到最新的 iOS 13。除了 AppDelegate 中新引入的 Scene 场景会有些兼容性的警告提示外，还有个奇怪的问题是应用编译到真机上调试时，Launch Screen 之后便是黑屏，没有按预期展示 main.storyboard 的内容。</p>
+
+<p>而 Simulator 上是没有黑屏问题的。</p>
+
+<p>注意到此刻控制台有如下提示：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The app delegate must implement the window property if it wants to use a main storyboard file
+</code></pre></div></div>
+
+<p>那么问题就很明显了，生成的模板代码中 <code class="language-plaintext highlighter-rouge">AppDelegate</code> 缺少 <code class="language-plaintext highlighter-rouge">window</code> 属性的声明。</p>
+
+<p>解决办法就是打开  <code class="language-plaintext highlighter-rouge">AppDelegate.h</code> 补上如下代码：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@property</span> <span class="p">(</span><span class="n">strong</span><span class="p">,</span> <span class="n">nonatomic</span><span class="p">)</span> <span class="n">UIWindow</span> <span class="o">*</span><span class="n">window</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>再次编译后运动就正常了。</p>
+
+<h2 id="super-方法的缺失">super 方法的缺失</h2>
+
+<p>常见导致黑屏的还有个原因是复写父类方法时没有正确调用 super。</p>
+
+<p>比如常见的做法是在 <code class="language-plaintext highlighter-rouge">loadView</code> 中进行视图的初始化，但这个方法是需要先调用父类的该方法的，不然会渲染不正确导致黑屏。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">loadView</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">super</span> <span class="nf">loadView</span><span class="p">];</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li>https://stackoverflow.com/a/58179203/1553656</li>
+</ul>
+
+:ET

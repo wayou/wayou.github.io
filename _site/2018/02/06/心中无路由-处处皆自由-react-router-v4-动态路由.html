@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>心中无路由，处处皆自由/react-router v4 动态路由 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="心中无路由，处处皆自由/react-router v4 动态路由" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="心中无路由，处处皆自由/react-router v4 动态路由 react-router v4 的到来已经过了一些时日了，注意到官方文档中有篇介绍其新式设计哲学的文章。其中区分了传统静态路由（Static Routing）和新版中引入的动态路由（Dynamic Routing）。 动态路由么，Interesting（呵呵）。 听起来并不是很新鲜，但其实想当然了。这里面存在一个理解误区。需要注意这里定义的 Dynamic Routing，他不是指初始化路由的时候可以加点业务逻辑去动态生成路由配置，也不是指通过路由参数（query）可以动态控制页面的输出。它抛开了传统静态路由在程序渲染前定义好的做法，采用程序在渲染过程中动态生成的方式。 静态路由/Static Routing 先来看我们熟悉并惯用的传统静态路由。 React.render(( &lt;Router&gt; &lt;Route path=&quot;/&quot; component={App}&gt; &lt;Route path=&quot;about&quot; component={About} /&gt; &lt;Route path=&quot;inbox&quot; component={Inbox} /&gt; &lt;/Route&gt; &lt;/Router&gt; ), document.body) 这里路由进行集中配置，UI 与路由强绑定。 传统静态路由是在页面渲染前声明配置好的。像 Angular，Express, Ember，都是这种方式，如果使用过其中某个框架，一定不会陌生。react-router v4 之前的版本，也是沿袭这一方式的。 静态路由的问题 v4 版本将整个库进行重构，并不是拍脑袋决定的。按照官方文档上的记载，Michael 和 Ryan （库的核心作者）感觉现有的实现严重地受 React API 的制约，并且实现方式也不够优雅（后面会讲）。反正就是写起来用起来都不爽。 那天他俩参加一个工作坊（Workshop，那种技术人员的线下交流会，区别于全球同性技术社区 Github 的线上 issue 互动），走在大厅的路上便聊到了接下来如何重构的事。 缘，妙不可言。 两人心照不宣地想到了一块，都从这次工作坊的分享内容中获得了灵感，即 v4 中引入的动态路由。 所以这次重构是线下碰撞出来的火花。 那么，之前的静态路由，到底有什么问题。本来用得好好的，到这里，不免心生疑惑。诚然，要说问题（Gotchas），那肯定是有的。没有完美的库解决所有人的问题，不然你以为这 4000+ 的 issue 数怎么来的。 react-router issue 列表（咦~好像有 F Word 乱入~~） Issue 多倒不一定都是库的问题。其中不乏使用姿势不对造成的问题，譬如循环路由内存溢出；还有的是 Feature reuqest。总之，issue 数量也体现了 react-router 受众之大，社区影响力不可小觑。所以如何把库做得更好更强，压力山大。 话题回到静态路由上来。基于静态配置的方式，让版本来到 v3 的 react-router，难以为继更加复杂的功能，而我们从该库身上期望的还有很多。前面 issue 中，只是用户的问题，作为库的开发维护者，所考虑的是功能实现及程序扩展性的问题。如果不是核心贡献者，想必很难体味其中的韵味。所以在 v4.0.0-beta 这个开发分支的 README 中，react-router 团队对面临的挑战和存在的问题进行了简要阐述，顺便答一些疑解一些惑（FAQ 秀一波）。 其中Why a major version bump?这一段便说出了现在的一些痛点。 路由写法则需要满足约定的格式，你甚至都不能将 &lt;Route&gt; 脱离 &lt;Router&gt; 在组件中任意组合。坦白地说，这一点也不 React。React 理念是可以声明式灵活性进行组件组装的（Declarative Composability）。 // NOPE! const CoolRoute = (props) =&gt; &lt;Route {...props} cool={true}/&gt; 因为其实 &lt;Router /&gt; 接管了你的组件，内部它实现了 createElement，render 和 createRouterMiddleware 等方法。同时，也需要提供组件生命周期回调，onEnter，onLeave 及 onChange，而这些生命周期 React 本身就有：componentWillMount, componentWillReceiveProps 及 componentWillUnmount。 v3 Router.js const propTypes = { history: object, children: routes, routes, // alias for children render: func, createElement: func, onError: func, onUpdate: func, // PRIVATE: For client-side rehydration of server match. matchContext: object } 配置路由的过程也是程序结构重现的过程，一级一级的嵌套，和组件在界面中的视图大致对应。但其实我们在写页面过程中，堆积组件时，就已经体现出程序的结构层级了。 为了适应代码拆分（code split），引入了 getComponent 和 getChildRoutes。为了支持热替换（hot module replacement），又得整一堆很 hack 的东西出来。 ... 所以之前应该是方向上出了点偏差。要是接下来的 v4 版本没能解决这些问题，是要负责任的（我指的是对社区）。 动态路由/Dynamic Routing 所以在 v4 版本中，让我们抛弃传统的路由概念，做到心中无路由，看山还是山，吧。 怎么讲？就是不存在路由的概念了，当然也就无需路由配置了。 那我们还怎么切页面？ 通过控制组件的渲染，来切页面。 react-router v4 中，请把路由看成普通的 React 组件，传递 props 来正常使用（之前&lt;Route&gt;会忽略掉这些属性），借助它来控制组件的展现。展示的逻辑及权利回归到了组件本身，回归到了熟悉的 React。这样，没有了静态配置的路由规则，取而代之的是程序在运行渲染过程中动态控制的展现。 这便是 v4 中称之为的动态路由。 当路由 &lt;Route&gt; 回归组件后，react-router 提供的那些 API，像上面讨论的那些，就不复存在了，因为它是普通的 React 组件，它的 API 就是 React 提供的那些 API。 曾记否，Linus 大神的警世箴言「Talk is cheap. Show me the code.」所以接下来看一段示例代码，以展示两个路由页的程序在 v3 与 v4 中分别如何实现。 下面的代码来自文章All About React Router 4 v3: import { Router, Route, IndexRoute } from &#39;react-router&#39; const PrimaryLayout = props =&gt; ( &lt;div className=&quot;primary-layout&quot;&gt; &lt;header&gt; Our React Router 3 App &lt;/header&gt; &lt;main&gt; {props.children} &lt;/main&gt; &lt;/div&gt; ) const HomePage =() =&gt; &lt;div&gt;Home Page&lt;/div&gt; const UsersPage = () =&gt; &lt;div&gt;Users Page&lt;/div&gt; const App = () =&gt; ( &lt;Router history={browserHistory}&gt; &lt;Route path=&quot;/&quot; component={PrimaryLayout}&gt; &lt;IndexRoute component={HomePage} /&gt; &lt;Route path=&quot;/users&quot; component={UsersPage} /&gt; &lt;/Route&gt; &lt;/Router&gt; ) render(&lt;App /&gt;, document.getElementById(&#39;root&#39;)) v3 中，路由配置集中在 App 函数中，&lt;Route&gt; 直接嵌套于 &lt;Router&gt;，页面组件融于其中作为路由的一部分。这便是整个路由的配置。 v4: import { BrowserRouter, Route } from &#39;react-router-dom&#39; const PrimaryLayout = () =&gt; ( &lt;div className=&quot;primary-layout&quot;&gt; &lt;header&gt; Our React Router 4 App &lt;/header&gt; &lt;main&gt; &lt;Route path=&quot;/&quot; exact component={HomePage} /&gt; &lt;Route path=&quot;/users&quot; component={UsersPage} /&gt; &lt;/main&gt; &lt;/div&gt; ) const HomePage =() =&gt; &lt;div&gt;Home Page&lt;/div&gt; const UsersPage = () =&gt; &lt;div&gt;Users Page&lt;/div&gt; const App = () =&gt; ( &lt;BrowserRouter&gt; &lt;PrimaryLayout /&gt; &lt;/BrowserRouter&gt; ) render(&lt;App /&gt;, document.getElementById(&#39;root&#39;)) v4 中 react-router 仓库拆分成了多个包进行发布， react-router 路由基础库 react-router-dom 浏览器中使用的封装 react-router-native React native 封装 示例中 BrowserRouter 组件便来自 react-router-dom 这个包。 如果之前静态路由的观念根植心中，那么在 v4 的版本中，似乎看不到路由的影子了，它穿插在了各组件中。这一点在需要嵌套路由（Nested Routes）的场景时尤为明显。 来自官方文档的示例代码 const App = () =&gt; ( &lt;BrowserRouter&gt; {/* here&#39;s a div */} &lt;div&gt; {/* here&#39;s a Route */} &lt;Route path=&quot;/tacos&quot; component={Tacos}/&gt; &lt;/div&gt; &lt;/BrowserRouter&gt; ) // when the url matches `/tacos` this component renders const Tacos = ({ match }) =&gt; ( // here&#39;s a nested div &lt;div&gt; {/* here&#39;s a nested Route, match.url helps us make a relative path */} &lt;Route path={match.url + &#39;/carnitas&#39;} component={Carnitas} /&gt; &lt;/div&gt; ) 上面，&lt;Tacos&gt; 组件展示与否，取决于当前路由是否与 /tacos 匹配。而 &lt;Route&gt; 则可以理解为一个容器型组件，它做的事情很简单，将传入的 path 与当前的 location 比较，匹配则渲染 component 属性传入的组件，否则 return null（实际实现以源码为准）。 由 react-router v3 转到 v4，在思想上的转变还是需要些时间来磨合。正如 react-router 刚发布时，对于将路由写在 jsx 中，我们是拒绝的。 响应式路由！ 说出来你可能不信，改为动态路由的实现方式后，其展现完全由组件控制，所以竟然可以和媒体查询（Media queries）结合，实现不同屏幕大小路由到不同的界面样式。官方的一个示例便展示了这一骚气操作。 const App = () =&gt; ( &lt;AppLayout&gt; &lt;Route path=&quot;/invoices&quot; component={Invoices}/&gt; &lt;/AppLayout&gt; ) const Invoices = () =&gt; ( &lt;Layout&gt; {/* always show the nav */} &lt;InvoicesNav/&gt; &lt;Media query={PRETTY_SMALL}&gt; {screenIsSmall =&gt; screenIsSmall // small screen has no redirect ? &lt;Switch&gt; &lt;Route exact path=&quot;/invoices/dashboard&quot; component={Dashboard}/&gt; &lt;Route path=&quot;/invoices/:id&quot; component={Invoice}/&gt; &lt;/Switch&gt; // large screen does! : &lt;Switch&gt; &lt;Route exact path=&quot;/invoices/dashboard&quot; component={Dashboard}/&gt; &lt;Route path=&quot;/invoices/:id&quot; component={Invoice}/&gt; &lt;Redirect from=&quot;/invoices&quot; to=&quot;/invoices/dashboard&quot;/&gt; &lt;/Switch&gt; } &lt;/Media&gt; &lt;/Layout&gt; ) 小贴士/为好奇的朋友们准备 &lt;Media&gt;：不要问我从哪里来，我滴故乡在 ReactTraining/react-media~ 这，不就让路由变得很响应式了么！简直骚得不行。 动态路由的问题 尽说了优点，看起来很美好，那新版的动态路由实现方式，社区的人买不买帐，广大人民群众同意不同意呢？ 在我看来， 不够直观了。你无法知道程序中所有的路由（是时候造一个 sitemap 的轮子了）。 测试成了老大难的问题。组件中掺杂了路由逻辑，原本对针对组件的单元测试（功能层面）完全不需要知道路由的存在，而现在就要考虑了。正如文章You might not need React Router 下面的评论： react-router v4 is terrible. Now your tests have to be aware of it and completely coupled to it even if your tests have nothing to do with testing custom routes. That’s garbage. Teams who test or TDD know exactly what I mean, this is not simple, and react-router v4 now leaks into your tests too…and you have no choice but to wrap the components you’re testing with react-router components. 总结 本质上，可以看做是页面自己控制了页面，这个逻辑给到了每个组件本身，而不是由顶级路由配置来决定页面的展示，更加的灵活。路由回归到了组件的本质，拥抱更加纯正的 React，所以如果你在使用 v4 的时候还遇到什么问题的话，那大部分都应该是使用 React 能遇到的问题。 Think about how to solve the problem with React’s declarative composability because nearly every “React Router question” is probably a “React question”. 还有一点好处是基于原生 React 组件后，没有自己造的生涩轮子，搭建好基础平台后社区可以基于 React 贡献更多插件。 更加详尽的关于 react-router v4 的东西推荐阅读All About React Router 4（讲真我很奇怪这文章为什么发在了 css-tricks，黑人问号？） ，或者查看这个在线 Demo。 不像硬气的 iOS 每次都墙裂建议所有用户升级（结果证明越升越慢），v4 beta 文档里关于「Do I have to upgrade?」的回答显得特别务实： No. Leave your package.json at v2/3 and move on with your life. We’ll be merging bug fixes for v2/3 indefinitely. 没有必要升级，v2/3 会持续维护（当然不会告诉你所谓的维护仅仅是指合并社区贡献的 bug fix）。不过新项目倒是可以把玩一下的，谁不喜新厌旧呢。 抑或，其实也并不需要什么 react-router。这个下次再讲。 相关资源 v4 FAQ - Why a major version bump? React router’s philosophy What exactly is Dynamic Routing in ReactJS All About React Router 4" />
+<meta property="og:description" content="心中无路由，处处皆自由/react-router v4 动态路由 react-router v4 的到来已经过了一些时日了，注意到官方文档中有篇介绍其新式设计哲学的文章。其中区分了传统静态路由（Static Routing）和新版中引入的动态路由（Dynamic Routing）。 动态路由么，Interesting（呵呵）。 听起来并不是很新鲜，但其实想当然了。这里面存在一个理解误区。需要注意这里定义的 Dynamic Routing，他不是指初始化路由的时候可以加点业务逻辑去动态生成路由配置，也不是指通过路由参数（query）可以动态控制页面的输出。它抛开了传统静态路由在程序渲染前定义好的做法，采用程序在渲染过程中动态生成的方式。 静态路由/Static Routing 先来看我们熟悉并惯用的传统静态路由。 React.render(( &lt;Router&gt; &lt;Route path=&quot;/&quot; component={App}&gt; &lt;Route path=&quot;about&quot; component={About} /&gt; &lt;Route path=&quot;inbox&quot; component={Inbox} /&gt; &lt;/Route&gt; &lt;/Router&gt; ), document.body) 这里路由进行集中配置，UI 与路由强绑定。 传统静态路由是在页面渲染前声明配置好的。像 Angular，Express, Ember，都是这种方式，如果使用过其中某个框架，一定不会陌生。react-router v4 之前的版本，也是沿袭这一方式的。 静态路由的问题 v4 版本将整个库进行重构，并不是拍脑袋决定的。按照官方文档上的记载，Michael 和 Ryan （库的核心作者）感觉现有的实现严重地受 React API 的制约，并且实现方式也不够优雅（后面会讲）。反正就是写起来用起来都不爽。 那天他俩参加一个工作坊（Workshop，那种技术人员的线下交流会，区别于全球同性技术社区 Github 的线上 issue 互动），走在大厅的路上便聊到了接下来如何重构的事。 缘，妙不可言。 两人心照不宣地想到了一块，都从这次工作坊的分享内容中获得了灵感，即 v4 中引入的动态路由。 所以这次重构是线下碰撞出来的火花。 那么，之前的静态路由，到底有什么问题。本来用得好好的，到这里，不免心生疑惑。诚然，要说问题（Gotchas），那肯定是有的。没有完美的库解决所有人的问题，不然你以为这 4000+ 的 issue 数怎么来的。 react-router issue 列表（咦~好像有 F Word 乱入~~） Issue 多倒不一定都是库的问题。其中不乏使用姿势不对造成的问题，譬如循环路由内存溢出；还有的是 Feature reuqest。总之，issue 数量也体现了 react-router 受众之大，社区影响力不可小觑。所以如何把库做得更好更强，压力山大。 话题回到静态路由上来。基于静态配置的方式，让版本来到 v3 的 react-router，难以为继更加复杂的功能，而我们从该库身上期望的还有很多。前面 issue 中，只是用户的问题，作为库的开发维护者，所考虑的是功能实现及程序扩展性的问题。如果不是核心贡献者，想必很难体味其中的韵味。所以在 v4.0.0-beta 这个开发分支的 README 中，react-router 团队对面临的挑战和存在的问题进行了简要阐述，顺便答一些疑解一些惑（FAQ 秀一波）。 其中Why a major version bump?这一段便说出了现在的一些痛点。 路由写法则需要满足约定的格式，你甚至都不能将 &lt;Route&gt; 脱离 &lt;Router&gt; 在组件中任意组合。坦白地说，这一点也不 React。React 理念是可以声明式灵活性进行组件组装的（Declarative Composability）。 // NOPE! const CoolRoute = (props) =&gt; &lt;Route {...props} cool={true}/&gt; 因为其实 &lt;Router /&gt; 接管了你的组件，内部它实现了 createElement，render 和 createRouterMiddleware 等方法。同时，也需要提供组件生命周期回调，onEnter，onLeave 及 onChange，而这些生命周期 React 本身就有：componentWillMount, componentWillReceiveProps 及 componentWillUnmount。 v3 Router.js const propTypes = { history: object, children: routes, routes, // alias for children render: func, createElement: func, onError: func, onUpdate: func, // PRIVATE: For client-side rehydration of server match. matchContext: object } 配置路由的过程也是程序结构重现的过程，一级一级的嵌套，和组件在界面中的视图大致对应。但其实我们在写页面过程中，堆积组件时，就已经体现出程序的结构层级了。 为了适应代码拆分（code split），引入了 getComponent 和 getChildRoutes。为了支持热替换（hot module replacement），又得整一堆很 hack 的东西出来。 ... 所以之前应该是方向上出了点偏差。要是接下来的 v4 版本没能解决这些问题，是要负责任的（我指的是对社区）。 动态路由/Dynamic Routing 所以在 v4 版本中，让我们抛弃传统的路由概念，做到心中无路由，看山还是山，吧。 怎么讲？就是不存在路由的概念了，当然也就无需路由配置了。 那我们还怎么切页面？ 通过控制组件的渲染，来切页面。 react-router v4 中，请把路由看成普通的 React 组件，传递 props 来正常使用（之前&lt;Route&gt;会忽略掉这些属性），借助它来控制组件的展现。展示的逻辑及权利回归到了组件本身，回归到了熟悉的 React。这样，没有了静态配置的路由规则，取而代之的是程序在运行渲染过程中动态控制的展现。 这便是 v4 中称之为的动态路由。 当路由 &lt;Route&gt; 回归组件后，react-router 提供的那些 API，像上面讨论的那些，就不复存在了，因为它是普通的 React 组件，它的 API 就是 React 提供的那些 API。 曾记否，Linus 大神的警世箴言「Talk is cheap. Show me the code.」所以接下来看一段示例代码，以展示两个路由页的程序在 v3 与 v4 中分别如何实现。 下面的代码来自文章All About React Router 4 v3: import { Router, Route, IndexRoute } from &#39;react-router&#39; const PrimaryLayout = props =&gt; ( &lt;div className=&quot;primary-layout&quot;&gt; &lt;header&gt; Our React Router 3 App &lt;/header&gt; &lt;main&gt; {props.children} &lt;/main&gt; &lt;/div&gt; ) const HomePage =() =&gt; &lt;div&gt;Home Page&lt;/div&gt; const UsersPage = () =&gt; &lt;div&gt;Users Page&lt;/div&gt; const App = () =&gt; ( &lt;Router history={browserHistory}&gt; &lt;Route path=&quot;/&quot; component={PrimaryLayout}&gt; &lt;IndexRoute component={HomePage} /&gt; &lt;Route path=&quot;/users&quot; component={UsersPage} /&gt; &lt;/Route&gt; &lt;/Router&gt; ) render(&lt;App /&gt;, document.getElementById(&#39;root&#39;)) v3 中，路由配置集中在 App 函数中，&lt;Route&gt; 直接嵌套于 &lt;Router&gt;，页面组件融于其中作为路由的一部分。这便是整个路由的配置。 v4: import { BrowserRouter, Route } from &#39;react-router-dom&#39; const PrimaryLayout = () =&gt; ( &lt;div className=&quot;primary-layout&quot;&gt; &lt;header&gt; Our React Router 4 App &lt;/header&gt; &lt;main&gt; &lt;Route path=&quot;/&quot; exact component={HomePage} /&gt; &lt;Route path=&quot;/users&quot; component={UsersPage} /&gt; &lt;/main&gt; &lt;/div&gt; ) const HomePage =() =&gt; &lt;div&gt;Home Page&lt;/div&gt; const UsersPage = () =&gt; &lt;div&gt;Users Page&lt;/div&gt; const App = () =&gt; ( &lt;BrowserRouter&gt; &lt;PrimaryLayout /&gt; &lt;/BrowserRouter&gt; ) render(&lt;App /&gt;, document.getElementById(&#39;root&#39;)) v4 中 react-router 仓库拆分成了多个包进行发布， react-router 路由基础库 react-router-dom 浏览器中使用的封装 react-router-native React native 封装 示例中 BrowserRouter 组件便来自 react-router-dom 这个包。 如果之前静态路由的观念根植心中，那么在 v4 的版本中，似乎看不到路由的影子了，它穿插在了各组件中。这一点在需要嵌套路由（Nested Routes）的场景时尤为明显。 来自官方文档的示例代码 const App = () =&gt; ( &lt;BrowserRouter&gt; {/* here&#39;s a div */} &lt;div&gt; {/* here&#39;s a Route */} &lt;Route path=&quot;/tacos&quot; component={Tacos}/&gt; &lt;/div&gt; &lt;/BrowserRouter&gt; ) // when the url matches `/tacos` this component renders const Tacos = ({ match }) =&gt; ( // here&#39;s a nested div &lt;div&gt; {/* here&#39;s a nested Route, match.url helps us make a relative path */} &lt;Route path={match.url + &#39;/carnitas&#39;} component={Carnitas} /&gt; &lt;/div&gt; ) 上面，&lt;Tacos&gt; 组件展示与否，取决于当前路由是否与 /tacos 匹配。而 &lt;Route&gt; 则可以理解为一个容器型组件，它做的事情很简单，将传入的 path 与当前的 location 比较，匹配则渲染 component 属性传入的组件，否则 return null（实际实现以源码为准）。 由 react-router v3 转到 v4，在思想上的转变还是需要些时间来磨合。正如 react-router 刚发布时，对于将路由写在 jsx 中，我们是拒绝的。 响应式路由！ 说出来你可能不信，改为动态路由的实现方式后，其展现完全由组件控制，所以竟然可以和媒体查询（Media queries）结合，实现不同屏幕大小路由到不同的界面样式。官方的一个示例便展示了这一骚气操作。 const App = () =&gt; ( &lt;AppLayout&gt; &lt;Route path=&quot;/invoices&quot; component={Invoices}/&gt; &lt;/AppLayout&gt; ) const Invoices = () =&gt; ( &lt;Layout&gt; {/* always show the nav */} &lt;InvoicesNav/&gt; &lt;Media query={PRETTY_SMALL}&gt; {screenIsSmall =&gt; screenIsSmall // small screen has no redirect ? &lt;Switch&gt; &lt;Route exact path=&quot;/invoices/dashboard&quot; component={Dashboard}/&gt; &lt;Route path=&quot;/invoices/:id&quot; component={Invoice}/&gt; &lt;/Switch&gt; // large screen does! : &lt;Switch&gt; &lt;Route exact path=&quot;/invoices/dashboard&quot; component={Dashboard}/&gt; &lt;Route path=&quot;/invoices/:id&quot; component={Invoice}/&gt; &lt;Redirect from=&quot;/invoices&quot; to=&quot;/invoices/dashboard&quot;/&gt; &lt;/Switch&gt; } &lt;/Media&gt; &lt;/Layout&gt; ) 小贴士/为好奇的朋友们准备 &lt;Media&gt;：不要问我从哪里来，我滴故乡在 ReactTraining/react-media~ 这，不就让路由变得很响应式了么！简直骚得不行。 动态路由的问题 尽说了优点，看起来很美好，那新版的动态路由实现方式，社区的人买不买帐，广大人民群众同意不同意呢？ 在我看来， 不够直观了。你无法知道程序中所有的路由（是时候造一个 sitemap 的轮子了）。 测试成了老大难的问题。组件中掺杂了路由逻辑，原本对针对组件的单元测试（功能层面）完全不需要知道路由的存在，而现在就要考虑了。正如文章You might not need React Router 下面的评论： react-router v4 is terrible. Now your tests have to be aware of it and completely coupled to it even if your tests have nothing to do with testing custom routes. That’s garbage. Teams who test or TDD know exactly what I mean, this is not simple, and react-router v4 now leaks into your tests too…and you have no choice but to wrap the components you’re testing with react-router components. 总结 本质上，可以看做是页面自己控制了页面，这个逻辑给到了每个组件本身，而不是由顶级路由配置来决定页面的展示，更加的灵活。路由回归到了组件的本质，拥抱更加纯正的 React，所以如果你在使用 v4 的时候还遇到什么问题的话，那大部分都应该是使用 React 能遇到的问题。 Think about how to solve the problem with React’s declarative composability because nearly every “React Router question” is probably a “React question”. 还有一点好处是基于原生 React 组件后，没有自己造的生涩轮子，搭建好基础平台后社区可以基于 React 贡献更多插件。 更加详尽的关于 react-router v4 的东西推荐阅读All About React Router 4（讲真我很奇怪这文章为什么发在了 css-tricks，黑人问号？） ，或者查看这个在线 Demo。 不像硬气的 iOS 每次都墙裂建议所有用户升级（结果证明越升越慢），v4 beta 文档里关于「Do I have to upgrade?」的回答显得特别务实： No. Leave your package.json at v2/3 and move on with your life. We’ll be merging bug fixes for v2/3 indefinitely. 没有必要升级，v2/3 会持续维护（当然不会告诉你所谓的维护仅仅是指合并社区贡献的 bug fix）。不过新项目倒是可以把玩一下的，谁不喜新厌旧呢。 抑或，其实也并不需要什么 react-router。这个下次再讲。 相关资源 v4 FAQ - Why a major version bump? React router’s philosophy What exactly is Dynamic Routing in ReactJS All About React Router 4" />
+<link rel="canonical" href="http://localhost:4000/2018/02/06/%E5%BF%83%E4%B8%AD%E6%97%A0%E8%B7%AF%E7%94%B1-%E5%A4%84%E5%A4%84%E7%9A%86%E8%87%AA%E7%94%B1-react-router-v4-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1.html" />
+<meta property="og:url" content="http://localhost:4000/2018/02/06/%E5%BF%83%E4%B8%AD%E6%97%A0%E8%B7%AF%E7%94%B1-%E5%A4%84%E5%A4%84%E7%9A%86%E8%87%AA%E7%94%B1-react-router-v4-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-02-06T02:02:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2018/02/06/%E5%BF%83%E4%B8%AD%E6%97%A0%E8%B7%AF%E7%94%B1-%E5%A4%84%E5%A4%84%E7%9A%86%E8%87%AA%E7%94%B1-react-router-v4-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2018/02/06/%E5%BF%83%E4%B8%AD%E6%97%A0%E8%B7%AF%E7%94%B1-%E5%A4%84%E5%A4%84%E7%9A%86%E8%87%AA%E7%94%B1-react-router-v4-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1.html"},"description":"心中无路由，处处皆自由/react-router v4 动态路由 react-router v4 的到来已经过了一些时日了，注意到官方文档中有篇介绍其新式设计哲学的文章。其中区分了传统静态路由（Static Routing）和新版中引入的动态路由（Dynamic Routing）。 动态路由么，Interesting（呵呵）。 听起来并不是很新鲜，但其实想当然了。这里面存在一个理解误区。需要注意这里定义的 Dynamic Routing，他不是指初始化路由的时候可以加点业务逻辑去动态生成路由配置，也不是指通过路由参数（query）可以动态控制页面的输出。它抛开了传统静态路由在程序渲染前定义好的做法，采用程序在渲染过程中动态生成的方式。 静态路由/Static Routing 先来看我们熟悉并惯用的传统静态路由。 React.render(( &lt;Router&gt; &lt;Route path=&quot;/&quot; component={App}&gt; &lt;Route path=&quot;about&quot; component={About} /&gt; &lt;Route path=&quot;inbox&quot; component={Inbox} /&gt; &lt;/Route&gt; &lt;/Router&gt; ), document.body) 这里路由进行集中配置，UI 与路由强绑定。 传统静态路由是在页面渲染前声明配置好的。像 Angular，Express, Ember，都是这种方式，如果使用过其中某个框架，一定不会陌生。react-router v4 之前的版本，也是沿袭这一方式的。 静态路由的问题 v4 版本将整个库进行重构，并不是拍脑袋决定的。按照官方文档上的记载，Michael 和 Ryan （库的核心作者）感觉现有的实现严重地受 React API 的制约，并且实现方式也不够优雅（后面会讲）。反正就是写起来用起来都不爽。 那天他俩参加一个工作坊（Workshop，那种技术人员的线下交流会，区别于全球同性技术社区 Github 的线上 issue 互动），走在大厅的路上便聊到了接下来如何重构的事。 缘，妙不可言。 两人心照不宣地想到了一块，都从这次工作坊的分享内容中获得了灵感，即 v4 中引入的动态路由。 所以这次重构是线下碰撞出来的火花。 那么，之前的静态路由，到底有什么问题。本来用得好好的，到这里，不免心生疑惑。诚然，要说问题（Gotchas），那肯定是有的。没有完美的库解决所有人的问题，不然你以为这 4000+ 的 issue 数怎么来的。 react-router issue 列表（咦~好像有 F Word 乱入~~） Issue 多倒不一定都是库的问题。其中不乏使用姿势不对造成的问题，譬如循环路由内存溢出；还有的是 Feature reuqest。总之，issue 数量也体现了 react-router 受众之大，社区影响力不可小觑。所以如何把库做得更好更强，压力山大。 话题回到静态路由上来。基于静态配置的方式，让版本来到 v3 的 react-router，难以为继更加复杂的功能，而我们从该库身上期望的还有很多。前面 issue 中，只是用户的问题，作为库的开发维护者，所考虑的是功能实现及程序扩展性的问题。如果不是核心贡献者，想必很难体味其中的韵味。所以在 v4.0.0-beta 这个开发分支的 README 中，react-router 团队对面临的挑战和存在的问题进行了简要阐述，顺便答一些疑解一些惑（FAQ 秀一波）。 其中Why a major version bump?这一段便说出了现在的一些痛点。 路由写法则需要满足约定的格式，你甚至都不能将 &lt;Route&gt; 脱离 &lt;Router&gt; 在组件中任意组合。坦白地说，这一点也不 React。React 理念是可以声明式灵活性进行组件组装的（Declarative Composability）。 // NOPE! const CoolRoute = (props) =&gt; &lt;Route {...props} cool={true}/&gt; 因为其实 &lt;Router /&gt; 接管了你的组件，内部它实现了 createElement，render 和 createRouterMiddleware 等方法。同时，也需要提供组件生命周期回调，onEnter，onLeave 及 onChange，而这些生命周期 React 本身就有：componentWillMount, componentWillReceiveProps 及 componentWillUnmount。 v3 Router.js const propTypes = { history: object, children: routes, routes, // alias for children render: func, createElement: func, onError: func, onUpdate: func, // PRIVATE: For client-side rehydration of server match. matchContext: object } 配置路由的过程也是程序结构重现的过程，一级一级的嵌套，和组件在界面中的视图大致对应。但其实我们在写页面过程中，堆积组件时，就已经体现出程序的结构层级了。 为了适应代码拆分（code split），引入了 getComponent 和 getChildRoutes。为了支持热替换（hot module replacement），又得整一堆很 hack 的东西出来。 ... 所以之前应该是方向上出了点偏差。要是接下来的 v4 版本没能解决这些问题，是要负责任的（我指的是对社区）。 动态路由/Dynamic Routing 所以在 v4 版本中，让我们抛弃传统的路由概念，做到心中无路由，看山还是山，吧。 怎么讲？就是不存在路由的概念了，当然也就无需路由配置了。 那我们还怎么切页面？ 通过控制组件的渲染，来切页面。 react-router v4 中，请把路由看成普通的 React 组件，传递 props 来正常使用（之前&lt;Route&gt;会忽略掉这些属性），借助它来控制组件的展现。展示的逻辑及权利回归到了组件本身，回归到了熟悉的 React。这样，没有了静态配置的路由规则，取而代之的是程序在运行渲染过程中动态控制的展现。 这便是 v4 中称之为的动态路由。 当路由 &lt;Route&gt; 回归组件后，react-router 提供的那些 API，像上面讨论的那些，就不复存在了，因为它是普通的 React 组件，它的 API 就是 React 提供的那些 API。 曾记否，Linus 大神的警世箴言「Talk is cheap. Show me the code.」所以接下来看一段示例代码，以展示两个路由页的程序在 v3 与 v4 中分别如何实现。 下面的代码来自文章All About React Router 4 v3: import { Router, Route, IndexRoute } from &#39;react-router&#39; const PrimaryLayout = props =&gt; ( &lt;div className=&quot;primary-layout&quot;&gt; &lt;header&gt; Our React Router 3 App &lt;/header&gt; &lt;main&gt; {props.children} &lt;/main&gt; &lt;/div&gt; ) const HomePage =() =&gt; &lt;div&gt;Home Page&lt;/div&gt; const UsersPage = () =&gt; &lt;div&gt;Users Page&lt;/div&gt; const App = () =&gt; ( &lt;Router history={browserHistory}&gt; &lt;Route path=&quot;/&quot; component={PrimaryLayout}&gt; &lt;IndexRoute component={HomePage} /&gt; &lt;Route path=&quot;/users&quot; component={UsersPage} /&gt; &lt;/Route&gt; &lt;/Router&gt; ) render(&lt;App /&gt;, document.getElementById(&#39;root&#39;)) v3 中，路由配置集中在 App 函数中，&lt;Route&gt; 直接嵌套于 &lt;Router&gt;，页面组件融于其中作为路由的一部分。这便是整个路由的配置。 v4: import { BrowserRouter, Route } from &#39;react-router-dom&#39; const PrimaryLayout = () =&gt; ( &lt;div className=&quot;primary-layout&quot;&gt; &lt;header&gt; Our React Router 4 App &lt;/header&gt; &lt;main&gt; &lt;Route path=&quot;/&quot; exact component={HomePage} /&gt; &lt;Route path=&quot;/users&quot; component={UsersPage} /&gt; &lt;/main&gt; &lt;/div&gt; ) const HomePage =() =&gt; &lt;div&gt;Home Page&lt;/div&gt; const UsersPage = () =&gt; &lt;div&gt;Users Page&lt;/div&gt; const App = () =&gt; ( &lt;BrowserRouter&gt; &lt;PrimaryLayout /&gt; &lt;/BrowserRouter&gt; ) render(&lt;App /&gt;, document.getElementById(&#39;root&#39;)) v4 中 react-router 仓库拆分成了多个包进行发布， react-router 路由基础库 react-router-dom 浏览器中使用的封装 react-router-native React native 封装 示例中 BrowserRouter 组件便来自 react-router-dom 这个包。 如果之前静态路由的观念根植心中，那么在 v4 的版本中，似乎看不到路由的影子了，它穿插在了各组件中。这一点在需要嵌套路由（Nested Routes）的场景时尤为明显。 来自官方文档的示例代码 const App = () =&gt; ( &lt;BrowserRouter&gt; {/* here&#39;s a div */} &lt;div&gt; {/* here&#39;s a Route */} &lt;Route path=&quot;/tacos&quot; component={Tacos}/&gt; &lt;/div&gt; &lt;/BrowserRouter&gt; ) // when the url matches `/tacos` this component renders const Tacos = ({ match }) =&gt; ( // here&#39;s a nested div &lt;div&gt; {/* here&#39;s a nested Route, match.url helps us make a relative path */} &lt;Route path={match.url + &#39;/carnitas&#39;} component={Carnitas} /&gt; &lt;/div&gt; ) 上面，&lt;Tacos&gt; 组件展示与否，取决于当前路由是否与 /tacos 匹配。而 &lt;Route&gt; 则可以理解为一个容器型组件，它做的事情很简单，将传入的 path 与当前的 location 比较，匹配则渲染 component 属性传入的组件，否则 return null（实际实现以源码为准）。 由 react-router v3 转到 v4，在思想上的转变还是需要些时间来磨合。正如 react-router 刚发布时，对于将路由写在 jsx 中，我们是拒绝的。 响应式路由！ 说出来你可能不信，改为动态路由的实现方式后，其展现完全由组件控制，所以竟然可以和媒体查询（Media queries）结合，实现不同屏幕大小路由到不同的界面样式。官方的一个示例便展示了这一骚气操作。 const App = () =&gt; ( &lt;AppLayout&gt; &lt;Route path=&quot;/invoices&quot; component={Invoices}/&gt; &lt;/AppLayout&gt; ) const Invoices = () =&gt; ( &lt;Layout&gt; {/* always show the nav */} &lt;InvoicesNav/&gt; &lt;Media query={PRETTY_SMALL}&gt; {screenIsSmall =&gt; screenIsSmall // small screen has no redirect ? &lt;Switch&gt; &lt;Route exact path=&quot;/invoices/dashboard&quot; component={Dashboard}/&gt; &lt;Route path=&quot;/invoices/:id&quot; component={Invoice}/&gt; &lt;/Switch&gt; // large screen does! : &lt;Switch&gt; &lt;Route exact path=&quot;/invoices/dashboard&quot; component={Dashboard}/&gt; &lt;Route path=&quot;/invoices/:id&quot; component={Invoice}/&gt; &lt;Redirect from=&quot;/invoices&quot; to=&quot;/invoices/dashboard&quot;/&gt; &lt;/Switch&gt; } &lt;/Media&gt; &lt;/Layout&gt; ) 小贴士/为好奇的朋友们准备 &lt;Media&gt;：不要问我从哪里来，我滴故乡在 ReactTraining/react-media~ 这，不就让路由变得很响应式了么！简直骚得不行。 动态路由的问题 尽说了优点，看起来很美好，那新版的动态路由实现方式，社区的人买不买帐，广大人民群众同意不同意呢？ 在我看来， 不够直观了。你无法知道程序中所有的路由（是时候造一个 sitemap 的轮子了）。 测试成了老大难的问题。组件中掺杂了路由逻辑，原本对针对组件的单元测试（功能层面）完全不需要知道路由的存在，而现在就要考虑了。正如文章You might not need React Router 下面的评论： react-router v4 is terrible. Now your tests have to be aware of it and completely coupled to it even if your tests have nothing to do with testing custom routes. That’s garbage. Teams who test or TDD know exactly what I mean, this is not simple, and react-router v4 now leaks into your tests too…and you have no choice but to wrap the components you’re testing with react-router components. 总结 本质上，可以看做是页面自己控制了页面，这个逻辑给到了每个组件本身，而不是由顶级路由配置来决定页面的展示，更加的灵活。路由回归到了组件的本质，拥抱更加纯正的 React，所以如果你在使用 v4 的时候还遇到什么问题的话，那大部分都应该是使用 React 能遇到的问题。 Think about how to solve the problem with React’s declarative composability because nearly every “React Router question” is probably a “React question”. 还有一点好处是基于原生 React 组件后，没有自己造的生涩轮子，搭建好基础平台后社区可以基于 React 贡献更多插件。 更加详尽的关于 react-router v4 的东西推荐阅读All About React Router 4（讲真我很奇怪这文章为什么发在了 css-tricks，黑人问号？） ，或者查看这个在线 Demo。 不像硬气的 iOS 每次都墙裂建议所有用户升级（结果证明越升越慢），v4 beta 文档里关于「Do I have to upgrade?」的回答显得特别务实： No. Leave your package.json at v2/3 and move on with your life. We’ll be merging bug fixes for v2/3 indefinitely. 没有必要升级，v2/3 会持续维护（当然不会告诉你所谓的维护仅仅是指合并社区贡献的 bug fix）。不过新项目倒是可以把玩一下的，谁不喜新厌旧呢。 抑或，其实也并不需要什么 react-router。这个下次再讲。 相关资源 v4 FAQ - Why a major version bump? React router’s philosophy What exactly is Dynamic Routing in ReactJS All About React Router 4","@type":"BlogPosting","headline":"心中无路由，处处皆自由/react-router v4 动态路由","dateModified":"2018-02-06T02:02:00+08:00","datePublished":"2018-02-06T02:02:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">心中无路由，处处皆自由/react-router v4 动态路由</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-02-06T02:02:00+08:00" itemprop="datePublished">Feb 6, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="心中无路由处处皆自由react-router-v4-动态路由">心中无路由，处处皆自由/react-router v4 动态路由</h2>
+
+<p>react-router v4 的到来已经过了一些时日了，注意到官方文档中有篇介绍其新式设计哲学的<a href="https://reacttraining.com/react-router/web/guides/philosophy">文章</a>。其中区分了传统静态路由（Static Routing）和新版中引入的动态路由（Dynamic Routing）。</p>
+
+<p>动态路由么，Interesting（呵呵）。 听起来并不是很新鲜，但其实想当然了。这里面存在一个理解误区。需要注意这里定义的 <code class="language-plaintext highlighter-rouge">Dynamic Routing</code>，他不是指初始化路由的时候可以加点业务逻辑去动态生成路由配置，也不是指通过路由参数（query）可以动态控制页面的输出。它抛开了传统静态路由在程序渲染前定义好的做法，采用程序在渲染过程中动态生成的方式。</p>
+
+<h3 id="静态路由static-routing">静态路由/Static Routing</h3>
+
+<p>先来看我们熟悉并惯用的传统静态路由。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">((</span>
+  <span class="o">&lt;</span><span class="nx">Router</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">App</span><span class="p">}</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">about</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">About</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">inbox</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">Inbox</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/Route</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/Router</span><span class="err">&gt;
+</span><span class="p">),</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>这里路由进行集中配置，UI 与路由强绑定。</p>
+
+<p>传统静态路由是在页面渲染前声明配置好的。像 Angular，Express, Ember，都是这种方式，如果使用过其中某个框架，一定不会陌生。react-router v4 之前的版本，也是沿袭这一方式的。</p>
+
+<h3 id="静态路由的问题">静态路由的问题</h3>
+
+<p>v4 版本将整个库进行重构，并不是拍脑袋决定的。按照<a href="https://reacttraining.com/react-router/core/guides/philosophy/backstory">官方文档上的记载</a>，Michael 和 Ryan （库的核心作者）感觉现有的实现严重地受 React API 的制约，并且实现方式也不够优雅（后面会讲）。反正就是写起来用起来都不爽。</p>
+
+<p>那天他俩参加一个工作坊（Workshop，那种技术人员的线下交流会，区别于全球同性技术社区 Github 的线上 issue 互动），走在大厅的路上便聊到了接下来如何重构的事。</p>
+
+<p>缘，妙不可言。</p>
+
+<p>两人心照不宣地想到了一块，都从这次工作坊的分享内容中获得了灵感，即 v4 中引入的动态路由。</p>
+
+<p>所以这次重构是线下碰撞出来的火花。</p>
+
+<p>那么，之前的静态路由，到底有什么问题。本来用得好好的，到这里，不免心生疑惑。诚然，要说问题（Gotchas），那肯定是有的。没有完美的库解决所有人的问题，不然你以为这 4000+ 的 issue 数怎么来的。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/react-router-dynamic-routing/assets/react-router-issue-count.png" alt="react-router issues count" />
+<em>react-router issue 列表（咦~好像有 F Word 乱入~~）</em></p>
+
+<p>Issue 多倒不一定都是库的问题。其中不乏使用姿势不对造成的问题，譬如循环路由内存溢出；还有的是 Feature reuqest。总之，issue 数量也体现了 react-router 受众之大，社区影响力不可小觑。所以如何把库做得更好更强，压力山大。</p>
+
+<p>话题回到静态路由上来。基于静态配置的方式，让版本来到 v3 的 react-router，难以为继更加复杂的功能，而我们从该库身上期望的还有很多。前面 issue 中，只是用户的问题，作为库的开发维护者，所考虑的是功能实现及程序扩展性的问题。如果不是核心贡献者，想必很难体味其中的韵味。所以在 <code class="language-plaintext highlighter-rouge">v4.0.0-beta</code> 这个开发分支的 <a href="https://github.com/ReactTraining/react-router/blob/v4.0.0-beta.8/README.md">README</a> 中，react-router 团队对面临的挑战和存在的问题进行了简要阐述，顺便答一些疑解一些惑（FAQ 秀一波）。</p>
+
+<p>其中<a href="https://github.com/ReactTraining/react-router/tree/v4.0.0-beta.8#why-a-major-version-bump">Why a major version bump?</a>这一段便说出了现在的一些痛点。</p>
+
+<ul>
+  <li>路由写法则需要满足约定的格式，你甚至都不能将 <code class="language-plaintext highlighter-rouge">&lt;Route&gt;</code> 脱离 <code class="language-plaintext highlighter-rouge">&lt;Router&gt;</code> 在组件中任意组合。坦白地说，这一点也不 React。React 理念是可以<strong>声明式灵活性进行组件组装</strong>的（<strong>Declarative Composability</strong>）。</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// NOPE!</span>
+<span class="kd">const</span> <span class="nx">CoolRoute</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">Route</span> <span class="p">{...</span><span class="nx">props</span><span class="p">}</span> <span class="nx">cool</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+<ul>
+  <li>因为其实 <code class="language-plaintext highlighter-rouge">&lt;Router /&gt;</code> 接管了你的组件，内部它实现了 <code class="language-plaintext highlighter-rouge">createElement</code>，<code class="language-plaintext highlighter-rouge">render</code> 和 <code class="language-plaintext highlighter-rouge">createRouterMiddleware</code> 等方法。同时，也需要提供组件生命周期回调，<code class="language-plaintext highlighter-rouge">onEnter</code>，<code class="language-plaintext highlighter-rouge">onLeave</code> 及 <code class="language-plaintext highlighter-rouge">onChange</code>，而这些生命周期 React 本身就有：<code class="language-plaintext highlighter-rouge">componentWillMount</code>, <code class="language-plaintext highlighter-rouge">componentWillReceiveProps</code> 及 <code class="language-plaintext highlighter-rouge">componentWillUnmount</code>。</li>
+</ul>
+
+<p><em><a href="https://github.com/ReactTraining/react-router/blob/v3/modules/Router.js">v3 Router.js</a></em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">propTypes</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">history</span><span class="p">:</span> <span class="nx">object</span><span class="p">,</span>
+  <span class="na">children</span><span class="p">:</span> <span class="nx">routes</span><span class="p">,</span>
+  <span class="nx">routes</span><span class="p">,</span> <span class="c1">// alias for children</span>
+  <span class="na">render</span><span class="p">:</span> <span class="nx">func</span><span class="p">,</span>
+  <span class="na">createElement</span><span class="p">:</span> <span class="nx">func</span><span class="p">,</span>
+  <span class="na">onError</span><span class="p">:</span> <span class="nx">func</span><span class="p">,</span>
+  <span class="na">onUpdate</span><span class="p">:</span> <span class="nx">func</span><span class="p">,</span>
+
+  <span class="c1">// PRIVATE: For client-side rehydration of server match.</span>
+  <span class="na">matchContext</span><span class="p">:</span> <span class="nx">object</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>配置路由的过程也是程序结构重现的过程，一级一级的嵌套，和组件在界面中的视图大致对应。但其实我们在写页面过程中，堆积组件时，就已经体现出程序的结构层级了。</li>
+  <li>为了适应代码拆分（code split），引入了 <code class="language-plaintext highlighter-rouge">getComponent</code> 和 <code class="language-plaintext highlighter-rouge">getChildRoutes</code>。为了支持热替换（hot module replacement），又得整一堆很 hack 的东西出来。</li>
+  <li>...</li>
+</ul>
+
+<p>所以之前应该是方向上出了点偏差。要是接下来的 v4 版本没能解决这些问题，是要负责任的（我指的是对社区）。</p>
+
+<h3 id="动态路由dynamic-routing">动态路由/Dynamic Routing</h3>
+
+<p>所以在 v4 版本中，让我们抛弃传统的路由概念，做到心中无路由，看山还是山，吧。</p>
+
+<p>怎么讲？就是不存在路由的概念了，当然也就无需路由配置了。</p>
+
+<p>那我们还怎么切页面？</p>
+
+<p>通过控制组件的渲染，来切页面。</p>
+
+<p>react-router v4 中，请把路由看成普通的 React 组件，传递 <code class="language-plaintext highlighter-rouge">props</code> 来正常使用（之前<code class="language-plaintext highlighter-rouge">&lt;Route&gt;</code>会忽略掉这些属性），借助它来控制组件的展现。展示的逻辑及权利回归到了组件本身，回归到了熟悉的 React。这样，没有了静态配置的路由规则，取而代之的是程序在运行渲染过程中动态控制的展现。</p>
+
+<p>这便是 v4 中称之为的动态路由。</p>
+
+<p>当路由 <code class="language-plaintext highlighter-rouge">&lt;Route&gt;</code> 回归组件后，react-router 提供的那些 API，像上面讨论的那些，就不复存在了，因为它是普通的 React 组件，它的 API 就是 React 提供的那些 API。</p>
+
+<p>曾记否，<a href="https://en.wikiquote.org/wiki/Linus_Torvalds">Linus</a> 大神的警世箴言「Talk is cheap. Show me the code.」所以接下来看一段示例代码，以展示两个路由页的程序在 v3 与 v4 中分别如何实现。</p>
+
+<p><em>下面的代码来自文章<a href="https://css-tricks.com/react-router-4/">All About React Router 4</a></em></p>
+
+<p>v3:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Router</span><span class="p">,</span> <span class="nx">Route</span><span class="p">,</span> <span class="nx">IndexRoute</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-router</span><span class="dl">'</span>
+
+<span class="kd">const</span> <span class="nx">PrimaryLayout</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">primary-layout</span><span class="dl">"</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">header</span><span class="o">&gt;</span>
+      <span class="nx">Our</span> <span class="nx">React</span> <span class="nx">Router</span> <span class="mi">3</span> <span class="nx">App</span>
+    <span class="o">&lt;</span><span class="sr">/header</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">main</span><span class="o">&gt;</span>
+      <span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">children</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="sr">/main</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span><span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">HomePage</span> <span class="o">=</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Home</span> <span class="nx">Page</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span><span class="kd">const</span> <span class="nx">UsersPage</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Users</span> <span class="nx">Page</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="o">&lt;</span><span class="nx">Router</span> <span class="nx">history</span><span class="o">=</span><span class="p">{</span><span class="nx">browserHistory</span><span class="p">}</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">PrimaryLayout</span><span class="p">}</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">IndexRoute</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">HomePage</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/users</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">UsersPage</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/Route</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/Router</span><span class="err">&gt;
+</span><span class="p">)</span>
+
+<span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">App</span> <span class="o">/&gt;</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">root</span><span class="dl">'</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>v3 中，路由配置集中在 <code class="language-plaintext highlighter-rouge">App</code> 函数中，<code class="language-plaintext highlighter-rouge">&lt;Route&gt;</code> 直接嵌套于 <code class="language-plaintext highlighter-rouge">&lt;Router&gt;</code>，页面组件融于其中作为路由的一部分。这便是整个路由的配置。</p>
+
+<p>v4:</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">BrowserRouter</span><span class="p">,</span> <span class="nx">Route</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-router-dom</span><span class="dl">'</span>
+
+<span class="kd">const</span> <span class="nx">PrimaryLayout</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">primary-layout</span><span class="dl">"</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">header</span><span class="o">&gt;</span>
+      <span class="nx">Our</span> <span class="nx">React</span> <span class="nx">Router</span> <span class="mi">4</span> <span class="nx">App</span>
+    <span class="o">&lt;</span><span class="sr">/header</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">main</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/</span><span class="dl">"</span> <span class="nx">exact</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">HomePage</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/users</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">UsersPage</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/main</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span><span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">HomePage</span> <span class="o">=</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Home</span> <span class="nx">Page</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span><span class="kd">const</span> <span class="nx">UsersPage</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Users</span> <span class="nx">Page</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="o">&lt;</span><span class="nx">BrowserRouter</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">PrimaryLayout</span> <span class="o">/&gt;</span>
+  <span class="o">&lt;</span><span class="sr">/BrowserRouter</span><span class="err">&gt;
+</span><span class="p">)</span>
+
+<span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">App</span> <span class="o">/&gt;</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">root</span><span class="dl">'</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>v4 中 react-router 仓库拆分成了多个包进行发布，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">react-router</code> 路由基础库</li>
+  <li><code class="language-plaintext highlighter-rouge">react-router-dom</code> 浏览器中使用的封装</li>
+  <li><code class="language-plaintext highlighter-rouge">react-router-native</code> React native 封装</li>
+</ul>
+
+<p>示例中 <code class="language-plaintext highlighter-rouge">BrowserRouter</code> 组件便来自 <code class="language-plaintext highlighter-rouge">react-router-dom</code> 这个包。</p>
+
+<p>如果之前静态路由的观念根植心中，那么在 v4 的版本中，似乎看不到路由的影子了，它穿插在了各组件中。这一点在需要嵌套路由（Nested Routes）的场景时尤为明显。</p>
+
+<p><em>来自官方文档的示例代码</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="o">&lt;</span><span class="nx">BrowserRouter</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="cm">/* here's a div */</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+      <span class="p">{</span><span class="cm">/* here's a Route */</span><span class="p">}</span>
+      <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/tacos</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">Tacos</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/BrowserRouter</span><span class="err">&gt;
+</span><span class="p">)</span>
+
+<span class="c1">// when the url matches `/tacos` this component renders</span>
+<span class="kd">const</span> <span class="nx">Tacos</span>  <span class="o">=</span> <span class="p">({</span> <span class="nx">match</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="c1">// here's a nested div</span>
+  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="cm">/* here's a nested Route,
+        match.url helps us make a relative path */</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="nx">Route</span>
+      <span class="nx">path</span><span class="o">=</span><span class="p">{</span><span class="nx">match</span><span class="p">.</span><span class="nx">url</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">/carnitas</span><span class="dl">'</span><span class="p">}</span>
+      <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">Carnitas</span><span class="p">}</span>
+    <span class="sr">/</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>上面，<code class="language-plaintext highlighter-rouge">&lt;Tacos&gt;</code> 组件展示与否，取决于当前路由是否与 <code class="language-plaintext highlighter-rouge">/tacos</code> 匹配。而 <code class="language-plaintext highlighter-rouge">&lt;Route&gt;</code> 则可以理解为一个容器型组件，它做的事情很简单，将传入的 <code class="language-plaintext highlighter-rouge">path</code> 与当前的 <code class="language-plaintext highlighter-rouge">location</code> 比较，匹配则渲染 <code class="language-plaintext highlighter-rouge">component</code> 属性传入的组件，否则 <code class="language-plaintext highlighter-rouge">return null</code>（实际实现以源码为准）。</p>
+
+<p>由 react-router v3 转到 v4，在思想上的转变还是需要些时间来磨合。正如 react-router 刚发布时，对于将路由写在 jsx 中，我们是拒绝的。</p>
+
+<h4 id="响应式路由">响应式路由！</h4>
+
+<p>说出来你可能不信，改为动态路由的实现方式后，其展现完全由组件控制，所以竟然可以和媒体查询（Media queries）结合，实现不同屏幕大小路由到不同的界面样式。官方的一个示例便展示了这一骚气操作。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="o">&lt;</span><span class="nx">AppLayout</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/invoices</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">Invoices</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/AppLayout</span><span class="err">&gt;
+</span><span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">Invoices</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="o">&lt;</span><span class="nx">Layout</span><span class="o">&gt;</span>
+
+    <span class="p">{</span><span class="cm">/* always show the nav */</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="nx">InvoicesNav</span><span class="o">/&gt;</span>
+
+    <span class="o">&lt;</span><span class="nx">Media</span> <span class="nx">query</span><span class="o">=</span><span class="p">{</span><span class="nx">PRETTY_SMALL</span><span class="p">}</span><span class="o">&gt;</span>
+      <span class="p">{</span><span class="nx">screenIsSmall</span> <span class="o">=&gt;</span> <span class="nx">screenIsSmall</span>
+        <span class="c1">// small screen has no redirect</span>
+        <span class="p">?</span> <span class="o">&lt;</span><span class="nx">Switch</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">exact</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/invoices/dashboard</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">Dashboard</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>            <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/invoices/:id</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">Invoice</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="sr">/Switch</span><span class="err">&gt;
+</span>        <span class="c1">// large screen does!</span>
+        <span class="p">:</span> <span class="o">&lt;</span><span class="nx">Switch</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">exact</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/invoices/dashboard</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">Dashboard</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>            <span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="dl">"</span><span class="s2">/invoices/:id</span><span class="dl">"</span> <span class="nx">component</span><span class="o">=</span><span class="p">{</span><span class="nx">Invoice</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>            <span class="o">&lt;</span><span class="nx">Redirect</span> <span class="k">from</span><span class="o">=</span><span class="dl">"</span><span class="s2">/invoices</span><span class="dl">"</span> <span class="nx">to</span><span class="o">=</span><span class="dl">"</span><span class="s2">/invoices/dashboard</span><span class="dl">"</span><span class="o">/&gt;</span>
+          <span class="o">&lt;</span><span class="sr">/Switch</span><span class="err">&gt;
+</span>      <span class="p">}</span>
+    <span class="o">&lt;</span><span class="sr">/Media</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/Layout</span><span class="err">&gt;
+</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>小贴士/为好奇的朋友们准备</strong>
+<code class="language-plaintext highlighter-rouge">&lt;Media&gt;</code>：不要问我从哪里来，我滴故乡在 <a href="https://github.com/ReactTraining/react-media">ReactTraining/react-media</a>~</p>
+</blockquote>
+
+<p>这，不就让路由变得很响应式了么！简直骚得不行。</p>
+
+<h3 id="动态路由的问题">动态路由的问题</h3>
+
+<p>尽说了优点，看起来很美好，那新版的动态路由实现方式，社区的人买不买帐，广大人民群众同意不同意呢？</p>
+
+<p>在我看来，</p>
+
+<ul>
+  <li>不够直观了。你无法知道程序中所有的路由（是时候造一个 sitemap 的轮子了）。</li>
+  <li>测试成了老大难的问题。组件中掺杂了路由逻辑，原本对针对组件的单元测试（功能层面）完全不需要知道路由的存在，而现在就要考虑了。正如文章<a href="https://medium.freecodecamp.org/you-might-not-need-react-router-38673620f3d">You might not need React Router
+</a>下面的<a href="https://medium.com/@DaveSchinkel/react-router-v4-is-terrible-3b3bfa2aab9d">评论</a>：</li>
+</ul>
+
+<blockquote>
+  <p>react-router v4 is terrible. Now your tests have to be aware of it and completely coupled to it even if your tests have nothing to do with testing custom routes. That’s garbage. Teams who test or TDD know exactly what I mean, this is not simple, and react-router v4 now leaks into your tests too…and you have no choice but to wrap the components you’re testing with react-router components.</p>
+</blockquote>
+
+<h3 id="总结">总结</h3>
+
+<p>本质上，可以看做是页面自己控制了页面，这个逻辑给到了每个组件本身，而不是由顶级路由配置来决定页面的展示，更加的灵活。路由回归到了组件的本质，拥抱更加纯正的 React，所以如果你在使用 v4 的时候还遇到什么问题的话，那大部分都应该是使用 React 能遇到的问题。</p>
+
+<blockquote>
+  <p>Think about how to solve the problem with React’s declarative composability because nearly every “React Router question” is probably a “React question”.</p>
+</blockquote>
+
+<p>还有一点好处是基于原生 React 组件后，没有自己造的生涩轮子，搭建好基础平台后社区可以基于 React 贡献更多插件。</p>
+
+<p>更加详尽的关于 react-router v4 的东西推荐阅读<a href="https://css-tricks.com/react-router-4/">All About React Router 4</a>（讲真我很奇怪这文章为什么发在了 css-tricks，黑人问号？） ，或者查看这个<a href="https://codepen.io/bradwestfall/project/editor/XWNWge">在线 Demo</a>。</p>
+
+<p>不像硬气的 iOS 每次都<strong>墙裂</strong>建议<strong>所有</strong>用户升级（结果证明越升越慢），v4 beta 文档里关于「<a href="https://github.com/ReactTraining/react-router/tree/v4.0.0-beta.8#do-i-have-to-upgrade">Do I have to upgrade?</a>」的回答显得特别务实：</p>
+
+<blockquote>
+  <p>No. Leave your package.json at v2/3 and move on with your life. We’ll be merging bug fixes for v2/3 indefinitely.</p>
+</blockquote>
+
+<p>没有必要升级，v2/3 会持续维护（当然不会告诉你所谓的维护仅仅是指合并社区贡献的 bug fix）。不过新项目倒是可以把玩一下的，谁不喜新厌旧呢。</p>
+
+<p>抑或，其实也并不需要什么 react-router。这个下次再讲。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://github.com/ReactTraining/react-router/tree/v4.0.0-beta.8#why-a-major-version-bump">v4 FAQ - Why a major version bump?</a></li>
+  <li><a href="https://reacttraining.com/react-router/web/guides/philosophy">React router’s philosophy</a></li>
+  <li><a href="https://stackoverflow.com/questions/46096518/what-exactly-is-dynamic-routing-in-reactjs">What exactly is Dynamic Routing in ReactJS</a></li>
+  <li><a href="https://css-tricks.com/react-router-4/">All About React Router 4</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2018/02/06/%E5%BF%83%E4%B8%AD%E6%97%A0%E8%B7%AF%E7%94%B1-%E5%A4%84%E5%A4%84%E7%9A%86%E8%87%AA%E7%94%B1-react-router-v4-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

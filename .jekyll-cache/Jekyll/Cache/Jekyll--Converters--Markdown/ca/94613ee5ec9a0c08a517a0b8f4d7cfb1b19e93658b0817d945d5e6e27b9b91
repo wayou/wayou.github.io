@@ -1,0 +1,26 @@
+I"Q<h1 id="升级-mac-big-sur-后虚拟机-parallels-desktop-无法启动的解决">升级 mac Big Sur 后虚拟机 Parallels Desktop 无法启动的解决</h1>
+
+<p>升级 mac Big Sur 后虚拟机 Parallels Desktop 无法启动。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/89913779-b31b4c00-dc26-11ea-88f1-8a6273f03714.png" alt="mac Big Sur Parallels Desktop 无法启动的报错" /></p>
+<p align="center">mac Big Sur Parallels Desktop 无法启动的报错</p>
+
+<p>参考 <a href="https://developer.apple.com/forums/thread/655115">Error Parallels 15 macOS Big Sur Beta 3</a> 里给出的方法，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">export </span><span class="nv">SYSTEM_VERSION_COMPAT</span><span class="o">=</span>1  
+</code></pre></div></div>
+
+<p>如果想持久化，将该命令加入 bash profile。</p>
+
+<p>然后通过如下方式打开应用：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>open <span class="nt">-a</span> <span class="s2">"Parallels Desktop.app"</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.apple.com/forums/thread/655115">Error Parallels 15 macOS Big Sur Beta 3</a></li>
+</ul>
+
+:ET

@@ -1,0 +1,125 @@
+I"�<h2 id="gitignore-添加文件不生效的问题">gitignore 添加文件不生效的问题</h2>
+
+<p><code class="language-plaintext highlighter-rouge">.gitignore</code> 文件用来指定需要排除在版本管理之外的文件或目录。最近发现一个问题，如果某个文件或文件夹之前是在版本管理内的，并且进行过提交，事后想加入 gitignore 中，并不生效。</p>
+
+<h3 id="问题复现">问题复现</h3>
+
+<p>以下操作步骤展示了这一问题。</p>
+
+<p>创建一个示例仓库：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">mkdir </span>git-ignore-issue <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="nv">$_</span>
+<span class="nv">$ </span>git init
+</code></pre></div></div>
+
+<p>上面命令创建了一个空文件夹并初始化了一个仓库。</p>
+
+<p>创建 <code class="language-plaintext highlighter-rouge">.gitignore</code> 文件并添加 <code class="language-plaintext highlighter-rouge">A.md</code> 为需要忽略的文件。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">echo</span> “A.md” <span class="o">&gt;</span> .gitignore
+</code></pre></div></div>
+
+<p>此时我们的 <code class="language-plaintext highlighter-rouge">.gitignore</code> 文件中包含了一条过滤规则，即 <code class="language-plaintext highlighter-rouge">A.md</code>  这个文件被排除在版本管理外。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>vi .gitignore
+
+A.md
+</code></pre></div></div>
+
+<p>再添加一些示例文件，以下命令创建了 <code class="language-plaintext highlighter-rouge">A.md</code>，<code class="language-plaintext highlighter-rouge">B.md</code> 和 <code class="language-plaintext highlighter-rouge">C.md</code> 三个文件。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">touch</span> <span class="o">{</span>A..C<span class="o">}</span>.md
+</code></pre></div></div>
+
+<p>此时的目录结构及文件情况是这样的：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ tree . -aL 1
+.
+├── .git
+├── .gitignore
+├── A.md
+├── B.md
+└── C.md
+</code></pre></div></div>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">git status</code> 命令可以看到被排除的文件 <code class="language-plaintext highlighter-rouge">A.md</code> 确实没有被包含进来。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git status
+On branch master
+
+Initial commit
+
+Untracked files:
+  <span class="o">(</span>use <span class="s2">"git add &lt;file&gt;..."</span> to include <span class="k">in </span>what will be committed<span class="o">)</span>
+
+	.gitignore
+	B.md
+	C.md
+</code></pre></div></div>
+
+<p>此时我们将所有文件添加并提交。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git add <span class="nt">-A</span> <span class="o">&amp;&amp;</span> git commit <span class="nt">-m</span> <span class="s2">"initial commit"</span>
+<span class="o">[</span>master <span class="o">(</span>root-commit<span class="o">)</span> bb7b8a8] initial commit
+ 3 files changed, 1 insertion<span class="o">(</span>+<span class="o">)</span>
+ create mode 100644 .gitignore
+ create mode 100644 B.md
+ create mode 100644 C.md
+</code></pre></div></div>
+
+<p>下面问题来了。此时我们想将 <code class="language-plaintext highlighter-rouge">B.md</code> 排除在版本管理之外，于是我们将其添加到 <code class="language-plaintext highlighter-rouge">.gitignore</code> 。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">echo</span> <span class="s2">"B.md"</span> <span class="o">&gt;&gt;</span> .gitignore
+</code></pre></div></div>
+<p>此时我们的 <code class="language-plaintext highlighter-rouge">.gitignore</code> 文件包含了 <code class="language-plaintext highlighter-rouge">A.md</code> 及 <code class="language-plaintext highlighter-rouge">B.md</code> 两个文件。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> vi .gitignore
+
+A.md
+<span class="gi">+B.md
+</span></code></pre></div></div>
+
+<p>现在去修改 <code class="language-plaintext highlighter-rouge">B.md</code> 文件，往其中随便写点东西。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">echo</span> <span class="s2">"B"</span> <span class="o">&gt;</span> B.md
+</code></pre></div></div>
+
+<p>然后通过 <code class="language-plaintext highlighter-rouge">git diff</code> 查看文件变更，检查其是否成功被排除在了版本管理外。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> git diff
+
+--------------------------------------------
+<span class="p">modified: .gitignore
+</span><span class="gd">--------------------------------------------
+</span><span class="p">@@ -1 +1,2 @@</span>
+ A.md
+<span class="gi">+B.md
+</span><span class="gd">--------------------------------------------
+</span><span class="p">modified: B.md
+</span><span class="gd">--------------------------------------------
+</span><span class="p">@@ -0,0 +1 @@</span>
+<span class="gi">+B
+</span>
+</code></pre></div></div>
+
+<p>我们惊奇地发现， <code class="language-plaintext highlighter-rouge">B.md</code> 文件的变更仍然出现在了变更列表中，并没有如愿被排除。</p>
+
+<h3 id="解决">解决</h3>
+
+<p>解决办法也是很简单，只需要清空一下 git 本地的缓存提交一次即可。</p>
+
+<p>先清掉 git 缓存</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git <span class="nb">rm</span> <span class="nt">-r</span> <span class="nt">--cached</span> <span class="nb">.</span>
+git add <span class="nb">.</span>
+git commit <span class="nt">-m</span> <span class="s2">"fixed untracked files"</span>
+</code></pre></div></div>
+
+<p>此时我们再对 <code class="language-plaintext highlighter-rouge">B.md</code> 进行一次修改进行验证。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">echo</span> “Blah” <span class="o">&gt;&gt;</span> B.md
+<span class="nv">$ </span>git status
+On branch master
+nothing to commit, working directory clean
+</code></pre></div></div>
+
+:ET

@@ -1,0 +1,87 @@
+I"�%<h1 id="objective-c-变参函数">Objective-C 变参函数</h1>
+
+<p>接收可变参数的函数，Objective-C 中称作 Variadic Functions，很明显的例子就是 <a href="https://developer.apple.com/documentation/foundation/nsstring/1497275-stringwithformat?language=objc"><code class="language-plaintext highlighter-rouge">NSString stringWithFormat:</code></a>  和 <a href="https://developer.apple.com/documentation/foundation/1395275-nslog?language=occ"><code class="language-plaintext highlighter-rouge">NSLog(NSString *format, ...)</code></a>。前者接收一个带格式化占位的字符串，后面跟任意多个需要插入占位的变量，后者同理。</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">NSString</span> <span class="o">*</span><span class="n">name</span> <span class="o">=</span> <span class="s">@"niuwayong"</span><span class="p">;</span>
+<span class="n">NSString</span> <span class="o">*</span><span class="n">verb</span> <span class="o">=</span> <span class="s">@"wft"</span><span class="p">;</span>
+<span class="n">NSString</span> <span class="o">*</span><span class="n">message</span> <span class="o">=</span>
+    <span class="p">[</span><span class="n">NSString</span> <span class="nf">stringWithFormat</span><span class="p">:</span><span class="s">@"hello my name is %@ and nice to %@ you!"</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verb</span><span class="p">];</span>
+<span class="n">NSLog</span><span class="p">(</span><span class="s">@"message: %@"</span><span class="p">,</span> <span class="n">message</span><span class="p">);</span>
+<span class="c1">// message: hello my name is niuwayong and nice to wft you!</span>
+</code></pre></div></div>
+
+<p>作为强类型语言，Objective-C 中实现可变参数是没有像弱类型语言那么方便。比如 JavaScript 中，参数是很随意的：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">fn</span><span class="p">(){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(...</span><span class="nx">arguments</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="nx">fn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="c1">// 1 2 3</span>
+</code></pre></div></div>
+
+<p>像上面这样，你甚至都没指定任何入参，但调用的时候也是可以传递任意参数的。</p>
+
+<p>但不是说就不能，因为开头已经看到了例子。以 <code class="language-plaintext highlighter-rouge">NSLog</code> 为例，查看其函数声明为如下形式：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kt">void</span> <span class="n">NSLog</span><span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">format</span><span class="p">,</span> <span class="p">...)</span>
+</code></pre></div></div>
+
+<p>这里的 <code class="language-plaintext highlighter-rouge">...</code> 便是实现可变参数的魔法点所在。</p>
+
+<p>## va_list</p>
+
+<p>实现可变参数需要借助标准 C 里面的一些技术，其实与 Objective-C 无关了。</p>
+
+<ul>
+  <li><a href="https://en.cppreference.com/w/c/variadic/va_list"><code class="language-plaintext highlighter-rouge">va_list</code></a> - 指向参数列表的指针。</li>
+  <li><a href="http://www.cplusplus.com/reference/cstdarg/va_start/"><code class="language-plaintext highlighter-rouge">va_start</code></a> - 初始化 <code class="language-plaintext highlighter-rouge">va_list</code> 并使其指向指定参数之后的参数位置。</li>
+  <li><a href="https://en.cppreference.com/w/c/variadic/va_arg"><code class="language-plaintext highlighter-rouge">va_arg</code></a> - 从参数列表中获取下一个参数（获取时需指定参数类型，这样底层才能正确计算出内存范围）。</li>
+  <li><a href="http://www.cplusplus.com/reference/cstdarg/va_end/"><code class="language-plaintext highlighter-rouge">va_end</code></a> - 释放参数列表所占内存。</li>
+</ul>
+
+<h2 id="利用-va_list-实现可变参数函数">利用 <code class="language-plaintext highlighter-rouge">va_list</code> 实现可变参数函数</h2>
+
+<p>利用 <code class="language-plaintext highlighter-rouge">va_list</code> 可实现自己的可变参数函数，比如向字符串无限追加内容：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">+</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nf">setContentByAppendingStrings</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">message</span><span class="p">,</span> <span class="p">...</span> <span class="p">{</span>
+   <span class="n">NSMutableString</span> <span class="o">*</span><span class="n">newContentString</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSMutableString</span> <span class="nf">string</span><span class="p">];</span>
+   <span class="kt">va_list</span> <span class="n">args</span><span class="p">;</span>
+   <span class="n">va_start</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">message</span><span class="p">);</span>
+   <span class="k">for</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">arg</span> <span class="o">=</span> <span class="n">message</span><span class="p">;</span> <span class="n">arg</span> <span class="o">!=</span> <span class="nb">nil</span><span class="p">;</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">NSString</span> <span class="o">*</span><span class="p">))</span> <span class="p">{</span>
+     <span class="p">[</span><span class="n">newContentString</span> <span class="nf">appendString</span><span class="p">:</span><span class="n">arg</span><span class="p">];</span>
+   <span class="p">}</span>
+   <span class="n">va_end</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+   <span class="k">return</span> <span class="n">newContentString</span><span class="p">;</span>
+ <span class="p">}</span>
+</code></pre></div></div>
+
+<p>运行效果：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">NSString</span> <span class="o">*</span><span class="n">message</span> <span class="o">=</span> <span class="s">@"hello"</span><span class="p">;</span>
+ <span class="n">message</span> <span class="o">=</span> <span class="p">[</span><span class="n">Util</span> <span class="nf">setContentByAppendingStrings</span><span class="p">:</span><span class="n">message</span><span class="p">,</span> <span class="s">@" niuwayong"</span><span class="p">,</span> <span class="s">@",大壮"</span><span class="p">];</span>
+ <span class="n">NSLog</span><span class="p">(</span><span class="s">@"message: %@"</span><span class="p">,</span> <span class="n">message</span><span class="p">);</span>
+ <span class="c1">//message: hello niuwayong,大壮</span>
+</code></pre></div></div>
+
+<p>回过头来看，可以推测 <code class="language-plaintext highlighter-rouge">NSLog</code> 的内部的实现，这里是利用 <code class="language-plaintext highlighter-rouge">NSLogv</code> 实现的一个简单等效函数：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">my_log</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">format</span><span class="p">,</span> <span class="p">...</span> <span class="p">{</span>
+  <span class="kt">va_list</span> <span class="n">args</span><span class="p">;</span>
+  <span class="n">va_start</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">format</span><span class="p">);</span>
+  <span class="n">NSLogv</span><span class="p">(</span><span class="n">format</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+  <span class="n">va_end</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/4804674/how-to-create-variable-argument-methods-in-objective-c">How to create variable argument methods in Objective-C</a></li>
+  <li><a href="https://en.cppreference.com/w/c/variadic/va_list">va_list</a></li>
+  <li><a href="http://www.cplusplus.com/reference/cstdarg/va_start/">va_start</a></li>
+  <li><a href="http://www.cplusplus.com/reference/cstdarg/va_end/">va_end</a></li>
+  <li><a href="https://en.cppreference.com/w/c/variadic/va_arg"><code class="language-plaintext highlighter-rouge">va_arg</code></a></li>
+  <li><a href="https://www.cocoawithlove.com/2009/05/variable-argument-lists-in-cocoa.html">Variable argument lists in Cocoa</a></li>
+</ul>
+
+:ET

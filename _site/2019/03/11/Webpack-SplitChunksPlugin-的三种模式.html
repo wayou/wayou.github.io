@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Webpack SplitChunksPlugin 的三种模式 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Webpack SplitChunksPlugin 的三种模式" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Webpack SplitChunksPlugin 的三种模式 自 Webpack 4 开始，自带的 SplitChunksPlugin 替代了之前的 CommonsChunkPlugin 插件，对代码自动进行拆分（Code Split）的优化，并伴随一个默认的配置能满足大部分情况下的代码优化。 sync 与 asycn 脚本 继续之前先讨论一下 sync 与 async 类型的脚本。 sync 类型的脚本需要同步加载到页面，bundle 中正常 import/require 的代码。这种 sync 类型的代码生成的 bundle 脚本是通过在页面写 &lt;script&gt; 标签进行加载的。如果有多个这样的脚本，需要按顺序写标签进行加载。 async 类型的脚本是通过异步拉取，按需加载到页面中的，比如代码中使用 import() 加载的脚本。 小贴士：这里顺便区分一下 bundle 与 chunk。前者是个更大的单位，可理解成根据 entry 配置生成的一个输出，而 chunk 可理解成从 bundle 中拆分出来的更小粒度代码形成的文件。本质上这个界定也没那么严格，或者解释也没有那么统一，只是可以这先么理解。 默认配置 SplitChunksPlugin 的默认配置： module.exports = { //... optimization: { splitChunks: { chunks: &quot;async&quot;, minSize: 30000, maxSize: 0, minChunks: 1, maxAsyncRequests: 5, maxInitialRequests: 3, automaticNameDelimiter: &quot;~&quot;, name: true, cacheGroups: { vendors: { test: /[\\/]node_modules[\\/]/, priority: -10 }, default: { minChunks: 2, priority: -20, reuseExistingChunk: true } } } } }; 默认配置下，会根据如下条件进行代码优化： 优化只针对动态引入的模块，即 async 类型脚本，因为对原始（initial） sync 类型的 bundle 进行拆分会产生新的 bundle，这个新产生的 bundle 需要被正确地在页面引入才能工作，这超出了 Webpack 作为脚本编译的范畴（将脚本插入页面是 html-webpack-plugin 干的事情）。 新产生的 chunk 来自 node_modules 或可被多个地方复用。 新 chunk 需要大于 30kb。 对 chunks 的最大同时请求数小于等于 5。换句话说，如果拆分后导致 bundle 需要同时异步加载的 chunk 数量大于 5 个或更多时，则不会进行拆分，因为增加了请求数，得不偿失。 拆分后需要尽量做到对于入口文件中最大同时请求数控制在 3 个以内。 在满足最后两个条件时，决定了 chunks 应越大越好，而不是越多。 chunks 配置项 这里主要讨论配置中的 chunks 配置项。它的可选值有 async: 只优化动态加载的代码，其他类型的代码正常打包。 initial: 针对原始 bundle 代码进行优化。 all: 针对所有代码进行优化。 function(chunk) 自定义拆分函数，不讨论 所以他们有什么区别，特别是 initial 方式，究竟会产生怎样的效果。这就是本文要探究的。 示例 下面通过示例看看三者在对正常与动态加载的代码效果上有什么区别。示例借用自 Webpack 4 — Mysterious SplitChunks Plugin，有调整。通过 webpack-bundle-analyzer 查看编译输出的组成情况。 a.js import &quot;react&quot;; import(&quot;lodash&quot;); import &quot;jquery&quot;; console.log(&quot;a&quot;); b.js import(&quot;react&quot;); import(&quot;lodash&quot;); import &quot;jquery&quot;; console.log(&quot;b&quot;); webpack.config.js module.exports = { entry: { a: &quot;./a.js&quot;, b: &quot;./b.js&quot; }, output: { filename: &quot;[name].bundle.js&quot; }, optimization: { splitChunks: { cacheGroups: { vendor: { test: /[\\/]node_modules[\\/]/, + chunks: &quot;async&quot;, priority: 1 } } } }, plugins: [new BundleAnalyzerPlugin()] }; 准备了两个入口文件，都引入了三个 npm 库，jquery,react,lodash。 jquery 均同步引入 其中 react 在 a 文件同步引入而 b 中动态加载， lodash 在两者中均动态引入 async 根据上面的配置，执行 npx webpack 先看 async 模式下的输出。 async 模式下的输出 在 a,b 中均同步引入的 jquery 被打包进了各自的 bundle 中没有拆分出来共用，因为这种模式下只会优化动态加载的代码。 react 打了两份 一份在 a 自己的 bundle 中，因为它同步引入了 react，而我们只优化动态加载的代码，所以这里的 react 不会被优化拆分出去。 一份在单独的文件中，它是从 b 里面拆出来的，因为 b 中动态加载了 react。 lodash 因为在 a,b 中都是动态加载，形成了单独的 chunk 被 a, b 共用。 initial initial 模式下的输出 initial 即原始的拆分，原则就是有共用的情况即发生拆分。动态引入的代码不受影响，它是无论如何都会走拆分逻辑的（毕竟你要动态引入嘛，不拆分成单独的文件怎么动态引入？！）。而对于同步引入的代码，如果有多处都在使用，则拆分出来共用。 jquery 在这种模式下发生了变化。形成了单独的 chunk 供 a,b 共用。 react 没有变，因为它在 a,b 中引用的方式不同，所以不会被当成同一个模块拆分出来共用，而是走各自的打包逻辑。在 a 中同步引用，被打入了 a 的 bundle。在 b 中动态引入所以拆分成了单独的文件供 b 使用。 lodash 没变，形成单独一份两者共用。 all 从上面 initial 模式下我们似乎看出了问题，即 在 a 中同步引入在 b 中动态引入的 react，它其实可以被抽成文件供两者共用的，只是因为引入方式不同而没有这样做。 所以 all 这种模式下，就会智能地进行判断以解决这个问题。此时不关心引入的模块是动态方式还是同步方式，只要能正确判断这段代码确实可以安全地进行拆分共用，那就干吧。 需要注意的是这里需要设置 minSize 以使 react 能够正确被拆分，因为它小于 30k，在同步方式下，默认不会被拆分出来（联想文章开头提到的那些条件）。 cacheGroups: { vendor: { chunks: &quot;all&quot;, test: /[\\/]node_modules[\\/]/, + minSize: 0, } } all 模式下的输出 结论 看起来似乎 all 是最好的模式，因为它最大限度地生成了复用的代码，Webpack 默认就走这个模式打包不就得了。 在开头的时候提到过一个原因为何默认情况下只优化 async 代码。所以，除了 all 之外的另外两个选项是有存在意义的。并且，具体的优化场景需要根据具体的需求而定，all 所产生的效果并非所有情况下都需要。 相关资源 Webpack SplitChunksPlugin 官方文档 Webpack 4 — Mysterious SplitChunks Plugin" />
+<meta property="og:description" content="Webpack SplitChunksPlugin 的三种模式 自 Webpack 4 开始，自带的 SplitChunksPlugin 替代了之前的 CommonsChunkPlugin 插件，对代码自动进行拆分（Code Split）的优化，并伴随一个默认的配置能满足大部分情况下的代码优化。 sync 与 asycn 脚本 继续之前先讨论一下 sync 与 async 类型的脚本。 sync 类型的脚本需要同步加载到页面，bundle 中正常 import/require 的代码。这种 sync 类型的代码生成的 bundle 脚本是通过在页面写 &lt;script&gt; 标签进行加载的。如果有多个这样的脚本，需要按顺序写标签进行加载。 async 类型的脚本是通过异步拉取，按需加载到页面中的，比如代码中使用 import() 加载的脚本。 小贴士：这里顺便区分一下 bundle 与 chunk。前者是个更大的单位，可理解成根据 entry 配置生成的一个输出，而 chunk 可理解成从 bundle 中拆分出来的更小粒度代码形成的文件。本质上这个界定也没那么严格，或者解释也没有那么统一，只是可以这先么理解。 默认配置 SplitChunksPlugin 的默认配置： module.exports = { //... optimization: { splitChunks: { chunks: &quot;async&quot;, minSize: 30000, maxSize: 0, minChunks: 1, maxAsyncRequests: 5, maxInitialRequests: 3, automaticNameDelimiter: &quot;~&quot;, name: true, cacheGroups: { vendors: { test: /[\\/]node_modules[\\/]/, priority: -10 }, default: { minChunks: 2, priority: -20, reuseExistingChunk: true } } } } }; 默认配置下，会根据如下条件进行代码优化： 优化只针对动态引入的模块，即 async 类型脚本，因为对原始（initial） sync 类型的 bundle 进行拆分会产生新的 bundle，这个新产生的 bundle 需要被正确地在页面引入才能工作，这超出了 Webpack 作为脚本编译的范畴（将脚本插入页面是 html-webpack-plugin 干的事情）。 新产生的 chunk 来自 node_modules 或可被多个地方复用。 新 chunk 需要大于 30kb。 对 chunks 的最大同时请求数小于等于 5。换句话说，如果拆分后导致 bundle 需要同时异步加载的 chunk 数量大于 5 个或更多时，则不会进行拆分，因为增加了请求数，得不偿失。 拆分后需要尽量做到对于入口文件中最大同时请求数控制在 3 个以内。 在满足最后两个条件时，决定了 chunks 应越大越好，而不是越多。 chunks 配置项 这里主要讨论配置中的 chunks 配置项。它的可选值有 async: 只优化动态加载的代码，其他类型的代码正常打包。 initial: 针对原始 bundle 代码进行优化。 all: 针对所有代码进行优化。 function(chunk) 自定义拆分函数，不讨论 所以他们有什么区别，特别是 initial 方式，究竟会产生怎样的效果。这就是本文要探究的。 示例 下面通过示例看看三者在对正常与动态加载的代码效果上有什么区别。示例借用自 Webpack 4 — Mysterious SplitChunks Plugin，有调整。通过 webpack-bundle-analyzer 查看编译输出的组成情况。 a.js import &quot;react&quot;; import(&quot;lodash&quot;); import &quot;jquery&quot;; console.log(&quot;a&quot;); b.js import(&quot;react&quot;); import(&quot;lodash&quot;); import &quot;jquery&quot;; console.log(&quot;b&quot;); webpack.config.js module.exports = { entry: { a: &quot;./a.js&quot;, b: &quot;./b.js&quot; }, output: { filename: &quot;[name].bundle.js&quot; }, optimization: { splitChunks: { cacheGroups: { vendor: { test: /[\\/]node_modules[\\/]/, + chunks: &quot;async&quot;, priority: 1 } } } }, plugins: [new BundleAnalyzerPlugin()] }; 准备了两个入口文件，都引入了三个 npm 库，jquery,react,lodash。 jquery 均同步引入 其中 react 在 a 文件同步引入而 b 中动态加载， lodash 在两者中均动态引入 async 根据上面的配置，执行 npx webpack 先看 async 模式下的输出。 async 模式下的输出 在 a,b 中均同步引入的 jquery 被打包进了各自的 bundle 中没有拆分出来共用，因为这种模式下只会优化动态加载的代码。 react 打了两份 一份在 a 自己的 bundle 中，因为它同步引入了 react，而我们只优化动态加载的代码，所以这里的 react 不会被优化拆分出去。 一份在单独的文件中，它是从 b 里面拆出来的，因为 b 中动态加载了 react。 lodash 因为在 a,b 中都是动态加载，形成了单独的 chunk 被 a, b 共用。 initial initial 模式下的输出 initial 即原始的拆分，原则就是有共用的情况即发生拆分。动态引入的代码不受影响，它是无论如何都会走拆分逻辑的（毕竟你要动态引入嘛，不拆分成单独的文件怎么动态引入？！）。而对于同步引入的代码，如果有多处都在使用，则拆分出来共用。 jquery 在这种模式下发生了变化。形成了单独的 chunk 供 a,b 共用。 react 没有变，因为它在 a,b 中引用的方式不同，所以不会被当成同一个模块拆分出来共用，而是走各自的打包逻辑。在 a 中同步引用，被打入了 a 的 bundle。在 b 中动态引入所以拆分成了单独的文件供 b 使用。 lodash 没变，形成单独一份两者共用。 all 从上面 initial 模式下我们似乎看出了问题，即 在 a 中同步引入在 b 中动态引入的 react，它其实可以被抽成文件供两者共用的，只是因为引入方式不同而没有这样做。 所以 all 这种模式下，就会智能地进行判断以解决这个问题。此时不关心引入的模块是动态方式还是同步方式，只要能正确判断这段代码确实可以安全地进行拆分共用，那就干吧。 需要注意的是这里需要设置 minSize 以使 react 能够正确被拆分，因为它小于 30k，在同步方式下，默认不会被拆分出来（联想文章开头提到的那些条件）。 cacheGroups: { vendor: { chunks: &quot;all&quot;, test: /[\\/]node_modules[\\/]/, + minSize: 0, } } all 模式下的输出 结论 看起来似乎 all 是最好的模式，因为它最大限度地生成了复用的代码，Webpack 默认就走这个模式打包不就得了。 在开头的时候提到过一个原因为何默认情况下只优化 async 代码。所以，除了 all 之外的另外两个选项是有存在意义的。并且，具体的优化场景需要根据具体的需求而定，all 所产生的效果并非所有情况下都需要。 相关资源 Webpack SplitChunksPlugin 官方文档 Webpack 4 — Mysterious SplitChunks Plugin" />
+<link rel="canonical" href="http://localhost:4000/2019/03/11/Webpack-SplitChunksPlugin-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F.html" />
+<meta property="og:url" content="http://localhost:4000/2019/03/11/Webpack-SplitChunksPlugin-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-03-11T01:03:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/03/11/Webpack-SplitChunksPlugin-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/03/11/Webpack-SplitChunksPlugin-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F.html"},"description":"Webpack SplitChunksPlugin 的三种模式 自 Webpack 4 开始，自带的 SplitChunksPlugin 替代了之前的 CommonsChunkPlugin 插件，对代码自动进行拆分（Code Split）的优化，并伴随一个默认的配置能满足大部分情况下的代码优化。 sync 与 asycn 脚本 继续之前先讨论一下 sync 与 async 类型的脚本。 sync 类型的脚本需要同步加载到页面，bundle 中正常 import/require 的代码。这种 sync 类型的代码生成的 bundle 脚本是通过在页面写 &lt;script&gt; 标签进行加载的。如果有多个这样的脚本，需要按顺序写标签进行加载。 async 类型的脚本是通过异步拉取，按需加载到页面中的，比如代码中使用 import() 加载的脚本。 小贴士：这里顺便区分一下 bundle 与 chunk。前者是个更大的单位，可理解成根据 entry 配置生成的一个输出，而 chunk 可理解成从 bundle 中拆分出来的更小粒度代码形成的文件。本质上这个界定也没那么严格，或者解释也没有那么统一，只是可以这先么理解。 默认配置 SplitChunksPlugin 的默认配置： module.exports = { //... optimization: { splitChunks: { chunks: &quot;async&quot;, minSize: 30000, maxSize: 0, minChunks: 1, maxAsyncRequests: 5, maxInitialRequests: 3, automaticNameDelimiter: &quot;~&quot;, name: true, cacheGroups: { vendors: { test: /[\\\\/]node_modules[\\\\/]/, priority: -10 }, default: { minChunks: 2, priority: -20, reuseExistingChunk: true } } } } }; 默认配置下，会根据如下条件进行代码优化： 优化只针对动态引入的模块，即 async 类型脚本，因为对原始（initial） sync 类型的 bundle 进行拆分会产生新的 bundle，这个新产生的 bundle 需要被正确地在页面引入才能工作，这超出了 Webpack 作为脚本编译的范畴（将脚本插入页面是 html-webpack-plugin 干的事情）。 新产生的 chunk 来自 node_modules 或可被多个地方复用。 新 chunk 需要大于 30kb。 对 chunks 的最大同时请求数小于等于 5。换句话说，如果拆分后导致 bundle 需要同时异步加载的 chunk 数量大于 5 个或更多时，则不会进行拆分，因为增加了请求数，得不偿失。 拆分后需要尽量做到对于入口文件中最大同时请求数控制在 3 个以内。 在满足最后两个条件时，决定了 chunks 应越大越好，而不是越多。 chunks 配置项 这里主要讨论配置中的 chunks 配置项。它的可选值有 async: 只优化动态加载的代码，其他类型的代码正常打包。 initial: 针对原始 bundle 代码进行优化。 all: 针对所有代码进行优化。 function(chunk) 自定义拆分函数，不讨论 所以他们有什么区别，特别是 initial 方式，究竟会产生怎样的效果。这就是本文要探究的。 示例 下面通过示例看看三者在对正常与动态加载的代码效果上有什么区别。示例借用自 Webpack 4 — Mysterious SplitChunks Plugin，有调整。通过 webpack-bundle-analyzer 查看编译输出的组成情况。 a.js import &quot;react&quot;; import(&quot;lodash&quot;); import &quot;jquery&quot;; console.log(&quot;a&quot;); b.js import(&quot;react&quot;); import(&quot;lodash&quot;); import &quot;jquery&quot;; console.log(&quot;b&quot;); webpack.config.js module.exports = { entry: { a: &quot;./a.js&quot;, b: &quot;./b.js&quot; }, output: { filename: &quot;[name].bundle.js&quot; }, optimization: { splitChunks: { cacheGroups: { vendor: { test: /[\\\\/]node_modules[\\\\/]/, + chunks: &quot;async&quot;, priority: 1 } } } }, plugins: [new BundleAnalyzerPlugin()] }; 准备了两个入口文件，都引入了三个 npm 库，jquery,react,lodash。 jquery 均同步引入 其中 react 在 a 文件同步引入而 b 中动态加载， lodash 在两者中均动态引入 async 根据上面的配置，执行 npx webpack 先看 async 模式下的输出。 async 模式下的输出 在 a,b 中均同步引入的 jquery 被打包进了各自的 bundle 中没有拆分出来共用，因为这种模式下只会优化动态加载的代码。 react 打了两份 一份在 a 自己的 bundle 中，因为它同步引入了 react，而我们只优化动态加载的代码，所以这里的 react 不会被优化拆分出去。 一份在单独的文件中，它是从 b 里面拆出来的，因为 b 中动态加载了 react。 lodash 因为在 a,b 中都是动态加载，形成了单独的 chunk 被 a, b 共用。 initial initial 模式下的输出 initial 即原始的拆分，原则就是有共用的情况即发生拆分。动态引入的代码不受影响，它是无论如何都会走拆分逻辑的（毕竟你要动态引入嘛，不拆分成单独的文件怎么动态引入？！）。而对于同步引入的代码，如果有多处都在使用，则拆分出来共用。 jquery 在这种模式下发生了变化。形成了单独的 chunk 供 a,b 共用。 react 没有变，因为它在 a,b 中引用的方式不同，所以不会被当成同一个模块拆分出来共用，而是走各自的打包逻辑。在 a 中同步引用，被打入了 a 的 bundle。在 b 中动态引入所以拆分成了单独的文件供 b 使用。 lodash 没变，形成单独一份两者共用。 all 从上面 initial 模式下我们似乎看出了问题，即 在 a 中同步引入在 b 中动态引入的 react，它其实可以被抽成文件供两者共用的，只是因为引入方式不同而没有这样做。 所以 all 这种模式下，就会智能地进行判断以解决这个问题。此时不关心引入的模块是动态方式还是同步方式，只要能正确判断这段代码确实可以安全地进行拆分共用，那就干吧。 需要注意的是这里需要设置 minSize 以使 react 能够正确被拆分，因为它小于 30k，在同步方式下，默认不会被拆分出来（联想文章开头提到的那些条件）。 cacheGroups: { vendor: { chunks: &quot;all&quot;, test: /[\\\\/]node_modules[\\\\/]/, + minSize: 0, } } all 模式下的输出 结论 看起来似乎 all 是最好的模式，因为它最大限度地生成了复用的代码，Webpack 默认就走这个模式打包不就得了。 在开头的时候提到过一个原因为何默认情况下只优化 async 代码。所以，除了 all 之外的另外两个选项是有存在意义的。并且，具体的优化场景需要根据具体的需求而定，all 所产生的效果并非所有情况下都需要。 相关资源 Webpack SplitChunksPlugin 官方文档 Webpack 4 — Mysterious SplitChunks Plugin","@type":"BlogPosting","headline":"Webpack SplitChunksPlugin 的三种模式","dateModified":"2019-03-11T01:03:00+08:00","datePublished":"2019-03-11T01:03:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Webpack SplitChunksPlugin 的三种模式</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-03-11T01:03:00+08:00" itemprop="datePublished">Mar 11, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="webpack-splitchunksplugin-的三种模式">Webpack SplitChunksPlugin 的三种模式</h1>
+
+<p>自 Webpack 4 开始，自带的 <code class="language-plaintext highlighter-rouge">SplitChunksPlugin</code> 替代了之前的 <code class="language-plaintext highlighter-rouge">CommonsChunkPlugin</code> 插件，对代码自动进行拆分（Code Split）的优化，并伴随一个默认的配置能满足大部分情况下的代码优化。</p>
+
+<h3 id="sync-与-asycn-脚本">sync 与 asycn 脚本</h3>
+
+<p>继续之前先讨论一下 sync 与 async 类型的脚本。</p>
+
+<ul>
+  <li>sync 类型的脚本需要同步加载到页面，bundle 中正常 import/require 的代码。这种 sync 类型的代码生成的 bundle 脚本是通过在页面写 <code class="language-plaintext highlighter-rouge">&lt;script&gt;</code> 标签进行加载的。如果有多个这样的脚本，需要按顺序写标签进行加载。</li>
+  <li>async 类型的脚本是通过异步拉取，按需加载到页面中的，比如代码中使用 <code class="language-plaintext highlighter-rouge">import()</code> 加载的脚本。</li>
+</ul>
+
+<p><em>小贴士：这里顺便区分一下 <code class="language-plaintext highlighter-rouge">bundle</code> 与 <code class="language-plaintext highlighter-rouge">chunk</code>。前者是个更大的单位，可理解成根据 <code class="language-plaintext highlighter-rouge">entry</code> 配置生成的一个输出，而 chunk 可理解成从 bundle 中拆分出来的更小粒度代码形成的文件。本质上这个界定也没那么严格，或者解释也没有那么统一，只是可以这先么理解。</em></p>
+
+<h3 id="默认配置">默认配置</h3>
+
+<p><code class="language-plaintext highlighter-rouge">SplitChunksPlugin</code> 的默认配置：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">//...</span>
+  <span class="na">optimization</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">splitChunks</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">chunks</span><span class="p">:</span> <span class="dl">"</span><span class="s2">async</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">minSize</span><span class="p">:</span> <span class="mi">30000</span><span class="p">,</span>
+      <span class="na">maxSize</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="na">minChunks</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="na">maxAsyncRequests</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="na">maxInitialRequests</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+      <span class="na">automaticNameDelimiter</span><span class="p">:</span> <span class="dl">"</span><span class="s2">~</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">name</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="na">cacheGroups</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">vendors</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">[\\/]</span><span class="sr">node_modules</span><span class="se">[\\/]</span><span class="sr">/</span><span class="p">,</span>
+          <span class="na">priority</span><span class="p">:</span> <span class="o">-</span><span class="mi">10</span>
+        <span class="p">},</span>
+        <span class="na">default</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">minChunks</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+          <span class="na">priority</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span>
+          <span class="na">reuseExistingChunk</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>默认配置下，会根据如下条件进行代码优化：</p>
+
+<ul>
+  <li>优化只针对动态引入的模块，即 async 类型脚本，因为对原始（initial） sync 类型的 bundle 进行拆分会产生新的 bundle，这个新产生的 bundle 需要被正确地在页面引入才能工作，这超出了 Webpack 作为脚本编译的范畴（将脚本插入页面是 <a href="https://github.com/jantimon/html-webpack-plugin">html-webpack-plugin</a> 干的事情）。</li>
+  <li>新产生的 chunk 来自 <code class="language-plaintext highlighter-rouge">node_modules</code> 或可被多个地方复用。</li>
+  <li>新 chunk 需要大于 30kb。</li>
+  <li>对 chunks 的最大同时请求数小于等于 5。换句话说，如果拆分后导致 bundle 需要同时异步加载的 chunk 数量大于 5 个或更多时，则不会进行拆分，因为增加了请求数，得不偿失。</li>
+  <li>拆分后需要尽量做到对于入口文件中最大同时请求数控制在 3 个以内。</li>
+</ul>
+
+<p>在满足最后两个条件时，决定了 chunks 应越大越好，而不是越多。</p>
+
+<h3 id="chunks-配置项">chunks 配置项</h3>
+
+<p>这里主要讨论配置中的 <code class="language-plaintext highlighter-rouge">chunks</code> 配置项。它的可选值有</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">async</code>: 只优化动态加载的代码，其他类型的代码正常打包。</li>
+  <li><code class="language-plaintext highlighter-rouge">initial</code>: 针对原始 bundle 代码进行优化。</li>
+  <li><code class="language-plaintext highlighter-rouge">all</code>: 针对所有代码进行优化。</li>
+  <li><code class="language-plaintext highlighter-rouge">function(chunk)</code> 自定义拆分函数，不讨论</li>
+</ul>
+
+<p>所以他们有什么区别，特别是 initial 方式，究竟会产生怎样的效果。这就是本文要探究的。</p>
+
+<h4 id="示例">示例</h4>
+
+<p>下面通过示例看看三者在对正常与动态加载的代码效果上有什么区别。示例借用自 <a href="https://medium.com/dailyjs/webpack-4-splitchunks-plugin-d9fbbe091fd0">Webpack 4 — Mysterious SplitChunks Plugin</a>，有调整。通过 <a href="https://github.com/webpack-contrib/webpack-bundle-analyzer">webpack-bundle-analyzer</a> 查看编译输出的组成情况。</p>
+
+<p><em>a.js</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span><span class="p">(</span><span class="dl">"</span><span class="s2">lodash</span><span class="dl">"</span><span class="p">);</span>
+<span class="k">import</span> <span class="dl">"</span><span class="s2">jquery</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">a</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><em>b.js</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="p">(</span><span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">);</span>
+<span class="k">import</span><span class="p">(</span><span class="dl">"</span><span class="s2">lodash</span><span class="dl">"</span><span class="p">);</span>
+<span class="k">import</span> <span class="dl">"</span><span class="s2">jquery</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">b</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><em>webpack.config.js</em></p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">module.exports = {
+</span>  entry: {
+    a: "./a.js",
+    b: "./b.js"
+  },
+  output: {
+    filename: "[name].bundle.js"
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+<span class="gi">+          chunks: "async",
+</span>          priority: 1
+        }
+      }
+    }
+  },
+  plugins: [new BundleAnalyzerPlugin()]
+<span class="err">};</span>
+</code></pre></div></div>
+
+<p>准备了两个入口文件，都引入了三个 npm 库，jquery,react,lodash。</p>
+
+<ul>
+  <li>jquery 均同步引入</li>
+  <li>其中 react 在 a 文件同步引入而 b 中动态加载，</li>
+  <li>lodash 在两者中均动态引入</li>
+</ul>
+
+<h4 id="async">async</h4>
+
+<p>根据上面的配置，执行 <code class="language-plaintext highlighter-rouge">npx webpack</code> 先看 async 模式下的输出。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/webpack-code-split-issue/assets/async.png" alt="async 模式下的输出" /></p>
+
+<p><em>async 模式下的输出</em></p>
+
+<ul>
+  <li>在 a,b 中均同步引入的 jquery 被打包进了各自的 bundle 中没有拆分出来共用，因为这种模式下只会优化动态加载的代码。</li>
+  <li>react 打了两份
+    <ul>
+      <li>一份在 a 自己的 bundle 中，因为它同步引入了 react，而我们只优化动态加载的代码，所以这里的 react 不会被优化拆分出去。</li>
+      <li>一份在单独的文件中，它是从 b 里面拆出来的，因为 b 中动态加载了 react。</li>
+    </ul>
+  </li>
+  <li>lodash 因为在 a,b 中都是动态加载，形成了单独的 chunk 被 a, b 共用。</li>
+</ul>
+
+<h4 id="initial">initial</h4>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/webpack-code-split-issue/assets/initial.png" alt="`initial` 模式下的输出" /></p>
+
+<p><em><code class="language-plaintext highlighter-rouge">initial</code> 模式下的输出</em></p>
+
+<p><code class="language-plaintext highlighter-rouge">initial</code> 即原始的拆分，原则就是有共用的情况即发生拆分。动态引入的代码不受影响，它是无论如何都会走拆分逻辑的（毕竟你要动态引入嘛，不拆分成单独的文件怎么动态引入？！）。而对于同步引入的代码，如果有多处都在使用，则拆分出来共用。</p>
+
+<ul>
+  <li>jquery 在这种模式下发生了变化。形成了单独的 chunk 供 a,b 共用。</li>
+  <li>react 没有变，因为它在 a,b 中引用的方式不同，所以不会被当成同一个模块拆分出来共用，而是走各自的打包逻辑。在 a 中同步引用，被打入了 a 的 bundle。在 b 中动态引入所以拆分成了单独的文件供 b 使用。</li>
+  <li>lodash 没变，形成单独一份两者共用。</li>
+</ul>
+
+<h4 id="all">all</h4>
+
+<p>从上面 <code class="language-plaintext highlighter-rouge">initial</code> 模式下我们似乎看出了问题，即 在 a 中同步引入在 b 中动态引入的 react，它其实可以被抽成文件供两者共用的，只是因为引入方式不同而没有这样做。</p>
+
+<p>所以 <code class="language-plaintext highlighter-rouge">all</code> 这种模式下，就会智能地进行判断以解决这个问题。此时不关心引入的模块是动态方式还是同步方式，只要能正确判断这段代码确实可以安全地进行拆分共用，那就干吧。</p>
+
+<p><em>需要注意的是这里需要设置 <code class="language-plaintext highlighter-rouge">minSize</code> 以使 <code class="language-plaintext highlighter-rouge">react</code> 能够正确被拆分，因为它小于 30k，在同步方式下，默认不会被拆分出来（联想文章开头提到的那些条件）。</em></p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">cacheGroups: {
+</span> vendor: {
+    chunks: "all",
+    test: /[\\/]node_modules[\\/]/,
+<span class="gi">+    minSize: 0,
+</span> }
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/webpack-code-split-issue/assets/all.png" alt="`all` 模式下的输出" /></p>
+
+<p><em><code class="language-plaintext highlighter-rouge">all</code> 模式下的输出</em></p>
+
+<h3 id="结论">结论</h3>
+
+<p>看起来似乎 <code class="language-plaintext highlighter-rouge">all</code> 是最好的模式，因为它最大限度地生成了复用的代码，Webpack 默认就走这个模式打包不就得了。</p>
+
+<p>在开头的时候提到过一个原因为何默认情况下只优化 <code class="language-plaintext highlighter-rouge">async</code> 代码。所以，除了 <code class="language-plaintext highlighter-rouge">all</code> 之外的另外两个选项是有存在意义的。并且，具体的优化场景需要根据具体的需求而定，<code class="language-plaintext highlighter-rouge">all</code> 所产生的效果并非所有情况下都需要。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://webpack.js.org/plugins/split-chunks-plugin/">Webpack SplitChunksPlugin 官方文档</a></li>
+  <li><a href="https://medium.com/dailyjs/webpack-4-splitchunks-plugin-d9fbbe091fd0">Webpack 4 — Mysterious SplitChunks Plugin</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/03/11/Webpack-SplitChunksPlugin-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,345 @@
+I"y<h1 id="mysql-常用操作">MySQL 常用操作</h1>
+
+<p>如果是本地开发，使用 GUI 工具比如官方的 <a href="https://www.mysql.com/products/workbench/">MySQL Workbench</a> 会省事很多，但命令行方式在服务器环境特别有用。</p>
+
+<p>另，如果官方的下载地址很慢的话，可尝试这个<a href="http://www.mirrorservice.org/sites/ftp.mysql.com/Downloads/MySQLGUITools/">镜像</a>，速度超快的。</p>
+
+<h2 id="数据库">数据库</h2>
+
+<h3 id="创建数据库">创建数据库</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="o">&lt;</span><span class="n">db_name</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="删除数据库">删除数据库</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DROP</span> <span class="k">DATABASE</span> <span class="o">&lt;</span><span class="n">db_name</span><span class="o">&gt;</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<p>注意 <code class="language-plaintext highlighter-rouge">DROP</code> 操作没有确认步骤，回车就执行了。所以进行删除操作时需要谨慎。</p>
+
+<h3 id="重命名数据库">重命名数据库</h3>
+
+<p><code class="language-plaintext highlighter-rouge">RENAME</code> 命令是用来对表进行重命名的，数据库没有对应的命令，只能间接实现。原理是将老数据库中的所有表重命名到新数据库下。当然，首先得创建新数据库。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">RENAME</span> <span class="k">TABLE</span> <span class="n">old_db</span><span class="p">.</span><span class="k">table</span> <span class="k">TO</span> <span class="n">new_db</span><span class="p">.</span><span class="k">table</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这是一个重复性的操作，所以可以通过脚本来实现，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql <span class="nt">-u</span> username <span class="nt">-ppassword</span> old_db <span class="nt">-sNe</span> <span class="s1">'show tables'</span> | <span class="k">while </span><span class="nb">read </span>table<span class="p">;</span> <span class="se">\ </span>
+    <span class="k">do </span>mysql <span class="nt">-u</span> username <span class="nt">-ppassword</span> <span class="nt">-sNe</span> <span class="s2">"rename table old_db.</span><span class="nv">$table</span><span class="s2"> to new_db.</span><span class="nv">$table</span><span class="s2">"</span><span class="p">;</span> <span class="k">done</span>
+</code></pre></div></div>
+
+<p>或，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for </span>table <span class="k">in</span> <span class="sb">`</span>mysql <span class="nt">-u</span> root <span class="nt">-ppassword</span> <span class="nt">-s</span> <span class="nt">-N</span> <span class="nt">-e</span> <span class="s2">"use old_db;show tables from old_db;"</span><span class="sb">`</span><span class="p">;</span> <span class="k">do </span>mysql <span class="nt">-u</span> root <span class="nt">-ppassword</span> <span class="nt">-s</span> <span class="nt">-N</span> <span class="nt">-e</span> <span class="s2">"use old_db;rename table old_db.</span><span class="nv">$table</span><span class="s2"> to new_db.</span><span class="nv">$table</span><span class="s2">;"</span><span class="p">;</span> <span class="k">done</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">-ppassword</code> 中 <code class="language-plaintext highlighter-rouge">password</code> 为你的密码，和 <code class="language-plaintext highlighter-rouge">-p</code> 之间没有空格。</p>
+
+<p>注：上面为 shell 脚本而非 sql 脚本，在 shell 中运行或保存成 shell 文件执行。</p>
+
+<h3 id="清空数据库">清空数据库</h3>
+
+<p>清空数据库，即清空数据库中所有表中的记录。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="n">FOREIGN_KEY_CHECKS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="o">@</span><span class="n">str</span> <span class="p">:</span><span class="o">=</span> <span class="n">CONCAT</span><span class="p">(</span><span class="s1">'TRUNCATE TABLE '</span><span class="p">,</span> <span class="n">table_schema</span><span class="p">,</span> <span class="s1">'.'</span><span class="p">,</span> <span class="k">table_name</span><span class="p">,</span> <span class="s1">';'</span><span class="p">)</span>
+<span class="k">FROM</span>   <span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span>
+<span class="k">WHERE</span>  <span class="n">table_type</span>   <span class="o">=</span> <span class="s1">'BASE TABLE'</span>
+  <span class="k">AND</span>  <span class="n">table_schema</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">'db1_name'</span><span class="p">,</span><span class="s1">'db2_name'</span><span class="p">);</span>
+
+<span class="k">PREPARE</span> <span class="n">stmt</span> <span class="k">FROM</span> <span class="o">@</span><span class="n">str</span><span class="p">;</span>
+
+<span class="k">EXECUTE</span> <span class="n">stmt</span><span class="p">;</span>
+
+<span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> <span class="n">stmt</span><span class="p">;</span>
+
+<span class="k">SET</span> <span class="n">FOREIGN_KEY_CHECKS</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="导出数据库">导出数据库</h3>
+
+<p>导出操作是通过 <code class="language-plaintext highlighter-rouge">mysqldump</code> 命令行工具来完成的。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> <span class="n">mysqldump</span> <span class="o">-</span><span class="n">u</span> <span class="o">&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">p</span> <span class="c1">--databases [db1] [db2]... &gt; backup.sql</span>
+</code></pre></div></div>
+
+<p>默认导出时是带数据记录的，可通过 <code class="language-plaintext highlighter-rouge">--no-data</code> 只导出表结构，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> <span class="n">mysqldump</span> <span class="o">-</span><span class="n">u</span> <span class="o">&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">p</span> <span class="c1">--no-data --databases [db1] [db2]... &gt; backup.sql</span>
+</code></pre></div></div>
+
+<p>更多 <code class="language-plaintext highlighter-rouge">mysqldump</code> 相关的参数可参见<a href="https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html">这里</a>。</p>
+
+<h3 id="导入数据库">导入数据库</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> <span class="n">mysql</span> <span class="o">-</span><span class="n">u</span> <span class="n">username</span> <span class="o">-</span><span class="n">ppassword</span> <span class="n">database_name</span> <span class="o">&lt;</span> <span class="n">backup</span><span class="p">.</span><span class="k">sql</span>
+</code></pre></div></div>
+
+<h2 id="表">表</h2>
+
+<h3 id="创建表">创建表</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="p">[</span><span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">]</span> <span class="k">table_name</span><span class="p">(</span>
+    <span class="n">column_list</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="重命名表">重命名表</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">RENAME</span> <span class="k">TABLE</span> <span class="n">tb1</span> <span class="k">TO</span> <span class="n">tb2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>如果想一次重命名多张表，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">RENAME</span> <span class="k">TABLE</span> <span class="n">tb1</span> <span class="k">TO</span> <span class="n">tb2</span><span class="p">,</span> <span class="n">tb3</span> <span class="k">TO</span> <span class="n">tb4</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="删除表">删除表</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DROP</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>同时删除多张表，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">table1</span><span class="p">,</span><span class="n">table2</span><span class="p">...;</span>
+</code></pre></div></div>
+
+<p>像这种操作表记录的，如果表存在外键关联，一般会报错，如果你明显知道自己在干什么，且知道操作是安全的，可暂时关闭 MySQL 的外键检查，操作完成后再开启。后续的操作中遇到该报错可同样应用此设置。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="n">FOREIGN_KEY_CHECKS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> 
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">SET</span> <span class="n">FOREIGN_KEY_CHECKS</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<h3 id="清空表">清空表</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">TRUNCATE</span> <span class="p">[</span><span class="k">TABLE</span><span class="p">]</span> <span class="n">tbl_name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="添加删除主键">添加/删除主键</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">DROP</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">ADD</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> 
+</code></pre></div></div>
+
+<h4 id="变更主键">变更主键</h4>
+
+<p>已经设置主键的情况下想要变更主键，可以先去掉原来的主键，再新增主键。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">DROP</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">;</span> 
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">auto_increment</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="k">first</span><span class="p">;</span> 
+
+</code></pre></div></div>
+
+<h2 id="列">列</h2>
+
+<h3 id="更新列">更新列</h3>
+
+<p>更新列的定义可通过 <code class="language-plaintext highlighter-rouge">CHANGE</code> 或 <code class="language-plaintext highlighter-rouge">MODIFY</code>。 区别仅在于后者不需要重新指定一个新的一列名。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">MyTable</span> <span class="n">CHANGE</span> <span class="k">COLUMN</span> <span class="n">foo</span> <span class="n">bar</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">FIRST</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">MyTable</span> <span class="k">MODIFY</span> <span class="k">COLUMN</span> <span class="n">foo</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">AFTER</span> <span class="n">baz</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="添加列">添加列</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">tempID</span> <span class="nb">int</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="mi">3</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="添加列到指定位置">添加列到指定位置</h4>
+
+<p>默认会添加到表中最后一列，可通过 <code class="language-plaintext highlighter-rouge">AFTER</code> 来控制其位置。比如，将新增的列添加到 <code class="language-plaintext highlighter-rouge">ID</code> 列后面。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">tempID</span> <span class="nb">int</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="mi">3</span> <span class="k">AFTER</span> <span class="n">ID</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="添加列到首位">添加列到首位</h4>
+
+<p>如果想添加列到首位，通过 <code class="language-plaintext highlighter-rouge">AFTER</code> 就无法实现了，对应的也不是 <code class="language-plaintext highlighter-rouge">BEFORE</code>，而是使用 <code class="language-plaintext highlighter-rouge">FIRST</code>。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">auto_increment</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="k">first</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<h3 id="删除列">删除列</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span> <span class="k">DROP</span> <span class="k">COLUMN</span> <span class="o">&lt;</span><span class="k">column_name</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>一次删除多列，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">table</span>
+<span class="k">DROP</span> <span class="k">COLUMN</span> <span class="n">column_1</span><span class="p">,</span>
+<span class="k">DROP</span> <span class="k">COLUMN</span> <span class="n">column_2</span><span class="p">,</span>
+<span class="err">…</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="记录">记录</h2>
+
+<h3 id="插入记录">插入记录</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="k">table_name</span> <span class="p">(</span><span class="n">column1</span><span class="p">,</span> <span class="n">column2</span><span class="p">,</span> <span class="n">column3</span><span class="p">,</span> <span class="p">...)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="n">value1</span><span class="p">,</span> <span class="n">value2</span><span class="p">,</span> <span class="n">value3</span><span class="p">,</span> <span class="p">...);</span>
+</code></pre></div></div>
+
+<p>一次插入多条记录：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="k">table</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span><span class="n">c2</span><span class="p">,...)</span>
+<span class="k">VALUES</span> 
+   <span class="p">(</span><span class="n">v11</span><span class="p">,</span><span class="n">v12</span><span class="p">,...),</span>
+   <span class="p">(</span><span class="n">v21</span><span class="p">,</span><span class="n">v22</span><span class="p">,...),</span>
+    <span class="p">...</span>
+   <span class="p">(</span><span class="n">vnn</span><span class="p">,</span><span class="n">vn2</span><span class="p">,...);</span>
+</code></pre></div></div>
+
+<h3 id="删除记录">删除记录</h3>
+
+<p>删除满足条件的列：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="nv">`table_name`</span> <span class="p">[</span><span class="k">WHERE</span> <span class="n">condition</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>如果是删除某列其值介于一个区间，比如 id 在 50~100 的记录，可以这样：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="k">BETWEEN</span> <span class="mi">50</span> <span class="k">AND</span> <span class="mi">100</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>需要删除的记录，其某列的值，在一个可选的列表中，可以将 <code class="language-plaintext highlighter-rouge">WHERE</code> 搭配 <code class="language-plaintext highlighter-rouge">IN</code> 关键词：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="k">IN</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,...,</span><span class="mi">254</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>像上面范围命中时，还可配合 <code class="language-plaintext highlighter-rouge">&lt;&gt;</code> 不等于来进一步控制：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="k">BETWEEN</span> <span class="mi">1</span> <span class="k">AND</span> <span class="mi">254</span> <span class="k">AND</span> <span class="n">id</span><span class="o">&lt;&gt;</span><span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>范围的情况常用的场景是命中一个日期区间的记录：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="nv">`objects`</span>
+<span class="k">WHERE</span> <span class="p">(</span><span class="n">date_field</span> <span class="k">BETWEEN</span> <span class="s1">'2010-01-30 14:15:55'</span> <span class="k">AND</span> <span class="s1">'2010-09-29 10:15:55'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>处理日期区间时除了上面的 <code class="language-plaintext highlighter-rouge">BETWEEN</code> <code class="language-plaintext highlighter-rouge">AND</code>，还可通过大于小于运算符来进行：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="nv">`objects`</span>
+<span class="k">WHERE</span> <span class="p">(</span><span class="n">date_field</span> <span class="o">&lt;=</span> <span class="s1">'2010-01-30 14:15:55'</span> <span class="k">AND</span> <span class="n">date_field</span> <span class="o">&gt;=</span> <span class="s1">'2010-09-29 10:15:55'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="更新记录">更新记录</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="p">[</span><span class="n">LOW_PRIORITY</span><span class="p">]</span> <span class="p">[</span><span class="k">IGNORE</span><span class="p">]</span> <span class="k">table_name</span> 
+<span class="k">SET</span> 
+    <span class="n">column_name1</span> <span class="o">=</span> <span class="n">expr1</span><span class="p">,</span>
+    <span class="n">column_name2</span> <span class="o">=</span> <span class="n">expr2</span><span class="p">,</span>
+    <span class="p">...</span>
+<span class="p">[</span><span class="k">WHERE</span>
+    <span class="n">condition</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">employees</span> 
+<span class="k">SET</span> 
+    <span class="n">lastname</span> <span class="o">=</span> <span class="s1">'Hill'</span><span class="p">,</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="s1">'mary.hill@classicmodelcars.com'</span>
+<span class="k">WHERE</span>
+    <span class="n">employeeNumber</span> <span class="o">=</span> <span class="mi">1056</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="外键">外键</h2>
+
+<h3 id="创建外键">创建外键</h3>
+
+<p>外键可在创建表时指定，通过 <code class="language-plaintext highlighter-rouge">FOREIGN KEY</code> 关键字。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CONSTRAINT</span> <span class="k">constraint_name</span>
+<span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="n">foreign_key_name</span> <span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+<span class="k">REFERENCES</span> <span class="n">parent_table</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+<span class="k">ON</span> <span class="k">DELETE</span> <span class="n">action</span>
+<span class="k">ON</span> <span class="k">UPDATE</span> <span class="n">action</span>
+</code></pre></div></div>
+
+<p>示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">Orders</span> <span class="p">(</span>
+    <span class="n">OrderID</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">OrderNumber</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">PersonID</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">OrderID</span><span class="p">),</span>
+    <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">PersonID</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">Persons</span><span class="p">(</span><span class="n">PersonID</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>对于已经存在的表，使用 <code class="language-plaintext highlighter-rouge">ALTER TABLE</code> 配合 <code class="language-plaintext highlighter-rouge">ADD FOREIGN KEY</code> 来完成。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">table_name</span>
+<span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="k">constraint_name</span>
+<span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="n">foreign_key_name</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+<span class="k">REFERENCES</span> <span class="n">parent_table</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+<span class="k">ON</span> <span class="k">DELETE</span> <span class="n">action</span>
+<span class="k">ON</span> <span class="k">UPDATE</span> <span class="n">action</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">Orders</span>
+<span class="k">ADD</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">PersonID</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">Persons</span><span class="p">(</span><span class="n">PersonID</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>创建的同时可指定一个外键名，否则 MySQL 会自己生成一个。这个名字在删除时有用。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">Orders</span>
+<span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="n">FK_PersonOrder</span>
+<span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">PersonID</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">Persons</span><span class="p">(</span><span class="n">PersonID</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="外键删除">外键删除</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">table_name</span> 
+<span class="k">DROP</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="k">constraint_name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="创建并查看表的关系图">创建并查看表的关系图</h2>
+
+<p>有一样是命令行无法进行的，那就是生成数据库整体的表关系图(<a href="https://dev.mysql.com/doc/workbench/en/wb-creating-eer-diagram.html">EER 图</a>)。这个需要借助文章开头提到的 GUI 工具 MySQL Workbench。</p>
+
+<p>方法是从菜单中 <code class="language-plaintext highlighter-rouge">database</code> -&gt; <code class="language-plaintext highlighter-rouge">Reverse Engineer... </code> 进入，然后跟着向导一步步直到结束，便创建好了相应数据库的表间关系图。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57940394-ff31f080-78fe-11e9-8010-96cb561734c1.png" alt="MySQL Reverse Engineer 菜单" /></p>
+<p align="center">MySQL Reverse Engineer 菜单</p>
+
+<p>生成结果示例：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57940601-5e900080-78ff-11e9-809e-118d12a6d910.png" alt="MySQL EER 图" /></p>
+<p align="center">MySQL EER 图</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/67093/how-do-i-quickly-rename-a-mysql-database-change-schema-name">How do I quickly rename a MySQL database (change schema name)?</a></li>
+  <li><a href="https://stackoverflow.com/a/47016383/1553656">Truncate all tables in a MySQL database in one command?</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html">4.5.4 mysqldump — A Database Backup Program</a></li>
+  <li><a href="https://stackoverflow.com/questions/17666249/how-to-import-an-sql-file-using-the-command-line-in-mysql">How to import an SQL file using the command line in MySQL?</a></li>
+  <li><a href="http://www.mysqltutorial.org/mysql-insert-statement.aspx">MySQL Insert</a></li>
+  <li><a href="https://stackoverflow.com/questions/15504020/delete-many-rows-from-a-table-using-id-in-mysql">Delete many rows from a table using id in Mysql</a></li>
+  <li><a href="https://stackoverflow.com/questions/14767174/modify-column-vs-change-column">Modify column Vs change column</a></li>
+  <li><a href="http://www.mysqltutorial.org/mysql-drop-column/">MySQL DROP COLUMN</a></li>
+  <li><a href="https://www.w3schools.com/sql/sql_foreignkey.asp">SQL FOREIGN KEY Constraint</a></li>
+  <li><a href="http://www.mysqltutorial.org/mysql-foreign-key/">MySQL Foreign Key</a></li>
+</ul>
+
+:ET

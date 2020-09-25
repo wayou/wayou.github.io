@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>React Hooks 方式下 props 到 state 的值同步 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="React Hooks 方式下 props 到 state 的值同步" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="React Hooks 方式下 props 到 state 的值同步 考虑如下的问题： 页面有两个计时器 A，B，两个计时器都能自由计数。但 B 的初始值由 A 提供，一旦 A 的值变化后，立即同步给 B。 这里涉及到将 props 值变化的检测和将变化后的值同步到 state 的问题。 Class 组件的实现 传统 Class 方式下，很容易想到即将废弃的生命周期函数 UNSAFE_componentWillReceiveProps，将 nextProps 与当前的 props 比较便可知道 A 计数器的值是否发生了变化。 UNSAFE_componentWillReceiveProps(nextProps) { if (nextProps.initialCount !== this.props.initialCount) { this.setState({ count: nextProps.initialCount }) } } 检测到变化后通过 setState 立即将最新的值同步到了 state 上，完成了功能。一套流程下来是很熟悉的操作。但既然已经不提倡使用 UNSAFE_componentWillReceiveProps，肯定有其他官方推荐的方式。 React 官方文档确实有相应描述： If you used componentWillReceiveProps to “reset” some state when a prop changes, consider either making a component fully controlled or fully uncontrolled with a key instead. 针对这里需要将 props 值同步到 State 的情况，这里不讨论了。 Hooks 方式的实现 使用 Hooks 方式时，因为是函数类型的组件，是没有相应生命周期来做这个事情的。如果单单只是检测 props 的变化，可以这样写： useEffect(() =&gt; { console.log(&#39;initialCount changed&#39;, props.initialCount); }, [props.initialCount]) useEffect(fn, option) 会在每次 render 后执行，第二个参数 [props.initialCount] 则限定其只在 props.initialCount 变化时才执行，完美符合文章开头的要求。 因为是在 render 后执行，所以此时拿到的是最新的 props 值。如果想要获取旧数据，则需要借助 useRef。 Class 组件下，ref 用来绑定对 DOM 的引用，hooks 方式下，根据官网文档的描述，它的作用就灵活些了，并不限定于引用 DOM。通过 useRef 创建的对象其 current 属性可存储任意值，作用等同于 Class 上的静态属性。 联想到 useEffect 是在 render 后执行，所以可在 useEffect 中将新的 props 同步到 ref 上，而每次 render 使用的 ref 是同步之前的旧值，这样能够在组件中同时获取到新旧 props。下面看代码比较直观： 以下示例代码来自 React 官方文档 function Counter() { const [count, setCount] = useState(0); const prevCountRef = useRef(); useEffect(() =&gt; { + prevCountRef.current = count; }); + const prevCount = prevCountRef.current; return &lt;h1&gt;Now: {count}, before: {prevCount}&lt;/h1&gt;; } 至此，解决了技术的问题，结合开头的需求，计数器可以这么写： import React, { useState, useRef, useEffect } from &#39;react&#39;; function Counter({ initialCount }) { const [count, setCount] = useState(initialCount) const prevCountRef = useRef(initialCount); useEffect(() =&gt; { prevCountRef.current = initialCount; }) if (initialCount !== prevCountRef.current &amp;&amp; count !== initialCount) { setCount(initialCount) } return &lt;div&gt; &lt;p&gt;counter2:{count}&lt;/p&gt; &lt;div&gt; &lt;button onClick={() =&gt; { setCount(count + 1) }}&gt;+&lt;/button&gt; &lt;/div &gt; &lt;/div &gt; } function App() { const [count, setCount] = useState(0) return ( &lt;div className=&quot;App&quot;&gt; &lt;h3&gt;hook ver&lt;/h3&gt; &lt;p&gt;counter1:{count}&lt;/p&gt; &lt;div&gt; &lt;button onClick={() =&gt; { setCount(count + 1) }}&gt;+&lt;/button&gt; &lt;/div&gt; &lt;Counter initialCount={count}&gt;&lt;/Counter&gt; &lt;/div&gt; ); } export default App; 完整的代码可查看这里，在线示例点此查看。 总结 针对在函数组件中需要获取旧数据的问题，目前是使用 useRef 间接实现，但从文档上的描述来看，不排除 React 未来的版本中会自带类似 usePrevious 这样命名的 hook 开箱即用，就没有那么麻烦了。毕竟，获取上一次的值也是比较常见的操作。 相关资源 Hooks FAQ - How to get the previous props or state? useRef useEffect Is there something like instance variables? REACT CLASS FEATURES VS. HOOKS EQUIVALENTS" />
+<meta property="og:description" content="React Hooks 方式下 props 到 state 的值同步 考虑如下的问题： 页面有两个计时器 A，B，两个计时器都能自由计数。但 B 的初始值由 A 提供，一旦 A 的值变化后，立即同步给 B。 这里涉及到将 props 值变化的检测和将变化后的值同步到 state 的问题。 Class 组件的实现 传统 Class 方式下，很容易想到即将废弃的生命周期函数 UNSAFE_componentWillReceiveProps，将 nextProps 与当前的 props 比较便可知道 A 计数器的值是否发生了变化。 UNSAFE_componentWillReceiveProps(nextProps) { if (nextProps.initialCount !== this.props.initialCount) { this.setState({ count: nextProps.initialCount }) } } 检测到变化后通过 setState 立即将最新的值同步到了 state 上，完成了功能。一套流程下来是很熟悉的操作。但既然已经不提倡使用 UNSAFE_componentWillReceiveProps，肯定有其他官方推荐的方式。 React 官方文档确实有相应描述： If you used componentWillReceiveProps to “reset” some state when a prop changes, consider either making a component fully controlled or fully uncontrolled with a key instead. 针对这里需要将 props 值同步到 State 的情况，这里不讨论了。 Hooks 方式的实现 使用 Hooks 方式时，因为是函数类型的组件，是没有相应生命周期来做这个事情的。如果单单只是检测 props 的变化，可以这样写： useEffect(() =&gt; { console.log(&#39;initialCount changed&#39;, props.initialCount); }, [props.initialCount]) useEffect(fn, option) 会在每次 render 后执行，第二个参数 [props.initialCount] 则限定其只在 props.initialCount 变化时才执行，完美符合文章开头的要求。 因为是在 render 后执行，所以此时拿到的是最新的 props 值。如果想要获取旧数据，则需要借助 useRef。 Class 组件下，ref 用来绑定对 DOM 的引用，hooks 方式下，根据官网文档的描述，它的作用就灵活些了，并不限定于引用 DOM。通过 useRef 创建的对象其 current 属性可存储任意值，作用等同于 Class 上的静态属性。 联想到 useEffect 是在 render 后执行，所以可在 useEffect 中将新的 props 同步到 ref 上，而每次 render 使用的 ref 是同步之前的旧值，这样能够在组件中同时获取到新旧 props。下面看代码比较直观： 以下示例代码来自 React 官方文档 function Counter() { const [count, setCount] = useState(0); const prevCountRef = useRef(); useEffect(() =&gt; { + prevCountRef.current = count; }); + const prevCount = prevCountRef.current; return &lt;h1&gt;Now: {count}, before: {prevCount}&lt;/h1&gt;; } 至此，解决了技术的问题，结合开头的需求，计数器可以这么写： import React, { useState, useRef, useEffect } from &#39;react&#39;; function Counter({ initialCount }) { const [count, setCount] = useState(initialCount) const prevCountRef = useRef(initialCount); useEffect(() =&gt; { prevCountRef.current = initialCount; }) if (initialCount !== prevCountRef.current &amp;&amp; count !== initialCount) { setCount(initialCount) } return &lt;div&gt; &lt;p&gt;counter2:{count}&lt;/p&gt; &lt;div&gt; &lt;button onClick={() =&gt; { setCount(count + 1) }}&gt;+&lt;/button&gt; &lt;/div &gt; &lt;/div &gt; } function App() { const [count, setCount] = useState(0) return ( &lt;div className=&quot;App&quot;&gt; &lt;h3&gt;hook ver&lt;/h3&gt; &lt;p&gt;counter1:{count}&lt;/p&gt; &lt;div&gt; &lt;button onClick={() =&gt; { setCount(count + 1) }}&gt;+&lt;/button&gt; &lt;/div&gt; &lt;Counter initialCount={count}&gt;&lt;/Counter&gt; &lt;/div&gt; ); } export default App; 完整的代码可查看这里，在线示例点此查看。 总结 针对在函数组件中需要获取旧数据的问题，目前是使用 useRef 间接实现，但从文档上的描述来看，不排除 React 未来的版本中会自带类似 usePrevious 这样命名的 hook 开箱即用，就没有那么麻烦了。毕竟，获取上一次的值也是比较常见的操作。 相关资源 Hooks FAQ - How to get the previous props or state? useRef useEffect Is there something like instance variables? REACT CLASS FEATURES VS. HOOKS EQUIVALENTS" />
+<link rel="canonical" href="http://localhost:4000/2019/02/14/React-Hooks-%E6%96%B9%E5%BC%8F%E4%B8%8B-props-%E5%88%B0-state-%E7%9A%84%E5%80%BC%E5%90%8C%E6%AD%A5.html" />
+<meta property="og:url" content="http://localhost:4000/2019/02/14/React-Hooks-%E6%96%B9%E5%BC%8F%E4%B8%8B-props-%E5%88%B0-state-%E7%9A%84%E5%80%BC%E5%90%8C%E6%AD%A5.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-02-14T22:02:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/02/14/React-Hooks-%E6%96%B9%E5%BC%8F%E4%B8%8B-props-%E5%88%B0-state-%E7%9A%84%E5%80%BC%E5%90%8C%E6%AD%A5.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/02/14/React-Hooks-%E6%96%B9%E5%BC%8F%E4%B8%8B-props-%E5%88%B0-state-%E7%9A%84%E5%80%BC%E5%90%8C%E6%AD%A5.html"},"description":"React Hooks 方式下 props 到 state 的值同步 考虑如下的问题： 页面有两个计时器 A，B，两个计时器都能自由计数。但 B 的初始值由 A 提供，一旦 A 的值变化后，立即同步给 B。 这里涉及到将 props 值变化的检测和将变化后的值同步到 state 的问题。 Class 组件的实现 传统 Class 方式下，很容易想到即将废弃的生命周期函数 UNSAFE_componentWillReceiveProps，将 nextProps 与当前的 props 比较便可知道 A 计数器的值是否发生了变化。 UNSAFE_componentWillReceiveProps(nextProps) { if (nextProps.initialCount !== this.props.initialCount) { this.setState({ count: nextProps.initialCount }) } } 检测到变化后通过 setState 立即将最新的值同步到了 state 上，完成了功能。一套流程下来是很熟悉的操作。但既然已经不提倡使用 UNSAFE_componentWillReceiveProps，肯定有其他官方推荐的方式。 React 官方文档确实有相应描述： If you used componentWillReceiveProps to “reset” some state when a prop changes, consider either making a component fully controlled or fully uncontrolled with a key instead. 针对这里需要将 props 值同步到 State 的情况，这里不讨论了。 Hooks 方式的实现 使用 Hooks 方式时，因为是函数类型的组件，是没有相应生命周期来做这个事情的。如果单单只是检测 props 的变化，可以这样写： useEffect(() =&gt; { console.log(&#39;initialCount changed&#39;, props.initialCount); }, [props.initialCount]) useEffect(fn, option) 会在每次 render 后执行，第二个参数 [props.initialCount] 则限定其只在 props.initialCount 变化时才执行，完美符合文章开头的要求。 因为是在 render 后执行，所以此时拿到的是最新的 props 值。如果想要获取旧数据，则需要借助 useRef。 Class 组件下，ref 用来绑定对 DOM 的引用，hooks 方式下，根据官网文档的描述，它的作用就灵活些了，并不限定于引用 DOM。通过 useRef 创建的对象其 current 属性可存储任意值，作用等同于 Class 上的静态属性。 联想到 useEffect 是在 render 后执行，所以可在 useEffect 中将新的 props 同步到 ref 上，而每次 render 使用的 ref 是同步之前的旧值，这样能够在组件中同时获取到新旧 props。下面看代码比较直观： 以下示例代码来自 React 官方文档 function Counter() { const [count, setCount] = useState(0); const prevCountRef = useRef(); useEffect(() =&gt; { + prevCountRef.current = count; }); + const prevCount = prevCountRef.current; return &lt;h1&gt;Now: {count}, before: {prevCount}&lt;/h1&gt;; } 至此，解决了技术的问题，结合开头的需求，计数器可以这么写： import React, { useState, useRef, useEffect } from &#39;react&#39;; function Counter({ initialCount }) { const [count, setCount] = useState(initialCount) const prevCountRef = useRef(initialCount); useEffect(() =&gt; { prevCountRef.current = initialCount; }) if (initialCount !== prevCountRef.current &amp;&amp; count !== initialCount) { setCount(initialCount) } return &lt;div&gt; &lt;p&gt;counter2:{count}&lt;/p&gt; &lt;div&gt; &lt;button onClick={() =&gt; { setCount(count + 1) }}&gt;+&lt;/button&gt; &lt;/div &gt; &lt;/div &gt; } function App() { const [count, setCount] = useState(0) return ( &lt;div className=&quot;App&quot;&gt; &lt;h3&gt;hook ver&lt;/h3&gt; &lt;p&gt;counter1:{count}&lt;/p&gt; &lt;div&gt; &lt;button onClick={() =&gt; { setCount(count + 1) }}&gt;+&lt;/button&gt; &lt;/div&gt; &lt;Counter initialCount={count}&gt;&lt;/Counter&gt; &lt;/div&gt; ); } export default App; 完整的代码可查看这里，在线示例点此查看。 总结 针对在函数组件中需要获取旧数据的问题，目前是使用 useRef 间接实现，但从文档上的描述来看，不排除 React 未来的版本中会自带类似 usePrevious 这样命名的 hook 开箱即用，就没有那么麻烦了。毕竟，获取上一次的值也是比较常见的操作。 相关资源 Hooks FAQ - How to get the previous props or state? useRef useEffect Is there something like instance variables? REACT CLASS FEATURES VS. HOOKS EQUIVALENTS","@type":"BlogPosting","headline":"React Hooks 方式下 props 到 state 的值同步","dateModified":"2019-02-14T22:02:00+08:00","datePublished":"2019-02-14T22:02:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">React Hooks 方式下 props 到 state 的值同步 </h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-02-14T22:02:00+08:00" itemprop="datePublished">Feb 14, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="react-hooks-方式下-props-到-state-的值同步">React Hooks 方式下 props 到 state 的值同步</h1>
+
+<p>考虑如下的问题：
+页面有两个计时器 A，B，两个计时器都能自由计数。但 B 的初始值由 A 提供，一旦 A 的值变化后，立即同步给 B。</p>
+
+<p>这里涉及到将 props 值变化的检测和将变化后的值同步到 state 的问题。</p>
+
+<h3 id="class-组件的实现">Class 组件的实现</h3>
+
+<p>传统 Class 方式下，很容易想到即将废弃的生命周期函数 <code class="language-plaintext highlighter-rouge">UNSAFE_componentWillReceiveProps</code>，将 <code class="language-plaintext highlighter-rouge">nextProps</code> 与当前的 <code class="language-plaintext highlighter-rouge">props</code> 比较便可知道 A 计数器的值是否发生了变化。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+  <span class="nx">UNSAFE_componentWillReceiveProps</span><span class="p">(</span><span class="nx">nextProps</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">nextProps</span><span class="p">.</span><span class="nx">initialCount</span> <span class="o">!==</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">initialCount</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span>
+        <span class="na">count</span><span class="p">:</span> <span class="nx">nextProps</span><span class="p">.</span><span class="nx">initialCount</span>
+      <span class="p">})</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>检测到变化后通过 <code class="language-plaintext highlighter-rouge">setState</code> 立即将最新的值同步到了 state 上，完成了功能。一套流程下来是很熟悉的操作。但既然已经不提倡使用 <code class="language-plaintext highlighter-rouge">UNSAFE_componentWillReceiveProps</code>，肯定有其他官方推荐的方式。</p>
+
+<p>React 官方文档确实有相应<a href="https://reactjs.org/docs/react-component.html#unsafe_componentwillreceiveprops">描述</a>：</p>
+
+<blockquote>
+  <p>If you used componentWillReceiveProps to “reset” some state when a prop changes, consider either making a component fully controlled or fully uncontrolled with a key instead.</p>
+</blockquote>
+
+<p>针对这里需要将 props 值同步到 State 的情况，这里不讨论了。</p>
+
+<h3 id="hooks-方式的实现">Hooks 方式的实现</h3>
+
+<p>使用 Hooks 方式时，因为是函数类型的组件，是没有相应生命周期来做这个事情的。如果单单只是检测 props 的变化，可以这样写：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">initialCount changed</span><span class="dl">'</span><span class="p">,</span> <span class="nx">props</span><span class="p">.</span><span class="nx">initialCount</span><span class="p">);</span>
+<span class="p">},</span> <span class="p">[</span><span class="nx">props</span><span class="p">.</span><span class="nx">initialCount</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">useEffect(fn, option)</code> 会在每次 render 后执行，第二个参数 <code class="language-plaintext highlighter-rouge">[props.initialCount]</code> 则限定其只在 <code class="language-plaintext highlighter-rouge">props.initialCount</code> 变化时才执行，完美符合文章开头的要求。</p>
+
+<p>因为是在 render 后执行，所以此时拿到的是最新的 props 值。如果想要获取旧数据，则需要借助 <code class="language-plaintext highlighter-rouge">useRef</code>。</p>
+
+<p>Class 组件下，<code class="language-plaintext highlighter-rouge">ref</code> 用来绑定对 DOM 的引用，hooks 方式下，根据<a href="https://reactjs.org/docs/hooks-faq.html#is-there-something-like-instance-variables">官网文档的描述</a>，它的作用就灵活些了，并不限定于引用 DOM。通过 <code class="language-plaintext highlighter-rouge">useRef</code> 创建的对象其 <code class="language-plaintext highlighter-rouge">current</code> 属性可存储任意值，作用等同于 Class 上的静态属性。</p>
+
+<p>联想到 <code class="language-plaintext highlighter-rouge">useEffect</code> 是在 render 后执行，所以可在 <code class="language-plaintext highlighter-rouge">useEffect</code> 中将新的 props 同步到 ref 上，而每次 render 使用的 ref 是同步之前的旧值，这样能够在组件中同时获取到新旧 props。下面看代码比较直观：</p>
+
+<p><em>以下示例代码来自 <a href="https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state">React 官方文档</a></em></p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function Counter() {
+</span>  const [count, setCount] = useState(0);
+
+  const prevCountRef = useRef();
+  useEffect(() =&gt; {
+<span class="gi">+    prevCountRef.current = count;
+</span>  });
+<span class="gi">+  const prevCount = prevCountRef.current;
+</span>
+  return &lt;h1&gt;Now: {count}, before: {prevCount}&lt;/h1&gt;;
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>至此，解决了技术的问题，结合开头的需求，计数器可以这么写：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useRef</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Counter</span><span class="p">({</span> <span class="nx">initialCount</span> <span class="p">})</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">count</span><span class="p">,</span> <span class="nx">setCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="nx">initialCount</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">prevCountRef</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">(</span><span class="nx">initialCount</span><span class="p">);</span>
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">prevCountRef</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="nx">initialCount</span><span class="p">;</span>
+  <span class="p">})</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">initialCount</span> <span class="o">!==</span> <span class="nx">prevCountRef</span><span class="p">.</span><span class="nx">current</span> <span class="o">&amp;&amp;</span> <span class="nx">count</span> <span class="o">!==</span> <span class="nx">initialCount</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">setCount</span><span class="p">(</span><span class="nx">initialCount</span><span class="p">)</span>
+  <span class="p">}</span>
+  
+  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">counter2</span><span class="p">:{</span><span class="nx">count</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nx">setCount</span><span class="p">(</span><span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">}}</span><span class="o">&gt;+&lt;</span><span class="sr">/button</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/div </span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/div </span><span class="err">&gt;
+</span><span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">count</span><span class="p">,</span> <span class="nx">setCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">App</span><span class="dl">"</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">h3</span><span class="o">&gt;</span><span class="nx">hook</span> <span class="nx">ver</span><span class="o">&lt;</span><span class="sr">/h3</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">counter1</span><span class="p">:{</span><span class="nx">count</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nx">setCount</span><span class="p">(</span><span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">}}</span><span class="o">&gt;+&lt;</span><span class="sr">/button</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">Counter</span> <span class="nx">initialCount</span><span class="o">=</span><span class="p">{</span><span class="nx">count</span><span class="p">}</span><span class="o">&gt;&lt;</span><span class="sr">/Counter</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>完整的代码可查看<a href="https://github.com/wayou/wayou.github.io/blob/master/posts/react-hooks-access-prev-prop/src/src/App.js">这里</a>，在线示例<a href="https://wayou.github.io/posts/react-hooks-access-prev-prop/src/build">点此查看</a>。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>针对在函数组件中需要获取旧数据的问题，目前是使用 <code class="language-plaintext highlighter-rouge">useRef</code> 间接实现，但从文档上的描述来看，不排除 React 未来的版本中会自带类似 <code class="language-plaintext highlighter-rouge">usePrevious</code> 这样命名的 hook 开箱即用，就没有那么麻烦了。毕竟，获取上一次的值也是比较常见的操作。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state">Hooks FAQ - How to get the previous props or state?</a></li>
+  <li><a href="https://reactjs.org/docs/hooks-reference.html#useref">useRef</a></li>
+  <li><a href="https://reactjs.org/docs/hooks-reference.html#useeffect">useEffect</a></li>
+  <li><a href="https://reactjs.org/docs/hooks-faq.html#is-there-something-like-instance-variables">Is there something like instance variables?</a></li>
+  <li><a href="https://blog.solutotlv.com/react-class-to-hooks/">REACT CLASS FEATURES VS. HOOKS EQUIVALENTS</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/02/14/React-Hooks-%E6%96%B9%E5%BC%8F%E4%B8%8B-props-%E5%88%B0-state-%E7%9A%84%E5%80%BC%E5%90%8C%E6%AD%A5.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

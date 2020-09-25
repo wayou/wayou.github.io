@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>TypeScript infer 关键字 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="TypeScript infer 关键字" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TypeScript infer 关键字 考察如下类型： type PromiseType&lt;T&gt; = (args: any[]) =&gt; Promise&lt;T&gt;; 那么对于符合上面类型的一个方法，如何得知其 Promise 返回的类型？ 譬如对于这么一个返回 string 类型的 Promise: async function stringPromise() { return &quot;string promise&quot;; } RetrunType 如果你对 TypeScript 不是那么陌生，可能知道官方类型库中提供了 RetrunType 可获取方法的返回类型，其用法如下： type stringPromiseReturnType = ReturnType&lt;typeof stringPromise&gt;; // Promise&lt;string&gt; 确实拿到了方法的返回类型，不过是 Promise&lt;string&gt;。但其实是想要返回里面的 string，所以和我们想要的还差点意思。 既然都能从一个方法反解其返回类型，肯定还能从 Promsie&lt;T&gt; 中反解出 T。所以不不妨看看 ReturnType 的定义： /** * Obtain the return type of a function type */ type ReturnType&lt;T extends (...args: any) =&gt; any&gt; = T extends (...args: any) =&gt; infer R ? R : any; F12 一看，果然发现了点什么，这里使用了 infer 关键字。 条件类型及 infer 上面 T extends U ? X : Y 的形式为条件类型（Conditional Types），即，如果类型 T 能够赋值给类型 U，那么该表达式返回类型 X，否则返回类型 Y。 所以，考察 ReturnType的定义， type ReturnType&lt;T extends (...args: any) =&gt; any&gt; = T extends (...args: any) =&gt; infer R ? R : any; 如果传入的类型 T 能够赋值给 (...args: any) =&gt; R 则返回类型 R。 但是这里类型 R 从何而来？讲道理，泛型中的变量需要外部指定，即 RetrunType&lt;T,R&gt;，但我们不是要得到 R 么，所以不能声明在这其中。这里 infer 便解决了这个问题。表达式右边的类型中，加上 infer 前缀我们便得到了反解出的类型变量 R，配合 extends 条件类型，可得到这个反解出的类型 R。这里 R 即为函数 (...args: any) =&gt; R 的返回类型。 反解 Promise 有了上面的基础，推而广之就很好反解 Promise&lt;T&gt; 中的 T 了。 type PromiseType&lt;T&gt; = (args: any[]) =&gt; Promise&lt;T&gt;; type UnPromisify&lt;T&gt; = T extends PromiseType&lt;infer U&gt; ? U : never; 测试 UnPromisify&lt;T&gt;： async function stringPromise() { return &quot;string promise&quot;; } async function numberPromise() { return 1; } interface Person { name: string; age: number; } async function personPromise() { return { name: &quot;Wayou&quot;, age: 999 } as Person; } type extractStringPromise = UnPromisify&lt;typeof stringPromise&gt;; // string type extractNumberPromise = UnPromisify&lt;typeof numberPromise&gt;; // number type extractPersonPromise = UnPromisify&lt;typeof personPromise&gt;; // Person 解析参数数组的类型 反解还可用在其他很多场景，比如解析函数入参的类型。 type VariadicFn&lt;A extends any[]&gt; = (...args: A) =&gt; any; type ArgsType&lt;T&gt; = T extends VariadicFn&lt;infer A&gt; ? A : never; type Fn = (a: number, b: string) =&gt; string; type Fn2Args = ArgsType&lt;Fn&gt;; // [number, string] 另一个示例 假设我们编写了两个按钮组件，底层渲染的是 HTML 原生的 button 和 a 标签。为了组件最大化可定制，原生元素支持的属性该组件也需要支持，因此可这样来写组件的 props: type ButtonProps = { color: string; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt;, HTMLButtonElement &gt;; type AnchorButtonProps = { color: string; disabled: boolean; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.AnchorHTMLAttributes&lt;HTMLAnchorElement&gt;, HTMLAnchorElement &gt;; export function Button({ children, ...props }: ButtonProps) { //... return &lt;button {...props}&gt;{children}&lt;/button&gt;; } export function AnchorButton({ children, ...props }: AnchorButtonProps) { //... return &lt;a {...props}&gt;{children}&lt;/a&gt;; } 单看 Button 和 AnchorButton 的属性， type ButtonProps = { color: string; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt;, HTMLButtonElement &gt;; type AnchorButtonProps = { color: string; disabled: boolean; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.AnchorHTMLAttributes&lt;HTMLAnchorElement&gt;, HTMLAnchorElement &gt;; 不难看出两者是有共性的，即可抽取成如下的形式： type ExtendHTMLAttributes&lt;P, T, K&gt; = P &amp; React.DetailedHTMLProps&lt;T, K&gt;; 其中 T 呢又是 T&lt;K&gt; 形式，即 T 中包含或有使用了 K。因此对使用者来说，如果传递了 T&lt;K&gt; 形式，就没必要单独再传递一次 K，我们应该是能利用 infer 从 T&lt;K&gt; 解析出 K 的。 T extends React.HtmlHTMLAttributes&lt;infer K&gt; ? K : HTMLElement 所以抽取出来两种组件 Props 可公用的一个类型如下： export type ExtendHTMLAttributes&lt; /** 组件自定义属性 */ P, /** 原生 HTML 标签自有属性 */ T extends React.HtmlHTMLAttributes&lt;HTMLElement&gt; &gt; = P &amp; React.DetailedHTMLProps&lt; T, T extends React.HtmlHTMLAttributes&lt;infer K&gt; ? K : HTMLElement &gt;; 利用抽取的 ExtendHTMLAttributes，两种按钮的 Props 可重新书写成如下形式： type ButtonProps = ExtendHTMLAttributes&lt; { color: string; children: React.ReactChildren; }, React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt; &gt;; type AnchorButtonProps = ExtendHTMLAttributes&lt; { color: string; disabled: boolean; children: React.ReactChildren; }, React.AnchorHTMLAttributes&lt;HTMLAnchorElement&gt; &gt;; 去掉了两者重叠的部分，看起来简洁了一些。关键后续编写其他组件时，如果想支持原生 HTML 属性，直接复用这里的 ExtendHTMLAttributes 类型即可。 相关资源 TypeScript 2.8 - Conditional Types Unwrapping composite types in Typescript" />
+<meta property="og:description" content="TypeScript infer 关键字 考察如下类型： type PromiseType&lt;T&gt; = (args: any[]) =&gt; Promise&lt;T&gt;; 那么对于符合上面类型的一个方法，如何得知其 Promise 返回的类型？ 譬如对于这么一个返回 string 类型的 Promise: async function stringPromise() { return &quot;string promise&quot;; } RetrunType 如果你对 TypeScript 不是那么陌生，可能知道官方类型库中提供了 RetrunType 可获取方法的返回类型，其用法如下： type stringPromiseReturnType = ReturnType&lt;typeof stringPromise&gt;; // Promise&lt;string&gt; 确实拿到了方法的返回类型，不过是 Promise&lt;string&gt;。但其实是想要返回里面的 string，所以和我们想要的还差点意思。 既然都能从一个方法反解其返回类型，肯定还能从 Promsie&lt;T&gt; 中反解出 T。所以不不妨看看 ReturnType 的定义： /** * Obtain the return type of a function type */ type ReturnType&lt;T extends (...args: any) =&gt; any&gt; = T extends (...args: any) =&gt; infer R ? R : any; F12 一看，果然发现了点什么，这里使用了 infer 关键字。 条件类型及 infer 上面 T extends U ? X : Y 的形式为条件类型（Conditional Types），即，如果类型 T 能够赋值给类型 U，那么该表达式返回类型 X，否则返回类型 Y。 所以，考察 ReturnType的定义， type ReturnType&lt;T extends (...args: any) =&gt; any&gt; = T extends (...args: any) =&gt; infer R ? R : any; 如果传入的类型 T 能够赋值给 (...args: any) =&gt; R 则返回类型 R。 但是这里类型 R 从何而来？讲道理，泛型中的变量需要外部指定，即 RetrunType&lt;T,R&gt;，但我们不是要得到 R 么，所以不能声明在这其中。这里 infer 便解决了这个问题。表达式右边的类型中，加上 infer 前缀我们便得到了反解出的类型变量 R，配合 extends 条件类型，可得到这个反解出的类型 R。这里 R 即为函数 (...args: any) =&gt; R 的返回类型。 反解 Promise 有了上面的基础，推而广之就很好反解 Promise&lt;T&gt; 中的 T 了。 type PromiseType&lt;T&gt; = (args: any[]) =&gt; Promise&lt;T&gt;; type UnPromisify&lt;T&gt; = T extends PromiseType&lt;infer U&gt; ? U : never; 测试 UnPromisify&lt;T&gt;： async function stringPromise() { return &quot;string promise&quot;; } async function numberPromise() { return 1; } interface Person { name: string; age: number; } async function personPromise() { return { name: &quot;Wayou&quot;, age: 999 } as Person; } type extractStringPromise = UnPromisify&lt;typeof stringPromise&gt;; // string type extractNumberPromise = UnPromisify&lt;typeof numberPromise&gt;; // number type extractPersonPromise = UnPromisify&lt;typeof personPromise&gt;; // Person 解析参数数组的类型 反解还可用在其他很多场景，比如解析函数入参的类型。 type VariadicFn&lt;A extends any[]&gt; = (...args: A) =&gt; any; type ArgsType&lt;T&gt; = T extends VariadicFn&lt;infer A&gt; ? A : never; type Fn = (a: number, b: string) =&gt; string; type Fn2Args = ArgsType&lt;Fn&gt;; // [number, string] 另一个示例 假设我们编写了两个按钮组件，底层渲染的是 HTML 原生的 button 和 a 标签。为了组件最大化可定制，原生元素支持的属性该组件也需要支持，因此可这样来写组件的 props: type ButtonProps = { color: string; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt;, HTMLButtonElement &gt;; type AnchorButtonProps = { color: string; disabled: boolean; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.AnchorHTMLAttributes&lt;HTMLAnchorElement&gt;, HTMLAnchorElement &gt;; export function Button({ children, ...props }: ButtonProps) { //... return &lt;button {...props}&gt;{children}&lt;/button&gt;; } export function AnchorButton({ children, ...props }: AnchorButtonProps) { //... return &lt;a {...props}&gt;{children}&lt;/a&gt;; } 单看 Button 和 AnchorButton 的属性， type ButtonProps = { color: string; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt;, HTMLButtonElement &gt;; type AnchorButtonProps = { color: string; disabled: boolean; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.AnchorHTMLAttributes&lt;HTMLAnchorElement&gt;, HTMLAnchorElement &gt;; 不难看出两者是有共性的，即可抽取成如下的形式： type ExtendHTMLAttributes&lt;P, T, K&gt; = P &amp; React.DetailedHTMLProps&lt;T, K&gt;; 其中 T 呢又是 T&lt;K&gt; 形式，即 T 中包含或有使用了 K。因此对使用者来说，如果传递了 T&lt;K&gt; 形式，就没必要单独再传递一次 K，我们应该是能利用 infer 从 T&lt;K&gt; 解析出 K 的。 T extends React.HtmlHTMLAttributes&lt;infer K&gt; ? K : HTMLElement 所以抽取出来两种组件 Props 可公用的一个类型如下： export type ExtendHTMLAttributes&lt; /** 组件自定义属性 */ P, /** 原生 HTML 标签自有属性 */ T extends React.HtmlHTMLAttributes&lt;HTMLElement&gt; &gt; = P &amp; React.DetailedHTMLProps&lt; T, T extends React.HtmlHTMLAttributes&lt;infer K&gt; ? K : HTMLElement &gt;; 利用抽取的 ExtendHTMLAttributes，两种按钮的 Props 可重新书写成如下形式： type ButtonProps = ExtendHTMLAttributes&lt; { color: string; children: React.ReactChildren; }, React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt; &gt;; type AnchorButtonProps = ExtendHTMLAttributes&lt; { color: string; disabled: boolean; children: React.ReactChildren; }, React.AnchorHTMLAttributes&lt;HTMLAnchorElement&gt; &gt;; 去掉了两者重叠的部分，看起来简洁了一些。关键后续编写其他组件时，如果想支持原生 HTML 属性，直接复用这里的 ExtendHTMLAttributes 类型即可。 相关资源 TypeScript 2.8 - Conditional Types Unwrapping composite types in Typescript" />
+<link rel="canonical" href="http://localhost:4000/2019/05/30/TypeScript-infer-%E5%85%B3%E9%94%AE%E5%AD%97.html" />
+<meta property="og:url" content="http://localhost:4000/2019/05/30/TypeScript-infer-%E5%85%B3%E9%94%AE%E5%AD%97.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-30T01:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/05/30/TypeScript-infer-%E5%85%B3%E9%94%AE%E5%AD%97.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/05/30/TypeScript-infer-%E5%85%B3%E9%94%AE%E5%AD%97.html"},"description":"TypeScript infer 关键字 考察如下类型： type PromiseType&lt;T&gt; = (args: any[]) =&gt; Promise&lt;T&gt;; 那么对于符合上面类型的一个方法，如何得知其 Promise 返回的类型？ 譬如对于这么一个返回 string 类型的 Promise: async function stringPromise() { return &quot;string promise&quot;; } RetrunType 如果你对 TypeScript 不是那么陌生，可能知道官方类型库中提供了 RetrunType 可获取方法的返回类型，其用法如下： type stringPromiseReturnType = ReturnType&lt;typeof stringPromise&gt;; // Promise&lt;string&gt; 确实拿到了方法的返回类型，不过是 Promise&lt;string&gt;。但其实是想要返回里面的 string，所以和我们想要的还差点意思。 既然都能从一个方法反解其返回类型，肯定还能从 Promsie&lt;T&gt; 中反解出 T。所以不不妨看看 ReturnType 的定义： /** * Obtain the return type of a function type */ type ReturnType&lt;T extends (...args: any) =&gt; any&gt; = T extends (...args: any) =&gt; infer R ? R : any; F12 一看，果然发现了点什么，这里使用了 infer 关键字。 条件类型及 infer 上面 T extends U ? X : Y 的形式为条件类型（Conditional Types），即，如果类型 T 能够赋值给类型 U，那么该表达式返回类型 X，否则返回类型 Y。 所以，考察 ReturnType的定义， type ReturnType&lt;T extends (...args: any) =&gt; any&gt; = T extends (...args: any) =&gt; infer R ? R : any; 如果传入的类型 T 能够赋值给 (...args: any) =&gt; R 则返回类型 R。 但是这里类型 R 从何而来？讲道理，泛型中的变量需要外部指定，即 RetrunType&lt;T,R&gt;，但我们不是要得到 R 么，所以不能声明在这其中。这里 infer 便解决了这个问题。表达式右边的类型中，加上 infer 前缀我们便得到了反解出的类型变量 R，配合 extends 条件类型，可得到这个反解出的类型 R。这里 R 即为函数 (...args: any) =&gt; R 的返回类型。 反解 Promise 有了上面的基础，推而广之就很好反解 Promise&lt;T&gt; 中的 T 了。 type PromiseType&lt;T&gt; = (args: any[]) =&gt; Promise&lt;T&gt;; type UnPromisify&lt;T&gt; = T extends PromiseType&lt;infer U&gt; ? U : never; 测试 UnPromisify&lt;T&gt;： async function stringPromise() { return &quot;string promise&quot;; } async function numberPromise() { return 1; } interface Person { name: string; age: number; } async function personPromise() { return { name: &quot;Wayou&quot;, age: 999 } as Person; } type extractStringPromise = UnPromisify&lt;typeof stringPromise&gt;; // string type extractNumberPromise = UnPromisify&lt;typeof numberPromise&gt;; // number type extractPersonPromise = UnPromisify&lt;typeof personPromise&gt;; // Person 解析参数数组的类型 反解还可用在其他很多场景，比如解析函数入参的类型。 type VariadicFn&lt;A extends any[]&gt; = (...args: A) =&gt; any; type ArgsType&lt;T&gt; = T extends VariadicFn&lt;infer A&gt; ? A : never; type Fn = (a: number, b: string) =&gt; string; type Fn2Args = ArgsType&lt;Fn&gt;; // [number, string] 另一个示例 假设我们编写了两个按钮组件，底层渲染的是 HTML 原生的 button 和 a 标签。为了组件最大化可定制，原生元素支持的属性该组件也需要支持，因此可这样来写组件的 props: type ButtonProps = { color: string; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt;, HTMLButtonElement &gt;; type AnchorButtonProps = { color: string; disabled: boolean; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.AnchorHTMLAttributes&lt;HTMLAnchorElement&gt;, HTMLAnchorElement &gt;; export function Button({ children, ...props }: ButtonProps) { //... return &lt;button {...props}&gt;{children}&lt;/button&gt;; } export function AnchorButton({ children, ...props }: AnchorButtonProps) { //... return &lt;a {...props}&gt;{children}&lt;/a&gt;; } 单看 Button 和 AnchorButton 的属性， type ButtonProps = { color: string; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt;, HTMLButtonElement &gt;; type AnchorButtonProps = { color: string; disabled: boolean; children: React.ReactChildren; } &amp; React.DetailedHTMLProps&lt; React.AnchorHTMLAttributes&lt;HTMLAnchorElement&gt;, HTMLAnchorElement &gt;; 不难看出两者是有共性的，即可抽取成如下的形式： type ExtendHTMLAttributes&lt;P, T, K&gt; = P &amp; React.DetailedHTMLProps&lt;T, K&gt;; 其中 T 呢又是 T&lt;K&gt; 形式，即 T 中包含或有使用了 K。因此对使用者来说，如果传递了 T&lt;K&gt; 形式，就没必要单独再传递一次 K，我们应该是能利用 infer 从 T&lt;K&gt; 解析出 K 的。 T extends React.HtmlHTMLAttributes&lt;infer K&gt; ? K : HTMLElement 所以抽取出来两种组件 Props 可公用的一个类型如下： export type ExtendHTMLAttributes&lt; /** 组件自定义属性 */ P, /** 原生 HTML 标签自有属性 */ T extends React.HtmlHTMLAttributes&lt;HTMLElement&gt; &gt; = P &amp; React.DetailedHTMLProps&lt; T, T extends React.HtmlHTMLAttributes&lt;infer K&gt; ? K : HTMLElement &gt;; 利用抽取的 ExtendHTMLAttributes，两种按钮的 Props 可重新书写成如下形式： type ButtonProps = ExtendHTMLAttributes&lt; { color: string; children: React.ReactChildren; }, React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt; &gt;; type AnchorButtonProps = ExtendHTMLAttributes&lt; { color: string; disabled: boolean; children: React.ReactChildren; }, React.AnchorHTMLAttributes&lt;HTMLAnchorElement&gt; &gt;; 去掉了两者重叠的部分，看起来简洁了一些。关键后续编写其他组件时，如果想支持原生 HTML 属性，直接复用这里的 ExtendHTMLAttributes 类型即可。 相关资源 TypeScript 2.8 - Conditional Types Unwrapping composite types in Typescript","@type":"BlogPosting","headline":"TypeScript infer 关键字","dateModified":"2019-05-30T01:05:00+08:00","datePublished":"2019-05-30T01:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">TypeScript `infer` 关键字</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-30T01:05:00+08:00" itemprop="datePublished">May 30, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="typescript-infer-关键字">TypeScript <code class="language-plaintext highlighter-rouge">infer</code> 关键字</h1>
+
+<p>考察如下类型：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">PromiseType</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">(</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">[])</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>那么对于符合上面类型的一个方法，如何得知其 Promise 返回的类型？</p>
+
+<p>譬如对于这么一个返回 <code class="language-plaintext highlighter-rouge">string</code> 类型的 Promise:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">stringPromise</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="dl">"</span><span class="s2">string promise</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="retruntype"><code class="language-plaintext highlighter-rouge">RetrunType</code></h2>
+
+<p>如果你对 TypeScript 不是那么陌生，可能知道官方类型库中提供了 <code class="language-plaintext highlighter-rouge">RetrunType</code> 可获取方法的返回类型，其用法如下：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">stringPromiseReturnType</span> <span class="o">=</span> <span class="nx">ReturnType</span><span class="o">&lt;</span><span class="k">typeof</span> <span class="nx">stringPromise</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// Promise&lt;string&gt;</span>
+</code></pre></div></div>
+
+<p>确实拿到了方法的返回类型，不过是 <code class="language-plaintext highlighter-rouge">Promise&lt;string&gt;</code>。但其实是想要返回里面的 <code class="language-plaintext highlighter-rouge">string</code>，所以和我们想要的还差点意思。</p>
+
+<p>既然都能从一个方法反解其返回类型，肯定还能从 <code class="language-plaintext highlighter-rouge">Promsie&lt;T&gt;</code> 中反解出 <code class="language-plaintext highlighter-rouge">T</code>。所以不不妨看看 <code class="language-plaintext highlighter-rouge">ReturnType</code> 的定义：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Obtain the return type of a function type
+ */</span>
+<span class="kd">type</span> <span class="nx">ReturnType</span><span class="o">&lt;</span><span class="nx">T</span> <span class="kd">extends</span> <span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="kr">any</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">T</span> <span class="kd">extends</span> <span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">infer</span> <span class="nx">R</span> <span class="p">?</span> <span class="nx">R</span> <span class="p">:</span> <span class="kr">any</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><kbd>F12</kbd> 一看，果然发现了点什么，这里使用了 <code class="language-plaintext highlighter-rouge">infer</code> 关键字。</p>
+
+<h2 id="条件类型及-infer">条件类型及 <code class="language-plaintext highlighter-rouge">infer</code></h2>
+
+<p>上面 <code class="language-plaintext highlighter-rouge">T extends U ? X : Y</code> 的形式为条件类型（Conditional Types），即，如果类型 <code class="language-plaintext highlighter-rouge">T</code> 能够赋值给类型 <code class="language-plaintext highlighter-rouge">U</code>，那么该表达式返回类型 <code class="language-plaintext highlighter-rouge">X</code>，否则返回类型 <code class="language-plaintext highlighter-rouge">Y</code>。</p>
+
+<p>所以，考察 <code class="language-plaintext highlighter-rouge">ReturnType</code>的定义，</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">ReturnType</span><span class="o">&lt;</span><span class="nx">T</span> <span class="kd">extends</span> <span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="kr">any</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">T</span> <span class="kd">extends</span> <span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">infer</span> <span class="nx">R</span> <span class="p">?</span> <span class="nx">R</span> <span class="p">:</span> <span class="kr">any</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>如果传入的类型 <code class="language-plaintext highlighter-rouge">T</code> 能够赋值给 <code class="language-plaintext highlighter-rouge">(...args: any) =&gt; R</code> 则返回类型 <code class="language-plaintext highlighter-rouge">R</code>。</p>
+
+<p>但是这里类型 <code class="language-plaintext highlighter-rouge">R</code> 从何而来？讲道理，泛型中的变量需要外部指定，即 <code class="language-plaintext highlighter-rouge">RetrunType&lt;T,R&gt;</code>，但我们不是要得到 R 么，所以不能声明在这其中。这里 <code class="language-plaintext highlighter-rouge">infer</code> 便解决了这个问题。表达式右边的类型中，加上 <code class="language-plaintext highlighter-rouge">infer</code> 前缀我们便得到了反解出的类型变量 <code class="language-plaintext highlighter-rouge">R</code>，配合 <code class="language-plaintext highlighter-rouge">extends</code> 条件类型，可得到这个反解出的类型 <code class="language-plaintext highlighter-rouge">R</code>。这里 <code class="language-plaintext highlighter-rouge">R</code> 即为函数 <code class="language-plaintext highlighter-rouge">(...args: any) =&gt; R</code> 的返回类型。</p>
+
+<h2 id="反解-promise">反解 Promise<T></T></h2>
+
+<p>有了上面的基础，推而广之就很好反解 <code class="language-plaintext highlighter-rouge">Promise&lt;T&gt;</code> 中的 <code class="language-plaintext highlighter-rouge">T</code> 了。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">PromiseType</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">(</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">[])</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="kd">type</span> <span class="nx">UnPromisify</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">T</span> <span class="kd">extends</span> <span class="nx">PromiseType</span><span class="o">&lt;</span><span class="nx">infer</span> <span class="nx">U</span><span class="o">&gt;</span> <span class="p">?</span> <span class="nx">U</span> <span class="p">:</span> <span class="nx">never</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>测试 <code class="language-plaintext highlighter-rouge">UnPromisify&lt;T&gt;</code>：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">stringPromise</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="dl">"</span><span class="s2">string promise</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">numberPromise</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">personPromise</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Wayou</span><span class="dl">"</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">999</span> <span class="p">}</span> <span class="k">as</span> <span class="nx">Person</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">extractStringPromise</span> <span class="o">=</span> <span class="nx">UnPromisify</span><span class="o">&lt;</span><span class="k">typeof</span> <span class="nx">stringPromise</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// string</span>
+
+<span class="kd">type</span> <span class="nx">extractNumberPromise</span> <span class="o">=</span> <span class="nx">UnPromisify</span><span class="o">&lt;</span><span class="k">typeof</span> <span class="nx">numberPromise</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// number</span>
+
+<span class="kd">type</span> <span class="nx">extractPersonPromise</span> <span class="o">=</span> <span class="nx">UnPromisify</span><span class="o">&lt;</span><span class="k">typeof</span> <span class="nx">personPromise</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// Person</span>
+</code></pre></div></div>
+
+<h2 id="解析参数数组的类型">解析参数数组的类型</h2>
+
+<p>反解还可用在其他很多场景，比如解析函数入参的类型。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">VariadicFn</span><span class="o">&lt;</span><span class="nx">A</span> <span class="kd">extends</span> <span class="kr">any</span><span class="p">[]</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="nx">A</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="kr">any</span><span class="p">;</span>
+<span class="kd">type</span> <span class="nx">ArgsType</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">T</span> <span class="kd">extends</span> <span class="nx">VariadicFn</span><span class="o">&lt;</span><span class="nx">infer</span> <span class="nx">A</span><span class="o">&gt;</span> <span class="p">?</span> <span class="nx">A</span> <span class="p">:</span> <span class="nx">never</span><span class="p">;</span>
+ 
+<span class="kd">type</span> <span class="nx">Fn</span> <span class="o">=</span> <span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="kr">string</span><span class="p">;</span>
+<span class="kd">type</span> <span class="nx">Fn2Args</span> <span class="o">=</span> <span class="nx">ArgsType</span><span class="o">&lt;</span><span class="nx">Fn</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// [number, string]</span>
+</code></pre></div></div>
+
+<h2 id="另一个示例">另一个示例</h2>
+
+<p>假设我们编写了两个按钮组件，底层渲染的是 HTML 原生的 <code class="language-plaintext highlighter-rouge">button</code> 和 <code class="language-plaintext highlighter-rouge">a</code> 标签。为了组件最大化可定制，原生元素支持的属性该组件也需要支持，因此可这样来写组件的 props:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">ButtonProps</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">color</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">children</span><span class="p">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactChildren</span><span class="p">;</span>
+<span class="p">}</span> <span class="o">&amp;</span> <span class="nx">React</span><span class="p">.</span><span class="nx">DetailedHTMLProps</span><span class="o">&lt;</span>
+  <span class="nx">React</span><span class="p">.</span><span class="nx">ButtonHTMLAttributes</span><span class="o">&lt;</span><span class="nx">HTMLButtonElement</span><span class="o">&gt;</span><span class="p">,</span>
+  <span class="nx">HTMLButtonElement</span>
+<span class="o">&gt;</span><span class="p">;</span>
+
+<span class="kd">type</span> <span class="nx">AnchorButtonProps</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">color</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">disabled</span><span class="p">:</span> <span class="nx">boolean</span><span class="p">;</span>
+  <span class="nl">children</span><span class="p">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactChildren</span><span class="p">;</span>
+<span class="p">}</span> <span class="o">&amp;</span> <span class="nx">React</span><span class="p">.</span><span class="nx">DetailedHTMLProps</span><span class="o">&lt;</span>
+  <span class="nx">React</span><span class="p">.</span><span class="nx">AnchorHTMLAttributes</span><span class="o">&lt;</span><span class="nx">HTMLAnchorElement</span><span class="o">&gt;</span><span class="p">,</span>
+  <span class="nx">HTMLAnchorElement</span>
+<span class="o">&gt;</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">Button</span><span class="p">({</span> <span class="nx">children</span><span class="p">,</span> <span class="p">...</span><span class="nx">props</span> <span class="p">}:</span> <span class="nx">ButtonProps</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//...</span>
+  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">button</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">children</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">AnchorButton</span><span class="p">({</span> <span class="nx">children</span><span class="p">,</span> <span class="p">...</span><span class="nx">props</span> <span class="p">}:</span> <span class="nx">AnchorButtonProps</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//...</span>
+  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">a</span> <span class="si">{</span><span class="p">...</span><span class="nx">props</span><span class="si">}</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">children</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>单看 <code class="language-plaintext highlighter-rouge">Button</code> 和 <code class="language-plaintext highlighter-rouge">AnchorButton</code> 的属性，</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">ButtonProps</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">color</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">children</span><span class="p">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactChildren</span><span class="p">;</span>
+<span class="p">}</span> <span class="o">&amp;</span> <span class="nx">React</span><span class="p">.</span><span class="nx">DetailedHTMLProps</span><span class="o">&lt;</span>
+  <span class="nx">React</span><span class="p">.</span><span class="nx">ButtonHTMLAttributes</span><span class="o">&lt;</span><span class="nx">HTMLButtonElement</span><span class="o">&gt;</span><span class="p">,</span>
+  <span class="nx">HTMLButtonElement</span>
+<span class="o">&gt;</span><span class="p">;</span>
+
+<span class="kd">type</span> <span class="nx">AnchorButtonProps</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">color</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">disabled</span><span class="p">:</span> <span class="nx">boolean</span><span class="p">;</span>
+  <span class="nl">children</span><span class="p">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactChildren</span><span class="p">;</span>
+<span class="p">}</span> <span class="o">&amp;</span> <span class="nx">React</span><span class="p">.</span><span class="nx">DetailedHTMLProps</span><span class="o">&lt;</span>
+  <span class="nx">React</span><span class="p">.</span><span class="nx">AnchorHTMLAttributes</span><span class="o">&lt;</span><span class="nx">HTMLAnchorElement</span><span class="o">&gt;</span><span class="p">,</span>
+  <span class="nx">HTMLAnchorElement</span>
+<span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>不难看出两者是有共性的，即可抽取成如下的形式：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">ExtendHTMLAttributes</span><span class="o">&lt;</span><span class="nx">P</span><span class="p">,</span> <span class="nx">T</span><span class="p">,</span> <span class="nx">K</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">P</span> <span class="o">&amp;</span> <span class="nx">React</span><span class="p">.</span><span class="nx">DetailedHTMLProps</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span> <span class="nx">K</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">T</code> 呢又是 <code class="language-plaintext highlighter-rouge">T&lt;K&gt;</code> 形式，即 <code class="language-plaintext highlighter-rouge">T</code> 中包含或有使用了 K。因此对使用者来说，如果传递了 <code class="language-plaintext highlighter-rouge">T&lt;K&gt;</code> 形式，就没必要单独再传递一次 <code class="language-plaintext highlighter-rouge">K</code>，我们应该是能利用 <code class="language-plaintext highlighter-rouge">infer</code> 从 <code class="language-plaintext highlighter-rouge">T&lt;K&gt;</code> 解析出 <code class="language-plaintext highlighter-rouge">K</code> 的。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">T</span> <span class="kd">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">HtmlHTMLAttributes</span><span class="o">&lt;</span><span class="nx">infer</span> <span class="nx">K</span><span class="o">&gt;</span> <span class="p">?</span> <span class="nx">K</span> <span class="p">:</span> <span class="nx">HTMLElement</span>
+</code></pre></div></div>
+
+<p>所以抽取出来两种组件 Props 可公用的一个类型如下：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">type</span> <span class="nx">ExtendHTMLAttributes</span><span class="o">&lt;</span>
+  <span class="cm">/** 组件自定义属性 */</span>
+  <span class="nx">P</span><span class="p">,</span>
+  <span class="cm">/** 原生 HTML 标签自有属性 */</span>
+  <span class="nx">T</span> <span class="kd">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">HtmlHTMLAttributes</span><span class="o">&lt;</span><span class="nx">HTMLElement</span><span class="o">&gt;</span>
+<span class="o">&gt;</span> <span class="o">=</span> <span class="nx">P</span> <span class="o">&amp;</span>
+  <span class="nx">React</span><span class="p">.</span><span class="nx">DetailedHTMLProps</span><span class="o">&lt;</span>
+    <span class="nx">T</span><span class="p">,</span>
+    <span class="nx">T</span> <span class="kd">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">HtmlHTMLAttributes</span><span class="o">&lt;</span><span class="nx">infer</span> <span class="nx">K</span><span class="o">&gt;</span> <span class="p">?</span> <span class="nx">K</span> <span class="p">:</span> <span class="nx">HTMLElement</span>
+  <span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>利用抽取的 <code class="language-plaintext highlighter-rouge">ExtendHTMLAttributes</code>，两种按钮的 Props 可重新书写成如下形式：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">type</span> <span class="nx">ButtonProps</span> <span class="o">=</span> <span class="nx">ExtendHTMLAttributes</span><span class="o">&lt;</span>
+  <span class="p">{</span>
+    <span class="na">color</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+    <span class="nl">children</span><span class="p">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactChildren</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">React</span><span class="p">.</span><span class="nx">ButtonHTMLAttributes</span><span class="o">&lt;</span><span class="nx">HTMLButtonElement</span><span class="o">&gt;</span>
+<span class="o">&gt;</span><span class="p">;</span>
+
+<span class="kd">type</span> <span class="nx">AnchorButtonProps</span> <span class="o">=</span> <span class="nx">ExtendHTMLAttributes</span><span class="o">&lt;</span>
+  <span class="p">{</span>
+    <span class="na">color</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+    <span class="nl">disabled</span><span class="p">:</span> <span class="nx">boolean</span><span class="p">;</span>
+    <span class="nl">children</span><span class="p">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactChildren</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">React</span><span class="p">.</span><span class="nx">AnchorHTMLAttributes</span><span class="o">&lt;</span><span class="nx">HTMLAnchorElement</span><span class="o">&gt;</span>
+<span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>去掉了两者重叠的部分，看起来简洁了一些。关键后续编写其他组件时，如果想支持原生 HTML 属性，直接复用这里的 <code class="language-plaintext highlighter-rouge">ExtendHTMLAttributes</code> 类型即可。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html">TypeScript 2.8 - Conditional Types</a></li>
+  <li><a href="https://lorefnon.tech/2018/07/18/unwrapping-composite-types-in-typescript/">Unwrapping composite types in Typescript</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/05/30/TypeScript-infer-%E5%85%B3%E9%94%AE%E5%AD%97.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

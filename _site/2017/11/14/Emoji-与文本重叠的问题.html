@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Emoji 与文本重叠的问题 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Emoji 与文本重叠的问题" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Emoji 与文本重叠的问题 长话短说 网页中 emoji 表情与文字的混排，正在来说没问题，但当你使用扩展屏幕的时候，并且扩展屏分辨率不够的情况下，会出现表情与文字重叠的情况。 算问题，也不算问题，毕竟正常使用没问题。 让我们去探索一下原因 一开始以为是样式代码写得有问题。 为了证明这不是我们代码的问题，我们拿其他网站来试一试，譬如对于排版有卓越追求的Medium，我随便找了篇 文章，流利地插入了一把金钥匙🔑外带两个笑脸。 主显示器 扩展显示器 重叠还是迷一样的存在着，特别是钥匙这个表情，特别明显，因为它是倾斜的，像一把刺刀，直插隔壁的老王。 为了排除浏览器外的样式带来的影响，我们做个实验。 在浏览器地址栏输入以下内容打开一个纯净而不沾淤泥的 html data:text/html, &lt;html contenteditable&gt; 然后粘入测试文本。 🔑H😒😒is first foray into computing was wire wrapping a Fairchild SCMP chipset into a simple computer and then doing the same with a Zilog Z80. Building his own first computer and then teaching himself to program set him on a path to a career in the industry.  chrome 中： 主显示器 扩展显示器 问题依旧，but，到这里我想到一点。不防多走一步，其他浏览器里面也试试。 Safari 下： 主显示器 扩展显示器 firefox 下： 主显示器 扩展显示器 不对比不知道，一对比真有料！ 从上面的对比结果来看，Chrome 中重叠的问题很明显，且只有 chrome 在扩展屏中展示有重叠问题，其他浏览器没问题，这不得不让人怀疑 chrome 渲染有问题丫。 于是，果断给 Chromium file了个 bug 先 。 Issue 784780 那么问题来了，前端能做什么呢。 如果在前端兼容呢？ 如果能在内容生成阶段进行控制，那就好办了，可以将 emoji 包一层 span 标签，然后就可以随意写样式了，就可以手动给表情加上边距。 但真实情况下 emoji 与文本是一体的，并不好单独抽离出来。如果不能再内容产生的地方进行控制，那就只能在拿到内容后进行处理。 emoji 的检测 基本上，表情也是字符，可以用正则像匹配一般字符那样用 ASCII 值去匹配。 但事物总是发展变化的，不断有新的表情加入到表情包中，也就是说表情的 ASCII 值并没有一个固定的范围。目前尚没有任何官方组织或者机构宣称一套可信的范围。 通过以下的正则，能够匹配大部分已被发现的 emoji。 (?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff]) 这篇文章有专门讨论如何得出以上正则并对以上正则的正确性负责。 测试一波： $0.innerHTML = $0.textContent.replace(/(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g,function(a){ return &#39;&lt;span&gt;&#39;+a+&#39;&lt;/span&gt;&#39; }) 抽取及处理文件中的表情 相关资源 How to detect emoji using javascript Emojis in Javascript" />
+<meta property="og:description" content="Emoji 与文本重叠的问题 长话短说 网页中 emoji 表情与文字的混排，正在来说没问题，但当你使用扩展屏幕的时候，并且扩展屏分辨率不够的情况下，会出现表情与文字重叠的情况。 算问题，也不算问题，毕竟正常使用没问题。 让我们去探索一下原因 一开始以为是样式代码写得有问题。 为了证明这不是我们代码的问题，我们拿其他网站来试一试，譬如对于排版有卓越追求的Medium，我随便找了篇 文章，流利地插入了一把金钥匙🔑外带两个笑脸。 主显示器 扩展显示器 重叠还是迷一样的存在着，特别是钥匙这个表情，特别明显，因为它是倾斜的，像一把刺刀，直插隔壁的老王。 为了排除浏览器外的样式带来的影响，我们做个实验。 在浏览器地址栏输入以下内容打开一个纯净而不沾淤泥的 html data:text/html, &lt;html contenteditable&gt; 然后粘入测试文本。 🔑H😒😒is first foray into computing was wire wrapping a Fairchild SCMP chipset into a simple computer and then doing the same with a Zilog Z80. Building his own first computer and then teaching himself to program set him on a path to a career in the industry.  chrome 中： 主显示器 扩展显示器 问题依旧，but，到这里我想到一点。不防多走一步，其他浏览器里面也试试。 Safari 下： 主显示器 扩展显示器 firefox 下： 主显示器 扩展显示器 不对比不知道，一对比真有料！ 从上面的对比结果来看，Chrome 中重叠的问题很明显，且只有 chrome 在扩展屏中展示有重叠问题，其他浏览器没问题，这不得不让人怀疑 chrome 渲染有问题丫。 于是，果断给 Chromium file了个 bug 先 。 Issue 784780 那么问题来了，前端能做什么呢。 如果在前端兼容呢？ 如果能在内容生成阶段进行控制，那就好办了，可以将 emoji 包一层 span 标签，然后就可以随意写样式了，就可以手动给表情加上边距。 但真实情况下 emoji 与文本是一体的，并不好单独抽离出来。如果不能再内容产生的地方进行控制，那就只能在拿到内容后进行处理。 emoji 的检测 基本上，表情也是字符，可以用正则像匹配一般字符那样用 ASCII 值去匹配。 但事物总是发展变化的，不断有新的表情加入到表情包中，也就是说表情的 ASCII 值并没有一个固定的范围。目前尚没有任何官方组织或者机构宣称一套可信的范围。 通过以下的正则，能够匹配大部分已被发现的 emoji。 (?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff]) 这篇文章有专门讨论如何得出以上正则并对以上正则的正确性负责。 测试一波： $0.innerHTML = $0.textContent.replace(/(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g,function(a){ return &#39;&lt;span&gt;&#39;+a+&#39;&lt;/span&gt;&#39; }) 抽取及处理文件中的表情 相关资源 How to detect emoji using javascript Emojis in Javascript" />
+<link rel="canonical" href="http://localhost:4000/2017/11/14/Emoji-%E4%B8%8E%E6%96%87%E6%9C%AC%E9%87%8D%E5%8F%A0%E7%9A%84%E9%97%AE%E9%A2%98.html" />
+<meta property="og:url" content="http://localhost:4000/2017/11/14/Emoji-%E4%B8%8E%E6%96%87%E6%9C%AC%E9%87%8D%E5%8F%A0%E7%9A%84%E9%97%AE%E9%A2%98.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-11-14T20:11:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2017/11/14/Emoji-%E4%B8%8E%E6%96%87%E6%9C%AC%E9%87%8D%E5%8F%A0%E7%9A%84%E9%97%AE%E9%A2%98.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2017/11/14/Emoji-%E4%B8%8E%E6%96%87%E6%9C%AC%E9%87%8D%E5%8F%A0%E7%9A%84%E9%97%AE%E9%A2%98.html"},"description":"Emoji 与文本重叠的问题 长话短说 网页中 emoji 表情与文字的混排，正在来说没问题，但当你使用扩展屏幕的时候，并且扩展屏分辨率不够的情况下，会出现表情与文字重叠的情况。 算问题，也不算问题，毕竟正常使用没问题。 让我们去探索一下原因 一开始以为是样式代码写得有问题。 为了证明这不是我们代码的问题，我们拿其他网站来试一试，譬如对于排版有卓越追求的Medium，我随便找了篇 文章，流利地插入了一把金钥匙🔑外带两个笑脸。 主显示器 扩展显示器 重叠还是迷一样的存在着，特别是钥匙这个表情，特别明显，因为它是倾斜的，像一把刺刀，直插隔壁的老王。 为了排除浏览器外的样式带来的影响，我们做个实验。 在浏览器地址栏输入以下内容打开一个纯净而不沾淤泥的 html data:text/html, &lt;html contenteditable&gt; 然后粘入测试文本。 🔑H😒😒is first foray into computing was wire wrapping a Fairchild SCMP chipset into a simple computer and then doing the same with a Zilog Z80. Building his own first computer and then teaching himself to program set him on a path to a career in the industry.  chrome 中： 主显示器 扩展显示器 问题依旧，but，到这里我想到一点。不防多走一步，其他浏览器里面也试试。 Safari 下： 主显示器 扩展显示器 firefox 下： 主显示器 扩展显示器 不对比不知道，一对比真有料！ 从上面的对比结果来看，Chrome 中重叠的问题很明显，且只有 chrome 在扩展屏中展示有重叠问题，其他浏览器没问题，这不得不让人怀疑 chrome 渲染有问题丫。 于是，果断给 Chromium file了个 bug 先 。 Issue 784780 那么问题来了，前端能做什么呢。 如果在前端兼容呢？ 如果能在内容生成阶段进行控制，那就好办了，可以将 emoji 包一层 span 标签，然后就可以随意写样式了，就可以手动给表情加上边距。 但真实情况下 emoji 与文本是一体的，并不好单独抽离出来。如果不能再内容产生的地方进行控制，那就只能在拿到内容后进行处理。 emoji 的检测 基本上，表情也是字符，可以用正则像匹配一般字符那样用 ASCII 值去匹配。 但事物总是发展变化的，不断有新的表情加入到表情包中，也就是说表情的 ASCII 值并没有一个固定的范围。目前尚没有任何官方组织或者机构宣称一套可信的范围。 通过以下的正则，能够匹配大部分已被发现的 emoji。 (?:[\\u2700-\\u27bf]|(?:\\ud83c[\\udde6-\\uddff]){2}|[\\ud800-\\udbff][\\udc00-\\udfff]|[\\u0023-\\u0039]\\ufe0f?\\u20e3|\\u3299|\\u3297|\\u303d|\\u3030|\\u24c2|\\ud83c[\\udd70-\\udd71]|\\ud83c[\\udd7e-\\udd7f]|\\ud83c\\udd8e|\\ud83c[\\udd91-\\udd9a]|\\ud83c[\\udde6-\\uddff]|[\\ud83c[\\ude01-\\ude02]|\\ud83c\\ude1a|\\ud83c\\ude2f|[\\ud83c[\\ude32-\\ude3a]|[\\ud83c[\\ude50-\\ude51]|\\u203c|\\u2049|[\\u25aa-\\u25ab]|\\u25b6|\\u25c0|[\\u25fb-\\u25fe]|\\u00a9|\\u00ae|\\u2122|\\u2139|\\ud83c\\udc04|[\\u2600-\\u26FF]|\\u2b05|\\u2b06|\\u2b07|\\u2b1b|\\u2b1c|\\u2b50|\\u2b55|\\u231a|\\u231b|\\u2328|\\u23cf|[\\u23e9-\\u23f3]|[\\u23f8-\\u23fa]|\\ud83c\\udccf|\\u2934|\\u2935|[\\u2190-\\u21ff]) 这篇文章有专门讨论如何得出以上正则并对以上正则的正确性负责。 测试一波： $0.innerHTML = $0.textContent.replace(/(?:[\\u2700-\\u27bf]|(?:\\ud83c[\\udde6-\\uddff]){2}|[\\ud800-\\udbff][\\udc00-\\udfff]|[\\u0023-\\u0039]\\ufe0f?\\u20e3|\\u3299|\\u3297|\\u303d|\\u3030|\\u24c2|\\ud83c[\\udd70-\\udd71]|\\ud83c[\\udd7e-\\udd7f]|\\ud83c\\udd8e|\\ud83c[\\udd91-\\udd9a]|\\ud83c[\\udde6-\\uddff]|[\\ud83c[\\ude01-\\ude02]|\\ud83c\\ude1a|\\ud83c\\ude2f|[\\ud83c[\\ude32-\\ude3a]|[\\ud83c[\\ude50-\\ude51]|\\u203c|\\u2049|[\\u25aa-\\u25ab]|\\u25b6|\\u25c0|[\\u25fb-\\u25fe]|\\u00a9|\\u00ae|\\u2122|\\u2139|\\ud83c\\udc04|[\\u2600-\\u26FF]|\\u2b05|\\u2b06|\\u2b07|\\u2b1b|\\u2b1c|\\u2b50|\\u2b55|\\u231a|\\u231b|\\u2328|\\u23cf|[\\u23e9-\\u23f3]|[\\u23f8-\\u23fa]|\\ud83c\\udccf|\\u2934|\\u2935|[\\u2190-\\u21ff])/g,function(a){ return &#39;&lt;span&gt;&#39;+a+&#39;&lt;/span&gt;&#39; }) 抽取及处理文件中的表情 相关资源 How to detect emoji using javascript Emojis in Javascript","@type":"BlogPosting","headline":"Emoji 与文本重叠的问题","dateModified":"2017-11-14T20:11:00+08:00","datePublished":"2017-11-14T20:11:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Emoji 与文本重叠的问题</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-11-14T20:11:00+08:00" itemprop="datePublished">Nov 14, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="emoji-与文本重叠的问题">Emoji 与文本重叠的问题</h2>
+
+<h3 id="长话短说">长话短说</h3>
+
+<p>网页中 emoji 表情与文字的混排，正在来说没问题，但当你使用扩展屏幕的时候，并且扩展屏分辨率不够的情况下，会出现表情与文字重叠的情况。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/emoji-overlap-issue.jpg" alt="" /></p>
+
+<p>算问题，也不算问题，毕竟正常使用没问题。</p>
+
+<h3 id="让我们去探索一下原因">让我们去探索一下原因</h3>
+
+<p>一开始以为是样式代码写得有问题。</p>
+
+<p>为了证明这不是我们代码的问题，我们拿其他网站来试一试，譬如对于排版有卓越追求的Medium，我随便找了篇 <a href="https://medium.com/@nodejs/fireside-chat-with-node-js-foundation-chairperson-todd-moore-vp-of-open-technology-at-ibm-cfb5a337a4fa">文章</a>，流利地插入了一把金钥匙🔑外带两个笑脸。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/extend-display.png" alt="主显示器" />
+<em>主显示器</em></p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/normal-display.png" alt="主显示器" />
+<em>扩展显示器</em></p>
+
+<p>重叠还是迷一样的存在着，特别是钥匙这个表情，特别明显，因为它是倾斜的，像一把刺刀，直插隔壁的老王。</p>
+
+<p>为了排除浏览器外的样式带来的影响，我们做个实验。</p>
+
+<p>在浏览器地址栏输入以下内容打开一个纯净而不沾淤泥的 html</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data:text/html, &lt;html contenteditable&gt;
+</code></pre></div></div>
+
+<p>然后粘入测试文本。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>🔑H😒😒is first foray into computing was wire wrapping a Fairchild SCMP chipset into a simple computer and then doing the same with a Zilog Z80. Building his own first computer and then teaching himself to program set him on a path to a career in the industry. 
+</code></pre></div></div>
+
+<p>chrome 中：</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/chrome-plain-html-normal-display.png" alt="主显示器" />
+<em>主显示器</em></p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/chrome-plain-html-extend-display.png" alt="主显示器" />
+<em>扩展显示器</em></p>
+
+<p>问题依旧，but，到这里我想到一点。不防多走一步，其他浏览器里面也试试。</p>
+
+<p>Safari 下：</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/safari-plain-html-normal-display.png" alt="主显示器" />
+<em>主显示器</em></p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/safari-plain-html-extend-display.png" alt="主显示器" />
+<em>扩展显示器</em></p>
+
+<p>firefox 下：</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/firefox-plain-html-normal-display.png" alt="主显示器" />
+<em>主显示器</em></p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/firefox-plain-html-extend-display.png" alt="主显示器" />
+<em>扩展显示器</em></p>
+
+<p>不对比不知道，一对比真有料！</p>
+
+<p>从上面的对比结果来看，Chrome 中重叠的问题很明显，且只有 chrome 在扩展屏中展示有重叠问题，其他浏览器没问题，这不得不让人怀疑 chrome 渲染有问题丫。</p>
+
+<p>于是，果断给 Chromium file了个 bug 先 。</p>
+
+<p><a href="https://bugs.chromium.org/p/chromium/issues/detail?id=784780&amp;can=4&amp;q=&amp;colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified">Issue 784780</a></p>
+
+<p>那么问题来了，前端能做什么呢。</p>
+
+<h3 id="如果在前端兼容呢">如果在前端兼容呢？</h3>
+
+<p>如果能在内容生成阶段进行控制，那就好办了，可以将 emoji 包一层 <code class="language-plaintext highlighter-rouge">span</code> 标签，然后就可以随意写样式了，就可以手动给表情加上边距。</p>
+
+<p>但真实情况下 emoji 与文本是一体的，并不好单独抽离出来。如果不能再内容产生的地方进行控制，那就只能在拿到内容后进行处理。</p>
+
+<h3 id="emoji-的检测">emoji 的检测</h3>
+
+<p>基本上，表情也是字符，可以用正则像匹配一般字符那样用 ASCII 值去匹配。
+但事物总是发展变化的，不断有新的表情加入到表情包中，也就是说表情的 ASCII 值并没有一个固定的范围。目前尚没有任何官方组织或者机构宣称一套可信的范围。</p>
+
+<p>通过以下的正则，能够匹配大部分已被发现的 emoji。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])
+</code></pre></div></div>
+
+<p><a href="https://medium.com/reactnative/emojis-in-javascript-f693d0eb79fb">这篇文章</a>有专门讨论如何得出以上正则并对以上正则的正确性负责。</p>
+
+<p>测试一波：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">$0</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">$0</span><span class="p">.</span><span class="nx">textContent</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">(?:[\u</span><span class="sr">2700-</span><span class="se">\u</span><span class="sr">27bf</span><span class="se">]</span><span class="sr">|</span><span class="se">(?:\u</span><span class="sr">d83c</span><span class="se">[\u</span><span class="sr">dde6-</span><span class="se">\u</span><span class="sr">ddff</span><span class="se">]){2}</span><span class="sr">|</span><span class="se">[\u</span><span class="sr">d800-</span><span class="se">\u</span><span class="sr">dbff</span><span class="se">][\u</span><span class="sr">dc00-</span><span class="se">\u</span><span class="sr">dfff</span><span class="se">]</span><span class="sr">|</span><span class="se">[\u</span><span class="sr">0023-</span><span class="se">\u</span><span class="sr">0039</span><span class="se">]\u</span><span class="sr">fe0f</span><span class="se">?\u</span><span class="sr">20e3|</span><span class="se">\u</span><span class="sr">3299|</span><span class="se">\u</span><span class="sr">3297|</span><span class="se">\u</span><span class="sr">303d|</span><span class="se">\u</span><span class="sr">3030|</span><span class="se">\u</span><span class="sr">24c2|</span><span class="se">\u</span><span class="sr">d83c</span><span class="se">[\u</span><span class="sr">dd70-</span><span class="se">\u</span><span class="sr">dd71</span><span class="se">]</span><span class="sr">|</span><span class="se">\u</span><span class="sr">d83c</span><span class="se">[\u</span><span class="sr">dd7e-</span><span class="se">\u</span><span class="sr">dd7f</span><span class="se">]</span><span class="sr">|</span><span class="se">\u</span><span class="sr">d83c</span><span class="se">\u</span><span class="sr">dd8e|</span><span class="se">\u</span><span class="sr">d83c</span><span class="se">[\u</span><span class="sr">dd91-</span><span class="se">\u</span><span class="sr">dd9a</span><span class="se">]</span><span class="sr">|</span><span class="se">\u</span><span class="sr">d83c</span><span class="se">[\u</span><span class="sr">dde6-</span><span class="se">\u</span><span class="sr">ddff</span><span class="se">]</span><span class="sr">|</span><span class="se">[\u</span><span class="sr">d83c[</span><span class="se">\u</span><span class="sr">de01-</span><span class="se">\u</span><span class="sr">de02</span><span class="se">]</span><span class="sr">|</span><span class="se">\u</span><span class="sr">d83c</span><span class="se">\u</span><span class="sr">de1a|</span><span class="se">\u</span><span class="sr">d83c</span><span class="se">\u</span><span class="sr">de2f|</span><span class="se">[\u</span><span class="sr">d83c[</span><span class="se">\u</span><span class="sr">de32-</span><span class="se">\u</span><span class="sr">de3a</span><span class="se">]</span><span class="sr">|</span><span class="se">[\u</span><span class="sr">d83c[</span><span class="se">\u</span><span class="sr">de50-</span><span class="se">\u</span><span class="sr">de51</span><span class="se">]</span><span class="sr">|</span><span class="se">\u</span><span class="sr">203c|</span><span class="se">\u</span><span class="sr">2049|</span><span class="se">[\u</span><span class="sr">25aa-</span><span class="se">\u</span><span class="sr">25ab</span><span class="se">]</span><span class="sr">|</span><span class="se">\u</span><span class="sr">25b6|</span><span class="se">\u</span><span class="sr">25c0|</span><span class="se">[\u</span><span class="sr">25fb-</span><span class="se">\u</span><span class="sr">25fe</span><span class="se">]</span><span class="sr">|</span><span class="se">\u</span><span class="sr">00a9|</span><span class="se">\u</span><span class="sr">00ae|</span><span class="se">\u</span><span class="sr">2122|</span><span class="se">\u</span><span class="sr">2139|</span><span class="se">\u</span><span class="sr">d83c</span><span class="se">\u</span><span class="sr">dc04|</span><span class="se">[\u</span><span class="sr">2600-</span><span class="se">\u</span><span class="sr">26FF</span><span class="se">]</span><span class="sr">|</span><span class="se">\u</span><span class="sr">2b05|</span><span class="se">\u</span><span class="sr">2b06|</span><span class="se">\u</span><span class="sr">2b07|</span><span class="se">\u</span><span class="sr">2b1b|</span><span class="se">\u</span><span class="sr">2b1c|</span><span class="se">\u</span><span class="sr">2b50|</span><span class="se">\u</span><span class="sr">2b55|</span><span class="se">\u</span><span class="sr">231a|</span><span class="se">\u</span><span class="sr">231b|</span><span class="se">\u</span><span class="sr">2328|</span><span class="se">\u</span><span class="sr">23cf|</span><span class="se">[\u</span><span class="sr">23e9-</span><span class="se">\u</span><span class="sr">23f3</span><span class="se">]</span><span class="sr">|</span><span class="se">[\u</span><span class="sr">23f8-</span><span class="se">\u</span><span class="sr">23fa</span><span class="se">]</span><span class="sr">|</span><span class="se">\u</span><span class="sr">d83c</span><span class="se">\u</span><span class="sr">dccf|</span><span class="se">\u</span><span class="sr">2934|</span><span class="se">\u</span><span class="sr">2935|</span><span class="se">[\u</span><span class="sr">2190-</span><span class="se">\u</span><span class="sr">21ff</span><span class="se">])</span><span class="sr">/g</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">){</span>
+	<span class="k">return</span> <span class="dl">'</span><span class="s1">&lt;span&gt;</span><span class="dl">'</span><span class="o">+</span><span class="nx">a</span><span class="o">+</span><span class="dl">'</span><span class="s1">&lt;/span&gt;</span><span class="dl">'</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/emoji-overlapping-issue/assets/emoji-abstract.png" alt="抽取及处理文件中的表情" />
+<em>抽取及处理文件中的表情</em></p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://stackoverflow.com/a/41164587/1553656">How to detect emoji using javascript</a></li>
+  <li><a href="https://medium.com/reactnative/emojis-in-javascript-f693d0eb79fb">Emojis in Javascript</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2017/11/14/Emoji-%E4%B8%8E%E6%96%87%E6%9C%AC%E9%87%8D%E5%8F%A0%E7%9A%84%E9%97%AE%E9%A2%98.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

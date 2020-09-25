@@ -1,0 +1,242 @@
+I"g<h1 id="objective-c-中实现-monkey-patching">Objective-C 中实现 Monkey-Patching</h1>
+
+<p>Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可以理解成劫持。这样系统在执行的时候，实际上执行的是被替换的版本。</p>
+
+<p>大部分时候，这里的操作隐含了对原方法的保留，只是向其中添加自己的新逻辑。毕竟，你不想修改掉系统某个方法后整个程序就崩掉。所以最安全的做法就是在劫持的时候保留对原方法的调用。</p>
+
+<p>像在 JavaScript 这种弱类型的语言中，这一技术很好实现，应用也很广泛。比如 <a href="https://github.com/wayou/wayou.github.io/issues/141">Reux 中间件的实现</a>。</p>
+
+<p>JavaScript 中 Monkey-Packing 示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 保存原始的 log 方法</span>
+<span class="kd">var</span> <span class="nx">log</span> <span class="o">=</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+   <span class="c1">// 向原始方法中添加新的逻辑</span>
+   <span class="nx">log</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">console</span><span class="p">,</span> <span class="p">[(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()).</span><span class="nx">toString</span><span class="p">()].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">arguments</span><span class="p">));</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>以上 JavaScript 代码替换掉了系统的版本，实现了打印信息到控制台时带上时间。</p>
+
+<h2 id="objective-c-运行时">Objective-C 运行时</h2>
+
+<p>Objective-C 虽然是强类型，但好多东西是动态的，即运行时（runtime）确定。比如向一个对象发送消息（就是调用方法），消息的响应及如何响应，完成是运行时确定的，而发送方只是规定了消息的标识（selector）。</p>
+
+<p>利用 <a href="https://developer.apple.com/documentation/objectivec/objective-c_runtime?language=objc">Objective-C 运行时</a>的一些东西，便可以实现修改 Cocoa 框架中方法的目的。</p>
+
+<h2 id="swizzle">Swizzle</h2>
+
+<p>在进行具体操作前，先来理解一段代码，其中用到了大量 Objective-C 运行时的方法，所以需要引入 runtime 头文件：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#import &lt;objc/runtime.h&gt;
+</span></code></pre></div></div>
+
+<p>然后来看这段代码：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SEL</span> <span class="n">firstMethodSelector</span> <span class="o">=</span> <span class="k">@selector</span><span class="p">(</span><span class="n">firstMethod</span><span class="p">);</span>
+<span class="n">SEL</span> <span class="n">secondMethodSelector</span> <span class="o">=</span> <span class="k">@selector</span><span class="p">(</span><span class="n">secondMethod</span><span class="p">);</span>
+<span class="n">Method</span> <span class="n">firstMethod</span> <span class="o">=</span> <span class="n">class_getInstanceMethod</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">firstMethodSelector</span><span class="p">);</span>
+<span class="n">Method</span> <span class="n">secondMethod</span> <span class="o">=</span> <span class="n">class_getInstanceMethod</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">secondMethodSelector</span><span class="p">);</span>
+ 
+<span class="n">BOOL</span> <span class="n">methodAdded</span> <span class="o">=</span> <span class="n">class_addMethod</span><span class="p">([</span><span class="n">self</span> <span class="nf">class</span><span class="p">],</span>
+                                   <span class="n">firstMethodSelector</span><span class="p">,</span>
+                                   <span class="n">method_getImplementation</span><span class="p">(</span><span class="n">secondMethod</span><span class="p">),</span>
+                                   <span class="n">method_getTypeEncoding</span><span class="p">(</span><span class="n">secondMethod</span><span class="p">));</span>
+  
+<span class="k">if</span> <span class="p">(</span><span class="n">methodAdded</span><span class="p">)</span> <span class="p">{</span>
+<span class="n">class_replaceMethod</span><span class="p">([</span><span class="n">self</span> <span class="nf">class</span><span class="p">],</span> 
+                      <span class="n">secondMethodSelector</span><span class="p">,</span> 
+                      <span class="n">method_getImplementation</span><span class="p">(</span><span class="n">firstMethod</span><span class="p">),</span>
+                      <span class="n">method_getTypeEncoding</span><span class="p">(</span><span class="n">firstMethod</span><span class="p">));</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="n">method_exchangeImplementations</span><span class="p">(</span><span class="n">firstMethod</span><span class="p">,</span> <span class="n">secondMethod</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>以上，做了如下的事情：</p>
+
+<ul>
+  <li>假设类上面已经有两个方法，<code class="language-plaintext highlighter-rouge">firstMethod</code>，<code class="language-plaintext highlighter-rouge">secondMethod</code>。</li>
+  <li><code class="language-plaintext highlighter-rouge">@selector</code> 肯定不陌生，返回一个指向方法的选择器。首先获取两个方法的选择器。</li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">class_getInstanceMethod</code> 获取两个方法对应的实例版本（实例上的副本）。</li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">class_addMethod</code> 向类上面添加一个方法， 并提供方法的实现和方法签名信息，这是通过 <code class="language-plaintext highlighter-rouge">method_getImplementation</code> 和 <code class="language-plaintext highlighter-rouge">secondMethod</code> 自动从 <code class="language-plaintext highlighter-rouge">secondMethod</code> 上获取的。</li>
+  <li><code class="language-plaintext highlighter-rouge">class_addMethod</code> 会返回一个状态，表示添加是否成功。如果方法一已经存在，这个操作就会失败。</li>
+  <li>接下来，如果上面的步骤操作成功，那么类上面成功添加了名为 <code class="language-plaintext highlighter-rouge">firstMethodSelector</code> 的方法且其实现是 <code class="language-plaintext highlighter-rouge">secondMethod</code>。剩下需要做的就是把名为 <code class="language-plaintext highlighter-rouge">secondMethodSelector</code> 的方法其实现变成 <code class="language-plaintext highlighter-rouge">firstMethod</code>， 通过 <code class="language-plaintext highlighter-rouge">class_replaceMethod</code> 来完成。<strong>理解这一步的关键是区分选择器与实例方法</strong>，这里替换时使用的 <code class="language-plaintext highlighter-rouge">method</code> 都是从实例上取下来的，所以前面步骤虽然使用 <code class="language-plaintext highlighter-rouge">class_addMethod</code> 添加了一个名为 <code class="language-plaintext highlighter-rouge">firstMethodSelector</code> 的方法，但 <code class="language-plaintext highlighter-rouge">firstMethod</code> 是在这个操作之前取的，它还是原来的方法体。</li>
+  <li>操作没成功，说明方法一已经存在，通过 <code class="language-plaintext highlighter-rouge">method_exchangeImplementations</code> 直接交换两者的实现即可。</li>
+</ul>
+
+<p>因为 Objective-C 中不能像 JavaScript 那样直接给方法重新赋值，所以实现修改方法，是通过这种交换的方式来变通实现。正因为是交换的方式，所以 Objective-C 中的 Monkey-Patching 有他自己的名字，Swizzle，查不到相关中文翻译，和 Switch 长得相所以用在此处到是很应景，英文本意和搅拌相关。</p>
+
+<h2 id="load"><code class="language-plaintext highlighter-rouge">load</code></h2>
+
+<p>NSObject 上提供了一个静态方法  <a href="https://developer.apple.com/documentation/objectivec/nsobject/1418815-load?language=objc#"><code class="language-plaintext highlighter-rouge">+(void)load;</code></a>，它会在类被加载到运行时环境后调用。这要先于类的初始化。在这里面可进行一些类相关的操作，很方便用来进行上面的 Swizzle。</p>
+
+<h2 id="使用场景">使用场景</h2>
+
+<p>说了这么多，到底做有什么用。</p>
+
+<p>举一些使用场景：</p>
+
+<ul>
+  <li>给界面中所有元素绘制边框方便调试。</li>
+  <li>打日志，统计执行次数和性能分析</li>
+  <li>给 viewController 统一添加是否该出引导蒙层的逻辑。</li>
+</ul>
+
+<p>拿绘制边框为例，开发过安卓的话会知道设备上开启 GPU Overdraw 后，界面的绘制会被色块区分开，形如这样：</p>
+
+<p><img src="https://developer.android.com/topic/performance/images/gpu/gpu-overdraw-before_2x.png" alt="GPU Overdraw on Android -- 图片来自 Android 开发者文档" /></p>
+<p align="center">GPU Overdraw on Android -- 图片来自 <a href="https://user-images.githubusercontent.com/3783096/71323401-9acab580-250d-11ea-910e-930c34329006.png">Android 开发者文档</a></p>
+
+<p>原来是用来调试界面绘制性能，发现过度绘制的，但我觉得这可以用来调试 UI 布局。</p>
+
+<p>通过修改 UIView 的初始化方法，我们可以为界面上所有的元素加上一个边框，这样可以方便地调试布局。</p>
+
+<h2 id="利用-swizzle-实现-uiview-的边框绘制">利用 Swizzle 实现 UIView 的边框绘制</h2>
+
+<p>界面上大部组件都是 UIView 的继承类，所以如果替换掉原生的初始化方法，在替换的版本中就可以实现为所有 UIView 添加边框。</p>
+
+<p>添加 UIView 的 Category，实现改造后的 <code class="language-plaintext highlighter-rouge">initWithFrame:</code> 方法，为了和原方法区分以方便替换，这里取名 <code class="language-plaintext highlighter-rouge">debugInitWithFrame</code>。</p>
+
+<p><em>UIView+Debug.h</em></p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#import &lt;objc/runtime.h&gt;
+#import "UIView+SBDebug.h"
+</span>
+<span class="k">@implementation</span> <span class="nc">UIView</span> <span class="p">(</span><span class="nl">Debug</span><span class="p">)</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="n">instancetype</span><span class="p">)</span><span class="nf">debugInitWithFrame</span><span class="p">:(</span><span class="n">CGRect</span><span class="p">)</span><span class="nv">frame</span><span class="p">{</span>
+    <span class="p">[</span><span class="n">self</span> <span class="nf">debugInitWithFrame</span><span class="p">:</span><span class="n">frame</span><span class="p">];</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">borderWidth</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">borderColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIColor</span> <span class="nf">redColor</span><span class="p">].</span><span class="n">CGColor</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+</code></pre></div></div>
+
+<p>注意上面我们在 <code class="language-plaintext highlighter-rouge">debugInitWithFrame:</code> 方法里又调用了 <code class="language-plaintext highlighter-rouge">debugInitWithFrame:</code> ，岂不是会造成死循环？实际情况是不会，因为在调用发生的时候，它已经被替换成了原生的 <code class="language-plaintext highlighter-rouge">initWithFrame:</code>。</p>
+
+<p>添加 swizzle 逻辑：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">load</span> <span class="p">{</span>
+  <span class="k">static</span> <span class="n">dispatch_once_t</span> <span class="n">onceToken</span><span class="p">;</span>
+  <span class="n">dispatch_once</span><span class="p">(</span><span class="o">&amp;</span><span class="n">onceToken</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+    <span class="n">SEL</span> <span class="n">orginalSelector</span> <span class="o">=</span> <span class="k">@selector</span><span class="p">(</span><span class="n">initWithFrame</span><span class="o">:</span><span class="p">);</span>
+    <span class="n">SEL</span> <span class="n">newSelector</span> <span class="o">=</span> <span class="k">@selector</span><span class="p">(</span><span class="n">debugInitWithFrame</span><span class="o">:</span><span class="p">);</span>
+    <span class="n">Method</span> <span class="n">orignalMethod</span> <span class="o">=</span> <span class="n">class_getInstanceMethod</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">orginalSelector</span><span class="p">);</span>
+    <span class="n">Method</span> <span class="n">newMethod</span> <span class="o">=</span> <span class="n">class_getInstanceMethod</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">newSelector</span><span class="p">);</span>
+
+    <span class="n">BOOL</span> <span class="n">addResult</span> <span class="o">=</span>
+        <span class="n">class_addMethod</span><span class="p">([</span><span class="n">self</span> <span class="nf">class</span><span class="p">],</span> <span class="n">orginalSelector</span><span class="p">,</span> <span class="n">method_getImplementation</span><span class="p">(</span><span class="n">newMethod</span><span class="p">),</span>
+                        <span class="n">method_getTypeEncoding</span><span class="p">(</span><span class="n">newMethod</span><span class="p">));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">addResult</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">class_replaceMethod</span><span class="p">([</span><span class="n">self</span> <span class="nf">class</span><span class="p">],</span> <span class="n">newSelector</span><span class="p">,</span> <span class="n">method_getImplementation</span><span class="p">(</span><span class="n">orignalMethod</span><span class="p">),</span>
+                          <span class="n">method_getTypeEncoding</span><span class="p">(</span><span class="n">orignalMethod</span><span class="p">));</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">method_exchangeImplementations</span><span class="p">(</span><span class="n">orignalMethod</span><span class="p">,</span> <span class="n">newMethod</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>为了保证替换操作只进行一次，这里使用了 <code class="language-plaintext highlighter-rouge">dispatch_once</code>。</p>
+
+<p>至此就大功告成了，来看下效果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70386072-8ea00d80-19cf-11ea-97cf-8006f69669f9.png" alt="为所有 UIView 绘制边框" /></p>
+<p align="center">为所有 UIView 绘制边框</p>
+
+<h2 id="将-swizzle-逻辑抽取成公用">将 Swizzle 逻辑抽取成公用</h2>
+
+<p>注意到 UIView 并不只有这一个初始化方法，还可通过调用 <code class="language-plaintext highlighter-rouge">initWithCoder:</code> 来初始化，所以要看到所有的 UIView 边框，还需要为这个方法添加一下支持。</p>
+
+<p>这意味着前面 <code class="language-plaintext highlighter-rouge">+load</code> 里做的事情需要复制一遍，明显不优雅。因此，可以将这段逻辑抽取到公共的地方，比如添加到 NSObject 上，然后将需要交换的 selector 传递进去即可。</p>
+
+<p>添加 NSObject 的 Category，添加一个 <code class="language-plaintext highlighter-rouge">+swizzleInstanceSelector:withNewSelector:</code> 方法：</p>
+
+<p><em>NSObject+Debug</em></p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#import &lt;objc/runtime.h&gt;
+#import "NSObject+Debug.h"
+</span>
+<span class="k">@implementation</span> <span class="nc">NSObject</span> <span class="p">(</span><span class="nl">Debug</span><span class="p">)</span>
+
+<span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">swizzleInstanceSelector</span><span class="p">:(</span><span class="n">SEL</span><span class="p">)</span><span class="nv">originalSelector</span> <span class="nf">withNewSelector</span><span class="p">:(</span><span class="n">SEL</span><span class="p">)</span><span class="nv">newSelector</span> <span class="p">{</span>
+  <span class="n">Method</span> <span class="n">originalMethod</span> <span class="o">=</span> <span class="n">class_getInstanceMethod</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">originalSelector</span><span class="p">);</span>
+  <span class="n">Method</span> <span class="n">newMethod</span> <span class="o">=</span> <span class="n">class_getInstanceMethod</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">newSelector</span><span class="p">);</span>
+
+  <span class="n">BOOL</span> <span class="n">methodAdded</span> <span class="o">=</span>
+      <span class="n">class_addMethod</span><span class="p">([</span><span class="n">self</span> <span class="nf">class</span><span class="p">],</span> <span class="n">originalSelector</span><span class="p">,</span> <span class="n">method_getImplementation</span><span class="p">(</span><span class="n">newMethod</span><span class="p">),</span>
+                      <span class="n">method_getTypeEncoding</span><span class="p">(</span><span class="n">newMethod</span><span class="p">));</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">methodAdded</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">class_replaceMethod</span><span class="p">([</span><span class="n">self</span> <span class="nf">class</span><span class="p">],</span> <span class="n">newSelector</span><span class="p">,</span> <span class="n">method_getImplementation</span><span class="p">(</span><span class="n">originalMethod</span><span class="p">),</span>
+                        <span class="n">method_getTypeEncoding</span><span class="p">(</span><span class="n">originalMethod</span><span class="p">));</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">method_exchangeImplementations</span><span class="p">(</span><span class="n">originalMethod</span><span class="p">,</span> <span class="n">newMethod</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+</code></pre></div></div>
+
+<p>使用：</p>
+
+<p><em>UIView+Debug.h</em></p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#import "NSObject+Debug.h"
+#import "UIView+Debug.h"
+</span>
+<span class="k">@implementation</span> <span class="nc">UIView</span> <span class="p">(</span><span class="nl">Debug</span><span class="p">)</span>
+
+<span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">load</span> <span class="p">{</span>
+  <span class="k">static</span> <span class="n">dispatch_once_t</span> <span class="n">onceToken</span><span class="p">;</span>
+  <span class="n">dispatch_once</span><span class="p">(</span><span class="o">&amp;</span><span class="n">onceToken</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+    <span class="p">[</span><span class="n">self</span> <span class="nf">swizzleInstanceSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nf">initWithFrame</span><span class="p">:)</span>
+                  <span class="nl">withNewSelector:</span><span class="k">@selector</span><span class="p">(</span><span class="n">debugInitWithFrame</span><span class="o">:</span><span class="p">)];</span>
+    <span class="p">[</span><span class="n">self</span> <span class="nf">swizzleInstanceSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nf">initWithCoder</span><span class="p">:)</span>
+                  <span class="nl">withNewSelector:</span><span class="k">@selector</span><span class="p">(</span><span class="n">debugInitWithCoder</span><span class="o">:</span><span class="p">)];</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="n">instancetype</span><span class="p">)</span><span class="nf">debugInitWithFrame</span><span class="p">:(</span><span class="n">CGRect</span><span class="p">)</span><span class="nv">frame</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">self</span> <span class="nf">debugInitWithFrame</span><span class="p">:</span><span class="n">frame</span><span class="p">];</span>
+  <span class="p">[</span><span class="n">self</span> <span class="nf">setupBorder</span><span class="p">];</span>
+  <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="n">instancetype</span><span class="p">)</span><span class="nf">debugInitWithCoder</span><span class="p">:(</span><span class="n">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="nv">coder</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">self</span> <span class="nf">debugInitWithCoder</span><span class="p">:</span><span class="n">coder</span><span class="p">];</span>
+  <span class="p">[</span><span class="n">self</span> <span class="nf">setupBorder</span><span class="p">];</span>
+  <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">setupBorder</span> <span class="p">{</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">borderWidth</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">borderColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIColor</span> <span class="nf">redColor</span><span class="p">].</span><span class="n">CGColor</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>修改框架代码这件事，需要小心。在没有完全理解 Swizzle 所干的事情前，不要在项目中使用。因为它威力很大，如果逻辑写得不对很可能影响正常功能。</p>
+
+<p>同时它很好用，这里的好用是说其威力巨大所带来的便利性，即用好后可以很高效地完成一些事情。比如像上面的示例，你不可能每个地方都去写一次 border 的设置。</p>
+
+<p>通过实现 UIView 添加边框这个示例，我还了解到，UIView 里 layer 的 <code class="language-plaintext highlighter-rouge">drawRect:</code> 并不是都会调，只有在复写时才会调用。因为一开始的思路不是替换初始化方法，而是想通过替换 <code class="language-plaintext highlighter-rouge">drawRect:</code> 来做。所以内部 runtime 对 UIView 子类，可能会先检查是否有自定义的 <code class="language-plaintext highlighter-rouge">drawRect:</code>，有才调用之，没有不会调用自己的 <code class="language-plaintext highlighter-rouge">drawRect:</code>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+<ul>
+  <li><a href="https://developer.apple.com/documentation/objectivec/1418901-class_addmethod?language=objc#">class_addMethod</a></li>
+  <li><a href="https://developer.apple.com/documentation/objectivec/1418530-class_getinstancemethod?language=objc#">class_getInstanceMethod</a></li>
+  <li><a href="https://developer.apple.com/documentation/objectivec/1418677-class_replacemethod?language=objc#">class_replaceMethod</a></li>
+  <li><a href="https://blog.carbonfive.com/2013/02/20/monkey-patching-ios-with-objective-c-categories-part-iii-swizzling/">Monkey-Patching iOS with Objective-C Categories Part III: Swizzling</a></li>
+  <li><a href="https://medium.com/rocknnull/ios-to-swizzle-or-not-to-swizzle-f8b0ed4a1ce6">iOS — To swizzle or not to swizzle?</a></li>
+  <li><a href="https://darkdust.net/writings/objective-c/method-swizzling">Extending existing classes (Method Swizzling)</a></li>
+  <li><a href="https://blog.newrelic.com/engineering/right-way-to-swizzle/">The Right Way to Swizzle in Objective-C</a></li>
+</ul>
+
+:ET

@@ -1,0 +1,25 @@
+I"�<h1 id="mac-抹掉磁盘失败的解决">Mac 抹掉磁盘失败的解决</h1>
+
+<p>使用 Mac 磁盘工具进行抹除操作时，报 <code class="language-plaintext highlighter-rouge">Erase process has failed. Click Done to continue.</code> 错误，如图：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/92440266-d4983500-f1de-11ea-9aef-70a6416af65e.jpg" alt="Mac 磁盘工具抹除失败的界面" /></p>
+<p align="center">Mac 磁盘工具抹除失败的界面</p>
+
+<h2 id="解决">解决</h2>
+
+<ul>
+  <li>重启</li>
+  <li>同时按住 command + R 进入 recovery 模式</li>
+  <li>进入磁盘工具</li>
+  <li>选择显示所有设备</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/92440402-05786a00-f1df-11ea-8d55-5f9879e268f6.png" alt="Mac 磁盘工具抹除操作时选择显示所有设备" /></p>
+<p align="center">Mac 磁盘工具抹除操作时选择显示所有设备</p>
+
+<ul>
+  <li>选择最顶层的设备</li>
+  <li>选择抹除</li>
+</ul>
+
+:ET

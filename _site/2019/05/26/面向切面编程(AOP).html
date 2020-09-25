@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>面向切面编程(AOP) | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="面向切面编程(AOP)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="面向切面编程(AOP) 面向切面编程(Aspect-Oriented Programming/AOP) 解决的是 cross-cutting concerns 问题。比如同一段代码在不同模块中重复，又不能简单地通过抽取公共方法的方式来达到重构，比如日志与参数校验。 以下是展示这一编程思想的一段伪代码： function mainProgram() { var x = foo(); doSomethingWith(x); return x; } aspect logging { before (mainProgram is called): { log.Write(&quot;entering mainProgram&quot;); } after (mainProgram is called): { log.Write( &quot;exiting mainProgram with return value of &quot; + mainProgram.returnValue); } } aspect verification { before (doSomethingWith is called): { if (doSomethingWith.arguments[0] == null) { throw NullArgumentException(); } if (!doSomethingWith.caller.isAuthenticated) { throw Securityexception(); } } } 代码进行编译转换后实际成为这样子： function mainProgram() { log.Write(&quot;entering mainProgram&quot;); var x = foo(); if (x == null) throw NullArgumentException(); if (!mainProgramIsAuthenticated()) throw Securityexception(); doSomethingWith(x); log.Write(&quot;exiting mainProgram with return value of &quot;+ x); return x; } 与 Mixin 的差别 Mixin 中代码与宿主无关，可向宿主添加做生意多的功能。装饰器是侵入式的，将宿主进行代理，对外提供的接口不变，可在相应逻辑运行前后进行拦截操作。 装饰器 装饰器（decorator pattern）可认为是一种面向切面的编程。一个装饰器可运用于类（class）属性（property），方法（method）以及参数等（parameter）。加上装饰器后，可用于对目标对象的日志处理，权限检查等与业务无关的操作。 JavaScript 中的实现 装饰器如其如，类似于给方法添加一个修饰，具体的功能在装饰器中实现，所有应用了该装饰器的方法都会带上相应的功能。 主流强类型语言比如 Java，C# 中装饰器由来已久，但 JavaScript 其还处于 stage 2 proposal 阶段。不过可通过 TypeScript 来使用，编译选项中开启 experimentalDecorators 参数。 { &quot;compilerOptions&quot;: { &quot;experimentalDecorators&quot;: true } } 装饰器运用最为典型的是 Angular。其整体框架大量使用装饰器来定义各组件模块，同时控制相应组件及模块的行为。 @Component({ selector: &#39;example-component&#39;, template: &#39;&lt;div&gt;Woo a component!&lt;/div&gt;&#39;, }) export class ExampleComponent { constructor() { console.log(&#39;Hey I am a component!&#39;); } } 其他应用场景比如将路由的定义使用装饰器写在 Controller 上，参见 midway 框架 - 路由装饰器。 import { provide, controller, inject, get } from &#39;midway&#39;; @provide() @controller(&#39;/user&#39;) export class UserController { @inject(&#39;userService&#39;) service: IUserService; @get(&#39;/:id&#39;) async getUser(ctx): Promise&lt;void&gt; { const id: number = ctx.params.id; const user: IUserResult = await this.service.getUser({id}); ctx.body = {success: true, message: &#39;OK&#39;, data: user}; } } 相关资源 What is aspect-oriented programming? What is the difference between a mixin and the decorator pattern?" />
+<meta property="og:description" content="面向切面编程(AOP) 面向切面编程(Aspect-Oriented Programming/AOP) 解决的是 cross-cutting concerns 问题。比如同一段代码在不同模块中重复，又不能简单地通过抽取公共方法的方式来达到重构，比如日志与参数校验。 以下是展示这一编程思想的一段伪代码： function mainProgram() { var x = foo(); doSomethingWith(x); return x; } aspect logging { before (mainProgram is called): { log.Write(&quot;entering mainProgram&quot;); } after (mainProgram is called): { log.Write( &quot;exiting mainProgram with return value of &quot; + mainProgram.returnValue); } } aspect verification { before (doSomethingWith is called): { if (doSomethingWith.arguments[0] == null) { throw NullArgumentException(); } if (!doSomethingWith.caller.isAuthenticated) { throw Securityexception(); } } } 代码进行编译转换后实际成为这样子： function mainProgram() { log.Write(&quot;entering mainProgram&quot;); var x = foo(); if (x == null) throw NullArgumentException(); if (!mainProgramIsAuthenticated()) throw Securityexception(); doSomethingWith(x); log.Write(&quot;exiting mainProgram with return value of &quot;+ x); return x; } 与 Mixin 的差别 Mixin 中代码与宿主无关，可向宿主添加做生意多的功能。装饰器是侵入式的，将宿主进行代理，对外提供的接口不变，可在相应逻辑运行前后进行拦截操作。 装饰器 装饰器（decorator pattern）可认为是一种面向切面的编程。一个装饰器可运用于类（class）属性（property），方法（method）以及参数等（parameter）。加上装饰器后，可用于对目标对象的日志处理，权限检查等与业务无关的操作。 JavaScript 中的实现 装饰器如其如，类似于给方法添加一个修饰，具体的功能在装饰器中实现，所有应用了该装饰器的方法都会带上相应的功能。 主流强类型语言比如 Java，C# 中装饰器由来已久，但 JavaScript 其还处于 stage 2 proposal 阶段。不过可通过 TypeScript 来使用，编译选项中开启 experimentalDecorators 参数。 { &quot;compilerOptions&quot;: { &quot;experimentalDecorators&quot;: true } } 装饰器运用最为典型的是 Angular。其整体框架大量使用装饰器来定义各组件模块，同时控制相应组件及模块的行为。 @Component({ selector: &#39;example-component&#39;, template: &#39;&lt;div&gt;Woo a component!&lt;/div&gt;&#39;, }) export class ExampleComponent { constructor() { console.log(&#39;Hey I am a component!&#39;); } } 其他应用场景比如将路由的定义使用装饰器写在 Controller 上，参见 midway 框架 - 路由装饰器。 import { provide, controller, inject, get } from &#39;midway&#39;; @provide() @controller(&#39;/user&#39;) export class UserController { @inject(&#39;userService&#39;) service: IUserService; @get(&#39;/:id&#39;) async getUser(ctx): Promise&lt;void&gt; { const id: number = ctx.params.id; const user: IUserResult = await this.service.getUser({id}); ctx.body = {success: true, message: &#39;OK&#39;, data: user}; } } 相关资源 What is aspect-oriented programming? What is the difference between a mixin and the decorator pattern?" />
+<link rel="canonical" href="http://localhost:4000/2019/05/26/%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B(AOP).html" />
+<meta property="og:url" content="http://localhost:4000/2019/05/26/%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B(AOP).html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-26T17:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/05/26/%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B(AOP).html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/05/26/%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B(AOP).html"},"description":"面向切面编程(AOP) 面向切面编程(Aspect-Oriented Programming/AOP) 解决的是 cross-cutting concerns 问题。比如同一段代码在不同模块中重复，又不能简单地通过抽取公共方法的方式来达到重构，比如日志与参数校验。 以下是展示这一编程思想的一段伪代码： function mainProgram() { var x = foo(); doSomethingWith(x); return x; } aspect logging { before (mainProgram is called): { log.Write(&quot;entering mainProgram&quot;); } after (mainProgram is called): { log.Write( &quot;exiting mainProgram with return value of &quot; + mainProgram.returnValue); } } aspect verification { before (doSomethingWith is called): { if (doSomethingWith.arguments[0] == null) { throw NullArgumentException(); } if (!doSomethingWith.caller.isAuthenticated) { throw Securityexception(); } } } 代码进行编译转换后实际成为这样子： function mainProgram() { log.Write(&quot;entering mainProgram&quot;); var x = foo(); if (x == null) throw NullArgumentException(); if (!mainProgramIsAuthenticated()) throw Securityexception(); doSomethingWith(x); log.Write(&quot;exiting mainProgram with return value of &quot;+ x); return x; } 与 Mixin 的差别 Mixin 中代码与宿主无关，可向宿主添加做生意多的功能。装饰器是侵入式的，将宿主进行代理，对外提供的接口不变，可在相应逻辑运行前后进行拦截操作。 装饰器 装饰器（decorator pattern）可认为是一种面向切面的编程。一个装饰器可运用于类（class）属性（property），方法（method）以及参数等（parameter）。加上装饰器后，可用于对目标对象的日志处理，权限检查等与业务无关的操作。 JavaScript 中的实现 装饰器如其如，类似于给方法添加一个修饰，具体的功能在装饰器中实现，所有应用了该装饰器的方法都会带上相应的功能。 主流强类型语言比如 Java，C# 中装饰器由来已久，但 JavaScript 其还处于 stage 2 proposal 阶段。不过可通过 TypeScript 来使用，编译选项中开启 experimentalDecorators 参数。 { &quot;compilerOptions&quot;: { &quot;experimentalDecorators&quot;: true } } 装饰器运用最为典型的是 Angular。其整体框架大量使用装饰器来定义各组件模块，同时控制相应组件及模块的行为。 @Component({ selector: &#39;example-component&#39;, template: &#39;&lt;div&gt;Woo a component!&lt;/div&gt;&#39;, }) export class ExampleComponent { constructor() { console.log(&#39;Hey I am a component!&#39;); } } 其他应用场景比如将路由的定义使用装饰器写在 Controller 上，参见 midway 框架 - 路由装饰器。 import { provide, controller, inject, get } from &#39;midway&#39;; @provide() @controller(&#39;/user&#39;) export class UserController { @inject(&#39;userService&#39;) service: IUserService; @get(&#39;/:id&#39;) async getUser(ctx): Promise&lt;void&gt; { const id: number = ctx.params.id; const user: IUserResult = await this.service.getUser({id}); ctx.body = {success: true, message: &#39;OK&#39;, data: user}; } } 相关资源 What is aspect-oriented programming? What is the difference between a mixin and the decorator pattern?","@type":"BlogPosting","headline":"面向切面编程(AOP)","dateModified":"2019-05-26T17:05:00+08:00","datePublished":"2019-05-26T17:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">面向切面编程(AOP)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-26T17:05:00+08:00" itemprop="datePublished">May 26, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="面向切面编程aop">面向切面编程(AOP)</h1>
+
+<p>面向切面编程(Aspect-Oriented Programming/AOP) 解决的是 <a href="https://en.wikipedia.org/wiki/Cross-cutting_concern">cross-cutting concerns</a> 问题。比如同一段代码在不同模块中重复，又不能简单地通过抽取公共方法的方式来达到重构，比如日志与参数校验。</p>
+
+<p>以下是展示这一编程思想的一段伪代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function mainProgram()
+{ 
+   var x =  foo();
+   doSomethingWith(x);
+   return x;
+}
+
+aspect logging
+{ 
+    before (mainProgram is called):
+    { 
+       log.Write("entering mainProgram");
+    }
+
+    after (mainProgram is called):
+    { 
+       log.Write(  "exiting mainProgram with return value of "
+                  + mainProgram.returnValue);
+    }
+ } 
+
+aspect verification
+{ 
+    before (doSomethingWith is called):
+    { 
+       if (doSomethingWith.arguments[0] == null) 
+       { 
+          throw NullArgumentException();
+       }
+
+       if (!doSomethingWith.caller.isAuthenticated)
+       { 
+          throw Securityexception();
+       }
+    }
+ }
+
+</code></pre></div></div>
+
+<p>代码进行编译转换后实际成为这样子：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function mainProgram()
+{ 
+   log.Write("entering mainProgram");
+
+   var x = foo();   
+
+   if (x == null) throw NullArgumentException();
+   if (!mainProgramIsAuthenticated()) throw Securityexception();
+   doSomethingWith(x);   
+
+   log.Write("exiting mainProgram with return value of "+ x);
+   return x;
+} 
+
+</code></pre></div></div>
+
+<h2 id="与-mixin-的差别">与 Mixin 的差别</h2>
+
+<p>Mixin 中代码与宿主无关，可向宿主添加做生意多的功能。装饰器是侵入式的，将宿主进行代理，对外提供的接口不变，可在相应逻辑运行前后进行拦截操作。</p>
+
+<h2 id="装饰器">装饰器</h2>
+
+<p>装饰器（decorator pattern）可认为是一种面向切面的编程。一个装饰器可运用于类（class）属性（property），方法（method）以及参数等（parameter）。加上装饰器后，可用于对目标对象的日志处理，权限检查等与业务无关的操作。</p>
+
+<h3 id="javascript-中的实现">JavaScript 中的实现</h3>
+
+<p>装饰器如其如，类似于给方法添加一个修饰，具体的功能在装饰器中实现，所有应用了该装饰器的方法都会带上相应的功能。</p>
+
+<p>主流强类型语言比如 Java，C# 中装饰器由来已久，但 JavaScript 其还处于 <a href="https://github.com/tc39/proposal-decorators">stage 2 proposal</a> 阶段。不过可通过 TypeScript 来使用，编译选项中开启 <code class="language-plaintext highlighter-rouge">experimentalDecorators</code> 参数。</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"experimentalDecorators"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>装饰器运用最为典型的是 <a href="https://angular.io">Angular</a>。其整体框架大量使用装饰器来定义各组件模块，同时控制相应组件及模块的行为。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">@</span><span class="nd">Component</span><span class="p">({</span>
+  <span class="na">selector</span><span class="p">:</span> <span class="dl">'</span><span class="s1">example-component</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">template</span><span class="p">:</span> <span class="dl">'</span><span class="s1">&lt;div&gt;Woo a component!&lt;/div&gt;</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">ExampleComponent</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hey I am a component!</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>其他应用场景比如将路由的定义使用装饰器写在 Controller 上，参见 <a href="https://midwayjs.org/midway/guide.html#路由装饰器">midway 框架 - 路由装饰器</a>。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">provide</span><span class="p">,</span> <span class="nx">controller</span><span class="p">,</span> <span class="nx">inject</span><span class="p">,</span> <span class="kd">get</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">midway</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">provide</span><span class="p">()</span>
+<span class="p">@</span><span class="nd">controller</span><span class="p">(</span><span class="dl">'</span><span class="s1">/user</span><span class="dl">'</span><span class="p">)</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">UserController</span> <span class="p">{</span>
+
+  <span class="p">@</span><span class="nd">inject</span><span class="p">(</span><span class="dl">'</span><span class="s1">userService</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">service</span><span class="p">:</span> <span class="nx">IUserService</span><span class="p">;</span>
+
+  <span class="p">@</span><span class="nd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">/:id</span><span class="dl">'</span><span class="p">)</span>
+  <span class="k">async</span> <span class="nx">getUser</span><span class="p">(</span><span class="nx">ctx</span><span class="p">):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="k">void</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="na">id</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="na">user</span><span class="p">:</span> <span class="nx">IUserResult</span> <span class="o">=</span> <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">getUser</span><span class="p">({</span><span class="nx">id</span><span class="p">});</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="p">{</span><span class="na">success</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="na">message</span><span class="p">:</span> <span class="dl">'</span><span class="s1">OK</span><span class="dl">'</span><span class="p">,</span> <span class="na">data</span><span class="p">:</span> <span class="nx">user</span><span class="p">};</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/242177/what-is-aspect-oriented-programming">What is aspect-oriented programming?</a></li>
+  <li><a href="https://stackoverflow.com/questions/2582289/what-is-the-difference-between-a-mixin-and-the-decorator-pattern">What is the difference between a mixin and the decorator pattern?</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/05/26/%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B(AOP).html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

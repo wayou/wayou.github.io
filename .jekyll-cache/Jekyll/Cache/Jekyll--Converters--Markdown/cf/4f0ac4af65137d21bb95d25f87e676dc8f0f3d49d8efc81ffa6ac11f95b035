@@ -1,0 +1,31 @@
+I"�<h1 id="ios-微信中音频-preload-的问题">iOS 微信中音频 preload 的问题</h1>
+
+<p>微信中 audio <code class="language-plaintext highlighter-rouge">preload</code> 并不好用，不确定是新版本中 x5 浏览器内核有变更的原因。</p>
+
+<p>一般情况下，如果想要展示音频的时长，只需要设置 <code class="language-plaintext highlighter-rouge">preload=‘metadata’</code> 即可。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">player</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Audio</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+  <span class="nx">player</span><span class="p">.</span><span class="nx">preload</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">metadata</span><span class="dl">"</span><span class="p">;</span>
+  <span class="nx">player</span><span class="p">.</span><span class="nx">onloadedmetadata</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">duration</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nx">player</span><span class="p">.</span><span class="nx">duration</span><span class="p">;</span>
+  <span class="p">};</span>
+</code></pre></div></div>
+
+<p>微信中不生效。解决办法是添加微信的 web sdk，然后监听 <code class="language-plaintext highlighter-rouge">WeixinJSBridgeReady</code> 事件，在该事件的回调中手动调用 <code class="language-plaintext highlighter-rouge">load</code> 即可。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span>
+    <span class="dl">"</span><span class="s2">WeixinJSBridgeReady</span><span class="dl">"</span><span class="p">,</span>
+    <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">player</span><span class="p">.</span><span class="nx">load</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="kc">false</span>
+  <span class="p">);</span>
+</code></pre></div></div>
+
+<p>对于视频同理。通过在 <code class="language-plaintext highlighter-rouge">WeixinJSBridgeReady</code> 回调中手动调用 <code class="language-plaintext highlighter-rouge">load</code> 可预加载资源视频可通过该方法加载出第一帧作为封面。</p>
+
+<p>如果要实现自动播放，iOS 及微信中也是限制很多。通过上述方法，只需将 <code class="language-plaintext highlighter-rouge">load</code> 换成 <code class="language-plaintext highlighter-rouge">play</code> 即可。</p>
+
+<p><a href="https://wayou.github.io/posts/wechat-audio-preload-issue/index.html">点击此处查看示例</a></p>
+
+:ET

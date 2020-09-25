@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>JavaScript 中实现 sleep | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="JavaScript 中实现 sleep" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="JavaScript 中实现 sleep 来自推特上 Windows 故障分析的笑话 图片来源：me.me 推上看到的笑话，Windows 故障分析的实现。 然后想起来 JavaScript 中如何实现这个 sleep() 函数让代码暂停指定时间。 异步版本 借助 Promise 这事很好实现。 function sleep(time) { return new Promise(resolve =&gt; { setTimeout(() =&gt; { resolve(); }, time); }); } 创建一个 Promise，等待指定时间后 resolve 掉即可。 但，Promise 是异步的，它要求后续代码要么包含在 then 里面，要么通过 async/await 来调用。 所以使用起来应该像这样子， function testSleep() { console.log(&quot;will sleep for 1s&quot;); sleep(1000).then(() =&gt; { console.log(&quot;will sleep for another 5s&quot;); sleep(5000).then(() =&gt; { console.log(&quot;waked up&quot;); }); }); } testSleep(); 或者这样子： async function testSleep() { console.log(&quot;will sleep for 1s&quot;); await sleep(1000); console.log(&quot;will sleep for another 5s&quot;); await sleep(5000); console.log(&quot;waked up&quot;); } testSleep(); 测试 sleep 当然后者会更加优雅些，但本质上都是需要保证后续代码在 Promise 回调中执行。如何有回调之外的代码，则不会被阻断，这便是其缺点。 async function testSleep() { console.log(&quot;will sleep for 1s&quot;); await sleep(1000); console.log(&quot;will sleep for another 5s&quot;); await sleep(5000); console.log(&quot;waked up&quot;); } testSleep(); // 🚨不会按预期那样最后执行，而是立即被执行 console.log(&quot;我在等上面的代码执行完...&quot;); 代码未阻断的情况 同步版本 不借助异步异步代码想阻断代码执行，那其实可以让代码原地跑，通过 while。 function syncSleep(time) { const start = new Date().getTime(); while (new Date().getTime() - start &lt; time) {} } 使用起来就和正常函数没区别了，对周围代码也没有要求必需得在回调什么的： console.log(&quot;start test sync sleep...&quot;); syncSleep(3000); console.log(&quot;sync sleep after 3s&quot;); 测试同步版本的 sleep 方便是方便，但不建议使用这种方式，毕竟代码在空跑。如果需要这样的场景，你需要考虑是否可以修改下代码或换个设计，异步能满足大部分需求。 相关资源 MDN - Promise Synchronous and asynchronous requests What is the JavaScript version of sleep()?" />
+<meta property="og:description" content="JavaScript 中实现 sleep 来自推特上 Windows 故障分析的笑话 图片来源：me.me 推上看到的笑话，Windows 故障分析的实现。 然后想起来 JavaScript 中如何实现这个 sleep() 函数让代码暂停指定时间。 异步版本 借助 Promise 这事很好实现。 function sleep(time) { return new Promise(resolve =&gt; { setTimeout(() =&gt; { resolve(); }, time); }); } 创建一个 Promise，等待指定时间后 resolve 掉即可。 但，Promise 是异步的，它要求后续代码要么包含在 then 里面，要么通过 async/await 来调用。 所以使用起来应该像这样子， function testSleep() { console.log(&quot;will sleep for 1s&quot;); sleep(1000).then(() =&gt; { console.log(&quot;will sleep for another 5s&quot;); sleep(5000).then(() =&gt; { console.log(&quot;waked up&quot;); }); }); } testSleep(); 或者这样子： async function testSleep() { console.log(&quot;will sleep for 1s&quot;); await sleep(1000); console.log(&quot;will sleep for another 5s&quot;); await sleep(5000); console.log(&quot;waked up&quot;); } testSleep(); 测试 sleep 当然后者会更加优雅些，但本质上都是需要保证后续代码在 Promise 回调中执行。如何有回调之外的代码，则不会被阻断，这便是其缺点。 async function testSleep() { console.log(&quot;will sleep for 1s&quot;); await sleep(1000); console.log(&quot;will sleep for another 5s&quot;); await sleep(5000); console.log(&quot;waked up&quot;); } testSleep(); // 🚨不会按预期那样最后执行，而是立即被执行 console.log(&quot;我在等上面的代码执行完...&quot;); 代码未阻断的情况 同步版本 不借助异步异步代码想阻断代码执行，那其实可以让代码原地跑，通过 while。 function syncSleep(time) { const start = new Date().getTime(); while (new Date().getTime() - start &lt; time) {} } 使用起来就和正常函数没区别了，对周围代码也没有要求必需得在回调什么的： console.log(&quot;start test sync sleep...&quot;); syncSleep(3000); console.log(&quot;sync sleep after 3s&quot;); 测试同步版本的 sleep 方便是方便，但不建议使用这种方式，毕竟代码在空跑。如果需要这样的场景，你需要考虑是否可以修改下代码或换个设计，异步能满足大部分需求。 相关资源 MDN - Promise Synchronous and asynchronous requests What is the JavaScript version of sleep()?" />
+<link rel="canonical" href="http://localhost:4000/2019/05/16/JavaScript-%E4%B8%AD%E5%AE%9E%E7%8E%B0-sleep.html" />
+<meta property="og:url" content="http://localhost:4000/2019/05/16/JavaScript-%E4%B8%AD%E5%AE%9E%E7%8E%B0-sleep.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-16T00:05:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/05/16/JavaScript-%E4%B8%AD%E5%AE%9E%E7%8E%B0-sleep.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/05/16/JavaScript-%E4%B8%AD%E5%AE%9E%E7%8E%B0-sleep.html"},"description":"JavaScript 中实现 sleep 来自推特上 Windows 故障分析的笑话 图片来源：me.me 推上看到的笑话，Windows 故障分析的实现。 然后想起来 JavaScript 中如何实现这个 sleep() 函数让代码暂停指定时间。 异步版本 借助 Promise 这事很好实现。 function sleep(time) { return new Promise(resolve =&gt; { setTimeout(() =&gt; { resolve(); }, time); }); } 创建一个 Promise，等待指定时间后 resolve 掉即可。 但，Promise 是异步的，它要求后续代码要么包含在 then 里面，要么通过 async/await 来调用。 所以使用起来应该像这样子， function testSleep() { console.log(&quot;will sleep for 1s&quot;); sleep(1000).then(() =&gt; { console.log(&quot;will sleep for another 5s&quot;); sleep(5000).then(() =&gt; { console.log(&quot;waked up&quot;); }); }); } testSleep(); 或者这样子： async function testSleep() { console.log(&quot;will sleep for 1s&quot;); await sleep(1000); console.log(&quot;will sleep for another 5s&quot;); await sleep(5000); console.log(&quot;waked up&quot;); } testSleep(); 测试 sleep 当然后者会更加优雅些，但本质上都是需要保证后续代码在 Promise 回调中执行。如何有回调之外的代码，则不会被阻断，这便是其缺点。 async function testSleep() { console.log(&quot;will sleep for 1s&quot;); await sleep(1000); console.log(&quot;will sleep for another 5s&quot;); await sleep(5000); console.log(&quot;waked up&quot;); } testSleep(); // 🚨不会按预期那样最后执行，而是立即被执行 console.log(&quot;我在等上面的代码执行完...&quot;); 代码未阻断的情况 同步版本 不借助异步异步代码想阻断代码执行，那其实可以让代码原地跑，通过 while。 function syncSleep(time) { const start = new Date().getTime(); while (new Date().getTime() - start &lt; time) {} } 使用起来就和正常函数没区别了，对周围代码也没有要求必需得在回调什么的： console.log(&quot;start test sync sleep...&quot;); syncSleep(3000); console.log(&quot;sync sleep after 3s&quot;); 测试同步版本的 sleep 方便是方便，但不建议使用这种方式，毕竟代码在空跑。如果需要这样的场景，你需要考虑是否可以修改下代码或换个设计，异步能满足大部分需求。 相关资源 MDN - Promise Synchronous and asynchronous requests What is the JavaScript version of sleep()?","@type":"BlogPosting","headline":"JavaScript 中实现 sleep","dateModified":"2019-05-16T00:05:00+08:00","datePublished":"2019-05-16T00:05:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">JavaScript 中实现 sleep</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-05-16T00:05:00+08:00" itemprop="datePublished">May 16, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="javascript-中实现-sleep">JavaScript 中实现 sleep</h1>
+
+<p align="center"><img alt="来自推特上 Windows 故障分析的笑话" src="https://user-images.githubusercontent.com/3783096/57644343-807f3f80-75ee-11e9-98a4-23123a250d9d.png" /></p>
+<p align="center">来自推特上 Windows 故障分析的笑话 <small>图片来源：<a href="https://me.me/i/the-source-code-of-windows-troubleshooting-program-has-leaked-1-010536dbd83247a4894a495e4bc33656">me.me</a></small></p>
+
+<p>推上看到的笑话，Windows 故障分析的实现。</p>
+
+<p>然后想起来 JavaScript 中如何实现这个 <code class="language-plaintext highlighter-rouge">sleep()</code> 函数让代码暂停指定时间。</p>
+
+<h2 id="异步版本">异步版本</h2>
+
+<p>借助 <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> 这事很好实现。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">resolve</span><span class="p">();</span>
+    <span class="p">},</span> <span class="nx">time</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>创建一个 <code class="language-plaintext highlighter-rouge">Promise</code>，等待指定时间后 resolve 掉即可。</p>
+
+<p>但，<code class="language-plaintext highlighter-rouge">Promise</code> 是异步的，它要求后续代码要么包含在 <code class="language-plaintext highlighter-rouge">then</code> 里面，要么通过 <code class="language-plaintext highlighter-rouge">async/await</code> 来调用。</p>
+
+<p>所以使用起来应该像这样子，</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">testSleep</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">will sleep for 1s</span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">).</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">will sleep for another 5s</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">sleep</span><span class="p">(</span><span class="mi">5000</span><span class="p">).</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">waked up</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+<span class="nx">testSleep</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>或者这样子：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">testSleep</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">will sleep for 1s</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">will sleep for another 5s</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">sleep</span><span class="p">(</span><span class="mi">5000</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">waked up</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">testSleep</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57644026-c7b90080-75ed-11e9-86f9-08972d5ef3cb.gif" alt="测试 sleep" /></p>
+<p align="center">测试 sleep</p>
+
+<p>当然后者会更加优雅些，但本质上都是需要保证后续代码在 Promise 回调中执行。如何有回调之外的代码，则不会被阻断，这便是其缺点。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">testSleep</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">will sleep for 1s</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">will sleep for another 5s</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">sleep</span><span class="p">(</span><span class="mi">5000</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">waked up</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">testSleep</span><span class="p">();</span>
+
+<span class="c1">// 🚨不会按预期那样最后执行，而是立即被执行</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">我在等上面的代码执行完...</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57644059-e0c1b180-75ed-11e9-8b1a-f511319f2d7c.gif" alt="代码未阻断的情况" /></p>
+<p align="center">代码未阻断的情况</p>
+
+<h2 id="同步版本">同步版本</h2>
+
+<p>不借助异步异步代码想阻断代码执行，那其实可以让代码原地跑，通过 <code class="language-plaintext highlighter-rouge">while</code>。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">syncSleep</span><span class="p">(</span><span class="nx">time</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
+  <span class="k">while</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span> <span class="o">&lt;</span> <span class="nx">time</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>使用起来就和正常函数没区别了，对周围代码也没有要求必需得在回调什么的：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">start test sync sleep...</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">syncSleep</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">sync sleep after 3s</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57644100-f9ca6280-75ed-11e9-9291-4ddd0181932a.gif" alt="测试同步版本的 sleep" /></p>
+<p align="center">测试同步版本的 sleep</p>
+
+<p>方便是方便，但不建议使用这种方式，毕竟代码在空跑。如果需要这样的场景，你需要考虑是否可以修改下代码或换个设计，异步能满足大部分需求。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise">MDN - Promise</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Synchronous_and_Asynchronous_Requests">Synchronous and asynchronous requests</a></li>
+  <li><a href="https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep">What is the JavaScript version of sleep()?</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/05/16/JavaScript-%E4%B8%AD%E5%AE%9E%E7%8E%B0-sleep.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

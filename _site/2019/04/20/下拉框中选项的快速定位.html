@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>下拉框中选项的快速定位 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="下拉框中选项的快速定位" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="下拉框中选项的快速定位 对于选项很多的下拉框 &lt;select&gt;，人工定位到想要的项目是很费劲的。浏览器其实原生支持下拉选择框根据键盘输入自动定位到相应条目的。 通过输入条目字母定位到下拉框中条目的位置 方便是方便，有个问题是连续输入不能间隔太久，这个间隔实测中感受是非常短的，如果想找的条目比较难输入，就无法在短时间内完成这个操作。 那有没有相应 API 修改这个间隔时间呢？不能，至少我还没找到。 &lt;datalist&gt; 其实 HTML5 中提供了另外一个元素，&lt;datalist&gt;。用它结合一个文本输入框可实现 Combo box 的效果，即根据输入自动筛选列表中的元素。 &lt;input type=&quot;text&quot; id=&quot;names&quot; list=&quot;nameList&quot; /&gt; &lt;datalist id=&quot;nameList&quot;&gt; &lt;option value=&quot;Larhonda Trentham&quot;&gt;Larhonda Trentham&lt;/option&gt; &lt;option value=&quot;Nicola Madigan&quot;&gt;Nicola Madigan&lt;/option&gt; ... &lt;/datalist&gt; 创建 &lt;datalist&gt; 元素并指定 id 值，同时将候选项放入 &lt;option&gt; 作为其子元素。然后为输入框指定 list 属性，值便是 &lt;datalist&gt; 的 id。 通过输入条目字母定位到下拉框中条目的位置 浏览器兼容性 IE10+ 可安心食用，详情参见 MDN 的数据。 相关资源 MDN - &lt;datalist&gt; StackOverflow - Html select keystroke timeout" />
+<meta property="og:description" content="下拉框中选项的快速定位 对于选项很多的下拉框 &lt;select&gt;，人工定位到想要的项目是很费劲的。浏览器其实原生支持下拉选择框根据键盘输入自动定位到相应条目的。 通过输入条目字母定位到下拉框中条目的位置 方便是方便，有个问题是连续输入不能间隔太久，这个间隔实测中感受是非常短的，如果想找的条目比较难输入，就无法在短时间内完成这个操作。 那有没有相应 API 修改这个间隔时间呢？不能，至少我还没找到。 &lt;datalist&gt; 其实 HTML5 中提供了另外一个元素，&lt;datalist&gt;。用它结合一个文本输入框可实现 Combo box 的效果，即根据输入自动筛选列表中的元素。 &lt;input type=&quot;text&quot; id=&quot;names&quot; list=&quot;nameList&quot; /&gt; &lt;datalist id=&quot;nameList&quot;&gt; &lt;option value=&quot;Larhonda Trentham&quot;&gt;Larhonda Trentham&lt;/option&gt; &lt;option value=&quot;Nicola Madigan&quot;&gt;Nicola Madigan&lt;/option&gt; ... &lt;/datalist&gt; 创建 &lt;datalist&gt; 元素并指定 id 值，同时将候选项放入 &lt;option&gt; 作为其子元素。然后为输入框指定 list 属性，值便是 &lt;datalist&gt; 的 id。 通过输入条目字母定位到下拉框中条目的位置 浏览器兼容性 IE10+ 可安心食用，详情参见 MDN 的数据。 相关资源 MDN - &lt;datalist&gt; StackOverflow - Html select keystroke timeout" />
+<link rel="canonical" href="http://localhost:4000/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D.html" />
+<meta property="og:url" content="http://localhost:4000/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-04-20T21:04:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D.html"},"description":"下拉框中选项的快速定位 对于选项很多的下拉框 &lt;select&gt;，人工定位到想要的项目是很费劲的。浏览器其实原生支持下拉选择框根据键盘输入自动定位到相应条目的。 通过输入条目字母定位到下拉框中条目的位置 方便是方便，有个问题是连续输入不能间隔太久，这个间隔实测中感受是非常短的，如果想找的条目比较难输入，就无法在短时间内完成这个操作。 那有没有相应 API 修改这个间隔时间呢？不能，至少我还没找到。 &lt;datalist&gt; 其实 HTML5 中提供了另外一个元素，&lt;datalist&gt;。用它结合一个文本输入框可实现 Combo box 的效果，即根据输入自动筛选列表中的元素。 &lt;input type=&quot;text&quot; id=&quot;names&quot; list=&quot;nameList&quot; /&gt; &lt;datalist id=&quot;nameList&quot;&gt; &lt;option value=&quot;Larhonda Trentham&quot;&gt;Larhonda Trentham&lt;/option&gt; &lt;option value=&quot;Nicola Madigan&quot;&gt;Nicola Madigan&lt;/option&gt; ... &lt;/datalist&gt; 创建 &lt;datalist&gt; 元素并指定 id 值，同时将候选项放入 &lt;option&gt; 作为其子元素。然后为输入框指定 list 属性，值便是 &lt;datalist&gt; 的 id。 通过输入条目字母定位到下拉框中条目的位置 浏览器兼容性 IE10+ 可安心食用，详情参见 MDN 的数据。 相关资源 MDN - &lt;datalist&gt; StackOverflow - Html select keystroke timeout","@type":"BlogPosting","headline":"下拉框中选项的快速定位","dateModified":"2019-04-20T21:04:00+08:00","datePublished":"2019-04-20T21:04:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">下拉框中选项的快速定位</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-04-20T21:04:00+08:00" itemprop="datePublished">Apr 20, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="下拉框中选项的快速定位">下拉框中选项的快速定位</h1>
+
+<p>对于选项很多的下拉框 <code class="language-plaintext highlighter-rouge">&lt;select&gt;</code>，人工定位到想要的项目是很费劲的。浏览器其实原生支持下拉选择框根据键盘输入自动定位到相应条目的。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56429810-ce0dd280-62f6-11e9-9930-87c443870ae0.gif" alt="通过输入条目字母定位到下拉框中条目的位置" /></p>
+<p align="center">通过输入条目字母定位到下拉框中条目的位置</p>
+
+<p>方便是方便，有个问题是连续输入不能间隔太久，这个间隔实测中感受是非常短的，如果想找的条目比较难输入，就无法在短时间内完成这个操作。</p>
+
+<p>那有没有相应 API 修改这个间隔时间呢？<a href="https://stackoverflow.com/questions/33309866/html-select-keystroke-timeout">不能</a>，至少我还没找到。</p>
+
+<h2 id="datalist"><code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code></h2>
+
+<p>其实 HTML5 中提供了另外一个元素，<a href="https://developer.mozilla.org/en/docs/Web/HTML/Element/datalist"><code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code></a>。用它结合一个文本输入框可实现 Combo box 的效果，即根据输入自动筛选列表中的元素。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">id=</span><span class="s">"names"</span> <span class="na">list=</span><span class="s">"nameList"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;datalist</span> <span class="na">id=</span><span class="s">"nameList"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"Larhonda Trentham"</span><span class="nt">&gt;</span>Larhonda Trentham<span class="nt">&lt;/option&gt;</span>
+  <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"Nicola Madigan"</span><span class="nt">&gt;</span>Nicola Madigan<span class="nt">&lt;/option&gt;</span>
+  ...
+<span class="nt">&lt;/datalist&gt;</span>
+</code></pre></div></div>
+
+<p>创建 <code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code> 元素并指定 <code class="language-plaintext highlighter-rouge">id</code> 值，同时将候选项放入 <code class="language-plaintext highlighter-rouge">&lt;option&gt;</code> 作为其子元素。然后为输入框指定 <code class="language-plaintext highlighter-rouge">list</code> 属性，值便是 <code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code> 的 <code class="language-plaintext highlighter-rouge">id</code>。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56429936-39f03b00-62f7-11e9-8fae-34547af7dcbc.gif" alt="利用 HTML5 datalist 元素实现 combbox" /></p>
+<p align="center">通过输入条目字母定位到下拉框中条目的位置</p>
+
+<h2 id="浏览器兼容性">浏览器兼容性</h2>
+
+<p>IE10+ 可安心食用，详情参见 <a href="https://github.com/mdn/browser-compat-data/blob/master/html/elements/datalist.json">MDN 的数据</a>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en/docs/Web/HTML/Element/datalist">MDN - <code class="language-plaintext highlighter-rouge">&lt;datalist&gt;</code></a></li>
+  <li><a href="https://stackoverflow.com/questions/33309866/html-select-keystroke-timeout">StackOverflow - Html select keystroke timeout</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

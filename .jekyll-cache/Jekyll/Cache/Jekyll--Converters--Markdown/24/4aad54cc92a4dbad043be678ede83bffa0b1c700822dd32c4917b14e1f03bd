@@ -1,0 +1,124 @@
+I"n <h1 id="面向切面编程aop">面向切面编程(AOP)</h1>
+
+<p>面向切面编程(Aspect-Oriented Programming/AOP) 解决的是 <a href="https://en.wikipedia.org/wiki/Cross-cutting_concern">cross-cutting concerns</a> 问题。比如同一段代码在不同模块中重复，又不能简单地通过抽取公共方法的方式来达到重构，比如日志与参数校验。</p>
+
+<p>以下是展示这一编程思想的一段伪代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function mainProgram()
+{ 
+   var x =  foo();
+   doSomethingWith(x);
+   return x;
+}
+
+aspect logging
+{ 
+    before (mainProgram is called):
+    { 
+       log.Write("entering mainProgram");
+    }
+
+    after (mainProgram is called):
+    { 
+       log.Write(  "exiting mainProgram with return value of "
+                  + mainProgram.returnValue);
+    }
+ } 
+
+aspect verification
+{ 
+    before (doSomethingWith is called):
+    { 
+       if (doSomethingWith.arguments[0] == null) 
+       { 
+          throw NullArgumentException();
+       }
+
+       if (!doSomethingWith.caller.isAuthenticated)
+       { 
+          throw Securityexception();
+       }
+    }
+ }
+
+</code></pre></div></div>
+
+<p>代码进行编译转换后实际成为这样子：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function mainProgram()
+{ 
+   log.Write("entering mainProgram");
+
+   var x = foo();   
+
+   if (x == null) throw NullArgumentException();
+   if (!mainProgramIsAuthenticated()) throw Securityexception();
+   doSomethingWith(x);   
+
+   log.Write("exiting mainProgram with return value of "+ x);
+   return x;
+} 
+
+</code></pre></div></div>
+
+<h2 id="与-mixin-的差别">与 Mixin 的差别</h2>
+
+<p>Mixin 中代码与宿主无关，可向宿主添加做生意多的功能。装饰器是侵入式的，将宿主进行代理，对外提供的接口不变，可在相应逻辑运行前后进行拦截操作。</p>
+
+<h2 id="装饰器">装饰器</h2>
+
+<p>装饰器（decorator pattern）可认为是一种面向切面的编程。一个装饰器可运用于类（class）属性（property），方法（method）以及参数等（parameter）。加上装饰器后，可用于对目标对象的日志处理，权限检查等与业务无关的操作。</p>
+
+<h3 id="javascript-中的实现">JavaScript 中的实现</h3>
+
+<p>装饰器如其如，类似于给方法添加一个修饰，具体的功能在装饰器中实现，所有应用了该装饰器的方法都会带上相应的功能。</p>
+
+<p>主流强类型语言比如 Java，C# 中装饰器由来已久，但 JavaScript 其还处于 <a href="https://github.com/tc39/proposal-decorators">stage 2 proposal</a> 阶段。不过可通过 TypeScript 来使用，编译选项中开启 <code class="language-plaintext highlighter-rouge">experimentalDecorators</code> 参数。</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"experimentalDecorators"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>装饰器运用最为典型的是 <a href="https://angular.io">Angular</a>。其整体框架大量使用装饰器来定义各组件模块，同时控制相应组件及模块的行为。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">@</span><span class="nd">Component</span><span class="p">({</span>
+  <span class="na">selector</span><span class="p">:</span> <span class="dl">'</span><span class="s1">example-component</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">template</span><span class="p">:</span> <span class="dl">'</span><span class="s1">&lt;div&gt;Woo a component!&lt;/div&gt;</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">ExampleComponent</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hey I am a component!</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>其他应用场景比如将路由的定义使用装饰器写在 Controller 上，参见 <a href="https://midwayjs.org/midway/guide.html#路由装饰器">midway 框架 - 路由装饰器</a>。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">provide</span><span class="p">,</span> <span class="nx">controller</span><span class="p">,</span> <span class="nx">inject</span><span class="p">,</span> <span class="kd">get</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">midway</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">provide</span><span class="p">()</span>
+<span class="p">@</span><span class="nd">controller</span><span class="p">(</span><span class="dl">'</span><span class="s1">/user</span><span class="dl">'</span><span class="p">)</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">UserController</span> <span class="p">{</span>
+
+  <span class="p">@</span><span class="nd">inject</span><span class="p">(</span><span class="dl">'</span><span class="s1">userService</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">service</span><span class="p">:</span> <span class="nx">IUserService</span><span class="p">;</span>
+
+  <span class="p">@</span><span class="nd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">/:id</span><span class="dl">'</span><span class="p">)</span>
+  <span class="k">async</span> <span class="nx">getUser</span><span class="p">(</span><span class="nx">ctx</span><span class="p">):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="k">void</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="na">id</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="na">user</span><span class="p">:</span> <span class="nx">IUserResult</span> <span class="o">=</span> <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="nx">service</span><span class="p">.</span><span class="nx">getUser</span><span class="p">({</span><span class="nx">id</span><span class="p">});</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="p">{</span><span class="na">success</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="na">message</span><span class="p">:</span> <span class="dl">'</span><span class="s1">OK</span><span class="dl">'</span><span class="p">,</span> <span class="na">data</span><span class="p">:</span> <span class="nx">user</span><span class="p">};</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/242177/what-is-aspect-oriented-programming">What is aspect-oriented programming?</a></li>
+  <li><a href="https://stackoverflow.com/questions/2582289/what-is-the-difference-between-a-mixin-and-the-decorator-pattern">What is the difference between a mixin and the decorator pattern?</a></li>
+</ul>
+:ET

@@ -1,0 +1,94 @@
+I"�"<h1 id="利用-nodejs-的-promisify-将回调转-promise">利用 Node.js 的 promisify 将回调转 Promise</h1>
+
+<p>Node.js 中存在大量回调形式的 API，虽然后续的版本中大部分已经对应提供了 Promise 版本。</p>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">util.promisify</code> 可将回调形式的 API 转 promise。</p>
+
+<p>以 <a href="https://nodejs.org/api/fs.html#fs_fs_stat_path_options_callback">fs.stat</a> 为例，下面是来自官方文档中的演示：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">util</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">util</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">fs</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">stat</span> <span class="o">=</span> <span class="nx">util</span><span class="p">.</span><span class="nx">promisify</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">stat</span><span class="p">);</span>
+<span class="nx">stat</span><span class="p">(</span><span class="dl">"</span><span class="s2">.</span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">stats</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// Do something with `stats`</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// Handle the error.</span>
+  <span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="转-promise-的条件">转 promise 的条件</h2>
+
+<p><code class="language-plaintext highlighter-rouge">util.promisify</code> 假定被转函数最后一个参数为 Node.js 中错误优先的回调形式，即，最后一个入参长这样 <code class="language-plaintext highlighter-rouge">(err, value) =&gt; ...</code>。</p>
+
+<p>Node.js 的 API 大多遵循这种风格，所以这样的假设能满足大部分场景，但不是全部。</p>
+
+<h2 id="自定义-promise-化的函数">自定义 Promise 化的函数</h2>
+
+<p>不满足的情况下可通过自定义的试来操作。</p>
+
+<p>具体来说，假如被转函数身上存在一个名叫 <code class="language-plaintext highlighter-rouge">util.promisify.custom</code> 的属性，调用 <code class="language-plaintext highlighter-rouge">promisify</code> 后会返回该属性的值。</p>
+
+<p>例如，被转函数为</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">original</span> <span class="o">=</span> <span class="p">(</span><span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,...)</span><span class="o">=&gt;</span> <span class="p">...</span>
+</code></pre></div></div>
+
+<p>同时 <code class="language-plaintext highlighter-rouge">original[util.promisify.custom]</code> 存在，那么：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">original</span><span class="p">[</span><span class="nx">util</span><span class="p">.</span><span class="nx">promisify</span><span class="p">.</span><span class="nx">custom</span><span class="p">]</span> <span class="o">===</span> <span class="nx">util</span><span class="p">.</span><span class="nx">promisify</span><span class="p">(</span><span class="nx">original</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>上面的操作有什么用？</p>
+
+<p>这个 <a href="https://nodejs.org/dist/latest-v8.x/docs/api/util.html#util_util_promisify_custom"><code class="language-plaintext highlighter-rouge">util.promisify.custom</code></a> 是 Node.js 提供的符号，作为名称在这里使用而以，没什么特别。</p>
+
+<p>假设有如下回调形式的函数：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">doSomething</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">onSuccessCallback</span><span class="p">,</span> <span class="nx">onErrorCallback</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>通过自定义 promisify 的返回，将其转成 Promise 调用。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">doSomething</span><span class="p">[</span><span class="nx">util</span><span class="p">.</span><span class="nx">promisify</span><span class="p">.</span><span class="nx">custom</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">foo</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">doSomething</span><span class="p">(</span><span class="nx">foo</span><span class="p">,</span> <span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">promisified</span> <span class="o">=</span> <span class="nx">util</span><span class="p">.</span><span class="nx">promisify</span><span class="p">(</span><span class="nx">doSomething</span><span class="p">);</span>
+
+<span class="nx">promisified</span><span class="p">(</span><span class="nx">foo</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(()</span><span class="o">=&gt;</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">success))
+  .catch((err) =&gt; console.log(err));
+</span></code></pre></div></div>
+
+<h2 id="更加-general-的情况">更加 General 的情况</h2>
+
+<p>推而广之，如果不考虑错误处理，函数第一个参数是不是错误就无所谓了，任何回调形式都可以改成 Promsie，比如 setTimeout。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="p">{</span> <span class="nx">promisify</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">util</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">sleep</span> <span class="o">=</span> <span class="nx">promisify</span><span class="p">(</span><span class="nx">setTimeout</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">main</span> <span class="o">=</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">time</span><span class="p">(</span><span class="dl">"</span><span class="s2">sleep</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">timeEnd</span><span class="p">(</span><span class="dl">"</span><span class="s2">sleep</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">main</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>像上面，我们压根就不关心调用 setTimeout 之后的返回，因此就不涉及它内部的流程处理，直接利用了其 Promise 特性而以。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://nodejs.org/dist/latest-v8.x/docs/api/util.html#util_util_promisify_original">util.promisify(original)</a></li>
+  <li><a href="https://twitter.com/joelnet/status/1262390142335148034?s=20">来自 @@joelnet 的 Twitter 展示了 setTimeout 的 promise 化</a></li>
+</ul>
+
+:ET

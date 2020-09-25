@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>CSS 利用 padding-bottom 实现固定比例的容器 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="CSS 利用 padding-bottom 实现固定比例的容器" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="CSS 利用 padding-bottom 实现固定比例的容器 复用 padding-bottom 可实现一块区域在窗口尺寸变化使始终保持自适应。对于响应式布局中的图片或视频来说比较有用。 &lt;div style=&quot;width: 100%; position: relative; padding-bottom: 56.25%;&quot;&gt; &lt;div style=&quot;position: absolute; left: 0; top: 0; right: 0; bottom: 0;background-color:yellow;&quot;&gt; this content will have a constant aspect ratio that varies based on the width. &lt;/div&gt; &lt;/div&gt; 16:9 容器的效果 其中 padding-bottom 的值与对应所形成容器的比例关系为容器宽除以高。 The percentage is calculated with respect to the width of the generated box’s containing block -- 来自 w3.org 的描述 以下是常用比例与对应的百分比值： aspect ratio | padding-bottom value --------------|---------------------- 16:9 | 56.25% 4:3 | 75% 3:2 | 66.66% 8:5 | 62.5% 相关资源 Maintain the aspect ratio of a div with CSS" />
+<meta property="og:description" content="CSS 利用 padding-bottom 实现固定比例的容器 复用 padding-bottom 可实现一块区域在窗口尺寸变化使始终保持自适应。对于响应式布局中的图片或视频来说比较有用。 &lt;div style=&quot;width: 100%; position: relative; padding-bottom: 56.25%;&quot;&gt; &lt;div style=&quot;position: absolute; left: 0; top: 0; right: 0; bottom: 0;background-color:yellow;&quot;&gt; this content will have a constant aspect ratio that varies based on the width. &lt;/div&gt; &lt;/div&gt; 16:9 容器的效果 其中 padding-bottom 的值与对应所形成容器的比例关系为容器宽除以高。 The percentage is calculated with respect to the width of the generated box’s containing block -- 来自 w3.org 的描述 以下是常用比例与对应的百分比值： aspect ratio | padding-bottom value --------------|---------------------- 16:9 | 56.25% 4:3 | 75% 3:2 | 66.66% 8:5 | 62.5% 相关资源 Maintain the aspect ratio of a div with CSS" />
+<link rel="canonical" href="http://localhost:4000/2019/07/08/CSS-%E5%88%A9%E7%94%A8-padding-bottom-%E5%AE%9E%E7%8E%B0%E5%9B%BA%E5%AE%9A%E6%AF%94%E4%BE%8B%E7%9A%84%E5%AE%B9%E5%99%A8.html" />
+<meta property="og:url" content="http://localhost:4000/2019/07/08/CSS-%E5%88%A9%E7%94%A8-padding-bottom-%E5%AE%9E%E7%8E%B0%E5%9B%BA%E5%AE%9A%E6%AF%94%E4%BE%8B%E7%9A%84%E5%AE%B9%E5%99%A8.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-07-08T23:07:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/07/08/CSS-%E5%88%A9%E7%94%A8-padding-bottom-%E5%AE%9E%E7%8E%B0%E5%9B%BA%E5%AE%9A%E6%AF%94%E4%BE%8B%E7%9A%84%E5%AE%B9%E5%99%A8.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/07/08/CSS-%E5%88%A9%E7%94%A8-padding-bottom-%E5%AE%9E%E7%8E%B0%E5%9B%BA%E5%AE%9A%E6%AF%94%E4%BE%8B%E7%9A%84%E5%AE%B9%E5%99%A8.html"},"description":"CSS 利用 padding-bottom 实现固定比例的容器 复用 padding-bottom 可实现一块区域在窗口尺寸变化使始终保持自适应。对于响应式布局中的图片或视频来说比较有用。 &lt;div style=&quot;width: 100%; position: relative; padding-bottom: 56.25%;&quot;&gt; &lt;div style=&quot;position: absolute; left: 0; top: 0; right: 0; bottom: 0;background-color:yellow;&quot;&gt; this content will have a constant aspect ratio that varies based on the width. &lt;/div&gt; &lt;/div&gt; 16:9 容器的效果 其中 padding-bottom 的值与对应所形成容器的比例关系为容器宽除以高。 The percentage is calculated with respect to the width of the generated box’s containing block -- 来自 w3.org 的描述 以下是常用比例与对应的百分比值： aspect ratio | padding-bottom value --------------|---------------------- 16:9 | 56.25% 4:3 | 75% 3:2 | 66.66% 8:5 | 62.5% 相关资源 Maintain the aspect ratio of a div with CSS","@type":"BlogPosting","headline":"CSS 利用 padding-bottom 实现固定比例的容器","dateModified":"2019-07-08T23:07:00+08:00","datePublished":"2019-07-08T23:07:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">CSS 利用 `padding-bottom` 实现固定比例的容器</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-07-08T23:07:00+08:00" itemprop="datePublished">Jul 8, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="css-利用-padding-bottom-实现固定比例的容器">CSS 利用 <code class="language-plaintext highlighter-rouge">padding-bottom</code> 实现固定比例的容器</h1>
+
+<p>复用 <code class="language-plaintext highlighter-rouge">padding-bottom</code> 可实现一块区域在窗口尺寸变化使始终保持自适应。对于响应式布局中的图片或视频来说比较有用。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">"width: 100%; position: relative; padding-bottom: 56.25%;"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">"position: absolute; left: 0; top: 0; right: 0; bottom: 0;background-color:yellow;"</span><span class="nt">&gt;</span>
+        this content will have a constant aspect ratio that varies based on the width.
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/60386863-83b28a00-9acd-11e9-98e1-d31a1b08948a.gif" alt="16:9 容器的效果" /></p>
+<p align="center">16:9 容器的效果</p>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">padding-bottom</code> 的值与对应所形成容器的比例关系为容器宽除以高。</p>
+
+<blockquote>
+  <p>The percentage is calculated with respect to the width of the generated box’s containing block</p>
+
+  <p><em>-- 来自 <a href="https://www.w3.org/TR/2011/REC-CSS2-20110607/box.html#padding-properties">w3.org</a> 的描述</em></p>
+</blockquote>
+
+<p>以下是常用比例与对应的百分比值：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>aspect ratio  | padding-bottom value
+<span class="nt">--------------</span>|----------------------
+    16:9      |       56.25%
+    4:3       |       75%
+    3:2       |       66.66%
+    8:5       |       62.5%
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/1495407/maintain-the-aspect-ratio-of-a-div-with-css">Maintain the aspect ratio of a div with CSS</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/07/08/CSS-%E5%88%A9%E7%94%A8-padding-bottom-%E5%AE%9E%E7%8E%B0%E5%9B%BA%E5%AE%9A%E6%AF%94%E4%BE%8B%E7%9A%84%E5%AE%B9%E5%99%A8.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

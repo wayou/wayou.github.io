@@ -1,0 +1,80 @@
+I"<h1 id="http-响应的分块传输">HTTP 响应的分块传输</h1>
+
+<p><code class="language-plaintext highlighter-rouge">Transfer-Encoding</code> 响应头用于告诉客户端服务器发送内容的编码格式。</p>
+
+<p>其可选值有：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">chunked</code>：数据分块发送。此时应缺省 <code class="language-plaintext highlighter-rouge">Content-Length</code> 响应头。</li>
+  <li><code class="language-plaintext highlighter-rouge">compress</code>：使用 <a href="http://en.wikipedia.org/wiki/LZW">Lempel-Ziv-Welch</a> 算法进行传输的格式，目前没有浏览器在支持。</li>
+  <li><code class="language-plaintext highlighter-rouge">deflate</code>：使用 <a href="http://en.wikipedia.org/wiki/DEFLATE">deflate</a> 压缩算法 <a href="http://en.wikipedia.org/wiki/Zlib">zlib</a> 结构。</li>
+  <li><code class="language-plaintext highlighter-rouge">gzip</code>：使用 <a href="http://en.wikipedia.org/wiki/LZ77_and_LZ78#LZ77">Lempel-Ziv coding</a> 编码的压缩格式。</li>
+  <li><code class="language-plaintext highlighter-rouge">identity</code>：标识身份函数（e.g. no compression, nor modification）。</li>
+</ul>
+
+<p>也可以同时指定多个值，用逗号分隔，像这样：<code class="language-plaintext highlighter-rouge">Transfer-Encoding: gzip, chunked</code>。</p>
+
+<p>其中，<code class="language-plaintext highlighter-rouge">chunked</code> 就比较有意思了。它表示服务器下发到客户端的内容不是一次性完成的，而是分成一小块一小块（trunk）下发，过程中客户端与服务器的连接仍然维持不会断开。</p>
+
+<p>在 Web Socket 没出来前，可利用这一机制实现长连接的效果。</p>
+
+<h2 id="示例">示例</h2>
+
+<p>以 Node.js 为例的 <code class="language-plaintext highlighter-rouge">Transfer-Encoding: gzip, chunked</code> 示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">http</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">generateChunk</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">===</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="dl">"</span><span class="s2">end</span><span class="dl">"</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="dl">"</span><span class="s2">&lt;/body&gt;&lt;/html&gt;</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">`&lt;p&gt; chunk </span><span class="p">${</span><span class="nx">index</span><span class="p">}</span><span class="s2">&lt;/p&gt;`</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">},</span> <span class="nx">index</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">handlerRequest</span><span class="p">(</span><span class="nx">_request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="dl">"</span><span class="s2">Content-Type</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">text/html; charset=UTF-8</span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="dl">"</span><span class="s2">Transfer-Encoding</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">chunked</span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">`&lt;!DOCTYPE html&gt;
+  &lt;html lang="en"&gt;
+  &lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;HTTP 分块传输示例&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+  &lt;h1&gt;HTTP 分块传输示例&lt;/h1&gt;
+  `</span><span class="p">);</span>
+
+  <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="nx">index</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">generateChunk</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">response</span><span class="p">);</span>
+    <span class="nx">index</span><span class="o">++</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">handlerRequest</span><span class="p">);</span>
+<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">server started at http://localhost:3000</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57470670-f7999880-72bb-11e9-866d-1bfe62f26e08.gif" alt="Transfer-Encoding:chunked 分块传输示例" /></p>
+<p align="center">Transfer-Encoding:chunked 分块传输示例</p>
+
+<h2 id="总结">总结</h2>
+
+<p>HTTP/2 中已经不支持 <code class="language-plaintext highlighter-rouge">chunked</code> 这一格式了，因为其本身提供了更加高级的流机制来实现类似功能。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding">MDN - Transfer-Encoding</a></li>
+  <li><a href="https://blog.maartenballiauw.be/post/2018/06/14/how-http-chunked-encoding-was-killing-a-request.html">How HTTP Chunked Encoding was killing a request</a></li>
+  <li><a href="https://github.com/koajs/koa/issues/593">Sending chunked responses #593</a></li>
+  <li><a href="https://gist.github.com/kadishmal/3871017">GitHub Gist - Simple Node.js server which responds in chunked transfer encoding</a></li>
+  <li><a href="https://nodejs.org/api/http.html#http_response_write_chunk_encoding_callback">Node.js - response.write(chunk[, encoding][, callback])</a></li>
+</ul>
+
+:ET

@@ -1,0 +1,88 @@
+I"+<h1 id="关于-javascript-中的继承">关于 JavaScript 中的继承</h1>
+
+<p>ES5 之前，继承是这样实现的</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Parent</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">foo</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+<span class="nx">Parent</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">bar</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">bar</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">Child</span><span class="p">()</span> <span class="p">{</span>
+<span class="p">}</span>
+<span class="nx">Child</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Parent</span><span class="p">();</span>
+<span class="nx">Child</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="kd">constructor</span> <span class="o">=</span> <span class="nx">Child</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Child</span><span class="p">();</span>
+<span class="nx">c</span> <span class="k">instanceof</span> <span class="nx">Parent</span><span class="p">;</span> <span class="c1">// true</span>
+<span class="nx">c</span> <span class="k">instanceof</span> <span class="nx">Child</span><span class="p">;</span> <span class="c1">// true</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="nx">p</span><span class="p">;</span>  <span class="c1">// true</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="nx">Parent</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>  <span class="c1">// true</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>  <span class="c1">// true</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="kc">null</span><span class="p">;</span>  <span class="c1">// true</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span> <span class="c1">// foo</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">bar</span><span class="p">();</span> <span class="c1">// bar</span>
+</code></pre></div></div>
+
+<p>这种方式有个缺点，需要首先实例化父类。这表示，子类需要知道父类该如何初始化。</p>
+
+<p>理想情况下，子类不关心父类的初始化细节，它只需要一个带有父类原型的对象用来继承即可。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Child</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">anObjectWithParentPrototypeOnThePrototypeChain</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>但是 js 中没有提供直接获取对象原型的能力，决定了我们不能像下面这样操作：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Child</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> 
+  <span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="p">{};</span> 
+  <span class="nx">o</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">=</span> <span class="nx">Parent</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span> 
+  <span class="k">return</span> <span class="nx">o</span><span class="p">;</span> 
+<span class="p">}());</span>
+</code></pre></div></div>
+
+<p>注意：<code class="language-plaintext highlighter-rouge">__prototype__</code> 不等于 <code class="language-plaintext highlighter-rouge">prototype</code>，前者是通过 <code class="language-plaintext highlighter-rouge">new</code> 后者创建的，所以后者是存在于构造器上的，前者属性实例上的属性。方法及属性在原型链上进行查找时使用的便是 <code class="language-plaintext highlighter-rouge">__prototype__</code>，因为实例才有 <code class="language-plaintext highlighter-rouge">__prototype</code>。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">instance</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="kd">constructor</span><span class="p">.</span><span class="nx">prototype</span> <span class="c1">// true</span>
+</code></pre></div></div>
+
+<p>所以，改进的方式是使用一个中间对象。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Parent defined as before.</span>
+<span class="kd">function</span> <span class="nx">Child</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">Parent</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span> <span class="c1">// Not always required.</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">TempCtor</span><span class="p">,</span> <span class="nx">tempO</span><span class="p">;</span>
+<span class="nx">TempCtor</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{};</span>
+<span class="nx">TempCtor</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">Parent</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
+<span class="nx">Child</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">tempO</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TempCtor</span><span class="p">();</span>
+<span class="nx">Child</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="kd">constructor</span> <span class="o">=</span> <span class="nx">Child</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Child</span><span class="p">();</span>
+<span class="nx">c</span> <span class="k">instanceof</span> <span class="nx">Parent</span><span class="p">;</span> <span class="c1">// true - Parent.prototype is on the p.-chain</span>
+<span class="nx">c</span> <span class="k">instanceof</span> <span class="nx">Child</span><span class="p">;</span> <span class="c1">// true</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="nx">tempO</span><span class="p">;</span>  <span class="c1">// true</span>
+<span class="c1">// ...and so on, as before</span>
+</code></pre></div></div>
+
+<p>借助这个中间对象绕开了对父类的依赖。为了减少如上的重复轮子，ES5 中加入 <code class="language-plaintext highlighter-rouge">Object.create</code> 方法，作用与上面等效。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Parent defined as before.</span>
+<span class="kd">function</span> <span class="nx">Child</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">Parent</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span> <span class="c1">// Not always required.</span>
+<span class="p">}</span>
+<span class="nx">Child</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">o</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Parent</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+<span class="nx">Child</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="kd">constructor</span> <span class="o">=</span> <span class="nx">Child</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Child</span><span class="p">();</span>
+<span class="nx">c</span> <span class="k">instanceof</span> <span class="nx">Parent</span><span class="p">;</span> <span class="c1">// true - Parent.prototype is on the p.-chain</span>
+<span class="nx">c</span> <span class="k">instanceof</span> <span class="nx">Child</span><span class="p">;</span> <span class="c1">// true</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">===</span> <span class="nx">o</span><span class="p">;</span>  <span class="c1">// true</span>
+<span class="c1">// ...and so on, as before</span>
+</code></pre></div></div>
+
+<h3 id="参考">参考</h3>
+
+<ul>
+  <li><a href="https://medium.com/@benastontweet/implementing-inheritance-in-javascript-2c933d6a70e7">Implementing Inheritance in JavaScript</a></li>
+  <li><a href="https://stackoverflow.com/questions/9959727/proto-vs-prototype-in-javascript"><strong>proto</strong> VS. prototype in JavaScript</a></li>
+</ul>
+:ET

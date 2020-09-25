@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>SASS 中变量的默认值 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="SASS 中变量的默认值" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="SASS 中变量的默认值 SASS 中定义的变量，后设置的值会覆盖旧的值。 $color: red; $color: blue; .btn { color: $color; } 编译后为： .btn { color: blue; } 如果你编写了一个 UI 库提供 SASS 文件，可能会提供一些参数供用户使用时自定义。而在 SASS 组件内部，我们需要应用上用户设置的这些值。但是如果使用者没有自定义变量的值，那这些变量应该有自己的默认值。 利用前面提到的覆盖机制是不能实现的。因为无论是你在 @import UI 库之前设置还是之后，都不能影响这个导入文件中的值。如果你设置的值在导入之前，那么 UI 库中的变量因为在后面，所以你的设置会被覆盖而不起作用；如果你的设置在导入之后，那更加不起作用了。 假设这是 UI 中的样式文件： _lib.scss $color: red; .btn { color: $color; } 在另一个文件中使用，并且试图自定义变量的值： page.scss @import &#39;lib&#39;; $color: blue; 或： page.scss $color: blue; @import &#39;lib&#39;; 两者编译结果均为： .btn { color: red; } !default 针对这种情况，SASS 提供了 !default 标识。将该标识应用于变量值后面，表示如果该变量没有在其他地方定义或即便定义了但值为 null，那此处设置的默认值才生效，否则使用其他地方设置的那个值。 将上面 _lib.scss 进行改造： _lib.scss - $color: red; + $color: red!default; .btn { color: $color; } 使用： $color: blue; @import &quot;lib&quot;; 注意：需要将自定义的值先于 @import，否则也不生效。 此时编译结果将是想要的那样，应用上了外部自定义的变量值。 .btn { color: blue; } 相关资源 SASS Documentation - Default Values A Sass !default use case" />
+<meta property="og:description" content="SASS 中变量的默认值 SASS 中定义的变量，后设置的值会覆盖旧的值。 $color: red; $color: blue; .btn { color: $color; } 编译后为： .btn { color: blue; } 如果你编写了一个 UI 库提供 SASS 文件，可能会提供一些参数供用户使用时自定义。而在 SASS 组件内部，我们需要应用上用户设置的这些值。但是如果使用者没有自定义变量的值，那这些变量应该有自己的默认值。 利用前面提到的覆盖机制是不能实现的。因为无论是你在 @import UI 库之前设置还是之后，都不能影响这个导入文件中的值。如果你设置的值在导入之前，那么 UI 库中的变量因为在后面，所以你的设置会被覆盖而不起作用；如果你的设置在导入之后，那更加不起作用了。 假设这是 UI 中的样式文件： _lib.scss $color: red; .btn { color: $color; } 在另一个文件中使用，并且试图自定义变量的值： page.scss @import &#39;lib&#39;; $color: blue; 或： page.scss $color: blue; @import &#39;lib&#39;; 两者编译结果均为： .btn { color: red; } !default 针对这种情况，SASS 提供了 !default 标识。将该标识应用于变量值后面，表示如果该变量没有在其他地方定义或即便定义了但值为 null，那此处设置的默认值才生效，否则使用其他地方设置的那个值。 将上面 _lib.scss 进行改造： _lib.scss - $color: red; + $color: red!default; .btn { color: $color; } 使用： $color: blue; @import &quot;lib&quot;; 注意：需要将自定义的值先于 @import，否则也不生效。 此时编译结果将是想要的那样，应用上了外部自定义的变量值。 .btn { color: blue; } 相关资源 SASS Documentation - Default Values A Sass !default use case" />
+<link rel="canonical" href="http://localhost:4000/2019/04/27/SASS-%E4%B8%AD%E5%8F%98%E9%87%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html" />
+<meta property="og:url" content="http://localhost:4000/2019/04/27/SASS-%E4%B8%AD%E5%8F%98%E9%87%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-04-27T23:04:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/04/27/SASS-%E4%B8%AD%E5%8F%98%E9%87%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/04/27/SASS-%E4%B8%AD%E5%8F%98%E9%87%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html"},"description":"SASS 中变量的默认值 SASS 中定义的变量，后设置的值会覆盖旧的值。 $color: red; $color: blue; .btn { color: $color; } 编译后为： .btn { color: blue; } 如果你编写了一个 UI 库提供 SASS 文件，可能会提供一些参数供用户使用时自定义。而在 SASS 组件内部，我们需要应用上用户设置的这些值。但是如果使用者没有自定义变量的值，那这些变量应该有自己的默认值。 利用前面提到的覆盖机制是不能实现的。因为无论是你在 @import UI 库之前设置还是之后，都不能影响这个导入文件中的值。如果你设置的值在导入之前，那么 UI 库中的变量因为在后面，所以你的设置会被覆盖而不起作用；如果你的设置在导入之后，那更加不起作用了。 假设这是 UI 中的样式文件： _lib.scss $color: red; .btn { color: $color; } 在另一个文件中使用，并且试图自定义变量的值： page.scss @import &#39;lib&#39;; $color: blue; 或： page.scss $color: blue; @import &#39;lib&#39;; 两者编译结果均为： .btn { color: red; } !default 针对这种情况，SASS 提供了 !default 标识。将该标识应用于变量值后面，表示如果该变量没有在其他地方定义或即便定义了但值为 null，那此处设置的默认值才生效，否则使用其他地方设置的那个值。 将上面 _lib.scss 进行改造： _lib.scss - $color: red; + $color: red!default; .btn { color: $color; } 使用： $color: blue; @import &quot;lib&quot;; 注意：需要将自定义的值先于 @import，否则也不生效。 此时编译结果将是想要的那样，应用上了外部自定义的变量值。 .btn { color: blue; } 相关资源 SASS Documentation - Default Values A Sass !default use case","@type":"BlogPosting","headline":"SASS 中变量的默认值","dateModified":"2019-04-27T23:04:00+08:00","datePublished":"2019-04-27T23:04:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">SASS 中变量的默认值</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-04-27T23:04:00+08:00" itemprop="datePublished">Apr 27, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="sass-中变量的默认值">SASS 中变量的默认值</h1>
+
+<p>SASS 中定义的变量，后设置的值会覆盖旧的值。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="nv">$color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+
+<span class="nc">.btn</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后为：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.btn</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>如果你编写了一个 UI 库提供 SASS 文件，可能会提供一些参数供用户使用时自定义。而在 SASS 组件内部，我们需要应用上用户设置的这些值。但是如果使用者没有自定义变量的值，那这些变量应该有自己的默认值。</p>
+
+<p>利用前面提到的覆盖机制是不能实现的。因为无论是你在 @import UI 库之前设置还是之后，都不能影响这个导入文件中的值。如果你设置的值在导入之前，那么 UI 库中的变量因为在后面，所以你的设置会被覆盖而不起作用；如果你的设置在导入之后，那更加不起作用了。</p>
+
+<p>假设这是 UI 中的样式文件：</p>
+
+<p><em>_lib.scss</em></p>
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="nc">.btn</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在另一个文件中使用，并且试图自定义变量的值：</p>
+
+<p><em>page.scss</em></p>
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@import</span> <span class="s1">'lib'</span><span class="p">;</span>
+<span class="nv">$color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+</code></pre></div></div>
+<p>或：</p>
+
+<p><em>page.scss</em></p>
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s1">'lib'</span><span class="p">;</span>
+</code></pre></div></div>
+<p>两者编译结果均为：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.btn</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="default"><code class="language-plaintext highlighter-rouge">!default</code></h2>
+
+<p>针对这种情况，SASS 提供了 <code class="language-plaintext highlighter-rouge">!default</code> 标识。将该标识应用于变量值后面，表示如果该变量没有在其他地方定义或即便定义了但值为 <code class="language-plaintext highlighter-rouge">null</code>，那此处设置的默认值才生效，否则使用其他地方设置的那个值。</p>
+
+<p>将上面 _lib.scss 进行改造：</p>
+
+<p><em>_lib.scss</em></p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">- $color: red;
+</span><span class="gi">+ $color: red!default;
+</span><span class="err">.btn</span> {
+    color: $color;
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>使用：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+
+<span class="k">@import</span> <span class="s2">"lib"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><strong>注意</strong>：需要将自定义的值先于 @import，否则也不生效。</p>
+
+<p>此时编译结果将是想要的那样，应用上了外部自定义的变量值。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.btn</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://sass-lang.com/documentation/variables#default-values">SASS Documentation -  Default Values</a></li>
+  <li><a href="https://thoughtbot.com/blog/sass-default">A Sass <code class="language-plaintext highlighter-rouge">!default</code> use case</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/04/27/SASS-%E4%B8%AD%E5%8F%98%E9%87%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

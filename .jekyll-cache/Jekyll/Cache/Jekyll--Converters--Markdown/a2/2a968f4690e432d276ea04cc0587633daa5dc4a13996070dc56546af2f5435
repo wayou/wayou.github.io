@@ -1,0 +1,78 @@
+I"v<h1 id="xcode-调试时打印变量值">Xcode 调试时打印变量值</h1>
+
+<h2 id="p--po"><code class="language-plaintext highlighter-rouge">p</code> &amp; <code class="language-plaintext highlighter-rouge">po</code></h2>
+
+<p>最简单的方式是使用 <code class="language-plaintext highlighter-rouge">p</code> 和 <code class="language-plaintext highlighter-rouge">po</code> 命令，大部分情况下两者等效，后者将等打印的值以对象来对待。</p>
+
+<p>以下示例展示了两者的区别：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) p 0
+  (int) $26 = 0
+(lldb) po 0
+  &lt;nil&gt;
+</code></pre></div></div>
+
+<p>使用 <code class="language-plaintext highlighter-rouge">po</code> 打印表达式查看其值的示例：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/90230625-67e28280-de4c-11ea-82fd-f3412366bb19.png" alt="使用 `po` 打印调试对象" /></p>
+<p align="center">使用 `po` 打印调试对象</p>
+
+<h2 id="e-or-expr-or-expression"><code class="language-plaintext highlighter-rouge">e</code> or <code class="language-plaintext highlighter-rouge">expr</code> or <code class="language-plaintext highlighter-rouge">expression</code></h2>
+
+<p><code class="language-plaintext highlighter-rouge">expr</code> 或 <code class="language-plaintext highlighter-rouge">expression</code> 是对表达式求值更加一般化的命令，前面提到的</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">p</code> 相当于 <code class="language-plaintext highlighter-rouge">expr --</code></li>
+  <li><code class="language-plaintext highlighter-rouge">po</code> 相当于 <code class="language-plaintext highlighter-rouge">expr -o --</code></li>
+</ul>
+
+<p>使用示例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) expr -- strlen(str1)
+(size_t) $7 = 5
+</code></pre></div></div>
+
+<p>也可以输入命令后进入表达式窗口，此时可以输入多行表达式，最后以空行结束以求值。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) expr
+Enter expressions, then terminate with an empty line to evaluate:
+1 strlen(str1)
+2 
+(size_t) $8 = 5
+(lldb) 
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">expression</code> 命令的完整语法为：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>expression &lt;cmd-options&gt; -- &lt;expr&gt;
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">cmd-options</code> 可控制输出，比如 <code class="language-plaintext highlighter-rouge">expression [-o] [-a ] [-d ] [-t ] [-u ] -- &lt;expr&gt;</code>。</p>
+
+<p>带参示例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) expr -o -- strlen(str1)
+5
+</code></pre></div></div>
+
+<h2 id="查看完整文档">查看完整文档</h2>
+
+<p>直接输入 <code class="language-plaintext highlighter-rouge">help expression</code> 可查看完整的用法及参数</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) help expression
+     Evaluate an expression on the current thread.  Displays any returned value
+     with LLDB's default formatting.  Expects 'raw' input (see 'help
+     raw-input'.)
+
+Syntax: expression &lt;cmd-options&gt; -- &lt;expr&gt;
+...
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/a/28841849/1553656">What’s the difference between “p” and “po” in Xcode’s LLDB debugger?</a></li>
+  <li><a href="https://medium.com/flawless-app-stories/debugging-swift-code-with-lldb-b30c5cf2fd49">Debugging Swift code with LLDB</a></li>
+</ul>
+
+:ET

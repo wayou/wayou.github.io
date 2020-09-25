@@ -1,0 +1,21 @@
+{
+  "name": "issues",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "issues": "ts-node issues.ts",
+    "serve": "jekyll serve"
+  },
+  "dependencies": {
+    "@octokit/rest": "^18.0.6",
+    "@types/node": "^14.11.2",
+    "await-to-js": "^2.1.1",
+    "filenamify": "^4.2.0",
+    "moment": "^2.29.0"
+  },
+  "devDependencies": {
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  }
+}

@@ -1,0 +1,91 @@
+I"�#<h1 id="transform-缩放后的滚动问题">transform 缩放后的滚动问题</h1>
+
+<h3 id="问题">问题</h3>
+
+<p>考察下面的问题：</p>
+
+<p>一个固定大小的容器中放置了另一个元素，现在想对该元素进行缩放处理，放大后可在容器范围内滚动显示。</p>
+
+<p>很自然地，通过 <code class="language-plaintext highlighter-rouge">transform: scale</code> 可实现缩放。于是得到如下的示例代码。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"viewport"</span> <span class="na">content=</span><span class="s">"width=device-width, initial-scale=1.0"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"X-UA-Compatible"</span> <span class="na">content=</span><span class="s">"ie=edge"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;title&gt;</span>scroll with scaled element<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+      <span class="nc">.container</span> <span class="p">{</span>
+        <span class="nl">width</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+        <span class="nl">height</span><span class="p">:</span> <span class="m">150px</span><span class="p">;</span>
+        <span class="nl">background</span><span class="p">:</span> <span class="n">grey</span><span class="p">;</span>
+        <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">brown</span><span class="p">;</span>
+        <span class="nl">overflow</span><span class="p">:</span> <span class="nb">scroll</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="nf">#target</span> <span class="p">{</span>
+        <span class="nl">height</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+        <span class="nl">background</span><span class="p">:</span> <span class="n">linear-gradient</span><span class="p">(</span><span class="m">45deg</span><span class="p">,</span> <span class="no">red</span><span class="p">,</span> <span class="no">blue</span><span class="p">);</span>
+        <span class="nl">transform-origin</span><span class="p">:</span> <span class="m">0</span> <span class="m">0</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;&lt;img</span> <span class="na">id=</span><span class="s">"target"</span> <span class="na">src=</span><span class="s">"./lenna.png"</span><span class="nt">/&gt;&lt;/div&gt;</span>
+      <span class="nt">&lt;button</span> <span class="na">onclick=</span><span class="s">"zoomin()"</span><span class="nt">&gt;</span>zoom in<span class="nt">&lt;/button&gt;</span>
+      <span class="nt">&lt;button</span> <span class="na">onclick=</span><span class="s">"zoomout()"</span><span class="nt">&gt;</span>zoom out<span class="nt">&lt;/button&gt;</span>
+    <span class="nt">&lt;script&gt;</span>
+      <span class="kd">var</span> <span class="nx">scale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="kd">var</span> <span class="nx">delta</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span>
+      <span class="kd">function</span> <span class="nx">zoomin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">scale</span> <span class="o">+=</span> <span class="nx">delta</span><span class="p">;</span>
+        <span class="nx">target</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">transform</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">scale(</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">scale</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">)</span><span class="dl">"</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="kd">function</span> <span class="nx">zoomout</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">scale</span> <span class="o">-=</span> <span class="nx">delta</span><span class="p">;</span>
+        <span class="nx">scale</span> <span class="o">=</span> <span class="nx">scale</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="p">?</span> <span class="mf">0.1</span> <span class="p">:</span> <span class="nx">scale</span><span class="p">;</span>
+        <span class="nx">target</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">transform</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">scale(</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">scale</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">)</span><span class="dl">"</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="nt">&lt;/script&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p><a href="https://wayou.github.io/posts/css-scale-scroll-problem/src/index.html">点击查看示例</a></p>
+
+<p><em>NOTE: Chrome (as of canaray 74.0.3684.0)，内部元素放大后并不能立即触发容器滚动。实际上在内部元素缩放过程中，容器并没有重新渲染导致滚动条没有即时出现。此时如果有其他任意 DOM 操作触发页面渲染，可修正该问题，比如缩放一下窗口。其他浏览器诸如 Safari，Firefox 没有这个问题。针对该问题已经提了个 <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=926167">bug</a> 给 Chromium。</em></p>
+
+<p><img src="https://wayou.github.io/posts/css-scale-scroll-problem/src/chrome_scroll_problem.gif" alt="chrome scroll problem" />
+<em>chrome 中缩放元素后容器不能即时滚动问题的展示</em></p>
+
+<p>So far so good. 注意因为 <code class="language-plaintext highlighter-rouge">transform-origin</code> 默认值是 <code class="language-plaintext highlighter-rouge">50% 50%</code>，即默认从元素中间开始。上面示例中，我们故意设置了 <code class="language-plaintext highlighter-rouge">transform-origin: 0 0</code> 使其从左上角开始缩放。问题出现在当我们想从中间开始缩放的时候。</p>
+
+<p>现在我们去掉 <code class="language-plaintext highlighter-rouge">transform-origin: 0 0 </code> 或者将其改成 <code class="language-plaintext highlighter-rouge">transform-origin: 50% 50% </code> 。</p>
+
+<p>此时会发现，放大后的元素虽然可以通过滚动来查看超出的部分，但左边和上面始终会有一部分是无法查看的。</p>
+
+<p><img src="https://wayou.github.io/posts/css-scale-scroll-problem/src/partial_view_problem.gif" alt="partial view problem" />
+<em>缩放后的元素无法通过滚动查看全部内容问题的展示</em></p>
+
+<h3 id="解决">解决</h3>
+
+<h4 id="手动修正宽高">手动修正宽高</h4>
+
+<p>既然无法滚动，说明缩放后实际所占的空间不够。此时可以通过对元素设置一下宽高来解决。有了真实所占的宽高，可滚动的区域自然就完整了。</p>
+
+<p>实际测试后发现，虽然手动设置宽高后可改变滚动条可滚动的区域，但元素仍然无法完整查看，通过滚动，我们看到的仍是元素的部分。</p>
+
+<h4 id="zoom">zoom</h4>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">zoom</code> 可以很好地解决这个问题。只需要将 <code class="language-plaintext highlighter-rouge">transform:scale(value)</code> 换成 <code class="language-plaintext highlighter-rouge">zoom: value</code> 即可。</p>
+
+<p>与 <code class="language-plaintext highlighter-rouge">transform</code> 相比，因为 <code class="language-plaintext highlighter-rouge">zoom</code> 不是浏览器标准中的，所以兼容性及支持情况没那么有保证。但查阅 caniuse 后会发现，除 Firefox 不支持外，其他浏览器对其的支持还是可以的。</p>
+
+<p>它的具体表现是，在尺寸超出容器前，从中间开始缩放，超出后，从左上角开始缩放。</p>
+
+<h3 id="其他资源">其他资源</h3>
+<ul>
+  <li><a href="https://stackoverflow.com/questions/26488960/zoom-vs-scale-in-css3">Zoom Vs. Scale in CSS3</a></li>
+</ul>
+
+:ET

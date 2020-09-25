@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>尾调用及递归优化 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="尾调用及递归优化" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="尾调用及递归优化 ES6 规范中添加了对尾调用优化的支持，虽然目前来看支持情况还不是很好，但了解其原理还是很有必要的，有助于我们编写高效的代码，一旦哪天引擎支持该优化了，将会收获性能上的提升。 讨论尾调用前，先看函数正常调用时其形成的堆栈（stack frame）情况。 函数的调用及调用堆栈 先看一个概念：调用堆栈（call stack），或叫调用帧（stack frame）。 我理解的调用堆栈：因为函数调用后，流程会进入到被调用函数体，此时需要传入一些入参，这些入参需要存放到一个位置，另外当函数调用结束后，执行流程需要返回到被调用的地方，这个返回的地方也需要被记录下来。所以会为这次函数调用分配一个存储区域，存放调用时传入的入参，调用结束后返回的地址。这个存储区域保存的都是跟本次函数调用相关的数据，所以，它是该函数的调用堆栈。 考察下面的示例代码： function g(x) { return x; // (C) } function f(a) { let b = a + 1; return g(b); // (B) } console.log(f(2)); // (A) 下面模拟 JaavScript 引擎在执行上面代码时的流程， 首先对于全局作用域来说，存在两个字面量（不算上全局 window） f,g，所以一开始执行时，已经默认有一个全局的堆栈信息了，看起来大概是这样子： +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 调用 f(2) 并生成调用堆栈，代码执行流程进入 f 的函数体中。形成了第一个 stack frame，里面有 f(2) 入参 a，函数体中声明的变量 b 以及被调用的位置 A。此时的堆栈是下面的样子： +-------------------------------------+ | | | a=2 | | b=2+1 | | Line A | | | +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 在函数 f 的函数体中，调用 g 代码流程进入 g 的函数体，同样，为其生成相应的调用堆栈，保存入参 x，调用位置 B。 +-------------------------------------+ | | | x=3 | | Line B | | | +-------------------------------------+ | | | a=2 | | b=2+1 | | Line A | | | +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 函数 g 中 return 进行返回后，因为 g 已经完成使命，其相关的调用堆栈被销毁。代码执行流程回到 g 被调用的地方 A，相当于代码执行流程回到了 f 函数体中。此时的堆栈是这样的： +-------------------------------------+ | | | a=2 | | b=2+1 | | Line A | | | +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ f 函数体中拿到 g 的返回后，什么也没干，直接 return 返回，此时结束了 f 的执行，流程回到 f 被调用的地方 A，即流程回到全局作用域，销毁 f 的调用堆栈。此时的堆栈为： +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 全局作用域中，得到返回值后将其打印输出结束了整段代码。 尾调用 如果一个函数最后一步是调用另一个函数，则这个调用为尾调用。比如： function g(x) { return x; } function f(y) { var a = y + 1; return g(a); } 但下面这个就不算尾调用了： function g(x) { return x; } function f(y) { var a = y + 1; return g(a) + 1; } 因为这里 f 中最后一步操作并不是对 g 的调用，在拿到 g 函数的返回后还进行了另外的操作 g(a)+1。其代码相当于如下的形式： function g(x) { return x; } function f(y) { var a = y + 1; var tmp = g(a); var result = tmp + 1; return result; } 经过改造后就能很明显看出，其中对 g 的调用不是尾调用了。 尾调用的判定 函数的调用形式 首先，JavaScript 中调用函数是多样的，只要这是另一函数中最后一步操作，都可称作尾调用。比如以下的函数调用形式： 正常函数调用：fn(...) 访问对象属性并调用：obj.method(...) 通过 Function.prototype.all 调用：fn.call(...) 通过 apply 调用：fn.apply(...) 表达式中的尾调用 因为箭头函数的函数体可以是表达式，所以表达式最终的步骤是什么决定了该箭头函数中是否包含尾调用。 能够形成尾调用的表达式有如下这些， 三元表达式：?: const a = x =&gt; x ? f() : g(); 其中 f() 和 g() 都是尾调用，表达式最终结果要么是对 f() 的调用，要么是对 g() 的调用。 逻辑或表达式：|| const a = () =&gt; f() || g(); 上面示例中， f() 不是尾调用，而对 g() 的调用是尾调用。这点可通过下面转换后的等效代码看出来： const a = () =&gt; { let fResult = f(); // not a tail call if (fResult) { return fResult; } else { return g(); // tail call } }; a||b 的意思是如果 a 真则返回 a 的值，否则继续判定 b，此时无论 b 真假与否，整个表达式的返回都是 b。 所以从上面的转换中看出，对于 f() 的调用，需要进一步对其返回值进行处理，而不是直接将 f() 进行返回，所以 f() 并不是函数体中最后一步操作，但 g() 是，因为对于 g() 的返回值没有其他操作，而是直接返回。 逻辑与表达式：&amp;&amp; const a = () =&gt; f() &amp;&amp; g(); 与逻辑或表达式雷同，这里需要对 f() 的返回值进一步处理，进行判定后决定整个表达式的执行，所以 f() 不是尾调用，而 g() 是。 其等效的代码如下： const a = () =&gt; { let fResult = f(); // not a tail call if (!fResult) { return fResult; } else { return g(); // tail call } }; 逗号表达式：expression，expression const a = () =&gt; (f() , g()); 这个就比较好理解了，逗号表达式是依次执行的，整个表达式返回结果为最后一个表达式。所以这里 f() 不是尾调用，g() 是。 ### 需要注意的是，单独的函数调用并不是尾调用，比如下面这样： function foo() { bar(); // this is not a tail call in JS } 这里 bar() 并不是尾调用，因为函数体中，最后一步操作并不是返回 bar()，而是隐式地返回 undefined。其等效的代码为： function foo() { bar(); return undefined; } 像这种情况其实并不能简单地通过加一个 return 将其变成尾调用。因为这样就改变了 foo 的返回值，其功能有可能就变了，调用方就不能再依赖于 foo() 返回的是 undefined。 尾调用优化 回到最开始的那个示例： function g(x) { return x; // (C) } function f(a) { let b = a + 1; return g(b); // (B) } console.log(f(2)); // (A) 这里 f(a) 中就包含一个尾调用 g(b)。并且通过前面的调用堆栈的分析，可以知道，每一次函数调用都需要生成相应的调用堆栈，会有存储的开销。 如果仔细看前面调用过程的分析，会发现，在 f(a) 函数体中，当我们调用 g(b) 时，就可以将 f(a) 的调用堆栈直接销毁了，其中 f(a) 相关的内容不会再被用到，除了其中关于 f(a) 被调用位置的记录。这个位置需要在调用 g(b) 后返回。 所以，完全可以省掉 f(a) 作为中间商这一步，将 f(a) 反返回地址告诉 g(x)，这样 g(x) 在执行完成后直接返回到代码中 A 标记处。 上面优化后的执行场景下，其调用堆栈的分配则变成了： 调用 f(2)，为其分配堆栈 调用 g(b)，为其分配堆栈。同时发现 g(b) 在 f(a) 的末尾直接被返回， f(a) 中存储的变量 b 这些在后续执行中不会再被用到，将 f(a) 的调用堆栈销毁。 执行 g(b) 并返回到 A 标记处。 最最开始不同之处在于，在创建 g(b) 的调用堆栈时，同时销毁了 f(a) 的调用堆栈。这当然是 JavaScript 引擎去实现的。 其好处显而易见，在函数连续调用过程中，堆栈数没有增加。假如不止一次尾调用， g(x) 中还存在对另外函数的尾调用，这样的优化可以持续下去，也就是说，堆栈数并没有随着函数调用的增多而增加。 利用这个特性，我们可以将一些不是尾调用的函数想办法改成尾调用，达到优化调用堆栈的目的，这便是尾调用优化。 尾递归调用 如果函数的尾调用是对自己的调用，便形成了递归调用，又因为同时还是尾调用，所以合称 尾递归调用。相比于传统的递归，调用堆栈极速增加的不同，尾递归调用的调用堆栈是恒定的，这由前面的分析可知。 所以尾调用优化特别适合用于递归的情况，收益会很大。 计算阶乘就是典型的递归场景： function factorial(x) { if (x &lt;= 0) { return 1; } else { return x * factorial(x-1); // (A) } } 但上面这样的实现并不是尾调用。不过可以通过添加一个额外的方法来达到优化成尾调用的目的。 function factorial(n) { return facRec(n, 1); } function facRec(x, acc) { if (x &lt;= 1) { return acc; } else { return facRec(x-1, x*acc); // (A) } } 此时 facRec 便是一个尾递归调用。 其他示例 利用尾递归调用实现循环语句。 function forEach(arr, callback, start = 0) { if (0 &lt;= start &amp;&amp; start &lt; arr.length) { callback(arr[start], start, arr); return forEach(arr, callback, start+1); // tail call } } forEach([&#39;a&#39;, &#39;b&#39;], (elem, i) =&gt; console.log(`${i}. ${elem}`)); // Output: // 0. a // 1. b function findIndex(arr, predicate, start = 0) { if (0 &lt;= start &amp;&amp; start &lt; arr.length) { if (predicate(arr[start])) { return start; } return findIndex(arr, predicate, start+1); // tail call } } findIndex([&#39;a&#39;, &#39;b&#39;], x =&gt; x === &#39;b&#39;); // 1 相关资源 2ality - Tail call optimization in ECMAScript 6 ES6 尾调用优化在各引擎中的实现支持情况 What Is Tail Call Optimization?" />
+<meta property="og:description" content="尾调用及递归优化 ES6 规范中添加了对尾调用优化的支持，虽然目前来看支持情况还不是很好，但了解其原理还是很有必要的，有助于我们编写高效的代码，一旦哪天引擎支持该优化了，将会收获性能上的提升。 讨论尾调用前，先看函数正常调用时其形成的堆栈（stack frame）情况。 函数的调用及调用堆栈 先看一个概念：调用堆栈（call stack），或叫调用帧（stack frame）。 我理解的调用堆栈：因为函数调用后，流程会进入到被调用函数体，此时需要传入一些入参，这些入参需要存放到一个位置，另外当函数调用结束后，执行流程需要返回到被调用的地方，这个返回的地方也需要被记录下来。所以会为这次函数调用分配一个存储区域，存放调用时传入的入参，调用结束后返回的地址。这个存储区域保存的都是跟本次函数调用相关的数据，所以，它是该函数的调用堆栈。 考察下面的示例代码： function g(x) { return x; // (C) } function f(a) { let b = a + 1; return g(b); // (B) } console.log(f(2)); // (A) 下面模拟 JaavScript 引擎在执行上面代码时的流程， 首先对于全局作用域来说，存在两个字面量（不算上全局 window） f,g，所以一开始执行时，已经默认有一个全局的堆栈信息了，看起来大概是这样子： +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 调用 f(2) 并生成调用堆栈，代码执行流程进入 f 的函数体中。形成了第一个 stack frame，里面有 f(2) 入参 a，函数体中声明的变量 b 以及被调用的位置 A。此时的堆栈是下面的样子： +-------------------------------------+ | | | a=2 | | b=2+1 | | Line A | | | +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 在函数 f 的函数体中，调用 g 代码流程进入 g 的函数体，同样，为其生成相应的调用堆栈，保存入参 x，调用位置 B。 +-------------------------------------+ | | | x=3 | | Line B | | | +-------------------------------------+ | | | a=2 | | b=2+1 | | Line A | | | +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 函数 g 中 return 进行返回后，因为 g 已经完成使命，其相关的调用堆栈被销毁。代码执行流程回到 g 被调用的地方 A，相当于代码执行流程回到了 f 函数体中。此时的堆栈是这样的： +-------------------------------------+ | | | a=2 | | b=2+1 | | Line A | | | +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ f 函数体中拿到 g 的返回后，什么也没干，直接 return 返回，此时结束了 f 的执行，流程回到 f 被调用的地方 A，即流程回到全局作用域，销毁 f 的调用堆栈。此时的堆栈为： +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 全局作用域中，得到返回值后将其打印输出结束了整段代码。 尾调用 如果一个函数最后一步是调用另一个函数，则这个调用为尾调用。比如： function g(x) { return x; } function f(y) { var a = y + 1; return g(a); } 但下面这个就不算尾调用了： function g(x) { return x; } function f(y) { var a = y + 1; return g(a) + 1; } 因为这里 f 中最后一步操作并不是对 g 的调用，在拿到 g 函数的返回后还进行了另外的操作 g(a)+1。其代码相当于如下的形式： function g(x) { return x; } function f(y) { var a = y + 1; var tmp = g(a); var result = tmp + 1; return result; } 经过改造后就能很明显看出，其中对 g 的调用不是尾调用了。 尾调用的判定 函数的调用形式 首先，JavaScript 中调用函数是多样的，只要这是另一函数中最后一步操作，都可称作尾调用。比如以下的函数调用形式： 正常函数调用：fn(...) 访问对象属性并调用：obj.method(...) 通过 Function.prototype.all 调用：fn.call(...) 通过 apply 调用：fn.apply(...) 表达式中的尾调用 因为箭头函数的函数体可以是表达式，所以表达式最终的步骤是什么决定了该箭头函数中是否包含尾调用。 能够形成尾调用的表达式有如下这些， 三元表达式：?: const a = x =&gt; x ? f() : g(); 其中 f() 和 g() 都是尾调用，表达式最终结果要么是对 f() 的调用，要么是对 g() 的调用。 逻辑或表达式：|| const a = () =&gt; f() || g(); 上面示例中， f() 不是尾调用，而对 g() 的调用是尾调用。这点可通过下面转换后的等效代码看出来： const a = () =&gt; { let fResult = f(); // not a tail call if (fResult) { return fResult; } else { return g(); // tail call } }; a||b 的意思是如果 a 真则返回 a 的值，否则继续判定 b，此时无论 b 真假与否，整个表达式的返回都是 b。 所以从上面的转换中看出，对于 f() 的调用，需要进一步对其返回值进行处理，而不是直接将 f() 进行返回，所以 f() 并不是函数体中最后一步操作，但 g() 是，因为对于 g() 的返回值没有其他操作，而是直接返回。 逻辑与表达式：&amp;&amp; const a = () =&gt; f() &amp;&amp; g(); 与逻辑或表达式雷同，这里需要对 f() 的返回值进一步处理，进行判定后决定整个表达式的执行，所以 f() 不是尾调用，而 g() 是。 其等效的代码如下： const a = () =&gt; { let fResult = f(); // not a tail call if (!fResult) { return fResult; } else { return g(); // tail call } }; 逗号表达式：expression，expression const a = () =&gt; (f() , g()); 这个就比较好理解了，逗号表达式是依次执行的，整个表达式返回结果为最后一个表达式。所以这里 f() 不是尾调用，g() 是。 ### 需要注意的是，单独的函数调用并不是尾调用，比如下面这样： function foo() { bar(); // this is not a tail call in JS } 这里 bar() 并不是尾调用，因为函数体中，最后一步操作并不是返回 bar()，而是隐式地返回 undefined。其等效的代码为： function foo() { bar(); return undefined; } 像这种情况其实并不能简单地通过加一个 return 将其变成尾调用。因为这样就改变了 foo 的返回值，其功能有可能就变了，调用方就不能再依赖于 foo() 返回的是 undefined。 尾调用优化 回到最开始的那个示例： function g(x) { return x; // (C) } function f(a) { let b = a + 1; return g(b); // (B) } console.log(f(2)); // (A) 这里 f(a) 中就包含一个尾调用 g(b)。并且通过前面的调用堆栈的分析，可以知道，每一次函数调用都需要生成相应的调用堆栈，会有存储的开销。 如果仔细看前面调用过程的分析，会发现，在 f(a) 函数体中，当我们调用 g(b) 时，就可以将 f(a) 的调用堆栈直接销毁了，其中 f(a) 相关的内容不会再被用到，除了其中关于 f(a) 被调用位置的记录。这个位置需要在调用 g(b) 后返回。 所以，完全可以省掉 f(a) 作为中间商这一步，将 f(a) 反返回地址告诉 g(x)，这样 g(x) 在执行完成后直接返回到代码中 A 标记处。 上面优化后的执行场景下，其调用堆栈的分配则变成了： 调用 f(2)，为其分配堆栈 调用 g(b)，为其分配堆栈。同时发现 g(b) 在 f(a) 的末尾直接被返回， f(a) 中存储的变量 b 这些在后续执行中不会再被用到，将 f(a) 的调用堆栈销毁。 执行 g(b) 并返回到 A 标记处。 最最开始不同之处在于，在创建 g(b) 的调用堆栈时，同时销毁了 f(a) 的调用堆栈。这当然是 JavaScript 引擎去实现的。 其好处显而易见，在函数连续调用过程中，堆栈数没有增加。假如不止一次尾调用， g(x) 中还存在对另外函数的尾调用，这样的优化可以持续下去，也就是说，堆栈数并没有随着函数调用的增多而增加。 利用这个特性，我们可以将一些不是尾调用的函数想办法改成尾调用，达到优化调用堆栈的目的，这便是尾调用优化。 尾递归调用 如果函数的尾调用是对自己的调用，便形成了递归调用，又因为同时还是尾调用，所以合称 尾递归调用。相比于传统的递归，调用堆栈极速增加的不同，尾递归调用的调用堆栈是恒定的，这由前面的分析可知。 所以尾调用优化特别适合用于递归的情况，收益会很大。 计算阶乘就是典型的递归场景： function factorial(x) { if (x &lt;= 0) { return 1; } else { return x * factorial(x-1); // (A) } } 但上面这样的实现并不是尾调用。不过可以通过添加一个额外的方法来达到优化成尾调用的目的。 function factorial(n) { return facRec(n, 1); } function facRec(x, acc) { if (x &lt;= 1) { return acc; } else { return facRec(x-1, x*acc); // (A) } } 此时 facRec 便是一个尾递归调用。 其他示例 利用尾递归调用实现循环语句。 function forEach(arr, callback, start = 0) { if (0 &lt;= start &amp;&amp; start &lt; arr.length) { callback(arr[start], start, arr); return forEach(arr, callback, start+1); // tail call } } forEach([&#39;a&#39;, &#39;b&#39;], (elem, i) =&gt; console.log(`${i}. ${elem}`)); // Output: // 0. a // 1. b function findIndex(arr, predicate, start = 0) { if (0 &lt;= start &amp;&amp; start &lt; arr.length) { if (predicate(arr[start])) { return start; } return findIndex(arr, predicate, start+1); // tail call } } findIndex([&#39;a&#39;, &#39;b&#39;], x =&gt; x === &#39;b&#39;); // 1 相关资源 2ality - Tail call optimization in ECMAScript 6 ES6 尾调用优化在各引擎中的实现支持情况 What Is Tail Call Optimization?" />
+<link rel="canonical" href="http://localhost:4000/2019/06/10/%E5%B0%BE%E8%B0%83%E7%94%A8%E5%8F%8A%E9%80%92%E5%BD%92%E4%BC%98%E5%8C%96.html" />
+<meta property="og:url" content="http://localhost:4000/2019/06/10/%E5%B0%BE%E8%B0%83%E7%94%A8%E5%8F%8A%E9%80%92%E5%BD%92%E4%BC%98%E5%8C%96.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-10T23:06:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/06/10/%E5%B0%BE%E8%B0%83%E7%94%A8%E5%8F%8A%E9%80%92%E5%BD%92%E4%BC%98%E5%8C%96.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/10/%E5%B0%BE%E8%B0%83%E7%94%A8%E5%8F%8A%E9%80%92%E5%BD%92%E4%BC%98%E5%8C%96.html"},"description":"尾调用及递归优化 ES6 规范中添加了对尾调用优化的支持，虽然目前来看支持情况还不是很好，但了解其原理还是很有必要的，有助于我们编写高效的代码，一旦哪天引擎支持该优化了，将会收获性能上的提升。 讨论尾调用前，先看函数正常调用时其形成的堆栈（stack frame）情况。 函数的调用及调用堆栈 先看一个概念：调用堆栈（call stack），或叫调用帧（stack frame）。 我理解的调用堆栈：因为函数调用后，流程会进入到被调用函数体，此时需要传入一些入参，这些入参需要存放到一个位置，另外当函数调用结束后，执行流程需要返回到被调用的地方，这个返回的地方也需要被记录下来。所以会为这次函数调用分配一个存储区域，存放调用时传入的入参，调用结束后返回的地址。这个存储区域保存的都是跟本次函数调用相关的数据，所以，它是该函数的调用堆栈。 考察下面的示例代码： function g(x) { return x; // (C) } function f(a) { let b = a + 1; return g(b); // (B) } console.log(f(2)); // (A) 下面模拟 JaavScript 引擎在执行上面代码时的流程， 首先对于全局作用域来说，存在两个字面量（不算上全局 window） f,g，所以一开始执行时，已经默认有一个全局的堆栈信息了，看起来大概是这样子： +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 调用 f(2) 并生成调用堆栈，代码执行流程进入 f 的函数体中。形成了第一个 stack frame，里面有 f(2) 入参 a，函数体中声明的变量 b 以及被调用的位置 A。此时的堆栈是下面的样子： +-------------------------------------+ | | | a=2 | | b=2+1 | | Line A | | | +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 在函数 f 的函数体中，调用 g 代码流程进入 g 的函数体，同样，为其生成相应的调用堆栈，保存入参 x，调用位置 B。 +-------------------------------------+ | | | x=3 | | Line B | | | +-------------------------------------+ | | | a=2 | | b=2+1 | | Line A | | | +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 函数 g 中 return 进行返回后，因为 g 已经完成使命，其相关的调用堆栈被销毁。代码执行流程回到 g 被调用的地方 A，相当于代码执行流程回到了 f 函数体中。此时的堆栈是这样的： +-------------------------------------+ | | | a=2 | | b=2+1 | | Line A | | | +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ f 函数体中拿到 g 的返回后，什么也没干，直接 return 返回，此时结束了 f 的执行，流程回到 f 被调用的地方 A，即流程回到全局作用域，销毁 f 的调用堆栈。此时的堆栈为： +-------------------------------------+ | | | f=function(a){...} | | g=function(x){...} | | | +-------------------------------------+ 全局作用域中，得到返回值后将其打印输出结束了整段代码。 尾调用 如果一个函数最后一步是调用另一个函数，则这个调用为尾调用。比如： function g(x) { return x; } function f(y) { var a = y + 1; return g(a); } 但下面这个就不算尾调用了： function g(x) { return x; } function f(y) { var a = y + 1; return g(a) + 1; } 因为这里 f 中最后一步操作并不是对 g 的调用，在拿到 g 函数的返回后还进行了另外的操作 g(a)+1。其代码相当于如下的形式： function g(x) { return x; } function f(y) { var a = y + 1; var tmp = g(a); var result = tmp + 1; return result; } 经过改造后就能很明显看出，其中对 g 的调用不是尾调用了。 尾调用的判定 函数的调用形式 首先，JavaScript 中调用函数是多样的，只要这是另一函数中最后一步操作，都可称作尾调用。比如以下的函数调用形式： 正常函数调用：fn(...) 访问对象属性并调用：obj.method(...) 通过 Function.prototype.all 调用：fn.call(...) 通过 apply 调用：fn.apply(...) 表达式中的尾调用 因为箭头函数的函数体可以是表达式，所以表达式最终的步骤是什么决定了该箭头函数中是否包含尾调用。 能够形成尾调用的表达式有如下这些， 三元表达式：?: const a = x =&gt; x ? f() : g(); 其中 f() 和 g() 都是尾调用，表达式最终结果要么是对 f() 的调用，要么是对 g() 的调用。 逻辑或表达式：|| const a = () =&gt; f() || g(); 上面示例中， f() 不是尾调用，而对 g() 的调用是尾调用。这点可通过下面转换后的等效代码看出来： const a = () =&gt; { let fResult = f(); // not a tail call if (fResult) { return fResult; } else { return g(); // tail call } }; a||b 的意思是如果 a 真则返回 a 的值，否则继续判定 b，此时无论 b 真假与否，整个表达式的返回都是 b。 所以从上面的转换中看出，对于 f() 的调用，需要进一步对其返回值进行处理，而不是直接将 f() 进行返回，所以 f() 并不是函数体中最后一步操作，但 g() 是，因为对于 g() 的返回值没有其他操作，而是直接返回。 逻辑与表达式：&amp;&amp; const a = () =&gt; f() &amp;&amp; g(); 与逻辑或表达式雷同，这里需要对 f() 的返回值进一步处理，进行判定后决定整个表达式的执行，所以 f() 不是尾调用，而 g() 是。 其等效的代码如下： const a = () =&gt; { let fResult = f(); // not a tail call if (!fResult) { return fResult; } else { return g(); // tail call } }; 逗号表达式：expression，expression const a = () =&gt; (f() , g()); 这个就比较好理解了，逗号表达式是依次执行的，整个表达式返回结果为最后一个表达式。所以这里 f() 不是尾调用，g() 是。 ### 需要注意的是，单独的函数调用并不是尾调用，比如下面这样： function foo() { bar(); // this is not a tail call in JS } 这里 bar() 并不是尾调用，因为函数体中，最后一步操作并不是返回 bar()，而是隐式地返回 undefined。其等效的代码为： function foo() { bar(); return undefined; } 像这种情况其实并不能简单地通过加一个 return 将其变成尾调用。因为这样就改变了 foo 的返回值，其功能有可能就变了，调用方就不能再依赖于 foo() 返回的是 undefined。 尾调用优化 回到最开始的那个示例： function g(x) { return x; // (C) } function f(a) { let b = a + 1; return g(b); // (B) } console.log(f(2)); // (A) 这里 f(a) 中就包含一个尾调用 g(b)。并且通过前面的调用堆栈的分析，可以知道，每一次函数调用都需要生成相应的调用堆栈，会有存储的开销。 如果仔细看前面调用过程的分析，会发现，在 f(a) 函数体中，当我们调用 g(b) 时，就可以将 f(a) 的调用堆栈直接销毁了，其中 f(a) 相关的内容不会再被用到，除了其中关于 f(a) 被调用位置的记录。这个位置需要在调用 g(b) 后返回。 所以，完全可以省掉 f(a) 作为中间商这一步，将 f(a) 反返回地址告诉 g(x)，这样 g(x) 在执行完成后直接返回到代码中 A 标记处。 上面优化后的执行场景下，其调用堆栈的分配则变成了： 调用 f(2)，为其分配堆栈 调用 g(b)，为其分配堆栈。同时发现 g(b) 在 f(a) 的末尾直接被返回， f(a) 中存储的变量 b 这些在后续执行中不会再被用到，将 f(a) 的调用堆栈销毁。 执行 g(b) 并返回到 A 标记处。 最最开始不同之处在于，在创建 g(b) 的调用堆栈时，同时销毁了 f(a) 的调用堆栈。这当然是 JavaScript 引擎去实现的。 其好处显而易见，在函数连续调用过程中，堆栈数没有增加。假如不止一次尾调用， g(x) 中还存在对另外函数的尾调用，这样的优化可以持续下去，也就是说，堆栈数并没有随着函数调用的增多而增加。 利用这个特性，我们可以将一些不是尾调用的函数想办法改成尾调用，达到优化调用堆栈的目的，这便是尾调用优化。 尾递归调用 如果函数的尾调用是对自己的调用，便形成了递归调用，又因为同时还是尾调用，所以合称 尾递归调用。相比于传统的递归，调用堆栈极速增加的不同，尾递归调用的调用堆栈是恒定的，这由前面的分析可知。 所以尾调用优化特别适合用于递归的情况，收益会很大。 计算阶乘就是典型的递归场景： function factorial(x) { if (x &lt;= 0) { return 1; } else { return x * factorial(x-1); // (A) } } 但上面这样的实现并不是尾调用。不过可以通过添加一个额外的方法来达到优化成尾调用的目的。 function factorial(n) { return facRec(n, 1); } function facRec(x, acc) { if (x &lt;= 1) { return acc; } else { return facRec(x-1, x*acc); // (A) } } 此时 facRec 便是一个尾递归调用。 其他示例 利用尾递归调用实现循环语句。 function forEach(arr, callback, start = 0) { if (0 &lt;= start &amp;&amp; start &lt; arr.length) { callback(arr[start], start, arr); return forEach(arr, callback, start+1); // tail call } } forEach([&#39;a&#39;, &#39;b&#39;], (elem, i) =&gt; console.log(`${i}. ${elem}`)); // Output: // 0. a // 1. b function findIndex(arr, predicate, start = 0) { if (0 &lt;= start &amp;&amp; start &lt; arr.length) { if (predicate(arr[start])) { return start; } return findIndex(arr, predicate, start+1); // tail call } } findIndex([&#39;a&#39;, &#39;b&#39;], x =&gt; x === &#39;b&#39;); // 1 相关资源 2ality - Tail call optimization in ECMAScript 6 ES6 尾调用优化在各引擎中的实现支持情况 What Is Tail Call Optimization?","@type":"BlogPosting","headline":"尾调用及递归优化","dateModified":"2019-06-10T23:06:00+08:00","datePublished":"2019-06-10T23:06:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">尾调用及递归优化</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-06-10T23:06:00+08:00" itemprop="datePublished">Jun 10, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="尾调用及递归优化">尾调用及递归优化</h1>
+
+<p>ES6 规范中添加了对尾调用优化的支持，虽然目前来看<a href="https://kangax.github.io/compat-table/es6/#test-proper_tail_calls_(tail_call_optimisation)">支持情况</a>还不是很好，但了解其原理还是很有必要的，有助于我们编写高效的代码，一旦哪天引擎支持该优化了，将会收获性能上的提升。</p>
+
+<p>讨论尾调用前，先看函数正常调用时其形成的堆栈（stack frame）情况。</p>
+
+<h2 id="函数的调用及调用堆栈">函数的调用及调用堆栈</h2>
+
+<p>先看一个概念：<strong>调用堆栈（call stack）</strong>，或叫调用帧（stack frame）。</p>
+
+<p>我理解的调用堆栈：因为函数调用后，流程会进入到被调用函数体，此时需要传入一些入参，这些入参需要存放到一个位置，另外当函数调用结束后，执行流程需要返回到被调用的地方，这个返回的地方也需要被记录下来。所以会为这次函数调用分配一个存储区域，存放调用时传入的入参，调用结束后返回的地址。这个存储区域保存的都是跟本次函数调用相关的数据，所以，它是该函数的调用堆栈。</p>
+
+<p>考察下面的示例代码：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">g</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span><span class="p">;</span> <span class="c1">// (C)</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">f</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">g</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span> <span class="c1">// (B)</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">f</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span> <span class="c1">// (A)</span>
+</code></pre></div></div>
+
+<p>下面模拟 JaavScript 引擎在执行上面代码时的流程，</p>
+
+<ul>
+  <li>首先对于全局作用域来说，存在两个字面量（不算上全局 window） <code class="language-plaintext highlighter-rouge">f</code>,<code class="language-plaintext highlighter-rouge">g</code>，所以一开始执行时，已经默认有一个全局的堆栈信息了，看起来大概是这样子：</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+-------------------------------------+
+|                                     |
+|         f=function(a){...}          |
+|         g=function(x){...}          |
+|                                     |
++-------------------------------------+
+</code></pre></div></div>
+
+<ul>
+  <li>调用 <code class="language-plaintext highlighter-rouge">f(2)</code> 并生成调用堆栈，代码执行流程进入 <code class="language-plaintext highlighter-rouge">f</code> 的函数体中。形成了第一个 stack frame，里面有 <code class="language-plaintext highlighter-rouge">f(2)</code> 入参 <code class="language-plaintext highlighter-rouge">a</code>，函数体中声明的变量 <code class="language-plaintext highlighter-rouge">b</code> 以及被调用的位置 A。此时的堆栈是下面的样子：</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+-------------------------------------+
+|                                     |
+|         a=2                         |
+|         b=2+1                       |
+|         Line A                      |
+|                                     |
++-------------------------------------+
+|                                     |
+|         f=function(a){...}          |
+|         g=function(x){...}          |
+|                                     |
++-------------------------------------+
+</code></pre></div></div>
+
+<ul>
+  <li>在函数 <code class="language-plaintext highlighter-rouge">f</code> 的函数体中，调用 <code class="language-plaintext highlighter-rouge">g</code> 代码流程进入 <code class="language-plaintext highlighter-rouge">g</code> 的函数体，同样，为其生成相应的调用堆栈，保存入参 <code class="language-plaintext highlighter-rouge">x</code>，调用位置 <code class="language-plaintext highlighter-rouge">B</code>。</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+-------------------------------------+
+|                                     |
+|         x=3                         |
+|         Line B                      |
+|                                     |
++-------------------------------------+
+|                                     |
+|         a=2                         |
+|         b=2+1                       |
+|         Line A                      |
+|                                     |
++-------------------------------------+
+|                                     |
+|         f=function(a){...}          |
+|         g=function(x){...}          |
+|                                     |
++-------------------------------------+
+</code></pre></div></div>
+
+<ul>
+  <li>函数 <code class="language-plaintext highlighter-rouge">g</code> 中 <code class="language-plaintext highlighter-rouge">return</code> 进行返回后，因为 <code class="language-plaintext highlighter-rouge">g</code> 已经完成使命，其相关的调用堆栈被销毁。代码执行流程回到 <code class="language-plaintext highlighter-rouge">g</code> 被调用的地方 <code class="language-plaintext highlighter-rouge">A</code>，相当于代码执行流程回到了 <code class="language-plaintext highlighter-rouge">f</code> 函数体中。此时的堆栈是这样的：</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+-------------------------------------+
+|                                     |
+|         a=2                         |
+|         b=2+1                       |
+|         Line A                      |
+|                                     |
++-------------------------------------+
+|                                     |
+|         f=function(a){...}          |
+|         g=function(x){...}          |
+|                                     |
++-------------------------------------+
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">f</code> 函数体中拿到 <code class="language-plaintext highlighter-rouge">g</code> 的返回后，什么也没干，直接 <code class="language-plaintext highlighter-rouge">return</code> 返回，此时结束了 <code class="language-plaintext highlighter-rouge">f</code> 的执行，流程回到 <code class="language-plaintext highlighter-rouge">f</code> 被调用的地方 A，即流程回到全局作用域，销毁 <code class="language-plaintext highlighter-rouge">f</code> 的调用堆栈。此时的堆栈为：</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+-------------------------------------+
+|                                     |
+|         f=function(a){...}          |
+|         g=function(x){...}          |
+|                                     |
++-------------------------------------+
+</code></pre></div></div>
+
+<ul>
+  <li>全局作用域中，得到返回值后将其打印输出结束了整段代码。</li>
+</ul>
+
+<h2 id="尾调用">尾调用</h2>
+
+<p>如果一个函数最后一步是调用另一个函数，则这个调用为尾调用。比如：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">g</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">f</span><span class="p">(</span><span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">g</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>但下面这个就不算尾调用了：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">g</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">f</span><span class="p">(</span><span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">g</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>因为这里 <code class="language-plaintext highlighter-rouge">f</code> 中最后一步操作并不是对 <code class="language-plaintext highlighter-rouge">g</code> 的调用，在拿到 <code class="language-plaintext highlighter-rouge">g</code> 函数的返回后还进行了另外的操作 <code class="language-plaintext highlighter-rouge">g(a)+1</code>。其代码相当于如下的形式：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">g</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">f</span><span class="p">(</span><span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">g</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">tmp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>经过改造后就能很明显看出，其中对 <code class="language-plaintext highlighter-rouge">g</code> 的调用不是尾调用了。</p>
+
+<h2 id="尾调用的判定">尾调用的判定</h2>
+
+<h3 id="函数的调用形式">函数的调用形式</h3>
+
+<p>首先，JavaScript 中调用函数是多样的，只要这是另一函数中最后一步操作，都可称作尾调用。比如以下的函数调用形式：</p>
+
+<ul>
+  <li>正常函数调用：<code class="language-plaintext highlighter-rouge">fn(...)</code></li>
+  <li>访问对象属性并调用：<code class="language-plaintext highlighter-rouge">obj.method(...)</code></li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">Function.prototype.all</code> 调用：<code class="language-plaintext highlighter-rouge">fn.call(...)</code></li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">apply</code> 调用：<code class="language-plaintext highlighter-rouge">fn.apply(...)</code></li>
+</ul>
+
+<h3 id="表达式中的尾调用">表达式中的尾调用</h3>
+
+<p>因为箭头函数的函数体可以是表达式，所以表达式最终的步骤是什么决定了该箭头函数中是否包含尾调用。</p>
+
+<p>能够形成尾调用的表达式有如下这些，</p>
+
+<ul>
+  <li>三元表达式：<code class="language-plaintext highlighter-rouge">?:</code></li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">=&gt;</span> <span class="nx">x</span> <span class="p">?</span> <span class="nx">f</span><span class="p">()</span> <span class="p">:</span> <span class="nx">g</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">f()</code> 和 <code class="language-plaintext highlighter-rouge">g()</code> 都是尾调用，表达式最终结果要么是对 <code class="language-plaintext highlighter-rouge">f()</code> 的调用，要么是对 <code class="language-plaintext highlighter-rouge">g()</code> 的调用。</p>
+
+<ul>
+  <li>逻辑或表达式：<code class="language-plaintext highlighter-rouge">||</code></li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">f</span><span class="p">()</span> <span class="o">||</span> <span class="nx">g</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>上面示例中， <code class="language-plaintext highlighter-rouge">f()</code> 不是尾调用，而对 <code class="language-plaintext highlighter-rouge">g()</code> 的调用是尾调用。这点可通过下面转换后的等效代码看出来：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">fResult</span> <span class="o">=</span> <span class="nx">f</span><span class="p">();</span> <span class="c1">// not a tail call</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">fResult</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fResult</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">g</span><span class="p">();</span> <span class="c1">// tail call</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">a||b</code> 的意思是如果 <code class="language-plaintext highlighter-rouge">a</code> 真则返回 <code class="language-plaintext highlighter-rouge">a</code> 的值，否则继续判定 <code class="language-plaintext highlighter-rouge">b</code>，此时无论 <code class="language-plaintext highlighter-rouge">b</code> 真假与否，整个表达式的返回都是 <code class="language-plaintext highlighter-rouge">b</code>。</p>
+
+<p>所以从上面的转换中看出，对于 <code class="language-plaintext highlighter-rouge">f()</code> 的调用，需要进一步对其返回值进行处理，而不是直接将 <code class="language-plaintext highlighter-rouge">f()</code> 进行返回，所以 <code class="language-plaintext highlighter-rouge">f()</code> 并不是函数体中最后一步操作，但 <code class="language-plaintext highlighter-rouge">g()</code> 是，因为对于 <code class="language-plaintext highlighter-rouge">g()</code> 的返回值没有其他操作，而是直接返回。</p>
+
+<ul>
+  <li>逻辑与表达式：<code class="language-plaintext highlighter-rouge">&amp;&amp;</code></li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">f</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="nx">g</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>与逻辑或表达式雷同，这里需要对 <code class="language-plaintext highlighter-rouge">f()</code> 的返回值进一步处理，进行判定后决定整个表达式的执行，所以 <code class="language-plaintext highlighter-rouge">f()</code> 不是尾调用，而 <code class="language-plaintext highlighter-rouge">g()</code> 是。 其等效的代码如下：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">fResult</span> <span class="o">=</span> <span class="nx">f</span><span class="p">();</span> <span class="c1">// not a tail call</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">fResult</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fResult</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">g</span><span class="p">();</span> <span class="c1">// tail call</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<ul>
+  <li>逗号表达式：<code class="language-plaintext highlighter-rouge">expression，expression</code></li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">f</span><span class="p">()</span> <span class="p">,</span> <span class="nx">g</span><span class="p">());</span>
+</code></pre></div></div>
+
+<p>这个就比较好理解了，逗号表达式是依次执行的，整个表达式返回结果为最后一个表达式。所以这里 <code class="language-plaintext highlighter-rouge">f()</code> 不是尾调用，<code class="language-plaintext highlighter-rouge">g()</code> 是。</p>
+
+<p>###</p>
+
+<p>需要注意的是，单独的函数调用并不是尾调用，比如下面这样：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">bar</span><span class="p">();</span> <span class="c1">// this is not a tail call in JS</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">bar()</code> 并不是尾调用，因为函数体中，最后一步操作并不是返回 <code class="language-plaintext highlighter-rouge">bar()</code>，而是隐式地返回 <code class="language-plaintext highlighter-rouge">undefined</code>。其等效的代码为：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">bar</span><span class="p">();</span>
+    <span class="k">return</span> <span class="kc">undefined</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>像这种情况其实并不能简单地通过加一个 <code class="language-plaintext highlighter-rouge">return</code> 将其变成尾调用。因为这样就改变了 <code class="language-plaintext highlighter-rouge">foo</code> 的返回值，其功能有可能就变了，调用方就不能再依赖于 <code class="language-plaintext highlighter-rouge">foo()</code> 返回的是 <code class="language-plaintext highlighter-rouge">undefined</code>。</p>
+
+<h2 id="尾调用优化">尾调用优化</h2>
+
+<p>回到最开始的那个示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">g</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span><span class="p">;</span> <span class="c1">// (C)</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">f</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">g</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span> <span class="c1">// (B)</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">f</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span> <span class="c1">// (A)</span>
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">f(a)</code> 中就包含一个尾调用 <code class="language-plaintext highlighter-rouge">g(b)</code>。并且通过前面的调用堆栈的分析，可以知道，每一次函数调用都需要生成相应的调用堆栈，会有存储的开销。</p>
+
+<p>如果仔细看前面调用过程的分析，会发现，在 <code class="language-plaintext highlighter-rouge">f(a)</code> 函数体中，当我们调用 <code class="language-plaintext highlighter-rouge">g(b)</code> 时，就可以将 <code class="language-plaintext highlighter-rouge">f(a)</code> 的调用堆栈直接销毁了，其中 <code class="language-plaintext highlighter-rouge">f(a)</code> 相关的内容不会再被用到，除了其中关于 <code class="language-plaintext highlighter-rouge">f(a)</code> 被调用位置的记录。这个位置需要在调用 <code class="language-plaintext highlighter-rouge">g(b)</code> 后返回。</p>
+
+<p>所以，完全可以省掉 <code class="language-plaintext highlighter-rouge">f(a)</code> 作为中间商这一步，将 <code class="language-plaintext highlighter-rouge">f(a)</code> 反返回地址告诉 <code class="language-plaintext highlighter-rouge">g(x)</code>，这样 <code class="language-plaintext highlighter-rouge">g(x)</code> 在执行完成后直接返回到代码中 <code class="language-plaintext highlighter-rouge">A</code> 标记处。</p>
+
+<p>上面优化后的执行场景下，其调用堆栈的分配则变成了：</p>
+
+<ul>
+  <li>调用 <code class="language-plaintext highlighter-rouge">f(2)</code>，为其分配堆栈</li>
+  <li>调用 <code class="language-plaintext highlighter-rouge">g(b)</code>，为其分配堆栈。同时发现 <code class="language-plaintext highlighter-rouge">g(b)</code> 在 <code class="language-plaintext highlighter-rouge">f(a)</code> 的末尾直接被返回， <code class="language-plaintext highlighter-rouge">f(a)</code> 中存储的变量 <code class="language-plaintext highlighter-rouge">b</code> 这些在后续执行中不会再被用到，将 <code class="language-plaintext highlighter-rouge">f(a)</code> 的调用堆栈销毁。</li>
+  <li>执行 <code class="language-plaintext highlighter-rouge">g(b)</code> 并返回到 <code class="language-plaintext highlighter-rouge">A</code> 标记处。</li>
+</ul>
+
+<p>最最开始不同之处在于，在创建 <code class="language-plaintext highlighter-rouge">g(b)</code> 的调用堆栈时，同时销毁了 <code class="language-plaintext highlighter-rouge">f(a)</code> 的调用堆栈。这当然是 JavaScript 引擎去实现的。</p>
+
+<p>其好处显而易见，在函数连续调用过程中，堆栈数没有增加。假如不止一次尾调用， <code class="language-plaintext highlighter-rouge">g(x)</code> 中还存在对另外函数的尾调用，这样的优化可以持续下去，也就是说，堆栈数并没有随着函数调用的增多而增加。</p>
+
+<p>利用这个特性，我们可以将一些不是尾调用的函数想办法改成尾调用，达到优化调用堆栈的目的，这便是尾调用优化。</p>
+
+<h2 id="尾递归调用">尾递归调用</h2>
+
+<p>如果函数的尾调用是对自己的调用，便形成了递归调用，又因为同时还是尾调用，所以合称 <strong>尾递归调用</strong>。相比于传统的递归，调用堆栈极速增加的不同，尾递归调用的调用堆栈是恒定的，这由前面的分析可知。</p>
+
+<p>所以尾调用优化特别适合用于递归的情况，收益会很大。</p>
+
+<p>计算阶乘就是典型的递归场景：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">factorial</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">factorial</span><span class="p">(</span><span class="nx">x</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// (A)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>但上面这样的实现并不是尾调用。不过可以通过添加一个额外的方法来达到优化成尾调用的目的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">factorial</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">facRec</span><span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">facRec</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">acc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">facRec</span><span class="p">(</span><span class="nx">x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">x</span><span class="o">*</span><span class="nx">acc</span><span class="p">);</span> <span class="c1">// (A)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>此时 <code class="language-plaintext highlighter-rouge">facRec</code> 便是一个尾递归调用。</p>
+
+<h2 id="其他示例">其他示例</h2>
+
+<p>利用尾递归调用实现循环语句。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">forEach</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">callback</span><span class="p">,</span> <span class="nx">start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="nx">start</span> <span class="o">&amp;&amp;</span> <span class="nx">start</span> <span class="o">&lt;</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="nx">start</span><span class="p">],</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">arr</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">forEach</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">callback</span><span class="p">,</span> <span class="nx">start</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// tail call</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="nx">forEach</span><span class="p">([</span><span class="dl">'</span><span class="s1">a</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">b</span><span class="dl">'</span><span class="p">],</span> <span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">i</span><span class="p">}</span><span class="s2">. </span><span class="p">${</span><span class="nx">elem</span><span class="p">}</span><span class="s2">`</span><span class="p">));</span>
+
+<span class="c1">// Output:</span>
+<span class="c1">// 0. a</span>
+<span class="c1">// 1. b</span>
+</code></pre></div></div>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">findIndex</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">predicate</span><span class="p">,</span> <span class="nx">start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="nx">start</span> <span class="o">&amp;&amp;</span> <span class="nx">start</span> <span class="o">&lt;</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">predicate</span><span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="nx">start</span><span class="p">]))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">start</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">findIndex</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">predicate</span><span class="p">,</span> <span class="nx">start</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// tail call</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="nx">findIndex</span><span class="p">([</span><span class="dl">'</span><span class="s1">a</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">b</span><span class="dl">'</span><span class="p">],</span> <span class="nx">x</span> <span class="o">=&gt;</span> <span class="nx">x</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">b</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// 1</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="http://2ality.com/2015/06/tail-call-optimization.html">2ality - Tail call optimization in ECMAScript 6</a></li>
+  <li><a href="https://kangax.github.io/compat-table/es6/#test-proper_tail_calls_(tail_call_optimisation)">ES6 尾调用优化在各引擎中的实现支持情况</a></li>
+  <li><a href="https://stackoverflow.com/questions/310974/what-is-tail-call-optimization">What Is Tail Call Optimization?</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/06/10/%E5%B0%BE%E8%B0%83%E7%94%A8%E5%8F%8A%E9%80%92%E5%BD%92%E4%BC%98%E5%8C%96.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

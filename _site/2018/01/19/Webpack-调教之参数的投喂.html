@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Webpack 调教之参数的投喂 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Webpack 调教之参数的投喂" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Webpack 调教之参数的投喂 考虑这样的场景：站点支持多国语言（i18n），编译时想支持指定语言来编译。这便涉及到传参了。 一般，项目中会配置 npm scripts 来跑一些任务，常规的线下开发编译任务，线上发版打包任务。所以 package.json 中的脚本配置大概会像这样子： package.json { &quot;scripts&quot;: { &quot;build&quot;: &quot;webpack&quot;, &quot;start&quot;: &quot;webpack --watch&quot; } } 现在需要在调用 webpack 时传递一个额外的语言参数，幸而通过 --env 这种句法可以轻松实现。 package.json { &quot;scripts&quot;: { &quot;start&quot;: &quot;webpack --env.lang=cn&quot; } } 同时需要将 webpack 配置文件改成导出函数以接收相应参数。 是的，webpack 配置文件通常是导出一个配置对象。但同时也支持导出为函数/Exporting a Function，导出为函数时会接收两个入参： env 用以接收上面那种方式传递的自定义参数 argv 里面包含 webpack 的配置信息，即 webpack 的各种命令行配置项/CLI Option 于是，我们的 webpack 配置文件需要由导出对象改成导出函数： webpack.config.js module.exports = (env, argv) =&gt; { console.log(`${env}`); // {lang: &#39;cn&#39;} return { ... }; }; 我们能在 webpack 配置文本中接收到语言参数了，但这个参数是在 npm script 中写死的 cn，而我们需要编译不同的语言。 多个 script 入口 好说嘛，最简单的方式，为每种语言写一句脚本入口不就行了。于是我们得到了第一种解决方案。 package.json { &quot;scripts&quot;: { &quot;dev:cn&quot;: &quot;webpack --env.lang=cn&quot;, &quot;dev:en&quot;: &quot;webpack --env.lang=en&quot;, &quot;dev:jp&quot;: &quot;webpack --env.lang=jp&quot;, ... } } 开发时想编哪个语言就 run 哪个命令，简直不能更简单粗暴了： npm run dev:jp 但问题是，这根本是一个不算办法的办法。全世界195个国家6909种语言，这样不得写吐。 所以我们需要一种更加走心的方式，得让语言参数支持动态指定。 理想中的样子应该长这样： package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$lang&quot;, } } 然后我们在 run 的时候指定。 其实到这一步，似乎和 webpack 没多大关系了，问题成了如何在 npm script 中支持变量。而让 script 中支持变量也并不是不可能，先来看最直接的一种，我们让 scripts 属性中的 $lang 真的活起来。 使用 npm config 当你 man npm-config 一下时会发现： npm gets its config settings from the command line, environment variables, npmrc files, and in some cases, the package.json file. 是的， npm 运行时会从四个地方获取配置信息，命令行中的输入，环境变量，npmrc 配置文件以及，某些情况下会从 package.json 中获取。这里的某些情况就是指 package.json 中定义了 config 字段时。 所以，我们可以考虑将变量放这里面（其实这里面的叫作配置项更确切，而不是变量）。 package.json { &quot;name&quot;: &quot;myApp&quot;, &quot;config&quot;:{ &quot;lang&quot;: &quot;cn&quot; }, &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$lang&quot;, } } 当使用 npm 运行脚本时，其会提供很多环境变量供程序使用，我们定义在 package.json config 字段中的变量，当然也会加入到其中。可以通过 npm run env 来查看当前可使用的所有环境变量。 $ npm run env &gt; myApp@1.0.0 env /Users/username/path/to/myApp &gt; env ... npm_package_name=myApp npm_package_config_lang=cn npm_package_version=1.0.0 ... 可以看到，我们定义在变量 lang 在环境变量中以 npm_package_config_lang 的名称存在。讲道理，如果还定义了其他变量比如 foo，则会以 npm_package_config_foo 的名称而存在。即，npm 会在自定义配置项前面加上 npm_package_config_ 前缀。 那么，如何获取及使用？ 有两种方式。 在 js 代码中可以通过 process.env 来获取。这里注意区分 process.env 中的 env 与前面 webpack 导出函数时的入参 env，它们不是一回事。 这里我们得到了第二种解决方案： webpack.config.js console.log(process.env.npm_package_config_lang) // cn module.exports = { // webpack config goes here... ... } 在 package.json 的 scripts 脚本中则可以通过 bash 变量的形式来获取，于是很快我们解锁了第三种方案。 package.json { &quot;name&quot;: &quot;myApp&quot;, &quot;config&quot;:{ &quot;lang&quot;: &quot;cn&quot; }, &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$npm_package_config_lang&quot;, } } webpack.config.js module.exports = (env, argv) =&gt; { console.log(`${env}`); // {lang: &#39;cn&#39;} return { ... }; }; npm scripts 中使用变量的平台兼容性问题 这里需要注意一下，webpack --env.lang=$npm_package_config_lang 中这个 bash 变量的形式只支持 Mac OS X/Linux，而 Windows 平台需要变成 webpack --env.lang=%npm_package_config_lang%。所以你要我怎么办，我也很无奈。 针对 Windows 平台单独写一条脚本入口倒也是种解决方案。 package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$npm_package_config_lang&quot;, &quot;dev:win&quot;: &quot;webpack --env.lang=%npm_package_config_lang%&quot;, } } 但实在不优雅，所以 cross-var 就可以开始它的表演了。这种差异的处理就交给它吧。 package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;cross-var webpack --env.lang=$npm_package_config_lang&quot;, } } 注意区别另一个类似的插件 cross-env，正如 cross-var README 中所说，cross-env 用来设置所需环境变量，而 cross-var 解决 scripts 中变量使用的兼容性问题。 npm config 的动态设置 上面引入了 package.json 的 config 字段，我们也知道怎么使用它了。现在问题是，它也是写死在 package.json 中的啊，相当于我们将之前写死在 scripts 中的问题转移到了 config 中嘛。 config 字段中写死的值可以看作默认值，通过 npm config 命令来设置它，以达到动态指定编译参数的目的。 npm config set myApp:lang en &amp;&amp; npm run dev 自定义 npm 命令行参数 通过 npm 的这个 PR Passing args into run-scripts #5518，也就是自 npm 2.0 开始，我们确实可以给 package.json 中的 scripts 传参。 是通过下面这样的语句办到的： npm run &lt;command&gt; [-- &lt;args&gt;...] 其中 args 部分会被拼接到 scripts 命令后面。估计没听懂，来看实操。 前面分析时得到了这样的脚本： package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$lang&quot;, } } 既然呆会儿会拼接一部分东西到这个命令后面，那么我们把变动的语言参数部分抠掉，把位置留出来，于是成了： package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=&quot;, } } 于是我们运行 npm run dev -- cn。从命令行输出的 Log 来看，实际运行的命令成了 webpack --env.lang= &quot;cn&quot;。注意这里 = 号后面多了个空格，这样的话，我们是拿不到 cn 这个值的，拿到的会是 undefined。 所以我们改变一下策略，既然拼接到 scripts 后面的参数会被加一个空格，那好，我们将 --env.lang=$lang 这一部分整个拿出来。 package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack&quot;, } } 然后执行命令时再加上即可，所以应该执行的命令是： npm run dev -- --env.lang=cn 这样我们得到了第四种方案。 多个参数的情况 有时，你需要定义的参数并不只有一个。下面的示例展示了多个参数传递的用法。 npm run dev -- --env.lang=cn --env.production 这里，如果指定的参数没有用 = 号赋值，那么该参数的值为 true。 所以你在 webpack 中获取到的参数为： { lang: &#39;cn&#39;, production: true } 一些问题 webpack 配置文件拆分情况下的参数获取 前面的方案中，通过 --env 方式设置的参数，需要 webpack 配置文件导出函数以接收。正常情况下没问题，但遇到 webpack 配置文件是拆分的情况，就不行了。 比如按照 webpack 官方的引导，如果配置项复杂的话，可以将 webpack.config.js 拆分成不同用途的配置文件。例如： webpack.common.js 公用的配置： module.exports = { ... } webpack.dev.js 开发配置： const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { console.log(env.lang); return merge(common, { devtool: &#39;inline-source-map&#39;, ... }); } webpack.prod.js 上线配置： const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { console.log(env.lang); return merge(common, { devtool: &#39;source-map&#39;, ... }); } 这种情况下， webpack.common.js 只能导出对象，供不同的配置文件中进行合并。所以 webpack.common.js 中便无法通过获取到 --env 设置给 webpack 的参数，只能另辟蹊径。 但如果你将 npm 环境变量 process.env 打印出来的话，发现 process.env.npm_config_argv 中包含了命令行参数，但，不建议这么去解析获取。 稍微变通一下，其实我们可以让 common 导出函数返回配置对象，然后在基本配置中使用时调用一下就可以了嘛！ webpack.common.js 公用的配置： module.exports = env =&gt; { console.log(&#39;看！我拿到了变量&#39;, env.lang); return { ... }; } webpack.dev.js const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { const commonConfig = common(env); return merge(commonConfig, { devtool: &#39;source-map&#39;, ... }); } alias 最后还剩一个问题。上面的命令行似乎有点太长，开发过程中你不会想要每次都记忆和输入那么一长串命令的。 npm config set myApp:lang en &amp;&amp; npm run dev npm run dev -- --env.lang=cn 何况这还只是一个参数的时候，参数多了那就更冗长了。 所以，我们需要一种方式来将它缩短。借助 shell 或者配置 alias，能够一定程度达到目的。让这些复杂的参数组合在 shell 中去处理，执行时只输入必要的命令和变化的参数。这里就看具体业务具体参数情况来具体处理了。 将常用的命令放入 npm start 中，同时在 webpack 配置文件中设置默认值，这样简单的 npm start 命令就可以满足平时大部分时间的开发所需，不用经常输入很多命令行参数。 package.json { &quot;scripts&quot;: { &quot;start&quot;: &quot;webpack --config webpack.dev.js&quot;, } } webpack.dev.js 上线配置： const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { const lang = (env &amp;&amp; env.lang) || &#39;cn&#39;;// 设置好默认值 return merge(common(env), { devtool: &#39;source-map&#39;, ... }); } 总结 前面总结了四种向 webpack 中传递参数的方式，真正意义上能够动态传参的有三种，其中方式二与方式三都是通过 npm config 实现，只是使用上有区别。最后一种社区里见得多，也与 webpack 比较搭，算是更加倾向的方案吧。 相关资料 webpack 配置导出为函数 命令行配置信息/CLI Option npm config cross-var cross-env Passing args into run-scripts #5518 npm config 中参数跨平台的问题 Externally-located ‘npm run’ scripts in package.json on Windows? npm scripting: configs and arguments... and some more tricks How to Pass Arguments to a Bash-Script" />
+<meta property="og:description" content="Webpack 调教之参数的投喂 考虑这样的场景：站点支持多国语言（i18n），编译时想支持指定语言来编译。这便涉及到传参了。 一般，项目中会配置 npm scripts 来跑一些任务，常规的线下开发编译任务，线上发版打包任务。所以 package.json 中的脚本配置大概会像这样子： package.json { &quot;scripts&quot;: { &quot;build&quot;: &quot;webpack&quot;, &quot;start&quot;: &quot;webpack --watch&quot; } } 现在需要在调用 webpack 时传递一个额外的语言参数，幸而通过 --env 这种句法可以轻松实现。 package.json { &quot;scripts&quot;: { &quot;start&quot;: &quot;webpack --env.lang=cn&quot; } } 同时需要将 webpack 配置文件改成导出函数以接收相应参数。 是的，webpack 配置文件通常是导出一个配置对象。但同时也支持导出为函数/Exporting a Function，导出为函数时会接收两个入参： env 用以接收上面那种方式传递的自定义参数 argv 里面包含 webpack 的配置信息，即 webpack 的各种命令行配置项/CLI Option 于是，我们的 webpack 配置文件需要由导出对象改成导出函数： webpack.config.js module.exports = (env, argv) =&gt; { console.log(`${env}`); // {lang: &#39;cn&#39;} return { ... }; }; 我们能在 webpack 配置文本中接收到语言参数了，但这个参数是在 npm script 中写死的 cn，而我们需要编译不同的语言。 多个 script 入口 好说嘛，最简单的方式，为每种语言写一句脚本入口不就行了。于是我们得到了第一种解决方案。 package.json { &quot;scripts&quot;: { &quot;dev:cn&quot;: &quot;webpack --env.lang=cn&quot;, &quot;dev:en&quot;: &quot;webpack --env.lang=en&quot;, &quot;dev:jp&quot;: &quot;webpack --env.lang=jp&quot;, ... } } 开发时想编哪个语言就 run 哪个命令，简直不能更简单粗暴了： npm run dev:jp 但问题是，这根本是一个不算办法的办法。全世界195个国家6909种语言，这样不得写吐。 所以我们需要一种更加走心的方式，得让语言参数支持动态指定。 理想中的样子应该长这样： package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$lang&quot;, } } 然后我们在 run 的时候指定。 其实到这一步，似乎和 webpack 没多大关系了，问题成了如何在 npm script 中支持变量。而让 script 中支持变量也并不是不可能，先来看最直接的一种，我们让 scripts 属性中的 $lang 真的活起来。 使用 npm config 当你 man npm-config 一下时会发现： npm gets its config settings from the command line, environment variables, npmrc files, and in some cases, the package.json file. 是的， npm 运行时会从四个地方获取配置信息，命令行中的输入，环境变量，npmrc 配置文件以及，某些情况下会从 package.json 中获取。这里的某些情况就是指 package.json 中定义了 config 字段时。 所以，我们可以考虑将变量放这里面（其实这里面的叫作配置项更确切，而不是变量）。 package.json { &quot;name&quot;: &quot;myApp&quot;, &quot;config&quot;:{ &quot;lang&quot;: &quot;cn&quot; }, &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$lang&quot;, } } 当使用 npm 运行脚本时，其会提供很多环境变量供程序使用，我们定义在 package.json config 字段中的变量，当然也会加入到其中。可以通过 npm run env 来查看当前可使用的所有环境变量。 $ npm run env &gt; myApp@1.0.0 env /Users/username/path/to/myApp &gt; env ... npm_package_name=myApp npm_package_config_lang=cn npm_package_version=1.0.0 ... 可以看到，我们定义在变量 lang 在环境变量中以 npm_package_config_lang 的名称存在。讲道理，如果还定义了其他变量比如 foo，则会以 npm_package_config_foo 的名称而存在。即，npm 会在自定义配置项前面加上 npm_package_config_ 前缀。 那么，如何获取及使用？ 有两种方式。 在 js 代码中可以通过 process.env 来获取。这里注意区分 process.env 中的 env 与前面 webpack 导出函数时的入参 env，它们不是一回事。 这里我们得到了第二种解决方案： webpack.config.js console.log(process.env.npm_package_config_lang) // cn module.exports = { // webpack config goes here... ... } 在 package.json 的 scripts 脚本中则可以通过 bash 变量的形式来获取，于是很快我们解锁了第三种方案。 package.json { &quot;name&quot;: &quot;myApp&quot;, &quot;config&quot;:{ &quot;lang&quot;: &quot;cn&quot; }, &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$npm_package_config_lang&quot;, } } webpack.config.js module.exports = (env, argv) =&gt; { console.log(`${env}`); // {lang: &#39;cn&#39;} return { ... }; }; npm scripts 中使用变量的平台兼容性问题 这里需要注意一下，webpack --env.lang=$npm_package_config_lang 中这个 bash 变量的形式只支持 Mac OS X/Linux，而 Windows 平台需要变成 webpack --env.lang=%npm_package_config_lang%。所以你要我怎么办，我也很无奈。 针对 Windows 平台单独写一条脚本入口倒也是种解决方案。 package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$npm_package_config_lang&quot;, &quot;dev:win&quot;: &quot;webpack --env.lang=%npm_package_config_lang%&quot;, } } 但实在不优雅，所以 cross-var 就可以开始它的表演了。这种差异的处理就交给它吧。 package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;cross-var webpack --env.lang=$npm_package_config_lang&quot;, } } 注意区别另一个类似的插件 cross-env，正如 cross-var README 中所说，cross-env 用来设置所需环境变量，而 cross-var 解决 scripts 中变量使用的兼容性问题。 npm config 的动态设置 上面引入了 package.json 的 config 字段，我们也知道怎么使用它了。现在问题是，它也是写死在 package.json 中的啊，相当于我们将之前写死在 scripts 中的问题转移到了 config 中嘛。 config 字段中写死的值可以看作默认值，通过 npm config 命令来设置它，以达到动态指定编译参数的目的。 npm config set myApp:lang en &amp;&amp; npm run dev 自定义 npm 命令行参数 通过 npm 的这个 PR Passing args into run-scripts #5518，也就是自 npm 2.0 开始，我们确实可以给 package.json 中的 scripts 传参。 是通过下面这样的语句办到的： npm run &lt;command&gt; [-- &lt;args&gt;...] 其中 args 部分会被拼接到 scripts 命令后面。估计没听懂，来看实操。 前面分析时得到了这样的脚本： package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$lang&quot;, } } 既然呆会儿会拼接一部分东西到这个命令后面，那么我们把变动的语言参数部分抠掉，把位置留出来，于是成了： package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=&quot;, } } 于是我们运行 npm run dev -- cn。从命令行输出的 Log 来看，实际运行的命令成了 webpack --env.lang= &quot;cn&quot;。注意这里 = 号后面多了个空格，这样的话，我们是拿不到 cn 这个值的，拿到的会是 undefined。 所以我们改变一下策略，既然拼接到 scripts 后面的参数会被加一个空格，那好，我们将 --env.lang=$lang 这一部分整个拿出来。 package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack&quot;, } } 然后执行命令时再加上即可，所以应该执行的命令是： npm run dev -- --env.lang=cn 这样我们得到了第四种方案。 多个参数的情况 有时，你需要定义的参数并不只有一个。下面的示例展示了多个参数传递的用法。 npm run dev -- --env.lang=cn --env.production 这里，如果指定的参数没有用 = 号赋值，那么该参数的值为 true。 所以你在 webpack 中获取到的参数为： { lang: &#39;cn&#39;, production: true } 一些问题 webpack 配置文件拆分情况下的参数获取 前面的方案中，通过 --env 方式设置的参数，需要 webpack 配置文件导出函数以接收。正常情况下没问题，但遇到 webpack 配置文件是拆分的情况，就不行了。 比如按照 webpack 官方的引导，如果配置项复杂的话，可以将 webpack.config.js 拆分成不同用途的配置文件。例如： webpack.common.js 公用的配置： module.exports = { ... } webpack.dev.js 开发配置： const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { console.log(env.lang); return merge(common, { devtool: &#39;inline-source-map&#39;, ... }); } webpack.prod.js 上线配置： const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { console.log(env.lang); return merge(common, { devtool: &#39;source-map&#39;, ... }); } 这种情况下， webpack.common.js 只能导出对象，供不同的配置文件中进行合并。所以 webpack.common.js 中便无法通过获取到 --env 设置给 webpack 的参数，只能另辟蹊径。 但如果你将 npm 环境变量 process.env 打印出来的话，发现 process.env.npm_config_argv 中包含了命令行参数，但，不建议这么去解析获取。 稍微变通一下，其实我们可以让 common 导出函数返回配置对象，然后在基本配置中使用时调用一下就可以了嘛！ webpack.common.js 公用的配置： module.exports = env =&gt; { console.log(&#39;看！我拿到了变量&#39;, env.lang); return { ... }; } webpack.dev.js const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { const commonConfig = common(env); return merge(commonConfig, { devtool: &#39;source-map&#39;, ... }); } alias 最后还剩一个问题。上面的命令行似乎有点太长，开发过程中你不会想要每次都记忆和输入那么一长串命令的。 npm config set myApp:lang en &amp;&amp; npm run dev npm run dev -- --env.lang=cn 何况这还只是一个参数的时候，参数多了那就更冗长了。 所以，我们需要一种方式来将它缩短。借助 shell 或者配置 alias，能够一定程度达到目的。让这些复杂的参数组合在 shell 中去处理，执行时只输入必要的命令和变化的参数。这里就看具体业务具体参数情况来具体处理了。 将常用的命令放入 npm start 中，同时在 webpack 配置文件中设置默认值，这样简单的 npm start 命令就可以满足平时大部分时间的开发所需，不用经常输入很多命令行参数。 package.json { &quot;scripts&quot;: { &quot;start&quot;: &quot;webpack --config webpack.dev.js&quot;, } } webpack.dev.js 上线配置： const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { const lang = (env &amp;&amp; env.lang) || &#39;cn&#39;;// 设置好默认值 return merge(common(env), { devtool: &#39;source-map&#39;, ... }); } 总结 前面总结了四种向 webpack 中传递参数的方式，真正意义上能够动态传参的有三种，其中方式二与方式三都是通过 npm config 实现，只是使用上有区别。最后一种社区里见得多，也与 webpack 比较搭，算是更加倾向的方案吧。 相关资料 webpack 配置导出为函数 命令行配置信息/CLI Option npm config cross-var cross-env Passing args into run-scripts #5518 npm config 中参数跨平台的问题 Externally-located ‘npm run’ scripts in package.json on Windows? npm scripting: configs and arguments... and some more tricks How to Pass Arguments to a Bash-Script" />
+<link rel="canonical" href="http://localhost:4000/2018/01/19/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82.html" />
+<meta property="og:url" content="http://localhost:4000/2018/01/19/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-19T00:01:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2018/01/19/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2018/01/19/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82.html"},"description":"Webpack 调教之参数的投喂 考虑这样的场景：站点支持多国语言（i18n），编译时想支持指定语言来编译。这便涉及到传参了。 一般，项目中会配置 npm scripts 来跑一些任务，常规的线下开发编译任务，线上发版打包任务。所以 package.json 中的脚本配置大概会像这样子： package.json { &quot;scripts&quot;: { &quot;build&quot;: &quot;webpack&quot;, &quot;start&quot;: &quot;webpack --watch&quot; } } 现在需要在调用 webpack 时传递一个额外的语言参数，幸而通过 --env 这种句法可以轻松实现。 package.json { &quot;scripts&quot;: { &quot;start&quot;: &quot;webpack --env.lang=cn&quot; } } 同时需要将 webpack 配置文件改成导出函数以接收相应参数。 是的，webpack 配置文件通常是导出一个配置对象。但同时也支持导出为函数/Exporting a Function，导出为函数时会接收两个入参： env 用以接收上面那种方式传递的自定义参数 argv 里面包含 webpack 的配置信息，即 webpack 的各种命令行配置项/CLI Option 于是，我们的 webpack 配置文件需要由导出对象改成导出函数： webpack.config.js module.exports = (env, argv) =&gt; { console.log(`${env}`); // {lang: &#39;cn&#39;} return { ... }; }; 我们能在 webpack 配置文本中接收到语言参数了，但这个参数是在 npm script 中写死的 cn，而我们需要编译不同的语言。 多个 script 入口 好说嘛，最简单的方式，为每种语言写一句脚本入口不就行了。于是我们得到了第一种解决方案。 package.json { &quot;scripts&quot;: { &quot;dev:cn&quot;: &quot;webpack --env.lang=cn&quot;, &quot;dev:en&quot;: &quot;webpack --env.lang=en&quot;, &quot;dev:jp&quot;: &quot;webpack --env.lang=jp&quot;, ... } } 开发时想编哪个语言就 run 哪个命令，简直不能更简单粗暴了： npm run dev:jp 但问题是，这根本是一个不算办法的办法。全世界195个国家6909种语言，这样不得写吐。 所以我们需要一种更加走心的方式，得让语言参数支持动态指定。 理想中的样子应该长这样： package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$lang&quot;, } } 然后我们在 run 的时候指定。 其实到这一步，似乎和 webpack 没多大关系了，问题成了如何在 npm script 中支持变量。而让 script 中支持变量也并不是不可能，先来看最直接的一种，我们让 scripts 属性中的 $lang 真的活起来。 使用 npm config 当你 man npm-config 一下时会发现： npm gets its config settings from the command line, environment variables, npmrc files, and in some cases, the package.json file. 是的， npm 运行时会从四个地方获取配置信息，命令行中的输入，环境变量，npmrc 配置文件以及，某些情况下会从 package.json 中获取。这里的某些情况就是指 package.json 中定义了 config 字段时。 所以，我们可以考虑将变量放这里面（其实这里面的叫作配置项更确切，而不是变量）。 package.json { &quot;name&quot;: &quot;myApp&quot;, &quot;config&quot;:{ &quot;lang&quot;: &quot;cn&quot; }, &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$lang&quot;, } } 当使用 npm 运行脚本时，其会提供很多环境变量供程序使用，我们定义在 package.json config 字段中的变量，当然也会加入到其中。可以通过 npm run env 来查看当前可使用的所有环境变量。 $ npm run env &gt; myApp@1.0.0 env /Users/username/path/to/myApp &gt; env ... npm_package_name=myApp npm_package_config_lang=cn npm_package_version=1.0.0 ... 可以看到，我们定义在变量 lang 在环境变量中以 npm_package_config_lang 的名称存在。讲道理，如果还定义了其他变量比如 foo，则会以 npm_package_config_foo 的名称而存在。即，npm 会在自定义配置项前面加上 npm_package_config_ 前缀。 那么，如何获取及使用？ 有两种方式。 在 js 代码中可以通过 process.env 来获取。这里注意区分 process.env 中的 env 与前面 webpack 导出函数时的入参 env，它们不是一回事。 这里我们得到了第二种解决方案： webpack.config.js console.log(process.env.npm_package_config_lang) // cn module.exports = { // webpack config goes here... ... } 在 package.json 的 scripts 脚本中则可以通过 bash 变量的形式来获取，于是很快我们解锁了第三种方案。 package.json { &quot;name&quot;: &quot;myApp&quot;, &quot;config&quot;:{ &quot;lang&quot;: &quot;cn&quot; }, &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$npm_package_config_lang&quot;, } } webpack.config.js module.exports = (env, argv) =&gt; { console.log(`${env}`); // {lang: &#39;cn&#39;} return { ... }; }; npm scripts 中使用变量的平台兼容性问题 这里需要注意一下，webpack --env.lang=$npm_package_config_lang 中这个 bash 变量的形式只支持 Mac OS X/Linux，而 Windows 平台需要变成 webpack --env.lang=%npm_package_config_lang%。所以你要我怎么办，我也很无奈。 针对 Windows 平台单独写一条脚本入口倒也是种解决方案。 package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$npm_package_config_lang&quot;, &quot;dev:win&quot;: &quot;webpack --env.lang=%npm_package_config_lang%&quot;, } } 但实在不优雅，所以 cross-var 就可以开始它的表演了。这种差异的处理就交给它吧。 package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;cross-var webpack --env.lang=$npm_package_config_lang&quot;, } } 注意区别另一个类似的插件 cross-env，正如 cross-var README 中所说，cross-env 用来设置所需环境变量，而 cross-var 解决 scripts 中变量使用的兼容性问题。 npm config 的动态设置 上面引入了 package.json 的 config 字段，我们也知道怎么使用它了。现在问题是，它也是写死在 package.json 中的啊，相当于我们将之前写死在 scripts 中的问题转移到了 config 中嘛。 config 字段中写死的值可以看作默认值，通过 npm config 命令来设置它，以达到动态指定编译参数的目的。 npm config set myApp:lang en &amp;&amp; npm run dev 自定义 npm 命令行参数 通过 npm 的这个 PR Passing args into run-scripts #5518，也就是自 npm 2.0 开始，我们确实可以给 package.json 中的 scripts 传参。 是通过下面这样的语句办到的： npm run &lt;command&gt; [-- &lt;args&gt;...] 其中 args 部分会被拼接到 scripts 命令后面。估计没听懂，来看实操。 前面分析时得到了这样的脚本： package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=$lang&quot;, } } 既然呆会儿会拼接一部分东西到这个命令后面，那么我们把变动的语言参数部分抠掉，把位置留出来，于是成了： package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack --env.lang=&quot;, } } 于是我们运行 npm run dev -- cn。从命令行输出的 Log 来看，实际运行的命令成了 webpack --env.lang= &quot;cn&quot;。注意这里 = 号后面多了个空格，这样的话，我们是拿不到 cn 这个值的，拿到的会是 undefined。 所以我们改变一下策略，既然拼接到 scripts 后面的参数会被加一个空格，那好，我们将 --env.lang=$lang 这一部分整个拿出来。 package.json { &quot;scripts&quot;: { &quot;dev&quot;: &quot;webpack&quot;, } } 然后执行命令时再加上即可，所以应该执行的命令是： npm run dev -- --env.lang=cn 这样我们得到了第四种方案。 多个参数的情况 有时，你需要定义的参数并不只有一个。下面的示例展示了多个参数传递的用法。 npm run dev -- --env.lang=cn --env.production 这里，如果指定的参数没有用 = 号赋值，那么该参数的值为 true。 所以你在 webpack 中获取到的参数为： { lang: &#39;cn&#39;, production: true } 一些问题 webpack 配置文件拆分情况下的参数获取 前面的方案中，通过 --env 方式设置的参数，需要 webpack 配置文件导出函数以接收。正常情况下没问题，但遇到 webpack 配置文件是拆分的情况，就不行了。 比如按照 webpack 官方的引导，如果配置项复杂的话，可以将 webpack.config.js 拆分成不同用途的配置文件。例如： webpack.common.js 公用的配置： module.exports = { ... } webpack.dev.js 开发配置： const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { console.log(env.lang); return merge(common, { devtool: &#39;inline-source-map&#39;, ... }); } webpack.prod.js 上线配置： const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { console.log(env.lang); return merge(common, { devtool: &#39;source-map&#39;, ... }); } 这种情况下， webpack.common.js 只能导出对象，供不同的配置文件中进行合并。所以 webpack.common.js 中便无法通过获取到 --env 设置给 webpack 的参数，只能另辟蹊径。 但如果你将 npm 环境变量 process.env 打印出来的话，发现 process.env.npm_config_argv 中包含了命令行参数，但，不建议这么去解析获取。 稍微变通一下，其实我们可以让 common 导出函数返回配置对象，然后在基本配置中使用时调用一下就可以了嘛！ webpack.common.js 公用的配置： module.exports = env =&gt; { console.log(&#39;看！我拿到了变量&#39;, env.lang); return { ... }; } webpack.dev.js const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { const commonConfig = common(env); return merge(commonConfig, { devtool: &#39;source-map&#39;, ... }); } alias 最后还剩一个问题。上面的命令行似乎有点太长，开发过程中你不会想要每次都记忆和输入那么一长串命令的。 npm config set myApp:lang en &amp;&amp; npm run dev npm run dev -- --env.lang=cn 何况这还只是一个参数的时候，参数多了那就更冗长了。 所以，我们需要一种方式来将它缩短。借助 shell 或者配置 alias，能够一定程度达到目的。让这些复杂的参数组合在 shell 中去处理，执行时只输入必要的命令和变化的参数。这里就看具体业务具体参数情况来具体处理了。 将常用的命令放入 npm start 中，同时在 webpack 配置文件中设置默认值，这样简单的 npm start 命令就可以满足平时大部分时间的开发所需，不用经常输入很多命令行参数。 package.json { &quot;scripts&quot;: { &quot;start&quot;: &quot;webpack --config webpack.dev.js&quot;, } } webpack.dev.js 上线配置： const merge = require(&#39;webpack-merge&#39;); const common = require(&#39;./webpack.common.js&#39;); module.exports = env =&gt; { const lang = (env &amp;&amp; env.lang) || &#39;cn&#39;;// 设置好默认值 return merge(common(env), { devtool: &#39;source-map&#39;, ... }); } 总结 前面总结了四种向 webpack 中传递参数的方式，真正意义上能够动态传参的有三种，其中方式二与方式三都是通过 npm config 实现，只是使用上有区别。最后一种社区里见得多，也与 webpack 比较搭，算是更加倾向的方案吧。 相关资料 webpack 配置导出为函数 命令行配置信息/CLI Option npm config cross-var cross-env Passing args into run-scripts #5518 npm config 中参数跨平台的问题 Externally-located ‘npm run’ scripts in package.json on Windows? npm scripting: configs and arguments... and some more tricks How to Pass Arguments to a Bash-Script","@type":"BlogPosting","headline":"Webpack 调教之参数的投喂","dateModified":"2018-01-19T00:01:00+08:00","datePublished":"2018-01-19T00:01:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Webpack 调教之参数的投喂</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-01-19T00:01:00+08:00" itemprop="datePublished">Jan 19, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="webpack-调教之参数的投喂">Webpack 调教之参数的投喂</h2>
+
+<p>考虑这样的场景：站点支持多国语言（i18n），编译时想支持指定语言来编译。这便涉及到传参了。</p>
+
+<p>一般，项目中会配置 npm scripts 来跑一些任务，常规的线下开发编译任务，线上发版打包任务。所以 package.json 中的脚本配置大概会像这样子：</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">build</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">start</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --watch</span><span class="dl">"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>现在需要在调用 webpack 时传递一个额外的语言参数，幸而通过 <code class="language-plaintext highlighter-rouge">--env</code> 这种句法可以轻松实现。</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">start</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=cn</span><span class="dl">"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>同时需要将 webpack 配置文件改成导出函数以接收相应参数。</p>
+
+<p>是的，webpack 配置文件通常是导出一个配置对象。但同时也支持<a href="https://webpack.js.org/configuration/configuration-types/#exporting-a-function">导出为函数/Exporting a Function</a>，导出为函数时会接收两个入参：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">env</code> 用以接收上面那种方式传递的自定义参数</li>
+  <li><code class="language-plaintext highlighter-rouge">argv</code> 里面包含 webpack 的配置信息，即 webpack 的各种<a href="https://webpack.js.org/api/cli/#common-options">命令行配置项/CLI Option</a></li>
+</ul>
+
+<p>于是，我们的 webpack 配置文件需要由导出对象改成导出函数：</p>
+
+<p><em>webpack.config.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="nx">env</span><span class="p">,</span> <span class="nx">argv</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">env</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span> <span class="c1">// {lang: 'cn'}</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="p">...</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>我们能在 webpack 配置文本中接收到语言参数了，但这个参数是在 npm script 中写死的 <code class="language-plaintext highlighter-rouge">cn</code>，而我们需要编译不同的语言。</p>
+
+<h3 id="多个-script-入口">多个 script 入口</h3>
+
+<p>好说嘛，最简单的方式，为每种语言写一句脚本入口不就行了。于是我们得到了第一种解决方案。</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">dev:cn</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=cn</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">dev:en</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=en</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">dev:jp</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=jp</span><span class="dl">"</span><span class="p">,</span>
+        <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>开发时想编哪个语言就 run 哪个命令，简直不能更简单粗暴了：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run dev:jp
+</code></pre></div></div>
+
+<p>但问题是，这根本是一个不算办法的办法。全世界195个国家6909种语言，这样不得写吐。</p>
+
+<p>所以我们需要一种更加走心的方式，得让语言参数支持动态指定。</p>
+
+<p>理想中的样子应该长这样：</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=$lang</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后我们在 run 的时候指定。</p>
+
+<p>其实到这一步，似乎和 webpack 没多大关系了，问题成了如何在 npm script 中支持变量。而让 script 中支持变量也并不是不可能，先来看最直接的一种，我们让 <code class="language-plaintext highlighter-rouge">scripts</code> 属性中的 <code class="language-plaintext highlighter-rouge">$lang</code> 真的活起来。</p>
+
+<h3 id="使用-npm-config">使用 npm config</h3>
+
+<p>当你 <code class="language-plaintext highlighter-rouge">man npm-config</code> 一下时会发现：</p>
+
+<blockquote>
+  <p>npm gets its config settings from the command line, environment variables, npmrc files, and in some cases, the package.json file.</p>
+</blockquote>
+
+<p>是的， npm 运行时会从四个地方获取配置信息，命令行中的输入，环境变量，<code class="language-plaintext highlighter-rouge">npmrc</code> 配置文件以及，某些情况下会从 package.json 中获取。这里的某些情况就是指 package.json 中定义了 <code class="language-plaintext highlighter-rouge">config</code> 字段时。</p>
+
+<p>所以，我们可以考虑将变量放这里面（其实这里面的叫作配置项更确切，而不是变量）。</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">name</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">myApp</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">config</span><span class="dl">"</span><span class="p">:{</span>
+        <span class="dl">"</span><span class="s2">lang</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">cn</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=$lang</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>当使用 npm 运行脚本时，其会提供很多环境变量供程序使用，我们定义在 package.json <code class="language-plaintext highlighter-rouge">config</code> 字段中的变量，当然也会加入到其中。可以通过 <code class="language-plaintext highlighter-rouge">npm run env</code> 来查看当前可使用的所有环境变量。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm run <span class="nb">env</span>
+
+<span class="o">&gt;</span> myApp@1.0.0 <span class="nb">env</span> /Users/username/path/to/myApp
+<span class="o">&gt;</span> <span class="nb">env</span>
+
+...
+<span class="nv">npm_package_name</span><span class="o">=</span>myApp
+<span class="nv">npm_package_config_lang</span><span class="o">=</span>cn
+<span class="nv">npm_package_version</span><span class="o">=</span>1.0.0
+...
+</code></pre></div></div>
+
+<p>可以看到，我们定义在变量 <code class="language-plaintext highlighter-rouge">lang</code> 在环境变量中以 <code class="language-plaintext highlighter-rouge">npm_package_config_lang</code> 的名称存在。讲道理，如果还定义了其他变量比如 <code class="language-plaintext highlighter-rouge">foo</code>，则会以 <code class="language-plaintext highlighter-rouge">npm_package_config_foo</code> 的名称而存在。即，npm 会在自定义配置项前面加上 <code class="language-plaintext highlighter-rouge">npm_package_config_</code> 前缀。</p>
+
+<p>那么，如何获取及使用？</p>
+
+<p>有两种方式。</p>
+
+<ul>
+  <li>在 js 代码中可以通过 <code class="language-plaintext highlighter-rouge">process.env</code> 来获取。这里注意区分 <code class="language-plaintext highlighter-rouge">process.env</code> 中的 <code class="language-plaintext highlighter-rouge">env</code> 与前面 webpack 导出函数时的入参 <code class="language-plaintext highlighter-rouge">env</code>，它们不是一回事。</li>
+</ul>
+
+<p>这里我们得到了第二种解决方案：</p>
+
+<p><em>webpack.config.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">npm_package_config_lang</span><span class="p">)</span> <span class="c1">// cn</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">// webpack config goes here...</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>在 package.json 的 scripts 脚本中则可以通过 bash 变量的形式来获取，于是很快我们解锁了第三种方案。</li>
+</ul>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">name</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">myApp</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">config</span><span class="dl">"</span><span class="p">:{</span>
+        <span class="dl">"</span><span class="s2">lang</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">cn</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=$npm_package_config_lang</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><em>webpack.config.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="nx">env</span><span class="p">,</span> <span class="nx">argv</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">env</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span> <span class="c1">// {lang: 'cn'}</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="p">...</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h4 id="npm-scripts-中使用变量的平台兼容性问题">npm scripts 中使用变量的平台兼容性问题</h4>
+
+<p>这里需要注意一下，<code class="language-plaintext highlighter-rouge">webpack --env.lang=$npm_package_config_lang</code> 中这个 bash 变量的形式只支持 Mac OS X/Linux，而 Windows 平台需要变成 <code class="language-plaintext highlighter-rouge">webpack --env.lang=%npm_package_config_lang%</code>。所以你要我怎么办，我也很无奈。</p>
+
+<p>针对  Windows 平台单独写一条脚本入口倒也是种解决方案。</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=$npm_package_config_lang</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">dev:win</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=%npm_package_config_lang%</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>但实在不优雅，所以 <a href="https://www.npmjs.com/package/cross-var">cross-var</a> 就可以开始它的表演了。这种差异的处理就交给它吧。</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">cross-var webpack --env.lang=$npm_package_config_lang</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>注意区别另一个类似的插件 <a href="https://github.com/kentcdodds/cross-env">cross-env</a>，正如 cross-var README 中所说，cross-env 用来设置所需环境变量，而 cross-var 解决 scripts 中变量使用的兼容性问题。</p>
+
+<h4 id="npm-config-的动态设置">npm config 的动态设置</h4>
+
+<p>上面引入了 package.json 的 <code class="language-plaintext highlighter-rouge">config</code> 字段，我们也知道怎么使用它了。现在问题是，它也是写死在 package.json 中的啊，相当于我们将之前写死在 <code class="language-plaintext highlighter-rouge">scripts</code> 中的问题转移到了 <code class="language-plaintext highlighter-rouge">config</code> 中嘛。</p>
+
+<p><code class="language-plaintext highlighter-rouge">config</code> 字段中写死的值可以看作默认值，通过 <code class="language-plaintext highlighter-rouge">npm config</code> 命令来设置它，以达到动态指定编译参数的目的。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm config <span class="nb">set </span>myApp:lang en <span class="o">&amp;&amp;</span> npm run dev
+</code></pre></div></div>
+
+<h3 id="自定义-npm-命令行参数">自定义 npm 命令行参数</h3>
+
+<p>通过 npm 的这个 PR <a href="https://github.com/npm/npm/pull/5518">Passing args into run-scripts #5518</a>，也就是自 npm 2.0 开始，我们确实可以给 package.json 中的 scripts 传参。</p>
+
+<p>是通过下面这样的语句办到的：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run &lt;<span class="nb">command</span><span class="o">&gt;</span> <span class="o">[</span><span class="nt">--</span> &lt;args&gt;...]
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">args</code> 部分会被拼接到 scripts 命令后面。估计没听懂，来看实操。</p>
+
+<p>前面分析时得到了这样的脚本：</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=$lang</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>既然呆会儿会拼接一部分东西到这个命令后面，那么我们把变动的语言参数部分抠掉，把位置留出来，于是成了：</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --env.lang=</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>于是我们运行 <code class="language-plaintext highlighter-rouge">npm run dev -- cn</code>。从命令行输出的 Log 来看，实际运行的命令成了 <code class="language-plaintext highlighter-rouge">webpack --env.lang= "cn"</code>。注意这里 <code class="language-plaintext highlighter-rouge">=</code> 号后面多了个空格，这样的话，我们是拿不到 <code class="language-plaintext highlighter-rouge">cn</code> 这个值的，拿到的会是 <code class="language-plaintext highlighter-rouge">undefined</code>。</p>
+
+<p>所以我们改变一下策略，既然拼接到 scripts 后面的参数会被加一个空格，那好，我们将 <code class="language-plaintext highlighter-rouge">--env.lang=$lang</code> 这一部分整个拿出来。</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后执行命令时再加上即可，所以应该执行的命令是：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run dev <span class="nt">--</span> <span class="nt">--env</span>.lang<span class="o">=</span>cn
+</code></pre></div></div>
+
+<p>这样我们得到了第四种方案。</p>
+
+<h4 id="多个参数的情况">多个参数的情况</h4>
+
+<p>有时，你需要定义的参数并不只有一个。下面的示例展示了多个参数传递的用法。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run dev <span class="nt">--</span> <span class="nt">--env</span>.lang<span class="o">=</span>cn <span class="nt">--env</span>.production
+</code></pre></div></div>
+
+<p>这里，如果指定的参数没有用 <code class="language-plaintext highlighter-rouge">=</code> 号赋值，那么该参数的值为 <code class="language-plaintext highlighter-rouge">true</code>。</p>
+
+<p>所以你在 webpack 中获取到的参数为：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="nl">lang</span><span class="p">:</span> <span class="dl">'</span><span class="s1">cn</span><span class="dl">'</span><span class="p">,</span>
+    <span class="nx">production</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="一些问题">一些问题</h3>
+
+<h4 id="webpack-配置文件拆分情况下的参数获取">webpack 配置文件拆分情况下的参数获取</h4>
+
+<p>前面的方案中，通过 <code class="language-plaintext highlighter-rouge">--env</code> 方式设置的参数，需要 webpack 配置文件导出函数以接收。正常情况下没问题，但遇到 webpack 配置文件是拆分的情况，就不行了。</p>
+
+<p>比如按照 webpack 官方的引导，如果配置项复杂的话，可以将 <code class="language-plaintext highlighter-rouge">webpack.config.js</code> 拆分成不同用途的配置文件。例如：</p>
+
+<p><em><code class="language-plaintext highlighter-rouge">webpack.common.js</code> 公用的配置：</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><em><code class="language-plaintext highlighter-rouge">webpack.dev.js</code> 开发配置：</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">merge</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">webpack-merge</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">common</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./webpack.common.js</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">env</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">env</span><span class="p">.</span><span class="nx">lang</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">common</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">devtool</span><span class="p">:</span> <span class="dl">'</span><span class="s1">inline-source-map</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">...</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><em><code class="language-plaintext highlighter-rouge">webpack.prod.js</code> 上线配置：</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">merge</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">webpack-merge</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">common</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./webpack.common.js</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">env</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">env</span><span class="p">.</span><span class="nx">lang</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">common</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">devtool</span><span class="p">:</span> <span class="dl">'</span><span class="s1">source-map</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">...</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这种情况下， <code class="language-plaintext highlighter-rouge">webpack.common.js</code> 只能导出对象，供不同的配置文件中进行合并。所以 <code class="language-plaintext highlighter-rouge">webpack.common.js</code> 中便无法通过获取到 <code class="language-plaintext highlighter-rouge">--env</code> 设置给 webpack 的参数，只能另辟蹊径。</p>
+
+<p>但如果你将 npm 环境变量 <code class="language-plaintext highlighter-rouge">process.env</code> 打印出来的话，发现 <code class="language-plaintext highlighter-rouge">process.env.npm_config_argv</code> 中包含了命令行参数，但，不建议这么去解析获取。</p>
+
+<p>稍微变通一下，其实我们可以让 common 导出函数返回配置对象，然后在基本配置中使用时调用一下就可以了嘛！</p>
+
+<p><em><code class="language-plaintext highlighter-rouge">webpack.common.js</code> 公用的配置：</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">env</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">看！我拿到了变量</span><span class="dl">'</span><span class="p">,</span> <span class="nx">env</span><span class="p">.</span><span class="nx">lang</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="p">...</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><em><code class="language-plaintext highlighter-rouge">webpack.dev.js</code></em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">merge</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">webpack-merge</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">common</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./webpack.common.js</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">env</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">commonConfig</span> <span class="o">=</span> <span class="nx">common</span><span class="p">(</span><span class="nx">env</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">commonConfig</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">devtool</span><span class="p">:</span> <span class="dl">'</span><span class="s1">source-map</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">...</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="alias">alias</h4>
+
+<p>最后还剩一个问题。上面的命令行似乎有点太长，开发过程中你不会想要每次都记忆和输入那么一长串命令的。</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">npm config set myApp:lang en &amp;&amp; npm run dev</code></li>
+  <li><code class="language-plaintext highlighter-rouge">npm run dev -- --env.lang=cn</code></li>
+</ul>
+
+<p>何况这还只是一个参数的时候，参数多了那就更冗长了。</p>
+
+<p>所以，我们需要一种方式来将它缩短。借助 shell 或者配置 alias，能够一定程度达到目的。让这些复杂的参数组合在 shell 中去处理，执行时只输入必要的命令和变化的参数。这里就看具体业务具体参数情况来具体处理了。</p>
+
+<p>将常用的命令放入 <code class="language-plaintext highlighter-rouge">npm start</code> 中，同时在 webpack 配置文件中设置默认值，这样简单的 <code class="language-plaintext highlighter-rouge">npm start</code> 命令就可以满足平时大部分时间的开发所需，不用经常输入很多命令行参数。</p>
+
+<p><em>package.json</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">start</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack --config webpack.dev.js</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><em><code class="language-plaintext highlighter-rouge">webpack.dev.js</code> 上线配置：</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">merge</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">webpack-merge</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">common</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./webpack.common.js</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">env</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">lang</span> <span class="o">=</span> <span class="p">(</span><span class="nx">env</span> <span class="o">&amp;&amp;</span> <span class="nx">env</span><span class="p">.</span><span class="nx">lang</span><span class="p">)</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">cn</span><span class="dl">'</span><span class="p">;</span><span class="c1">// 设置好默认值</span>
+
+    <span class="k">return</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">common</span><span class="p">(</span><span class="nx">env</span><span class="p">),</span> <span class="p">{</span>
+        <span class="na">devtool</span><span class="p">:</span> <span class="dl">'</span><span class="s1">source-map</span><span class="dl">'</span><span class="p">,</span>
+        <span class="p">...</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="总结">总结</h3>
+
+<p>前面总结了四种向 webpack 中传递参数的方式，真正意义上能够动态传参的有三种，其中方式二与方式三都是通过 npm config 实现，只是使用上有区别。最后一种社区里见得多，也与 webpack 比较搭，算是更加倾向的方案吧。</p>
+
+<h3 id="相关资料">相关资料</h3>
+
+<ul>
+  <li><a href="https://webpack.js.org/configuration/configuration-types/#exporting-a-function">webpack 配置导出为函数</a></li>
+  <li><a href="https://webpack.js.org/api/cli/#common-options">命令行配置信息/CLI Option</a></li>
+  <li><a href="https://docs.npmjs.com/misc/config">npm config</a></li>
+  <li><a href="https://www.npmjs.com/package/cross-var">cross-var</a></li>
+  <li><a href="https://github.com/kentcdodds/cross-env">cross-env</a></li>
+  <li><a href="https://github.com/npm/npm/pull/5518">Passing args into run-scripts #5518</a></li>
+  <li><a href="https://stackoverflow.com/questions/42166632/how-to-use-npm-config-variables-cross-platform-win-linux">npm config 中参数跨平台的问题</a></li>
+  <li><a href="https://stackoverflow.com/questions/23201024/externally-located-npm-run-scripts-in-package-json-on-windows">Externally-located ‘npm run’ scripts in package.json on Windows?</a></li>
+  <li><a href="http://www.marcusoft.net/2015/08/npm-scripting-configs-and-arguments.html">npm scripting: configs and arguments... and some more tricks</a></li>
+  <li><a href="https://www.lifewire.com/pass-arguments-to-bash-script-2200571">How to Pass Arguments to a Bash-Script</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2018/01/19/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

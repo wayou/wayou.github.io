@@ -1,0 +1,53 @@
+I"w<h1 id="git-clone-仓库的部分代码">git clone 仓库的部分代码</h1>
+
+<p>对于较大的代码仓库来说，如果只是想查看和学习其中部分源代码，选择性地下载部分路径中的代码就显得很实用了，这样可以节省大量等待时间。</p>
+
+<p>比如像 <a href="https://github.com/chromium/chromium">Chromium</a> 这种，仓库大小好几 G 的。</p>
+
+<p>clone 仓库中部分路径下的代码分三步，</p>
+
+<ol>
+  <li>本地初始化一个空仓库，将目标仓库 git 地址设置成远端 origin。</li>
+  <li>配置需要下载代码的路径到 <code class="language-plaintext highlighter-rouge">.git/info/sparse-checkout</code> 文件，多个路径可每个一行进行书写。</li>
+  <li>最后执行 <code class="language-plaintext highlighter-rouge">git pull</code> 执行代码的拉取。</li>
+</ol>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git init &lt;repo&gt;
+<span class="nv">$ </span><span class="nb">cd</span> &lt;repo&gt;
+<span class="nv">$ </span>git remote add <span class="nt">-f</span> origin &lt;url&gt;
+
+<span class="nv">$ </span>git config core.sparseCheckout <span class="nb">true</span>
+
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s2">"some/dir/"</span> <span class="o">&gt;&gt;</span> .git/info/sparse-checkout
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s2">"another/sub/tree"</span> <span class="o">&gt;&gt;</span> .git/info/sparse-checkout
+
+<span class="nv">$ </span>git pull origin master
+</code></pre></div></div>
+
+<h3 id="目录增删">目录增删</h3>
+
+<p>如果后续想增删路径，直接编辑 <code class="language-plaintext highlighter-rouge">.git/info/sparse-checkout</code> 文件，然后执行 <code class="language-plaintext highlighter-rouge">git read-tree</code>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>vi .git/info/sparse-checkout
+<span class="nv">$ </span>git read-tree <span class="nt">-mu</span> HEAD
+<span class="c"># 或</span>
+<span class="nv">$ </span>git read-tree <span class="nt">--dry-run</span> HEAD
+</code></pre></div></div>
+
+<h3 id="切换到完整模式">切换到完整模式</h3>
+
+<p>如果哪天不想获取部分代码，而想拉取整个仓库的完整代码，同样地，编辑 <code class="language-plaintext highlighter-rouge">.git/info/sparse-checkout</code> 文件替换其内容为如下：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/<span class="k">*</span>
+</code></pre></div></div>
+
+<p>然后再执行 <code class="language-plaintext highlighter-rouge">git read-tree</code> 即可。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://git-scm.com/docs/git-read-tree#_sparse_checkout">git-scm SPARSE CHECKOUT</a></li>
+  <li><a href="https://askubuntu.com/a/645276/368322">SO - How to clone git repository only some directories?</a></li>
+  <li><a href="https://gist.github.com/sumardi/5559896">Subdirectory checkouts with Git sparse-checkout</a></li>
+</ul>
+:ET

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>TypeScript 实现任务队列 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="TypeScript 实现任务队列" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TypeScript 实现任务队列 业务中经常会有一些批量操作的任务，比如使用 JavaScript 预加载一组图片，批量上传一些资源。如果这些任务一次性启动，势必会消耗很多资源和带宽。理想的做法应该对这些任务进行限制，比如一次只跑几个，当其中一些任务完成后，再添加新的任务到队列。 总的来说，我们需要这样一个服务，它提供一个添加任务的方法，内部将添加的方法维护在一个数组。然后根据设置的阈值，即同时可跑的任务数，来执行这些任务。 同时为了打日志方便，注册的任务可指定一个名称，所以一个任务的类型看起来应该像这样： type Task&lt;T&gt; = { name?: string; fn: () =&gt; Promise&lt;T&gt;; }; 其中 name 方便调试，fn 便是需要执行的任务，它应该是一个比较耗时的异步任务，所以调用后返回 Promise。 运行任务的服务： export class TaskRunner { private queue: Task&lt;any&gt;[] = []; private activeTaskNum: number = 0; constructor(private limit = 5, public debug = false) { if (limit &lt; 1) { throw new Error(&quot;limit must be interger greater then 1&quot;); } } public addTask&lt;T&gt;(task: Task&lt;T&gt;) { task.name ? task.name : task.fn.name || this.queue.length || &quot;&quot;; this.queue.push(task); this.runTask(); } private execute&lt;T&gt;(task: Task&lt;T&gt;) { this.log(`running ${task.name}`); return task .fn() .then(ressult =&gt; { this.log(`task ${task.name} finished`); return ressult; }) .catch(error =&gt; { this.log(`${task.name} failed`); throw error; }) .finally(() =&gt; { this.activeTaskNum--; this.runTask(); }); } private runTask() { while (this.activeTaskNum &lt; this.limit &amp;&amp; this.queue.length &gt; 0) { const task = this.queue.shift(); this.activeTaskNum++; this.execute(task!); } } private log(msg: string) { if (this.debug) { console.info(`[TaskRunner] ${msg}`); } } } 因为任务可以动态添加，所以在添加完任务的方法 addTask() 里就启动任务队列的执行 runTask()，无须外部显式触发。 测试上面的代码： import { TaskRunner } from &quot;./taskRunner&quot;; const runner = new TaskRunner(3, true); function taskGenerator(taskName: string, time: number) { return { name: taskName, fn: () =&gt; new Promise&lt;string&gt;((resolve, _reject) =&gt; { setTimeout(() =&gt; { resolve(`result for task ${taskName}`); }, time); }) }; } const errorTask = { name: &quot;errroTask&quot;, fn: () =&gt; new Promise&lt;string&gt;((_resolve, reject) =&gt; { setTimeout(() =&gt; { reject(&quot;errorTask failed&quot;); }, 3000); }) }; [errorTask] .concat( [...new Array(5).keys()].map((_value, index) =&gt; taskGenerator(String(index), Math.random() * 10000 + 1000) ) ) .forEach(task =&gt; runner.addTask(task)); 这里生成了 5 个任务，每个任务的耗时是随机的 1s ~ 10s。同时添加一个了个直接 reject 的任务来模拟任务失败时，不会影响其他任务的执行。 完整的代码移步 GitHub 仓库 wayou/task-runner 相关资源 Limiting concurrent operations in JavaScript" />
+<meta property="og:description" content="TypeScript 实现任务队列 业务中经常会有一些批量操作的任务，比如使用 JavaScript 预加载一组图片，批量上传一些资源。如果这些任务一次性启动，势必会消耗很多资源和带宽。理想的做法应该对这些任务进行限制，比如一次只跑几个，当其中一些任务完成后，再添加新的任务到队列。 总的来说，我们需要这样一个服务，它提供一个添加任务的方法，内部将添加的方法维护在一个数组。然后根据设置的阈值，即同时可跑的任务数，来执行这些任务。 同时为了打日志方便，注册的任务可指定一个名称，所以一个任务的类型看起来应该像这样： type Task&lt;T&gt; = { name?: string; fn: () =&gt; Promise&lt;T&gt;; }; 其中 name 方便调试，fn 便是需要执行的任务，它应该是一个比较耗时的异步任务，所以调用后返回 Promise。 运行任务的服务： export class TaskRunner { private queue: Task&lt;any&gt;[] = []; private activeTaskNum: number = 0; constructor(private limit = 5, public debug = false) { if (limit &lt; 1) { throw new Error(&quot;limit must be interger greater then 1&quot;); } } public addTask&lt;T&gt;(task: Task&lt;T&gt;) { task.name ? task.name : task.fn.name || this.queue.length || &quot;&quot;; this.queue.push(task); this.runTask(); } private execute&lt;T&gt;(task: Task&lt;T&gt;) { this.log(`running ${task.name}`); return task .fn() .then(ressult =&gt; { this.log(`task ${task.name} finished`); return ressult; }) .catch(error =&gt; { this.log(`${task.name} failed`); throw error; }) .finally(() =&gt; { this.activeTaskNum--; this.runTask(); }); } private runTask() { while (this.activeTaskNum &lt; this.limit &amp;&amp; this.queue.length &gt; 0) { const task = this.queue.shift(); this.activeTaskNum++; this.execute(task!); } } private log(msg: string) { if (this.debug) { console.info(`[TaskRunner] ${msg}`); } } } 因为任务可以动态添加，所以在添加完任务的方法 addTask() 里就启动任务队列的执行 runTask()，无须外部显式触发。 测试上面的代码： import { TaskRunner } from &quot;./taskRunner&quot;; const runner = new TaskRunner(3, true); function taskGenerator(taskName: string, time: number) { return { name: taskName, fn: () =&gt; new Promise&lt;string&gt;((resolve, _reject) =&gt; { setTimeout(() =&gt; { resolve(`result for task ${taskName}`); }, time); }) }; } const errorTask = { name: &quot;errroTask&quot;, fn: () =&gt; new Promise&lt;string&gt;((_resolve, reject) =&gt; { setTimeout(() =&gt; { reject(&quot;errorTask failed&quot;); }, 3000); }) }; [errorTask] .concat( [...new Array(5).keys()].map((_value, index) =&gt; taskGenerator(String(index), Math.random() * 10000 + 1000) ) ) .forEach(task =&gt; runner.addTask(task)); 这里生成了 5 个任务，每个任务的耗时是随机的 1s ~ 10s。同时添加一个了个直接 reject 的任务来模拟任务失败时，不会影响其他任务的执行。 完整的代码移步 GitHub 仓库 wayou/task-runner 相关资源 Limiting concurrent operations in JavaScript" />
+<link rel="canonical" href="http://localhost:4000/2019/04/29/TypeScript-%E5%AE%9E%E7%8E%B0%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97.html" />
+<meta property="og:url" content="http://localhost:4000/2019/04/29/TypeScript-%E5%AE%9E%E7%8E%B0%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-04-29T23:04:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/04/29/TypeScript-%E5%AE%9E%E7%8E%B0%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/04/29/TypeScript-%E5%AE%9E%E7%8E%B0%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97.html"},"description":"TypeScript 实现任务队列 业务中经常会有一些批量操作的任务，比如使用 JavaScript 预加载一组图片，批量上传一些资源。如果这些任务一次性启动，势必会消耗很多资源和带宽。理想的做法应该对这些任务进行限制，比如一次只跑几个，当其中一些任务完成后，再添加新的任务到队列。 总的来说，我们需要这样一个服务，它提供一个添加任务的方法，内部将添加的方法维护在一个数组。然后根据设置的阈值，即同时可跑的任务数，来执行这些任务。 同时为了打日志方便，注册的任务可指定一个名称，所以一个任务的类型看起来应该像这样： type Task&lt;T&gt; = { name?: string; fn: () =&gt; Promise&lt;T&gt;; }; 其中 name 方便调试，fn 便是需要执行的任务，它应该是一个比较耗时的异步任务，所以调用后返回 Promise。 运行任务的服务： export class TaskRunner { private queue: Task&lt;any&gt;[] = []; private activeTaskNum: number = 0; constructor(private limit = 5, public debug = false) { if (limit &lt; 1) { throw new Error(&quot;limit must be interger greater then 1&quot;); } } public addTask&lt;T&gt;(task: Task&lt;T&gt;) { task.name ? task.name : task.fn.name || this.queue.length || &quot;&quot;; this.queue.push(task); this.runTask(); } private execute&lt;T&gt;(task: Task&lt;T&gt;) { this.log(`running ${task.name}`); return task .fn() .then(ressult =&gt; { this.log(`task ${task.name} finished`); return ressult; }) .catch(error =&gt; { this.log(`${task.name} failed`); throw error; }) .finally(() =&gt; { this.activeTaskNum--; this.runTask(); }); } private runTask() { while (this.activeTaskNum &lt; this.limit &amp;&amp; this.queue.length &gt; 0) { const task = this.queue.shift(); this.activeTaskNum++; this.execute(task!); } } private log(msg: string) { if (this.debug) { console.info(`[TaskRunner] ${msg}`); } } } 因为任务可以动态添加，所以在添加完任务的方法 addTask() 里就启动任务队列的执行 runTask()，无须外部显式触发。 测试上面的代码： import { TaskRunner } from &quot;./taskRunner&quot;; const runner = new TaskRunner(3, true); function taskGenerator(taskName: string, time: number) { return { name: taskName, fn: () =&gt; new Promise&lt;string&gt;((resolve, _reject) =&gt; { setTimeout(() =&gt; { resolve(`result for task ${taskName}`); }, time); }) }; } const errorTask = { name: &quot;errroTask&quot;, fn: () =&gt; new Promise&lt;string&gt;((_resolve, reject) =&gt; { setTimeout(() =&gt; { reject(&quot;errorTask failed&quot;); }, 3000); }) }; [errorTask] .concat( [...new Array(5).keys()].map((_value, index) =&gt; taskGenerator(String(index), Math.random() * 10000 + 1000) ) ) .forEach(task =&gt; runner.addTask(task)); 这里生成了 5 个任务，每个任务的耗时是随机的 1s ~ 10s。同时添加一个了个直接 reject 的任务来模拟任务失败时，不会影响其他任务的执行。 完整的代码移步 GitHub 仓库 wayou/task-runner 相关资源 Limiting concurrent operations in JavaScript","@type":"BlogPosting","headline":"TypeScript 实现任务队列","dateModified":"2019-04-29T23:04:00+08:00","datePublished":"2019-04-29T23:04:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">TypeScript 实现任务队列</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-04-29T23:04:00+08:00" itemprop="datePublished">Apr 29, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="typescript-实现任务队列">TypeScript 实现任务队列</h2>
+
+<p>业务中经常会有一些批量操作的任务，比如使用 JavaScript 预加载一组图片，批量上传一些资源。如果这些任务一次性启动，势必会消耗很多资源和带宽。理想的做法应该对这些任务进行限制，比如一次只跑几个，当其中一些任务完成后，再添加新的任务到队列。</p>
+
+<p>总的来说，我们需要这样一个服务，它提供一个添加任务的方法，内部将添加的方法维护在一个数组。然后根据设置的阈值，即同时可跑的任务数，来执行这些任务。</p>
+
+<p>同时为了打日志方便，注册的任务可指定一个名称，所以一个任务的类型看起来应该像这样：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">type</span> <span class="nx">Task</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">name</span><span class="p">?:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">fn</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+<p>其中 <code class="language-plaintext highlighter-rouge">name</code> 方便调试，<code class="language-plaintext highlighter-rouge">fn</code> 便是需要执行的任务，它应该是一个比较耗时的异步任务，所以调用后返回 Promise。</p>
+
+<p>运行任务的服务：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">TaskRunner</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="nx">queue</span><span class="p">:</span> <span class="nx">Task</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">private</span> <span class="nx">activeTaskNum</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">private</span> <span class="nx">limit</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="k">public</span> <span class="nx">debug</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">limit</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">limit must be interger greater then 1</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">public</span> <span class="nx">addTask</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">task</span><span class="p">:</span> <span class="nx">Task</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">task</span><span class="p">.</span><span class="nx">name</span> <span class="p">?</span> <span class="nx">task</span><span class="p">.</span><span class="nx">name</span> <span class="p">:</span> <span class="nx">task</span><span class="p">.</span><span class="nx">fn</span><span class="p">.</span><span class="nx">name</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">queue</span><span class="p">.</span><span class="nx">length</span> <span class="o">||</span> <span class="dl">""</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">queue</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">task</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">runTask</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="k">private</span> <span class="nx">execute</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">task</span><span class="p">:</span> <span class="nx">Task</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`running </span><span class="p">${</span><span class="nx">task</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">task</span>
+      <span class="p">.</span><span class="nx">fn</span><span class="p">()</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">ressult</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`task </span><span class="p">${</span><span class="nx">task</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="s2"> finished`</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">ressult</span><span class="p">;</span>
+      <span class="p">})</span>
+      <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">task</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="s2"> failed`</span><span class="p">);</span>
+        <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+      <span class="p">})</span>
+      <span class="p">.</span><span class="k">finally</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">activeTaskNum</span><span class="o">--</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">runTask</span><span class="p">();</span>
+      <span class="p">});</span>
+  <span class="p">}</span>
+
+  <span class="k">private</span> <span class="nx">runTask</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">activeTaskNum</span> <span class="o">&lt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">limit</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">queue</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">task</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">queue</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">activeTaskNum</span><span class="o">++</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">execute</span><span class="p">(</span><span class="nx">task</span><span class="o">!</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">private</span> <span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s2">`[TaskRunner] </span><span class="p">${</span><span class="nx">msg</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>因为任务可以动态添加，所以在添加完任务的方法 <code class="language-plaintext highlighter-rouge">addTask()</code> 里就启动任务队列的执行 <code class="language-plaintext highlighter-rouge">runTask()</code>，无须外部显式触发。</p>
+
+<p>测试上面的代码：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">TaskRunner</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./taskRunner</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">runner</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TaskRunner</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">taskGenerator</span><span class="p">(</span><span class="nx">taskName</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">time</span><span class="p">:</span> <span class="kr">number</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span> <span class="nx">taskName</span><span class="p">,</span>
+    <span class="na">fn</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span>
+      <span class="k">new</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">_reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">resolve</span><span class="p">(</span><span class="s2">`result for task </span><span class="p">${</span><span class="nx">taskName</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="p">},</span> <span class="nx">time</span><span class="p">);</span>
+      <span class="p">})</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">errorTask</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">errroTask</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">fn</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span><span class="p">((</span><span class="nx">_resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">reject</span><span class="p">(</span><span class="dl">"</span><span class="s2">errorTask failed</span><span class="dl">"</span><span class="p">);</span>
+      <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span>
+    <span class="p">})</span>
+<span class="p">};</span>
+
+<span class="p">[</span><span class="nx">errorTask</span><span class="p">]</span>
+  <span class="p">.</span><span class="nx">concat</span><span class="p">(</span>
+    <span class="p">[...</span><span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="nx">keys</span><span class="p">()].</span><span class="nx">map</span><span class="p">((</span><span class="nx">_value</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nx">taskGenerator</span><span class="p">(</span><span class="nb">String</span><span class="p">(</span><span class="nx">index</span><span class="p">),</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10000</span> <span class="o">+</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="p">)</span>
+  <span class="p">)</span>
+  <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">task</span> <span class="o">=&gt;</span> <span class="nx">runner</span><span class="p">.</span><span class="nx">addTask</span><span class="p">(</span><span class="nx">task</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>这里生成了 5 个任务，每个任务的耗时是随机的 1s ~ 10s。同时添加一个了个直接 <code class="language-plaintext highlighter-rouge">reject</code> 的任务来模拟任务失败时，不会影响其他任务的执行。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56847967-4ab33900-6915-11e9-8e05-806d85a1f473.gif" alt="任务运行效果" /></p>
+<p align="center"></p>
+
+<p>完整的代码移步 GitHub 仓库 <a href="https://github.com/wayou/task-runner">wayou/task-runner</a></p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://medium.freecodecamp.org/how-to-limit-concurrent-operations-in-javascript-b57d7b80d573">Limiting concurrent operations in JavaScript</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/04/29/TypeScript-%E5%AE%9E%E7%8E%B0%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

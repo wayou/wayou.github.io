@@ -1,0 +1,410 @@
+I"�<h1 id="利用-sass-简化-nth-child-样式的生成">利用 SASS 简化 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式的生成</h1>
+
+<p>考察如下的 HTML 片段，通过 CSS 的 <code class="language-plaintext highlighter-rouge">nth-child()</code> 伪选择器实现列表的颜色循环，比如每三个一次循环。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;ul&gt;</span>
+  <span class="nt">&lt;li&gt;</span>1<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>2<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>3<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>4<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>5<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>6<span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</code></pre></div></div>
+
+<p>很容易地，我们能得出如下样式代码：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="p">{</span>
+  <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">3n</span> <span class="o">+</span> <span class="nt">1</span><span class="o">)</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">3n</span> <span class="o">+</span> <span class="nt">2</span><span class="o">)</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">3n</span> <span class="o">+</span> <span class="nt">3</span><span class="o">)</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>以上，只三种颜色循环，简单情况下可这样处理。但样式多起来之后，上面代码显得很臃肿且不易维护。</p>
+
+<p>既然是使用 SASS，很容易想到可通过编写循环语句来将其简化。</p>
+
+<p>循环过程就是遍历一个预设的颜色列表，为每一个颜色生成相应的样式。</p>
+
+<h2 id="list--map">List &amp; Map</h2>
+
+<p>首先需要定义一个对象来保存预设的颜色列表，SASS 中的 <a href="https://sass-lang.com/documentation/values/lists">Lists</a> 可满足条件。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>使用上面的 list:</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">;</span>
+
+<span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+  <span class="nc">.color-</span><span class="si">#{</span><span class="nv">$color</span><span class="si">}</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后输出：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.color-indigo</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.color-red</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.color-green</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>当然，也可以定义 <a href="https://sass-lang.com/documentation/values/maps">Map</a> 类型，为每种颜色指定名字，这样使用的时候比较语义：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span>
+  <span class="s2">"indigo"</span><span class="o">:</span> <span class="no">indigo</span><span class="o">,</span>
+  <span class="s2">"red"</span><span class="o">:</span> <span class="no">red</span><span class="o">,</span>
+  <span class="s2">"green"</span><span class="o">:</span> <span class="no">green</span>
+<span class="p">);</span>
+
+<span class="k">@each</span> <span class="nv">$name</span><span class="o">,</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+  <span class="nc">.color-</span><span class="si">#{</span><span class="nv">$name</span><span class="si">}</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="索引">索引</h2>
+
+<p>列表对象及其遍历如上，现在还需要在遍历过程中获得一个 index 索引值，用于生成 <code class="language-plaintext highlighter-rouge">3*n+index</code>。</p>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">index()</code> 函数可以达到目的：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+  <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+  <span class="nc">.color-</span><span class="si">#{</span><span class="nv">$index</span><span class="si">}</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后输出：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.color-1</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.color-2</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.color-3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="生成-nth-child-样式">生成 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式</h2>
+
+<p>结合上面所有，可以得出生成 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式的代码：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">3n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后输出：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span> <span class="o">+</span> <span class="err">1</span><span class="o">)</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span> <span class="o">+</span> <span class="err">2</span><span class="o">)</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span> <span class="o">+</span> <span class="err">3</span><span class="o">)</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>注意到 <code class="language-plaintext highlighter-rouge">nth-child(3n + #{$index})</code> 中的 <code class="language-plaintext highlighter-rouge">3</code> 是硬编码。既然我们的颜色是在一个数组中，所以我们是知道总个数的，也就能替换掉这里硬编码的写法。</p>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">length()</code> 函数可获得 list 的长度。改进后的代码如下：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这样，如果后续有颜色增加，或顺序的调整，我们只需要更新 <code class="language-plaintext highlighter-rouge">$colors</code> 变量的值即可。</p>
+
+<h2 id="mixin">@mixin</h2>
+
+<p>进一步，我们可以将上面遍历生成 <code class="language-plaintext highlighter-rouge">nth-child</code> 的代码抽取成 mixin，这样可以被其他地方使用。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="k">@mixin</span> <span class="nf">nth-color</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="k">@include</span> <span class="nd">nth-color</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="mixin-的优化">mixin 的优化</h2>
+
+<p>但像上面这样还不能达到完全公用，因为 mixin 中使用了 <code class="language-plaintext highlighter-rouge">li</code> 选择器，不是所有需要 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式的地方，都使用的 <code class="language-plaintext highlighter-rouge">li</code> 元素，所以此处需要进行优化，使得 mixin 中的这部分内容灵活一点，以适用不同的使用环境。</p>
+
+<p>首先，使用 <code class="language-plaintext highlighter-rouge">&amp;</code> 父选择器便可快速解决，这样生成的样式便由包含这个 mixin 的选择器决定了。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="k">@mixin</span> <span class="nf">nth-color</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="k">&amp;</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="nt">li</span> <span class="p">{</span>
+    <span class="k">@include</span> <span class="nd">nth-color</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>诚然，这样修改过后，确实可以将该 mixin 使用于多个地方了。</p>
+
+<p>但考虑这么一种情况，因为上面列表比较简单，更加常见的情况是，列表中是另外复杂的元素，而不是单纯的一个元素，比如像下面这样：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;ul&gt;</span>
+  <span class="nt">&lt;li&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">"item"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;h3&gt;</span>title<span class="nt">&lt;/h3&gt;</span>
+      <span class="nt">&lt;div&gt;</span>desc goes here...<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">"item"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;h3&gt;</span>title<span class="nt">&lt;/h3&gt;</span>
+      <span class="nt">&lt;div&gt;</span>desc goes here...<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">"item"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;h3&gt;</span>title<span class="nt">&lt;/h3&gt;</span>
+      <span class="nt">&lt;div&gt;</span>desc goes here...<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</code></pre></div></div>
+
+<p>现在想针对列表元素中的 <code class="language-plaintext highlighter-rouge">h3</code> 进行颜色的设置，即 <code class="language-plaintext highlighter-rouge">nth-child</code> 中设置的 <code class="language-plaintext highlighter-rouge">color</code> 只针对 <code class="language-plaintext highlighter-rouge">h3</code> 而不是整个 <code class="language-plaintext highlighter-rouge">li</code> 元素。</p>
+
+<p>结合前面的优化，似乎可以这样写：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$colors:</span> (indigo, red, green);
+
+@mixin nth-color {
+  @each $color in $colors {
+    $index: index($colors, $color);
+<span class="gd">-    &amp;:nth-child(#{length($colors)}n + #{$index}) {
+</span><span class="gi">+    &amp;:nth-child(#{length($colors)}n + #{$index}) h3{
+</span>      color: $color;
+    }
+  }
+<span class="err">}</span>
+
+<span class="p">ul {
+</span>  li {
+    @include nth-color;
+  }
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>编译后的结果：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">1</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">2</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">3</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>从结果来看，达到了目标。但又在 <code class="language-plaintext highlighter-rouge">nth-color</code> 这个 mixin 中引入了 <code class="language-plaintext highlighter-rouge">h3</code>，使其变得不再通用，问题又回到了之前。</p>
+
+<p>所以 <code class="language-plaintext highlighter-rouge">&amp;</code> 只解决了 <code class="language-plaintext highlighter-rouge">nth-child</code> 父级嵌套的问题，对于 <code class="language-plaintext highlighter-rouge">nth-child</code> 后面还需要自定义选择器的情况，就需要用别的方式进一步优化。</p>
+
+<h2 id="给-mixin-传参">给 <code class="language-plaintext highlighter-rouge">@mixin</code> 传参</h2>
+
+<p>mixin 是可以接收参数的，通过外部传递选择器进来，可以达到将 <code class="language-plaintext highlighter-rouge">h3</code> 从 mixin 从剥离的目的。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@mixin</span> <span class="nf">nth-color</span><span class="p">(</span><span class="nv">$child</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="k">&amp;</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="si">#{</span><span class="nv">$child</span><span class="si">}</span><span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="nt">li</span> <span class="p">{</span>
+    <span class="k">@include</span> <span class="nd">nth-color</span><span class="p">(</span><span class="s2">"h3"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="从-mixin-将参数传递到外面">从 <code class="language-plaintext highlighter-rouge">@mixin</code> 将参数传递到外面</h2>
+
+<p>最后，<code class="language-plaintext highlighter-rouge">nth-color</code> 这个 mixin 还有一处不够灵活的地方，便是其样式内容。</p>
+
+<p>现在在其中写死了只有一个 <code class="language-plaintext highlighter-rouge">color: $color;</code> 属性，也就是说，使用该 mixin 的地方只能用它来设置元素的字色。如果 mixin 能够将颜色传递出来，这样外部使用的时候就可以用到其他属性上，更加的灵活了。</p>
+
+<p>SASS 确实也提供了这么种机制，即 mixin 能够身外传递参数，借助 <a href="https://sass-lang.com/documentation/at-rules/mixin#passing-arguments-to-content-blocks"><code class="language-plaintext highlighter-rouge">@content</code></a> 指令。</p>
+
+<p><code class="language-plaintext highlighter-rouge">@content</code> 指令指代调用 mixin 时书写的模式内容部分。如下的代码直观展示了其功能：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">@mixin</span> nth-color($child) {
+  @each $color in $colors {
+    $index: index($colors, $color);
+    &amp;:nth-child(#{length($colors)}n + #{$index}) #{$child}{
+      color: $color;
+<span class="gi">+      @content;
+</span>    }
+  }
+<span class="err">}</span>
+
+<span class="p">ul {
+</span>  li {
+<span class="gd">-    @include nth-color("h3")
+</span><span class="gi">+    @include nth-color("h3"){
++      border:1px solid orange;
++    };
+</span>  }
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>编译后内容为：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">1</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">orange</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">2</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">orange</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">3</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">orange</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>可以看到，外部书写的 <code class="language-plaintext highlighter-rouge">border: 1px solid orange;</code> 通过 <code class="language-plaintext highlighter-rouge">@content</code> 指代而放进了每个 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式中。只是这个 <code class="language-plaintext highlighter-rouge">border</code> 的颜色现在还是写死的 <code class="language-plaintext highlighter-rouge">orange</code>，现在来将其设置成跟随相应的字色，即跟着 <code class="language-plaintext highlighter-rouge">color</code> 属性走。</p>
+
+<p>当我们使用 <code class="language-plaintext highlighter-rouge">@content(&lt;arguments...&gt;)</code> 形式的 <code class="language-plaintext highlighter-rouge">@content</code> 时，可以传递一些参数，外部调用该 mixin 时需要使用如下形式来获取传递的参数：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@include &lt;name&gt; using (&lt;arguments...&gt;)
+</code></pre></div></div>
+
+<p><strong>NOTE：</strong>：这里的 <a href="https://sass-lang.com/documentation/at-rules/mixin#passing-arguments-to-content-blocks"><code class="language-plaintext highlighter-rouge">using</code></a> 语法只部分 SASS 实现（Dart Sass since 1.15.0, LibSass, Ruby Sass）中有支持，<a href="https://github.com/sass/node-sass">node-sass</a> 还没有。</p>
+
+<h2 id="最终的-mixin">最终的 mixin</h2>
+
+<p>所以，最终版的代码为：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="k">@mixin</span> <span class="nf">nth-color</span><span class="p">(</span><span class="nv">$child</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="k">&amp;</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="si">#{</span><span class="nv">$child</span><span class="si">}</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+      <span class="k">@content</span> <span class="o">(</span><span class="err">$</span><span class="nt">color</span><span class="o">)</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="nt">li</span> <span class="p">{</span>
+    <span class="k">@include</span> <span class="nd">nth-color</span><span class="p">(</span><span class="s2">"h3"</span><span class="p">)</span> <span class="nf">using</span><span class="p">(</span><span class="nv">$color</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="si">#{</span><span class="nv">$color</span><span class="si">}</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后得到的 CSS：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">1</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">2</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">3</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>通过将生成 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式的规则自动化的过程中，顺带使用了 SASS 中另外一些特性，</p>
+
+<ul>
+  <li>定义和使用数组及对象</li>
+  <li>数组及对象的遍历</li>
+  <li>遍历过程中索引的获取</li>
+  <li><code class="language-plaintext highlighter-rouge">@mixin</code> 的使用，参数的传递</li>
+  <li><code class="language-plaintext highlighter-rouge">@mixin</code> 中 <code class="language-plaintext highlighter-rouge">@content</code> 的使用</li>
+  <li><code class="language-plaintext highlighter-rouge">@mixin</code> 中向外传递参数</li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child">:nth-child()</a></li>
+  <li><a href="https://sass-lang.com/documentation/values/lists">SASS documentation - Lists</a></li>
+  <li><a href="https://sass-lang.com/documentation/values/maps">SASS documentation - Maps</a></li>
+  <li><a href="https://sass-lang.com/documentation/at-rules/mixin#passing-arguments-to-content-blocks"><code class="language-plaintext highlighter-rouge">@content</code></a></li>
+</ul>
+
+:ET

@@ -1,0 +1,213 @@
+I"�8<h1 id="nodejs-命令行工具的编写">Node.js 命令行工具的编写</h1>
+
+<p>日常开发中，编写 Node.js 命令行工具来完成一些小任务是很常见的操作。其编写也不难，和日常编写 Node.js 代码并无二致。</p>
+
+<h2 id="packagejson-中的-bin-字段"><code class="language-plaintext highlighter-rouge">package.json</code> 中的 <code class="language-plaintext highlighter-rouge">bin</code> 字段</h2>
+
+<p>一个 npm 模块，如果在 <code class="language-plaintext highlighter-rouge">package.json</code> 中指定了 <code class="language-plaintext highlighter-rouge">bin</code> 字段，那说明该模块提供了可在命令行执行的命令，这些命令就是在 <code class="language-plaintext highlighter-rouge">bin</code> 字段中指定的。</p>
+
+<p><em>package.json</em></p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"bin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"myapp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./cli.js"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>程序安装后会可在命令行执行 <code class="language-plaintext highlighter-rouge">myapp</code> 命令，实际执行的就是指定的这个 <code class="language-plaintext highlighter-rouge">cli.js</code> 文件。如果是全局安装，会将这个目标 js 文件映射到 <code class="language-plaintext highlighter-rouge">prefix/bin</code> 目录下，而如果是在项目中安装，则映射到 <code class="language-plaintext highlighter-rouge">./node_modules/.bin/</code> 目录下。</p>
+
+<p>比如上面的示例，全局安装后会将 <code class="language-plaintext highlighter-rouge">cli.js</code> 映射到 <code class="language-plaintext highlighter-rouge">/usr/local/bin/myapp</code> 目录下。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看项目中安装的所有可执行模块</span>
+<span class="nv">$ </span>ll node_modules/.bin
+...
+webpack -&gt; ../webpack/bin/webpack.js
+...
+</code></pre></div></div>
+
+<p>如果你的 npm 包只提供了一个可执行的命令，可直接将 <code class="language-plaintext highlighter-rouge">bin</code> 字段设置为目标文件，此时命令行中可执行的 CLI 命令名为 npm 包名（即 <code class="language-plaintext highlighter-rouge">name</code> 字段）。</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-program"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.2.5"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"bin"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./path/to/program"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>所以上面的配置和下面这个配置是等效的。</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-program"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.2.5"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"bin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"my-program"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./path/to/program"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>执行：</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>my-program 
+</code></pre></div></div>
+
+<h2 id="cli-命令的编写">CLI 命令的编写</h2>
+
+<p>为项目添加 README 文件是很常见的操作，每次都从零开始是没必要的。这时候就可以通过创建一个 README 模板，然后写一个 CLI 工具来生成到项目中。这样，将工具安装到全局或通过 <code class="language-plaintext highlighter-rouge">npx</code> 就可以方便地完成 README 文件的创建。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npx mkreadme
+README.md created
+</code></pre></div></div>
+
+<h3 id="初始化项目">初始化项目</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm init <span class="nt">-y</span>
+</code></pre></div></div>
+
+<p>修改 <code class="language-plaintext highlighter-rouge">package.json</code> 文件为如下内容：</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mkreadme"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"bin"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./cli.js"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1.0"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MIT"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="创建入口文件">创建入口文件</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">touch </span>cli.js
+</code></pre></div></div>
+
+<p>入口文件即 <code class="language-plaintext highlighter-rouge">bin</code> 字段所指向的文件，它可以是任何文件名，只需要在行首指定运行环境即可。Node.js 的 CLI 命令，期望的运行环境当然是 Node.js。</p>
+
+<p><em>cli.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp"> #!/usr/bin/env node
+</span> <span class="c1">// 其他代码...</span>
+</code></pre></div></div>
+
+<p>然后添加我们的功能代码，从远端获取一个 README 模板文件到本地。</p>
+
+<p><em>cli.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#!/usr/bin/env node
+</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">fs</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">https</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">https</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">TEMPLATE_FILE</span> <span class="o">=</span>
+  <span class="dl">"</span><span class="s2">https://raw.githubusercontent.com/wayou/readme-template/master/README.md</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">file</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">createWriteStream</span><span class="p">(</span><span class="dl">"</span><span class="s2">README.md</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">https</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">TEMPLATE_FILE</span><span class="p">,</span> <span class="nx">resposne</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">resposne</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">README.md created</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>这里，我们将模板文件放远端的一个位置然后通过网络请求下载下来，而不是直接放到 npm 模块中。这样做的好处是后面可以随时更新我们的模板文件而无须重新发布这个 npm 模块。</p>
+
+<h3 id="调试">调试</h3>
+
+<p>通过在当前开发目录进行 <code class="language-plaintext highlighter-rouge">link</code> 操作可进行本地调试。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm <span class="nb">link</span>
+</code></pre></div></div>
+
+<details>
+<summary>
+link 操作的输出信息
+</summary>
+
+```sh
+npm WARN mkreadme@0.1.0 No description
+npm WARN mkreadme@0.1.0 No repository field.
+
+up to date in 3.435s
+found 0 vulnerabilities
+
+/Users/wayou/.nvm/versions/node/v11.14.0/bin/mkreadme -&gt; /Users/wayou/.nvm/versions/node/v11.14.0/lib/node_modules/mkreadme/cli.js
+/Users/wayou/.nvm/versions/node/v11.14.0/lib/node_modules/mkreadme -&gt; /Users/wayou/Documents/dev/github/mkreadme
+```
+</details>
+
+<p>然后就可以在任何地方执行刚刚创建的 CLI 命令了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mkreadme
+README.md created
+</code></pre></div></div>
+
+<h3 id="参数的获取">参数的获取</h3>
+
+<p>让命令支持参数可以实现更加灵活的功能。通过 <code class="language-plaintext highlighter-rouge">process.argv</code> 在代码中能够获取到来自命令行的输入。但需要注意它返回的参数列表中前两位是 Node.js 的路径和当前项目的路径，从第三个元素开始才是命令中用户输入的数据。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#!/usr/bin/env</span> node
+
+const fs = require("fs");
+<span class="p">const https = require("https");
+</span>
+const TEMPLATE_FILE =
+  "https://raw.githubusercontent.com/wayou/readme-template/master/README.md";
+
++ const [, , ...args] = process.argv;
+
+const file = fs.createWriteStream("README.md");
+<span class="gi">+ const url = args[0] || TEMPLATE_FILE;
++ https.get(url, resposne =&gt; {
+</span>  resposne.pipe(file);
+  console.log("README.md created");
+<span class="err">});</span>
+</code></pre></div></div>
+
+<p>通过添加参数的支持，我们可以让使用者手动指定一个模板地址以下载对应的模板文件。</p>
+
+<h3 id="发布">发布</h3>
+
+<p>最后一步就是发布出去，这样所有人就能安装使用了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm publish <span class="nt">--access</span> public
+</code></pre></div></div>
+
+<h3 id="安装与使用">安装与使用</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm i <span class="nt">-g</span> mkreadme
+<span class="nv">$ </span>mkreadme
+README.md created
+</code></pre></div></div>
+
+<p>除了像上面将命令安装到全局使用外，个人更加推荐的方式是通过 <code class="language-plaintext highlighter-rouge">npx</code>。<code class="language-plaintext highlighter-rouge">npx</code> 会自动查找本机是否有安装相应模块，如果没有的话，自动去远端查找并执行。通过 <code class="language-plaintext highlighter-rouge">npx</code> 就不用安装到本地，每次运行都可以使用远端最新的版本。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npx mkreadme
+README.md created
+</code></pre></div></div>
+
+<h3 id="后续的优化">后续的优化</h3>
+
+<p>示例中只实现了基本的功能，作为一个功能健全的实用工具，可以做以下的优化：</p>
+
+<ul>
+  <li>生成时做重名判断，如果已经存在 README 文件则提示是否覆盖。</li>
+  <li>文件下载和创建过程中的异常处理及提示。</li>
+  <li>提供并打印帮助信息，对使用者更加友好。</li>
+  <li>对输出进行格式化，高亮输出相关信息，使信息更易读。</li>
+</ul>
+
+<h3 id="完整的示例">完整的示例</h3>
+
+<p>上面示例中的代码可在 <a href="https://github.com/wayou/mkreadme">mkreadme</a> 这个仓库中找到。同时也发布到了 npm，可直接使用体验该工具。</p>
+
+<h2 id="三方工具">三方工具</h2>
+
+<p>命令行工具能够打印帮助和使用信息是很重要的，如果自己输出的话，会面临格式化这些内容的麻烦。
+如果提供的参数很多，解析处理用户输入的参数也是件很麻烦的事。</p>
+
+<p>像参数校验，错误提示及帮助信息的输出，这些命令行工具基本的功能已经有三方库比较成熟地解决了，比如 <a href="https://github.com/tj/commander.js/">commander.js</a>。通过这个库可方便地编写更加复杂的命令行工具。</p>
+
+<p>至于将输出信息进行高亮加彩色进行展示，也有相应三方库比如 <a href="https://github.com/chalk/chalk">chalk</a>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://docs.npmjs.com/files/package.json#bin">npm-package.json 文档关于 <code class="language-plaintext highlighter-rouge">bin</code> 字段的描述</a></li>
+  <li><a href="https://github.com/chalk/chalk">chalk</a></li>
+  <li><a href="https://github.com/tj/commander.js/">commander.js</a></li>
+</ul>
+
+:ET

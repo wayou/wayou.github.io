@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>CSS transition 的默认值 | 牛さんの部落格</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="CSS transition 的默认值" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="CSS transition 的默认值 语法 transition: property duration timing-function delay|initial|inherit; 示例： div {   width: 100px;   height: 100px;   transition: width 2s; } div:hover {   width: 300px; } CSS transition 演示 同时指定多个属性 也可同时指定多个需要 transition 的属性，每个属性用逗号分隔，包含自己完整的时间，动画方法（timing function）的指定。 div { width: 100px; height: 100px; transition: width,height 2s; } div:hover { width: 300px; height: 300px; } CSS transition 同时作用于多个属性 上面 width 只指定了属性，未指定时间及动画方法，所以动作的变化发是在瞬时完成的。 默认值 transition: all 0s ease 0s 意味着浏览器对所有元素所有属性设置了 transitoin 但时长为 0。 所以实际使用中，只需要设置元素的 transition-duration 即可让 transition 生效。 div { width: 100px; height: 100px; - transition: width,height 2s; + transition-duration: 2s; } div:hover { width: 300px; height: 300px; } CSS transition 的默认值 相关资料 Using CSS transitions Set a CSS3 transition to none w3schools - CSS transition Property" />
+<meta property="og:description" content="CSS transition 的默认值 语法 transition: property duration timing-function delay|initial|inherit; 示例： div {   width: 100px;   height: 100px;   transition: width 2s; } div:hover {   width: 300px; } CSS transition 演示 同时指定多个属性 也可同时指定多个需要 transition 的属性，每个属性用逗号分隔，包含自己完整的时间，动画方法（timing function）的指定。 div { width: 100px; height: 100px; transition: width,height 2s; } div:hover { width: 300px; height: 300px; } CSS transition 同时作用于多个属性 上面 width 只指定了属性，未指定时间及动画方法，所以动作的变化发是在瞬时完成的。 默认值 transition: all 0s ease 0s 意味着浏览器对所有元素所有属性设置了 transitoin 但时长为 0。 所以实际使用中，只需要设置元素的 transition-duration 即可让 transition 生效。 div { width: 100px; height: 100px; - transition: width,height 2s; + transition-duration: 2s; } div:hover { width: 300px; height: 300px; } CSS transition 的默认值 相关资料 Using CSS transitions Set a CSS3 transition to none w3schools - CSS transition Property" />
+<link rel="canonical" href="http://localhost:4000/2019/08/03/CSS-transition-%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html" />
+<meta property="og:url" content="http://localhost:4000/2019/08/03/CSS-transition-%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html" />
+<meta property="og:site_name" content="牛さんの部落格" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-08-03T22:08:00+08:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019/08/03/CSS-transition-%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/08/03/CSS-transition-%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html"},"description":"CSS transition 的默认值 语法 transition: property duration timing-function delay|initial|inherit; 示例： div {   width: 100px;   height: 100px;   transition: width 2s; } div:hover {   width: 300px; } CSS transition 演示 同时指定多个属性 也可同时指定多个需要 transition 的属性，每个属性用逗号分隔，包含自己完整的时间，动画方法（timing function）的指定。 div { width: 100px; height: 100px; transition: width,height 2s; } div:hover { width: 300px; height: 300px; } CSS transition 同时作用于多个属性 上面 width 只指定了属性，未指定时间及动画方法，所以动作的变化发是在瞬时完成的。 默认值 transition: all 0s ease 0s 意味着浏览器对所有元素所有属性设置了 transitoin 但时长为 0。 所以实际使用中，只需要设置元素的 transition-duration 即可让 transition 生效。 div { width: 100px; height: 100px; - transition: width,height 2s; + transition-duration: 2s; } div:hover { width: 300px; height: 300px; } CSS transition 的默认值 相关资料 Using CSS transitions Set a CSS3 transition to none w3schools - CSS transition Property","@type":"BlogPosting","headline":"CSS transition 的默认值","dateModified":"2019-08-03T22:08:00+08:00","datePublished":"2019-08-03T22:08:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="牛さんの部落格" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">牛さんの部落格</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">CSS transition 的默认值</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-08-03T22:08:00+08:00" itemprop="datePublished">Aug 3, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="css-transition-的默认值">CSS transition 的默认值</h1>
+
+<h2 id="语法">语法</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>transition: property duration timing-function delay|initial|inherit;
+</code></pre></div></div>
+
+<p>示例：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span><span class="err"> </span><span class="p">{</span>
+<span class="err">  </span><span class="nl">width</span><span class="p">:</span><span class="err"> </span><span class="m">100px</span><span class="p">;</span>
+<span class="err">  </span><span class="nl">height</span><span class="p">:</span><span class="err"> </span><span class="m">100px</span><span class="p">;</span>
+<span class="err">  </span><span class="nl">transition</span><span class="p">:</span><span class="err"> </span><span class="n">width</span> <span class="m">2s</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">div</span><span class="nd">:hover</span><span class="err"> </span><span class="p">{</span>
+<span class="err">  </span><span class="nl">width</span><span class="p">:</span><span class="err"> </span><span class="m">300px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/62132263-4c730b00-b30f-11e9-8434-dd149d72f863.gif" alt="transition mov" /></p>
+<p align="center">CSS transition 演示</p>
+
+<h2 id="同时指定多个属性">同时指定多个属性</h2>
+
+<p>也可同时指定多个需要 <code class="language-plaintext highlighter-rouge">transition</code> 的属性，每个属性用逗号分隔，包含自己完整的时间，动画方法（timing function）的指定。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+  <span class="nl">transition</span><span class="p">:</span> <span class="n">width</span><span class="p">,</span><span class="n">height</span> <span class="m">2s</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">div</span><span class="nd">:hover</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/62132304-6280cb80-b30f-11e9-9017-303e4ef4fecc.gif" alt="transition_multi_props mov" /></p>
+<p align="center">CSS transition 同时作用于多个属性 </p>
+
+<p>上面 <code class="language-plaintext highlighter-rouge">width</code> 只指定了属性，未指定时间及动画方法，所以动作的变化发是在瞬时完成的。</p>
+
+<h2 id="默认值">默认值</h2>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">transition</span><span class="o">:</span> <span class="nt">all</span> <span class="err">0</span><span class="nt">s</span> <span class="nt">ease</span> <span class="err">0</span><span class="nt">s</span>
+</code></pre></div></div>
+
+<p>意味着浏览器对所有元素所有属性设置了 transitoin 但时长为 0。</p>
+
+<p>所以实际使用中，只需要设置元素的 <code class="language-plaintext highlighter-rouge">transition-duration</code> 即可让 <code class="language-plaintext highlighter-rouge">transition</code> 生效。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">div {
+</span>  width: 100px;
+  height: 100px;
+<span class="gd">-  transition: width,height 2s;
+</span><span class="gi">+  transition-duration: 2s;
+</span><span class="err">}</span>
+
+<span class="p">div:hover {
+</span>  width: 300px;
+  height: 300px;
+<span class="err">}</span>
+
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/62132377-8ba15c00-b30f-11e9-84f0-38b9f78c3f44.gif" alt="defualt mov" /></p>
+<p align="center">CSS transition 的默认值</p>
+
+<h2 id="相关资料">相关资料</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions">Using CSS transitions</a></li>
+  <li><a href="https://stackoverflow.com/a/41140206/1553656">Set a CSS3 transition to none</a></li>
+  <li><a href="https://www.w3schools.com/cssref/css3_pr_transition.asp">w3schools - CSS transition Property</a></li>
+</ul>
+
+
+  </div><a class="u-url" href="/2019/08/03/CSS-transition-%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">牛さんの部落格</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">牛さんの部落格</li><li><a class="u-email" href="mailto:liuwayong@gmail.com">liuwayong@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>notes about the coding life</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

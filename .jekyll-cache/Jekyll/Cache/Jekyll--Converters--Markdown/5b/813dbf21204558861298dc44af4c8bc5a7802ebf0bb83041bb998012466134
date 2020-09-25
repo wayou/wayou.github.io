@@ -1,0 +1,128 @@
+I"e;<h2 id="apply-vs-call-vs-bind">apply vs call vs bind</h2>
+
+<h3 id="apply-与-call"><code class="language-plaintext highlighter-rouge">apply</code> 与 <code class="language-plaintext highlighter-rouge">call</code></h3>
+
+<p>js 有三个方法可以改变函数的执行上下文，<code class="language-plaintext highlighter-rouge">apply</code>，<code class="language-plaintext highlighter-rouge">call</code>和<code class="language-plaintext highlighter-rouge">bind</code>，三者都系 <code class="language-plaintext highlighter-rouge">Function</code> 对象上的原型方法。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">foo</span><span class="dl">'</span><span class="p">,</span>
+    <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bar</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">sayHello</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">();</span><span class="c1">//bar</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="c1">//foo</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="c1">//foo</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)();</span><span class="c1">//foo</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">apply</code> 与 <code class="language-plaintext highlighter-rouge">call</code> 其实相当于调用函数，只不过调用时可以传递一个指定的上下文。而 <code class="language-plaintext highlighter-rouge">bind</code> 则不是立即调用，而是生成一个新的函数，新函数的上下文被指定为了传入的上下文。</p>
+
+<p>前两者，如果你纠结于它们的区别，那就是参数。</p>
+
+<p><code class="language-plaintext highlighter-rouge">apply</code>方法的签名：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">func</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">,</span> <span class="p">[</span><span class="nx">argsArray</span><span class="p">])</span>
+</code></pre></div></div>
+<p>其中，<code class="language-plaintext highlighter-rouge">argsArray</code> 是个类数组对象，并非真正的数据。
+什么意思？联想一下，在函数体中，我们可以通过一个隐藏的 <code class="language-plaintext highlighter-rouge">arguments</code> 变量来获取入参。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f</span><span class="p">(){</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arguments</span><span class="p">)}</span>
+<span class="nx">f</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nx">f</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">world</span><span class="dl">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-apply-call-and-bind/assets/array-like-arguments.png" alt="函数体中类数组的 `arguments` 变量" /></p>
+
+<p><em>函数体中类数组的 <code class="language-plaintext highlighter-rouge">arguments</code> 变量</em></p>
+
+<p>我们看到，函数体中的 <code class="language-plaintext highlighter-rouge">arguments</code> 变量中用从0开始的索引记录了函数调用时的入参，可以通过索引访依次访问到每个入参。</p>
+
+<p>有没有一点感觉了？是吧，意味着，我们可以将一个函数的入参，直接通过 <code class="language-plaintext highlighter-rouge">arguments</code> 作为 <code class="language-plaintext highlighter-rouge">apply</code> 时的参数。</p>
+
+<p>请看示例：假如我们想改写原生的 <code class="language-plaintext highlighter-rouge">console.log</code>，让它在每次 log 的时候带上时间</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">obj</span><span class="o">=</span><span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span><span class="dl">'</span><span class="s1">susan</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">say</span><span class="p">:</span><span class="kd">function</span><span class="p">(){</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">say</span><span class="p">(</span><span class="dl">'</span><span class="s1">, how old are you?</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">say</span><span class="p">(</span><span class="dl">'</span><span class="s1">, how beautiful are you?</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">by the way, got time tonight?</span><span class="dl">'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>上面一大段在讨论什么？
+其实我想说，虽然平时我们介绍 <code class="language-plaintext highlighter-rouge">apply</code> 会说第一个参数指定上下文，后面跟参数数组，并且也是这么用的，我们会构造数组传递给它，</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]);</span>
+</code></pre></div></div>
+
+<p>但我在想，是不是人们在设计它的时候，其实是期望用在直接传递 <code class="language-plaintext highlighter-rouge">arguments</code> 的场景下，不然用类数组作为参数序列真的有点别扭不是。这样说来，不止 <code class="language-plaintext highlighter-rouge">arguments</code>，同样作为类数组，<code class="language-plaintext highlighter-rouge">document.querySelectorAll</code> 类似这样的选择器返回的 DOM 节点集合，也是正统的 <code class="language-plaintext highlighter-rouge">apply</code> 第二参数候选人。</p>
+
+<p><code class="language-plaintext highlighter-rouge">call</code>方法的签名：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">func</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">,</span> <span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="p">...)</span>
+</code></pre></div></div>
+
+<p>如果你苦恼于记不住，容易将两者搞混，到底谁在调用时传正常逗号分隔的入参，谁又接收类数组的入参。有个方法，<code class="language-plaintext highlighter-rouge">call</code> 本身英文意思就与 <code class="language-plaintext highlighter-rouge">invoke</code> 相近，有「调用」的意思，所以，我们在使用 <code class="language-plaintext highlighter-rouge">call</code>的时候，传参就像正常调用一个函数一个传递就行了。反之，既然记住了 <code class="language-plaintext highlighter-rouge">call</code> 是正常类型的传参，那剩下 <code class="language-plaintext highlighter-rouge">apply</code> 就是传递类数组参数喽。</p>
+
+<h3 id="bind"><code class="language-plaintext highlighter-rouge">bind</code></h3>
+
+<p>它的方法签名：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">fun</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">[,</span> <span class="nx">arg1</span><span class="p">[,</span> <span class="nx">arg2</span><span class="p">[,</span> <span class="p">...]]])</span>
+</code></pre></div></div>
+
+<p>你可能会问，既然已经有两个这样牛逼的方法了，还要 <code class="language-plaintext highlighter-rouge">bind</code> 何用。<code class="language-plaintext highlighter-rouge">bind</code> 在异步及事件中很有用。因为 <code class="language-plaintext highlighter-rouge">call</code> 和 <code class="language-plaintext highlighter-rouge">apply</code> 是立即执行的，而在异步及事件绑定时，我们需要提供的是一个函数。</p>
+
+<p>考察下面的例子：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">1</span> <span class="p">},</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">log</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">log</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span> <span class="c1">// 会打印出全局 a 的值 2，而非对象 o.a</span>
+</code></pre></div></div>
+
+<p>我们想让 <code class="language-plaintext highlighter-rouge">log</code> 执行上下文绑定到对象 <code class="language-plaintext highlighter-rouge">a</code> 身上，于是进行下面的尝试：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">1</span> <span class="p">},</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">log</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">log</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">o</span><span class="p">),</span> <span class="mi">1000</span><span class="p">);</span> <span class="c1">//立即进行了打印输出，而不是等待1000毫秒</span>
+</code></pre></div></div>
+
+<p>执行结果是立即进行了输出，而没有等待。因为 <code class="language-plaintext highlighter-rouge">bind</code> 或 <code class="language-plaintext highlighter-rouge">call</code> 是对函数的调用，当代码执行到的时候当然就是直接执行了。而 <code class="language-plaintext highlighter-rouge">setTimeout</code> 这里需要传入一个函数，但同时我们又想绑定这个函数的上下文。这时候 <code class="language-plaintext highlighter-rouge">bind</code> 就派上用场了。</p>
+
+<p>再举另一种场景下的例子。原生方法作为工具方法调用的时候，为了确保正常调用，是需要带上原生上下文的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">$</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querSelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span><span class="c1">//现在可以愉快地使用 `$` 来选择 DOM 啦，假装在使用 jQuery</span>
+<span class="nx">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">body</span><span class="dl">'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-apply-call-and-bind/assets/alias-native-method.png" alt="alias 原生方法" /></p>
+
+<p><em>alias 原生方法</em></p>
+
+<h3 id="相关资料">相关资料</h3>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply">Function.prototype.apply()</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call">Function.prototype.call()</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind">Function.prototype.bind()</a></li>
+  <li><a href="https://stackoverflow.com/questions/15455009/javascript-call-apply-vs-bind">Javascript call() &amp; apply() vs bind()?</a></li>
+  <li><a href="https://stackoverflow.com/questions/37487497/beginner-explicit-this-binding-javascript">Beginner - Explicit this Binding JavaScript</a></li>
+</ul>
+
+:ET
