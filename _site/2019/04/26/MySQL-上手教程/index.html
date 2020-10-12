@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="MySQL 上手教程 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="MySQL 上手教程
+
+安装
+
+通过官网选择版本下载安装。Mac  上可通过 Homebrew 方便地安装：
+
+$ brew install mysql
+
+
+检查安装是否成功：
+
+$ mysql --version
+mysql  Ver 8.0.15 for osx10.14 on x86_64 (Homebrew)
+
+
+注意到安装成功后的提示里有一些有用的信息：
+
+==&gt; Cavea...">
+    
+    <meta property="article:published_time" content="2019-04-26T15:04:00Z">
+    
+    
+    
+    <meta property="article:tag" content="mysql">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/04/26/MySQL-%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>MySQL 上手教程 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/04/26/MySQL-%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=mysql" title="mysql">mysql</a>
+                        
+                    </div>
+                    <h1>MySQL 上手教程</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on April 26, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="mysql-上手教程">MySQL 上手教程</h1>
+
+<h2 id="安装">安装</h2>
+
+<p>通过官网选择<a href="https://www.mysql.com/downloads/">版本</a>下载安装。Mac  上可通过 <a href="https://brew.sh">Homebrew</a> 方便地安装：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew <span class="nb">install </span>mysql
+</code></pre></div></div>
+
+<p>检查安装是否成功：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysql <span class="nt">--version</span>
+mysql  Ver 8.0.15 <span class="k">for </span>osx10.14 on x86_64 <span class="o">(</span>Homebrew<span class="o">)</span>
+</code></pre></div></div>
+
+<p>注意到安装成功后的提示里有一些有用的信息：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">==&gt;</span> Caveats
+We<span class="s1">'ve installed your MySQL database without a root password. To secure it run:
+    mysql_secure_installation
+
+MySQL is configured to only allow connections from localhost by default
+
+To connect run:
+    mysql -uroot
+
+To have launchd start mysql now and restart at login:
+  brew services start mysql
+Or, if you don'</span>t want/need a background service you can just run:
+  mysql.server start
+<span class="o">==&gt;</span> Analytics
+<span class="nb">install</span>: 61,745 <span class="o">(</span>30 days<span class="o">)</span>, 203,280 <span class="o">(</span>90 days<span class="o">)</span>, 869,736 <span class="o">(</span>365 days<span class="o">)</span>
+install_on_request: 58,156 <span class="o">(</span>30 days<span class="o">)</span>, 187,881 <span class="o">(</span>90 days<span class="o">)</span>, 795,173 <span class="o">(</span>365 days<span class="o">)</span>
+build_error: 0 <span class="o">(</span>30 days<span class="o">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>默认的安装没有设置 root 密码，可运行 <code class="language-plaintext highlighter-rouge">mysql_secure_installation</code> 来设置</li>
+  <li>默认安装下，只允许从本机连接 MySQL 服务，命令是 <code class="language-plaintext highlighter-rouge">mysql -uroot</code></li>
+  <li>启动并使其开机时自启动 <code class="language-plaintext highlighter-rouge">brew services start mysql</code></li>
+</ul>
+
+<p>第一件事我们需要启动 MySQL 服务，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew services start mysql
+</code></pre></div></div>
+
+<p>另外，停止及重启的命令为：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">brew services stop mysql</code></li>
+  <li><code class="language-plaintext highlighter-rouge">brew services restart mysql</code></li>
+</ul>
+
+<h3 id="卸载">卸载</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew uninstall mysql
+</code></pre></div></div>
+
+<p>该命令并没有彻底卸载 MySQL，比如设置过的 root 密码，MySQL 相关的配置都还保留。如需彻底卸载，可参考<a href="https://gist.github.com/vitorbritto/0555879fe4414d18569d">这里</a> 以及<a href="https://stackoverflow.com/a/49970533/1553656">这里</a>。</p>
+
+<h2 id="上手相关的资源">上手相关的资源</h2>
+
+<p>通过<a href="https://dev.mysql.com/doc/refman/8.0/en/">官方文档</a>可查阅<a href="https://dev.mysql.com/doc/refman/8.0/en/tutorial.html">教程</a>及其他相关知识点，比如<a href="https://dev.mysql.com/doc/refman/8.0/en/security.html">安全</a>，<a href="https://dev.mysql.com/doc/refman/8.0/en/optimization.html">优化</a>。</p>
+
+<p>初始可从这个<a href="https://dev.mysql.com/doc/mysql-getting-started/en/">上手教程</a>开始。</p>
+
+<h2 id="数据库的连接">数据库的连接</h2>
+
+<p>默认安装下，MySQL 提供了 root 账户且不需要密码，所以可通过如下命令在本地快速连接，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysql <span class="nt">-uroot</span>
+</code></pre></div></div>
+
+<p>不过还是让我们先为其设置一个密码，操作起来比较规范也更接近于真实生产环境。运行 <a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-secure-installation.html"><code class="language-plaintext highlighter-rouge">mysql_secure_installation</code></a> 后根据向导来为 root 设置密码，同时跟着向导走还能完善一些安全相关的设置。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysql_secure_installation
+</code></pre></div></div>
+
+<p>如果设置密码时提示不符全规则，比如长度不够，可以手动修改 MySQL 的密码验证策略，执行 <code class="language-plaintext highlighter-rouge">SHOW VARIABLES LIKE 'validate_password%';</code> 查看策略，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; show variables like <span class="s1">'validate_password%'</span><span class="p">;</span>
++--------------------------------------+-------+
+| Variable_name                        | Value |
++--------------------------------------+-------+
+| validate_password.check_user_name    | ON    |
+| validate_password.dictionary_file    |       |
+| validate_password.length             | 6     |
+| validate_password.mixed_case_count   | 1     |
+| validate_password.number_count       | 1     |
+| validate_password.policy             | LOW   |
+| validate_password.special_char_count | 1     |
++--------------------------------------+-------+
+7 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">SET GLOBAL validate_password.length = 6;</code> 设置相应策略。</p>
+
+<p>设置好之后来看如何连接到 MySQL 服务。连接 MySQL 的命令为：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysql <span class="nt">-h</span> host <span class="nt">-u</span> user <span class="nt">-p</span>
+</code></pre></div></div>
+
+<p>其中，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">-h</code> 指定 host</li>
+  <li><code class="language-plaintext highlighter-rouge">-u</code> 指定用户名</li>
+  <li><code class="language-plaintext highlighter-rouge">-p</code> 指定密码</li>
+</ul>
+
+<p>设置密码后便不能再缺省密码登录了，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysql <span class="nt">-uroot</span>
+ERROR 1045 <span class="o">(</span>28000<span class="o">)</span>: Access denied <span class="k">for </span>user <span class="s1">'root'</span>@<span class="s1">'localhost'</span> <span class="o">(</span>using password: NO<span class="o">)</span>
+</code></pre></div></div>
+
+<p>需要带上 <code class="language-plaintext highlighter-rouge">-u</code>，<code class="language-plaintext highlighter-rouge">-p</code> 指定用户名及密码。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysql <span class="nt">-h</span> localhost <span class="nt">-u</span> root <span class="nt">-p</span>
+Enter password:
+</code></pre></div></div>
+
+<p>本机的数据库可省略掉 host 的指定，即 <code class="language-plaintext highlighter-rouge">mysql -u root -p</code>。</p>
+
+<p>成功登录后可看到欢迎信息：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Welcome to the MySQL monitor.  Commands end with <span class="p">;</span> or <span class="se">\g</span><span class="nb">.</span>
+Your MySQL connection <span class="nb">id </span>is 25
+Server version: 8.0.15 Homebrew
+
+Copyright <span class="o">(</span>c<span class="o">)</span> 2000, 2019, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type <span class="s1">'help;'</span> or <span class="s1">'\h'</span> <span class="k">for </span>help. Type <span class="s1">'\c'</span> to clear the current input statement.
+
+mysql&gt;
+</code></pre></div></div>
+
+<p>此时便进入了 MySQL 的命令行，可以和数据库进行交互了，比如重置刚才设置的 root 密码：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; ALTER USER <span class="s1">'root'</span>@<span class="s1">'localhost'</span> IDENTIFIED BY <span class="s1">'new_password'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>输入 <code class="language-plaintext highlighter-rouge">help</code> 或 <code class="language-plaintext highlighter-rouge">?</code> 查看帮助。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; <span class="nb">help</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>执行 <code class="language-plaintext highlighter-rouge">exit</code> 或 <code class="language-plaintext highlighter-rouge">quit</code> 可退出登录，即退出 MySQL 命令行。</p>
+
+<h2 id="mysql-命令行及-sql-语句">MySQL 命令行及 SQL 语句</h2>
+
+<p>一些注意点：</p>
+
+<ul>
+  <li>从上面欢迎信息可看到，<strong>SQL 语句</strong>以分号（<code class="language-plaintext highlighter-rouge">;</code>）或 <code class="language-plaintext highlighter-rouge">\g</code>，<code class="language-plaintext highlighter-rouge">\G</code> 结束，如果没有显式输入结束符，回车后会进入多行输入的模式。而 <strong>MySQL 命令</strong>则不需要显式地结束，比如 <code class="language-plaintext highlighter-rouge">help</code>。</li>
+  <li>命令（e.g. <code class="language-plaintext highlighter-rouge">help</code>, <code class="language-plaintext highlighter-rouge">quit</code>, 或 <code class="language-plaintext highlighter-rouge">clear</code>）及 SQL 语句（e.g.  <code class="language-plaintext highlighter-rouge">SELECT</code>, <code class="language-plaintext highlighter-rouge">CREATE TABLE</code>, 或 <code class="language-plaintext highlighter-rouge">INSERT</code>）等是大小写不敏感的，但一般我们都将 SQL 语句中关键字大写。</li>
+  <li>表中<strong>列名</strong>是大小写敏感的，但<strong>表名</strong>因为本质是对应的是<a href="https://dev.mysql.com/doc/refman/8.0/en/identifier-case-sensitivity.html">物理上的文件夹</a>，其大小写是否敏感跟系统有关，在 Windows 上大小写不敏感，在类 Unix 系统比如 Linux，Mac OS 上则是大小写敏感的。在进行字符串比较时，是否大小写敏感与所使用的字符（character collation）集有关。推荐的做法是在代码中始终保持大小写敏感，不要混用，即虽然表名对大小写不敏感就一会大写一会小写。</li>
+</ul>
+
+<p>以下是通过 MySQL 命令行对数据库的一些基本操作。</p>
+
+<h3 id="列出数据库">列出数据库</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/show-databases.html"><code class="language-plaintext highlighter-rouge">SHOW DATABASES</code></a> 语句可查看当前存在的数据库。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW DATABASES<span class="p">;</span>
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.04 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p><em>虽然 MySQL 文档里有说其自带了一个名为 <code class="language-plaintext highlighter-rouge">test</code> 的库方便测试，但这里并没发现，可能跟安装的版本及来源有关</em>。</p>
+
+<h3 id="创建数据库">创建数据库</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/create-database.html"><code class="language-plaintext highlighter-rouge">CREATE DATABASE</code></a> 语句来创建数据库。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE DATABASE &lt;database_name&gt;
+</code></pre></div></div>
+
+<p>比如，创建名为 <code class="language-plaintext highlighter-rouge">pets</code> 的数据库，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; CREATE DATABASE pets<span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.09 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>然后通过 <code class="language-plaintext highlighter-rouge">SHOW DATABASES</code>查看检查刚刚创建的 <code class="language-plaintext highlighter-rouge">pets</code> 数据库是否生效。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW DATABASES<span class="p">;</span>
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| pets               |
+| sys                |
++--------------------+
+5 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h4 id="删除数据库">删除数据库</h4>
+
+<p>相应地，删除数据库的命令为 <code class="language-plaintext highlighter-rouge">DROP DATABASE &lt;database_name&gt;</code>。</p>
+
+<h4 id="重命名数据库">重命名数据库</h4>
+
+<p>MySQL 中没有提供数据库重命名的功能，但可以间接地实现。</p>
+
+<p>先使用想要的名字创建一个新的数据库，再将旧数据库中的表重命名到新数据库下。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; CREATE database new_db_name<span class="p">;</span>
+mysql&gt; RENAME TABLE old_db_name.table1 TO new_db_name.table1, old_db_name.table2 TO new_db_name.table2<span class="p">;</span>
+mysql&gt; DROP database old_db_name<span class="p">;</span>
+</code></pre></div></div>
+
+<p>关于表的重命名，参见下面表的部分。</p>
+
+<h3 id="数据库间的切换">数据库间的切换</h3>
+
+<p>首先通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/use.html"><code class="language-plaintext highlighter-rouge">USE</code></a> 命令切到目标数据库，该命令表示后续 SQL 语句都作用于所切换到的那个数据库。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; USE pets<span class="p">;</span>
+</code></pre></div></div>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">SELECT DATABASE()</code> 可查看当前使用的是哪个数据库。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT DATABASE<span class="o">()</span><span class="p">;</span>
++------------+
+| DATABASE<span class="o">()</span> |
++------------+
+| pets       |
++------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="创建表">创建表</h3>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">CREATE TABLE</code> 语句在数据库中创建表。</p>
+
+<p>以下语句会在数据库中创建一张名为 <code class="language-plaintext highlighter-rouge">cats</code> 表。</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE TABLE cats
+<span class="o">(</span>
+  <span class="nb">id              </span>INT unsigned NOT NULL AUTO_INCREMENT, <span class="c"># Unique ID for the record</span>
+  name            VARCHAR<span class="o">(</span>150<span class="o">)</span> NOT NULL,                <span class="c"># Name of the cat</span>
+  owner           VARCHAR<span class="o">(</span>150<span class="o">)</span> NOT NULL,                <span class="c"># Owner of the cat</span>
+  birth           DATE NOT NULL,                        <span class="c"># Birthday of the cat</span>
+  PRIMARY KEY     <span class="o">(</span><span class="nb">id</span><span class="o">)</span>                                  <span class="c"># Make the id the primary key</span>
+<span class="o">)</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>其中第一列为列名，紧随其后的是该列的<a href="https://dev.mysql.com/doc/refman/8.0/en/data-types.html"><strong>数据类型</strong></a>，然后是指定其是否可空。<code class="language-plaintext highlighter-rouge">id</code> 列通过指定 <code class="language-plaintext highlighter-rouge">AUTO_INCREMENT</code> 使其在新增条目时自动增加。通过 <code class="language-plaintext highlighter-rouge">PRIMARY KEY</code> 设置 <code class="language-plaintext highlighter-rouge">id</code> 列作为表的<a href="https://dev.mysql.com/doc/refman/8.0/en/primary-key-optimization.html"><strong>主键</strong></a>。其中 <code class="language-plaintext highlighter-rouge">#</code> 号后面为<a href="https://dev.mysql.com/doc/refman/8.0/en/comments.html">注释内容</a>。</p>
+
+<p>上面代码可直接粘贴执行。平时自己手动输入的情况下，在进入多行模式行，如果发现前一行输入有误，那么很不幸，根据<a href="https://dev.mysql.com/doc/refman/8.0/en/entering-queries.html">文档</a>的描述，没有办法回到上一行进行修正。只能键入 <code class="language-plaintext highlighter-rouge">\c</code> 结束掉当前的编辑重新编写。</p>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/show-tables.html"><code class="language-plaintext highlighter-rouge">SHOW TABLES</code></a> 可查看到刚刚创建的 <code class="language-plaintext highlighter-rouge">cats</code> 表。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW TABLES<span class="p">;</span>
++----------------+
+| Tables_in_pets |
++----------------+
+| cats           |
++----------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/explain.html"><code class="language-plaintext highlighter-rouge">DESCRIBE</code></a> 可查看各列的详情。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; DESCRIBE cats<span class="p">;</span>
++-------+------------------+------+-----+---------+----------------+
+| Field | Type             | Null | Key | Default | Extra          |
++-------+------------------+------+-----+---------+----------------+
+| <span class="nb">id</span>    | int<span class="o">(</span>10<span class="o">)</span> unsigned | NO   | PRI | NULL    | auto_increment |
+| name  | varchar<span class="o">(</span>150<span class="o">)</span>     | NO   |     | NULL    |                |
+| owner | varchar<span class="o">(</span>150<span class="o">)</span>     | NO   |     | NULL    |                |
+| birth | <span class="nb">date</span>             | NO   |     | NULL    |                |
++-------+------------------+------+-----+---------+----------------+
+4 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h4 id="修改表名">修改表名</h4>
+
+<p>如果想修改已经创建的表名，可通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/rename-table.html"><code class="language-plaintext highlighter-rouge">RENAME TABLE</code></a> 语句来实现。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; RENAME TABLE todo TO todos
+Query OK, 0 rows affected <span class="o">(</span>0.04 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="插入记录">插入记录</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/insert.html"><code class="language-plaintext highlighter-rouge">INSERT...VALUES</code></a> 可向表中插入记录。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>INSERT INTO cats <span class="o">(</span> name, owner, birth<span class="o">)</span> VALUES
+  <span class="o">(</span> <span class="s1">'Sandy'</span>, <span class="s1">'Lennon'</span>, <span class="s1">'2015-01-03'</span> <span class="o">)</span>,
+  <span class="o">(</span> <span class="s1">'Cookie'</span>, <span class="s1">'Casey'</span>, <span class="s1">'2013-11-13'</span> <span class="o">)</span>,
+  <span class="o">(</span> <span class="s1">'Charlie'</span>, <span class="s1">'River'</span>, <span class="s1">'2016-05-21'</span> <span class="o">)</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>关于各数据类型及相应值的设置可参见 <a href="https://dev.mysql.com/doc/refman/8.0/en/literals.html">Literal Values</a>。</p>
+
+<h3 id="查询记录">查询记录</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/select.html"><code class="language-plaintext highlighter-rouge">SELECT</code></a> 语句可查询表中的记录。这应该是使用最为频繁的语句了。</p>
+
+<p>简单情况下的使用格式为 <code class="language-plaintext highlighter-rouge">SELECT &lt;column_name&gt; from &lt;table_name&gt;</code>，表示从 <code class="language-plaintext highlighter-rouge">table_name</code> 查询 <code class="language-plaintext highlighter-rouge">column_name</code> 这一列的数据，可通过将列名指定为通配符 <code class="language-plaintext highlighter-rouge">*</code> 以表示查询所有列。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM cats<span class="p">;</span>
++----+---------+--------+------------+
+| <span class="nb">id</span> | name    | owner  | birth      |
++----+---------+--------+------------+
+|  1 | Sandy   | Lennon | 2015-01-03 |
+|  2 | Cookie  | Casey  | 2013-11-13 |
+|  3 | Charlie | River  | 2016-05-21 |
++----+---------+--------+------------+
+3 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>前面提到过语句的结束除了通过分号，还有 <code class="language-plaintext highlighter-rouge">\g</code>，以及 <code class="language-plaintext highlighter-rouge">\G</code>。前面两者等效，<code class="language-plaintext highlighter-rouge">\G</code> 会将结果竖向展示。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM cats<span class="se">\G</span>
+<span class="k">***************************</span> 1. row <span class="k">***************************</span>
+    <span class="nb">id</span>: 1
+  name: Sandy
+ owner: Lennon
+ birth: 2015-01-03
+<span class="k">***************************</span> 2. row <span class="k">***************************</span>
+    <span class="nb">id</span>: 2
+  name: Cookie
+ owner: Casey
+ birth: 2013-11-13
+<span class="k">***************************</span> 3. row <span class="k">***************************</span>
+    <span class="nb">id</span>: 3
+  name: Charlie
+ owner: River
+ birth: 2016-05-21
+3 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>注意使用 <code class="language-plaintext highlighter-rouge">\G</code> 时语句后面无须再跟分号，否则会报错。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM cats<span class="se">\G</span><span class="p">;</span>
+...
+
+ERROR:
+No query specified
+</code></pre></div></div>
+
+<p>通过添加 <code class="language-plaintext highlighter-rouge">WHERE</code> 条件可对查询进行更加精确的限制，比如只返回满足某个条件下的记录。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT name FROM cats WHERE owner <span class="o">=</span> <span class="s1">'Casey'</span><span class="p">;</span>
++--------+
+| name   |
++--------+
+| Cookie |
++--------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="更新记录">更新记录</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/update.html"><code class="language-plaintext highlighter-rouge">UPDATE</code></a> 对已经插入的记录进行更新。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM cats<span class="p">;</span>
++----+---------+--------+------------+
+| <span class="nb">id</span> | name    | owner  | birth      |
++----+---------+--------+------------+
+|  1 | Sandy   | Lennon | 2015-01-03 |
+|  3 | Charlie | River  | 2016-05-21 |
++----+---------+--------+------------+
+2 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+
+mysql&gt; UPDATE cats SET <span class="nv">name</span><span class="o">=</span><span class="s1">'Tom'</span>,owner<span class="o">=</span><span class="s1">'Tom\'</span>s Daddy<span class="s1">' WHERE cats.name='</span>Charlie<span class="s1">';
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql&gt; SELECT * FROM cats;
++----+-------+-------------+------------+
+| id | name  | owner       | birth      |
++----+-------+-------------+------------+
+|  1 | Sandy | Lennon      | 2015-01-03 |
+|  3 | Tom   | Tom'</span>s Daddy | 2016-05-21 |
++----+-------+-------------+------------+
+2 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>上面更新时，新的 <code class="language-plaintext highlighter-rouge">owner</code> 将 <code class="language-plaintext highlighter-rouge">\</code>` 进行转义后插入，不然 SQL 语句在这里无法被正确解析。</p>
+
+<h3 id="删除记录">删除记录</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/delete.html"><code class="language-plaintext highlighter-rouge">DELETE</code></a> 语句可删除表中的记录。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; DELETE FROM cats WHERE <span class="nv">name</span><span class="o">=</span><span class="s1">'Cookie'</span><span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; SELECT <span class="k">*</span> FROM cats<span class="p">;</span>
++----+---------+--------+------------+
+| <span class="nb">id</span> | name    | owner  | birth      |
++----+---------+--------+------------+
+|  1 | Sandy   | Lennon | 2015-01-03 |
+|  3 | Charlie | River  | 2016-05-21 |
++----+---------+--------+------------+
+2 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="清空表">清空表</h3>
+
+<p>线下测试时，会造成大量测试数据。可通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/truncate-table.html"><code class="language-plaintext highlighter-rouge">TRUNCATE</code></a> 语句来清空指定的表。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>TRUNCATE <span class="o">[</span>TABLE] tbl_name
+</code></pre></div></div>
+
+<p>清空前需谨慎，你应该不会想要在生产环境随便给到这个权限。</p>
+
+<h3 id="列的添加">列的添加</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/alter-table.html"><code class="language-plaintext highlighter-rouge">ALTER TABLE...ADD</code></a> 语句可对表进行列的增加。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; ALTER TABLE cats ADD gender CHAR<span class="o">(</span>1<span class="o">)</span> AFTER name<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.22 sec<span class="o">)</span>
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql&gt; DESCRIBE cats<span class="p">;</span>
++--------+------------------+------+-----+---------+----------------+
+| Field  | Type             | Null | Key | Default | Extra          |
++--------+------------------+------+-----+---------+----------------+
+| <span class="nb">id</span>     | int<span class="o">(</span>10<span class="o">)</span> unsigned | NO   | PRI | NULL    | auto_increment |
+| name   | varchar<span class="o">(</span>150<span class="o">)</span>     | NO   |     | NULL    |                |
+| gender | char<span class="o">(</span>1<span class="o">)</span>          | YES  |     | NULL    |                |
+| owner  | varchar<span class="o">(</span>150<span class="o">)</span>     | NO   |     | NULL    |                |
+| birth  | <span class="nb">date</span>             | NO   |     | NULL    |                |
++--------+------------------+------+-----+---------+----------------+
+5 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>创建表时，除了通过设置 <code class="language-plaintext highlighter-rouge">AUTO_INCREMENT</code> 让 id 列自增，还可通过 <code class="language-plaintext highlighter-rouge">DEFAULT</code> 指定列的默认值。所以这里如果想在数据插入时如果没指定性别就默认为 <code class="language-plaintext highlighter-rouge">M</code>，可以这样来写，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> mysql&gt; ALTER TABLE cats ADD gender CHAR<span class="o">(</span>1<span class="o">)</span> DEFAULT <span class="s1">'M'</span> AFTER name<span class="p">;</span>
+</code></pre></div></div>
+
+<p>前面通过 <code class="language-plaintext highlighter-rouge">DESCRIBE</code> 语句检查表的创建情况，还可通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/show-create-table.html"><code class="language-plaintext highlighter-rouge">SHOW CREATE TABLE</code></a> 以获得关于表更加具体的信息，该语句打印用于创建该表时的 <a href="https://dev.mysql.com/doc/refman/8.0/en/create-table.html"><code class="language-plaintext highlighter-rouge">CREATE TABLE</code></a> 语句，包含了我们在手写时省略掉的一些默认设置。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW CREATE TABLE cats<span class="se">\G</span>
+<span class="k">***************************</span> 1. row <span class="k">***************************</span>
+       Table: cats
+Create Table: CREATE TABLE <span class="sb">`</span>cats<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> int<span class="o">(</span>10<span class="o">)</span> unsigned NOT NULL AUTO_INCREMENT,
+  <span class="sb">`</span>name<span class="sb">`</span> varchar<span class="o">(</span>150<span class="o">)</span> COLLATE utf8mb4_general_ci NOT NULL,
+  <span class="sb">`</span>gender<span class="sb">`</span> char<span class="o">(</span>1<span class="o">)</span> COLLATE utf8mb4_general_ci DEFAULT NULL,
+  <span class="sb">`</span>owner<span class="sb">`</span> varchar<span class="o">(</span>150<span class="o">)</span> COLLATE utf8mb4_general_ci NOT NULL,
+  <span class="sb">`</span>birth<span class="sb">`</span> <span class="nb">date </span>NOT NULL,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span><span class="nb">id</span><span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB <span class="nv">AUTO_INCREMENT</span><span class="o">=</span>4 DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8mb4 <span class="nv">COLLATE</span><span class="o">=</span>utf8mb4_general_ci
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>关键是该语句的输出可直接用来在其他地方执行，然后创建出相同的表，比如上线的时候在线上环境执行。</p>
+
+<h3 id="列的删除">列的删除</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/alter-table.html"><code class="language-plaintext highlighter-rouge">ALTER TABLE...DROP</code></a> 语句可删除表中指定的列。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; DESCRIBE cats<span class="p">;</span>
++--------+------------------+------+-----+---------+----------------+
+| Field  | Type             | Null | Key | Default | Extra          |
++--------+------------------+------+-----+---------+----------------+
+| <span class="nb">id</span>     | int<span class="o">(</span>10<span class="o">)</span> unsigned | NO   | PRI | NULL    | auto_increment |
+| name   | varchar<span class="o">(</span>150<span class="o">)</span>     | NO   |     | NULL    |                |
+| gender | char<span class="o">(</span>1<span class="o">)</span>          | YES  |     | NULL    |                |
+| owner  | varchar<span class="o">(</span>150<span class="o">)</span>     | NO   |     | NULL    |                |
+| birth  | <span class="nb">date</span>             | NO   |     | NULL    |                |
++--------+------------------+------+-----+---------+----------------+
+5 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+
+mysql&gt; ALTER TABLE cats DROP gender<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.21 sec<span class="o">)</span>
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql&gt; DESCRIBE cats<span class="p">;</span>
++-------+------------------+------+-----+---------+----------------+
+| Field | Type             | Null | Key | Default | Extra          |
++-------+------------------+------+-----+---------+----------------+
+| <span class="nb">id</span>    | int<span class="o">(</span>10<span class="o">)</span> unsigned | NO   | PRI | NULL    | auto_increment |
+| name  | varchar<span class="o">(</span>150<span class="o">)</span>     | NO   |     | NULL    |                |
+| owner | varchar<span class="o">(</span>150<span class="o">)</span>     | NO   |     | NULL    |                |
+| birth | <span class="nb">date</span>             | NO   |     | NULL    |                |
++-------+------------------+------+-----+---------+----------------+
+4 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="账户及权限">账户及权限</h2>
+
+<p>默认的 root 账户权限很高，一般不用于日常的作业。 可根据需要创建不同权限的账户来进行管理和作业。</p>
+
+<ul>
+  <li>
+    <p><a href="https://dev.mysql.com/doc/refman/8.0/en/create-user.html">CREATE USER</a> 语句创建账户， <a href="https://dev.mysql.com/doc/refman/8.0/en/drop-user.html">DROP USER</a> 删除账户。</p>
+  </li>
+  <li>
+    <p><a href="https://dev.mysql.com/doc/refman/8.0/en/grant.html">GRANT</a> 语句用于授予权限， <a href="https://dev.mysql.com/doc/refman/8.0/en/revoke.html">REVOKE</a> 用来回收权限。</p>
+  </li>
+  <li>
+    <p><a href="https://dev.mysql.com/doc/refman/8.0/en/show-grants.html">SHOW GRANTS</a> 查看权限的分配情况。</p>
+  </li>
+</ul>
+
+<h3 id="账户创建与分配的权限">账户创建与分配的权限</h3>
+
+<p>以下脚本展示了账户的创建并为其分配相应权限。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE USER <span class="s1">'finley'</span>@<span class="s1">'localhost'</span>
+  IDENTIFIED BY <span class="s1">'password'</span><span class="p">;</span>
+
+GRANT ALL
+  ON <span class="k">*</span>.<span class="k">*</span>
+  TO <span class="s1">'finley'</span>@<span class="s1">'localhost'</span>
+  WITH GRANT OPTION<span class="p">;</span>
+
+CREATE USER <span class="s1">'finley'</span>@<span class="s1">'%.example.com'</span>
+  IDENTIFIED BY <span class="s1">'password'</span><span class="p">;</span>
+
+GRANT ALL
+  ON <span class="k">*</span>.<span class="k">*</span>
+  TO <span class="s1">'finley'</span>@<span class="s1">'%.example.com'</span>
+  WITH GRANT OPTION<span class="p">;</span>
+</code></pre></div></div>
+
+<p>该脚本分别为 <code class="language-plaintext highlighter-rouge">finley</code> 在本地 <code class="language-plaintext highlighter-rouge">localhost</code> 及 <code class="language-plaintext highlighter-rouge">example.com</code> 域上的数据库创建了账户，并赋予了所有权限。其中 <code class="language-plaintext highlighter-rouge">%.example.com</code> 里面的 <code class="language-plaintext highlighter-rouge">%</code> 为通配符，表示该账户对 <code class="language-plaintext highlighter-rouge">example.com</code> 上的数据库拥有权限。</p>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">WITH GRANT OPTION</code> 表示还给该账户赋予了能够<a href="https://dev.mysql.com/doc/refman/5.6/en/privileges-provided.html#priv_grant-option">修改其他用户权限的能力</a>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE USER <span class="s1">'admin'</span>@<span class="s1">'localhost'</span>
+  IDENTIFIED BY <span class="s1">'password'</span><span class="p">;</span>
+
+GRANT RELOAD,PROCESS
+  ON <span class="k">*</span>.<span class="k">*</span>
+  TO <span class="s1">'admin'</span>@<span class="s1">'localhost'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>上面的脚本创建了名为 <code class="language-plaintext highlighter-rouge">'admin'@'localhost'</code> 的账户并赋予了 <a href="https://dev.mysql.com/doc/refman/8.0/en/mysqladmin.html"><code class="language-plaintext highlighter-rouge">RELOAD</code></a>，<a href="https://dev.mysql.com/doc/refman/8.0/en/mysqladmin.html"><code class="language-plaintext highlighter-rouge">PROCESS</code></a> 权限。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE USER <span class="s1">'dummy'</span>@<span class="s1">'localhost'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>上面的脚本创建名为 <code class="language-plaintext highlighter-rouge">'dummy'@'localhost'</code> 的账户并且无须密码登录，但并没有赋予任何权限。后续可通过 <code class="language-plaintext highlighter-rouge">GRANT</code> 来设置权限。</p>
+
+<p>上面创建的账户都是全局作用域，即没有限制数据库。通过为账户指定相应的数据库可限制账户只对某些库有相应操作权限，达到更加精细的设置。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE USER <span class="s1">'custom'</span>@<span class="s1">'localhost'</span>
+  IDENTIFIED BY <span class="s1">'password'</span><span class="p">;</span>
+GRANT ALL
+  ON bankaccount.<span class="k">*</span>
+  TO <span class="s1">'custom'</span>@<span class="s1">'localhost'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>上面脚本创建的 <code class="language-plaintext highlighter-rouge">'custom'@'localhost'</code> 账户对 <code class="language-plaintext highlighter-rouge">bankaccount</code> 库拥有全部权限，但仅限于从 <code class="language-plaintext highlighter-rouge">localhost</code> 进行连接。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE USER <span class="s1">'custom'</span>@<span class="s1">'host47.example.com'</span>
+  IDENTIFIED BY <span class="s1">'password'</span><span class="p">;</span>
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
+  ON expenses.<span class="k">*</span>
+  TO <span class="s1">'custom'</span>@<span class="s1">'host47.example.com'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>上面脚本对 <code class="language-plaintext highlighter-rouge">'custom'@'host47.example.com'</code> 开放 <code class="language-plaintext highlighter-rouge">expenses</code> 数据库的部分权限，其中包括 <code class="language-plaintext highlighter-rouge">SELECT</code>，<code class="language-plaintext highlighter-rouge">INSERT</code>，<code class="language-plaintext highlighter-rouge">UPDATE</code>，<code class="language-plaintext highlighter-rouge">DELETE</code>，<code class="language-plaintext highlighter-rouge">CREATE</code>，<code class="language-plaintext highlighter-rouge">DROP</code> 且只能是操作 <code class="language-plaintext highlighter-rouge">host47.example.com</code> 上的数据库。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE USER <span class="s1">'custom'</span>@<span class="s1">'%.example.com'</span>
+  IDENTIFIED BY <span class="s1">'password'</span><span class="p">;</span>
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
+  ON customer.addresses
+  TO <span class="s1">'custom'</span>@<span class="s1">'%.example.com'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>上面脚本创建 <code class="language-plaintext highlighter-rouge">'custom'@'%.example.com'</code> 账户并只对其开通 <code class="language-plaintext highlighter-rouge">customer</code> 库下面 <code class="language-plaintext highlighter-rouge">addresses</code> 的权限。</p>
+
+<h3 id="权限的查看">权限的查看</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/show-grants.html"><code class="language-plaintext highlighter-rouge">SHOW GRANTS</code></a> 来查看账户的权限。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW GRANTS FOR <span class="s1">'wayou'</span>@<span class="s1">'localhost'</span><span class="p">;</span>
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Grants <span class="k">for </span>wayou@localhost                                                                                                                                                                                                                                                                                                                                                                                   |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, RELOAD, SHUTDOWN, PROCESS, FILE, REFERENCES, INDEX, ALTER, SHOW DATABASES, SUPER, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE, REPLICATION SLAVE, REPLICATION CLIENT, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, CREATE USER, EVENT, TRIGGER, CREATE TABLESPACE, CREATE ROLE, DROP ROLE ON <span class="k">*</span>.<span class="k">*</span> TO <span class="sb">`</span>wayou<span class="sb">`</span>@<span class="sb">`</span>localhost<span class="sb">`</span> WITH GRANT OPTION    |
+| GRANT APPLICATION_PASSWORD_ADMIN,BACKUP_ADMIN,BINLOG_ADMIN,BINLOG_ENCRYPTION_ADMIN,CONNECTION_ADMIN,ENCRYPTION_KEY_ADMIN,GROUP_REPLICATION_ADMIN,PERSIST_RO_VARIABLES_ADMIN,REPLICATION_SLAVE_ADMIN,RESOURCE_GROUP_ADMIN,RESOURCE_GROUP_USER,ROLE_ADMIN,SERVICE_CONNECTION_ADMIN,SESSION_VARIABLES_ADMIN,SET_USER_ID,SYSTEM_VARIABLES_ADMIN,XA_RECOVER_ADMIN ON <span class="k">*</span>.<span class="k">*</span> TO <span class="sb">`</span>wayou<span class="sb">`</span>@<span class="sb">`</span>localhost<span class="sb">`</span> WITH GRANT OPTION |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+2 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/show-create-user.html"><code class="language-plaintext highlighter-rouge">SHOW CREATE USER</code></a> 可查看创建该用户的脚本。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW CREATE USER <span class="s1">'wayou'</span>@<span class="s1">'localhost'</span><span class="p">;</span>
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| CREATE USER <span class="k">for </span>wayou@localhost                                                                                                                                                                                                                                                                     |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| CREATE USER <span class="s1">'wayou'</span>@<span class="s1">'localhost'</span> IDENTIFIED WITH <span class="s1">'caching_sha2_password'</span> AS <span class="s1">'xxx'</span> REQUIRE NONE PASSWORD EXPIRE DEFAULT ACCOUNT UNLOCK PASSWORD HISTORY DEFAULT PASSWORD REUSE INTERVAL DEFAULT PASSWORD REQUIRE CURRENT DEFAULT |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="权限的回收与账户的删除">权限的回收与账户的删除</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/revoke.html"><code class="language-plaintext highlighter-rouge">REVOKE</code></a> 可对权限进行回收，即撤回。</p>
+
+<p>回收所有全局权限的示例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>REVOKE ALL
+  ON <span class="k">*</span>.<span class="k">*</span>
+  FROM <span class="s1">'finley'</span>@<span class="s1">'%.example.com'</span><span class="p">;</span>
+
+REVOKE RELOAD
+  ON <span class="k">*</span>.<span class="k">*</span>
+  FROM <span class="s1">'admin'</span>@<span class="s1">'localhost'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>回收数据库作用域权限的示例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>REVOKE CREATE,DROP
+  ON expenses.<span class="k">*</span>
+  FROM <span class="s1">'custom'</span>@<span class="s1">'host47.example.com'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>回收表作用域权限的示例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>REVOKE INSERT,UPDATE,DELETE
+  ON customer.addresses
+  FROM <span class="s1">'custom'</span>@<span class="s1">'%.example.com'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>同样，可通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/show-grants.html"><code class="language-plaintext highlighter-rouge">SHOW GRANTS</code></a> 来检查权限更新的情况。</p>
+
+<p>最后是账户的删除，通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/drop-user.html"><code class="language-plaintext highlighter-rouge">DROP USER</code></a> 语句，以下是一个删除的示例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DROP USER <span class="s1">'finley'</span>@<span class="s1">'localhost'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="查看用户列表">查看用户列表</h3>
+
+<p>通过查询内置的 <code class="language-plaintext highlighter-rouge">mysql</code> 数据库中 <code class="language-plaintext highlighter-rouge">user</code> 表，可看到添加后的所有用户。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT User FROM mysql.user<span class="p">;</span>
++------------------+
+| user             |
++------------------+
+| mysql.infoschema |
+| mysql.session    |
+| mysql.sys        |
+| root             |
+| wayou            |
++------------------+
+5 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/mysql-getting-started/en/">Getting Started with MySQL</a></li>
+  <li><a href="https://dev.mysql.com/doc/">MySQL Documentation</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-secure-installation.html">4.4.4 mysql_secure_installation — Improve MySQL Installation Security</a></li>
+  <li><a href="https://gist.github.com/vitorbritto/0555879fe4414d18569d">Remove MySQL completely</a></li>
+  <li><a href="https://stackoverflow.com/a/49970533/1553656">MacOSX homebrew mysql root password</a></li>
+  <li><a href="https://stackoverflow.com/questions/8096550/mysql-determine-which-database-is-selected">MySQL: determine which database is selected?</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/identifier-case-sensitivity.html">9.2.2 Identifier Case Sensitivity</a></li>
+  <li><a href="https://superuser.com/questions/363466/mysql-when-in-command-line-how-to-jump-previous-line">mysql when in command line how to jump previous line</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/entering-queries.html">3.2 Entering Queries</a></li>
+  <li><a href="http://collation-charts.org/mysql60/mysql604.utf8_general_ci.european.html">Collation chart for utf8_general_ci, European alphabets (MySQL 6.0.4)</a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/04/25/%E4%BC%98%E9%9B%85%E5%9C%B0-async-await/" data-toggle="tooltip" data-placement="top" title="优雅地 async/await">
+                        Previous<br>
+                        <span>优雅地 async/await</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/04/27/SASS-%E4%B8%AD%E5%8F%98%E9%87%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC/" data-toggle="tooltip" data-placement="top" title="SASS 中变量的默认值">
+                        Next<br>
+                        <span>SASS 中变量的默认值</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

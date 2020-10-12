@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="利用 SASS 简化 `nth-child` 样式的生成 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="利用 SASS 简化 nth-child 样式的生成
+
+考察如下的 HTML 片段，通过 CSS 的 nth-child() 伪选择器实现列表的颜色循环，比如每三个一次循环。
+
+&lt;ul&gt;
+  &lt;li&gt;1&lt;/li&gt;
+  &lt;li&gt;2&lt;/li&gt;
+  &lt;li&gt;3&lt;/li&gt;
+  &lt;li&gt;4&lt;/li&g...">
+    
+    <meta property="article:published_time" content="2019-10-14T19:10:00Z">
+    
+    
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/10/14/%E5%88%A9%E7%94%A8-SASS-%E7%AE%80%E5%8C%96-nth-child-%E6%A0%B7%E5%BC%8F%E7%9A%84%E7%94%9F%E6%88%90/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>利用 SASS 简化 `nth-child` 样式的生成 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/10/14/%E5%88%A9%E7%94%A8-SASS-%E7%AE%80%E5%8C%96-nth-child-%E6%A0%B7%E5%BC%8F%E7%9A%84%E7%94%9F%E6%88%90/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>利用 SASS 简化 `nth-child` 样式的生成</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on October 14, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="利用-sass-简化-nth-child-样式的生成">利用 SASS 简化 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式的生成</h1>
+
+<p>考察如下的 HTML 片段，通过 CSS 的 <code class="language-plaintext highlighter-rouge">nth-child()</code> 伪选择器实现列表的颜色循环，比如每三个一次循环。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;ul&gt;</span>
+  <span class="nt">&lt;li&gt;</span>1<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>2<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>3<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>4<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>5<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>6<span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</code></pre></div></div>
+
+<p>很容易地，我们能得出如下样式代码：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="p">{</span>
+  <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">3n</span> <span class="o">+</span> <span class="nt">1</span><span class="o">)</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">3n</span> <span class="o">+</span> <span class="nt">2</span><span class="o">)</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">3n</span> <span class="o">+</span> <span class="nt">3</span><span class="o">)</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>以上，只三种颜色循环，简单情况下可这样处理。但样式多起来之后，上面代码显得很臃肿且不易维护。</p>
+
+<p>既然是使用 SASS，很容易想到可通过编写循环语句来将其简化。</p>
+
+<p>循环过程就是遍历一个预设的颜色列表，为每一个颜色生成相应的样式。</p>
+
+<h2 id="list--map">List &amp; Map</h2>
+
+<p>首先需要定义一个对象来保存预设的颜色列表，SASS 中的 <a href="https://sass-lang.com/documentation/values/lists">Lists</a> 可满足条件。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>使用上面的 list:</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">;</span>
+
+<span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+  <span class="nc">.color-</span><span class="si">#{</span><span class="nv">$color</span><span class="si">}</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后输出：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.color-indigo</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.color-red</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.color-green</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>当然，也可以定义 <a href="https://sass-lang.com/documentation/values/maps">Map</a> 类型，为每种颜色指定名字，这样使用的时候比较语义：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span>
+  <span class="s2">"indigo"</span><span class="o">:</span> <span class="no">indigo</span><span class="o">,</span>
+  <span class="s2">"red"</span><span class="o">:</span> <span class="no">red</span><span class="o">,</span>
+  <span class="s2">"green"</span><span class="o">:</span> <span class="no">green</span>
+<span class="p">);</span>
+
+<span class="k">@each</span> <span class="nv">$name</span><span class="o">,</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+  <span class="nc">.color-</span><span class="si">#{</span><span class="nv">$name</span><span class="si">}</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="索引">索引</h2>
+
+<p>列表对象及其遍历如上，现在还需要在遍历过程中获得一个 index 索引值，用于生成 <code class="language-plaintext highlighter-rouge">3*n+index</code>。</p>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">index()</code> 函数可以达到目的：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+  <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+  <span class="nc">.color-</span><span class="si">#{</span><span class="nv">$index</span><span class="si">}</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后输出：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.color-1</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.color-2</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.color-3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="生成-nth-child-样式">生成 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式</h2>
+
+<p>结合上面所有，可以得出生成 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式的代码：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">3n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后输出：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span> <span class="o">+</span> <span class="err">1</span><span class="o">)</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span> <span class="o">+</span> <span class="err">2</span><span class="o">)</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span> <span class="o">+</span> <span class="err">3</span><span class="o">)</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>注意到 <code class="language-plaintext highlighter-rouge">nth-child(3n + #{$index})</code> 中的 <code class="language-plaintext highlighter-rouge">3</code> 是硬编码。既然我们的颜色是在一个数组中，所以我们是知道总个数的，也就能替换掉这里硬编码的写法。</p>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">length()</code> 函数可获得 list 的长度。改进后的代码如下：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这样，如果后续有颜色增加，或顺序的调整，我们只需要更新 <code class="language-plaintext highlighter-rouge">$colors</code> 变量的值即可。</p>
+
+<h2 id="mixin">@mixin</h2>
+
+<p>进一步，我们可以将上面遍历生成 <code class="language-plaintext highlighter-rouge">nth-child</code> 的代码抽取成 mixin，这样可以被其他地方使用。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="k">@mixin</span> <span class="nf">nth-color</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="k">@include</span> <span class="nd">nth-color</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="mixin-的优化">mixin 的优化</h2>
+
+<p>但像上面这样还不能达到完全公用，因为 mixin 中使用了 <code class="language-plaintext highlighter-rouge">li</code> 选择器，不是所有需要 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式的地方，都使用的 <code class="language-plaintext highlighter-rouge">li</code> 元素，所以此处需要进行优化，使得 mixin 中的这部分内容灵活一点，以适用不同的使用环境。</p>
+
+<p>首先，使用 <code class="language-plaintext highlighter-rouge">&amp;</code> 父选择器便可快速解决，这样生成的样式便由包含这个 mixin 的选择器决定了。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="k">@mixin</span> <span class="nf">nth-color</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="k">&amp;</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="nt">li</span> <span class="p">{</span>
+    <span class="k">@include</span> <span class="nd">nth-color</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>诚然，这样修改过后，确实可以将该 mixin 使用于多个地方了。</p>
+
+<p>但考虑这么一种情况，因为上面列表比较简单，更加常见的情况是，列表中是另外复杂的元素，而不是单纯的一个元素，比如像下面这样：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;ul&gt;</span>
+  <span class="nt">&lt;li&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">"item"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;h3&gt;</span>title<span class="nt">&lt;/h3&gt;</span>
+      <span class="nt">&lt;div&gt;</span>desc goes here...<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">"item"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;h3&gt;</span>title<span class="nt">&lt;/h3&gt;</span>
+      <span class="nt">&lt;div&gt;</span>desc goes here...<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">"item"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;h3&gt;</span>title<span class="nt">&lt;/h3&gt;</span>
+      <span class="nt">&lt;div&gt;</span>desc goes here...<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</code></pre></div></div>
+
+<p>现在想针对列表元素中的 <code class="language-plaintext highlighter-rouge">h3</code> 进行颜色的设置，即 <code class="language-plaintext highlighter-rouge">nth-child</code> 中设置的 <code class="language-plaintext highlighter-rouge">color</code> 只针对 <code class="language-plaintext highlighter-rouge">h3</code> 而不是整个 <code class="language-plaintext highlighter-rouge">li</code> 元素。</p>
+
+<p>结合前面的优化，似乎可以这样写：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$colors:</span> (indigo, red, green);
+
+@mixin nth-color {
+  @each $color in $colors {
+    $index: index($colors, $color);
+<span class="gd">-    &amp;:nth-child(#{length($colors)}n + #{$index}) {
+</span><span class="gi">+    &amp;:nth-child(#{length($colors)}n + #{$index}) h3{
+</span>      color: $color;
+    }
+  }
+<span class="err">}</span>
+
+<span class="p">ul {
+</span>  li {
+    @include nth-color;
+  }
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>编译后的结果：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">1</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">2</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">3</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>从结果来看，达到了目标。但又在 <code class="language-plaintext highlighter-rouge">nth-color</code> 这个 mixin 中引入了 <code class="language-plaintext highlighter-rouge">h3</code>，使其变得不再通用，问题又回到了之前。</p>
+
+<p>所以 <code class="language-plaintext highlighter-rouge">&amp;</code> 只解决了 <code class="language-plaintext highlighter-rouge">nth-child</code> 父级嵌套的问题，对于 <code class="language-plaintext highlighter-rouge">nth-child</code> 后面还需要自定义选择器的情况，就需要用别的方式进一步优化。</p>
+
+<h2 id="给-mixin-传参">给 <code class="language-plaintext highlighter-rouge">@mixin</code> 传参</h2>
+
+<p>mixin 是可以接收参数的，通过外部传递选择器进来，可以达到将 <code class="language-plaintext highlighter-rouge">h3</code> 从 mixin 从剥离的目的。</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@mixin</span> <span class="nf">nth-color</span><span class="p">(</span><span class="nv">$child</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="k">&amp;</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="si">#{</span><span class="nv">$child</span><span class="si">}</span><span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="nt">li</span> <span class="p">{</span>
+    <span class="k">@include</span> <span class="nd">nth-color</span><span class="p">(</span><span class="s2">"h3"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="从-mixin-将参数传递到外面">从 <code class="language-plaintext highlighter-rouge">@mixin</code> 将参数传递到外面</h2>
+
+<p>最后，<code class="language-plaintext highlighter-rouge">nth-color</code> 这个 mixin 还有一处不够灵活的地方，便是其样式内容。</p>
+
+<p>现在在其中写死了只有一个 <code class="language-plaintext highlighter-rouge">color: $color;</code> 属性，也就是说，使用该 mixin 的地方只能用它来设置元素的字色。如果 mixin 能够将颜色传递出来，这样外部使用的时候就可以用到其他属性上，更加的灵活了。</p>
+
+<p>SASS 确实也提供了这么种机制，即 mixin 能够身外传递参数，借助 <a href="https://sass-lang.com/documentation/at-rules/mixin#passing-arguments-to-content-blocks"><code class="language-plaintext highlighter-rouge">@content</code></a> 指令。</p>
+
+<p><code class="language-plaintext highlighter-rouge">@content</code> 指令指代调用 mixin 时书写的模式内容部分。如下的代码直观展示了其功能：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">@mixin</span> nth-color($child) {
+  @each $color in $colors {
+    $index: index($colors, $color);
+    &amp;:nth-child(#{length($colors)}n + #{$index}) #{$child}{
+      color: $color;
+<span class="gi">+      @content;
+</span>    }
+  }
+<span class="err">}</span>
+
+<span class="p">ul {
+</span>  li {
+<span class="gd">-    @include nth-color("h3")
+</span><span class="gi">+    @include nth-color("h3"){
++      border:1px solid orange;
++    };
+</span>  }
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>编译后内容为：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">1</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">orange</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">2</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">orange</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">3</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">orange</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>可以看到，外部书写的 <code class="language-plaintext highlighter-rouge">border: 1px solid orange;</code> 通过 <code class="language-plaintext highlighter-rouge">@content</code> 指代而放进了每个 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式中。只是这个 <code class="language-plaintext highlighter-rouge">border</code> 的颜色现在还是写死的 <code class="language-plaintext highlighter-rouge">orange</code>，现在来将其设置成跟随相应的字色，即跟着 <code class="language-plaintext highlighter-rouge">color</code> 属性走。</p>
+
+<p>当我们使用 <code class="language-plaintext highlighter-rouge">@content(&lt;arguments...&gt;)</code> 形式的 <code class="language-plaintext highlighter-rouge">@content</code> 时，可以传递一些参数，外部调用该 mixin 时需要使用如下形式来获取传递的参数：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@include &lt;name&gt; using (&lt;arguments...&gt;)
+</code></pre></div></div>
+
+<p><strong>NOTE：</strong>：这里的 <a href="https://sass-lang.com/documentation/at-rules/mixin#passing-arguments-to-content-blocks"><code class="language-plaintext highlighter-rouge">using</code></a> 语法只部分 SASS 实现（Dart Sass since 1.15.0, LibSass, Ruby Sass）中有支持，<a href="https://github.com/sass/node-sass">node-sass</a> 还没有。</p>
+
+<h2 id="最终的-mixin">最终的 mixin</h2>
+
+<p>所以，最终版的代码为：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$colors</span><span class="p">:</span> <span class="p">(</span><span class="no">indigo</span><span class="o">,</span> <span class="no">red</span><span class="o">,</span> <span class="no">green</span><span class="p">);</span>
+
+<span class="k">@mixin</span> <span class="nf">nth-color</span><span class="p">(</span><span class="nv">$child</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">@each</span> <span class="nv">$color</span> <span class="n">in</span> <span class="nv">$colors</span> <span class="p">{</span>
+    <span class="nv">$index</span><span class="p">:</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$colors</span><span class="o">,</span> <span class="nv">$color</span><span class="p">);</span>
+    <span class="k">&amp;</span><span class="nd">:nth-child</span><span class="o">(</span><span class="si">#{</span><span class="nf">length</span><span class="p">(</span><span class="nv">$colors</span><span class="p">)</span><span class="si">}</span><span class="nt">n</span> <span class="o">+</span> <span class="si">#{</span><span class="nv">$index</span><span class="si">}</span><span class="o">)</span> <span class="si">#{</span><span class="nv">$child</span><span class="si">}</span> <span class="p">{</span>
+      <span class="nl">color</span><span class="p">:</span> <span class="nv">$color</span><span class="p">;</span>
+      <span class="k">@content</span> <span class="o">(</span><span class="err">$</span><span class="nt">color</span><span class="o">)</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nt">ul</span> <span class="p">{</span>
+  <span class="nt">li</span> <span class="p">{</span>
+    <span class="k">@include</span> <span class="nd">nth-color</span><span class="p">(</span><span class="s2">"h3"</span><span class="p">)</span> <span class="nf">using</span><span class="p">(</span><span class="nv">$color</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="si">#{</span><span class="nv">$color</span><span class="si">}</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后得到的 CSS：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">1</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">indigo</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">indigo</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">2</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="err">3</span><span class="nt">n</span><span class="o">+</span><span class="err">3</span><span class="o">)</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>通过将生成 <code class="language-plaintext highlighter-rouge">nth-child</code> 样式的规则自动化的过程中，顺带使用了 SASS 中另外一些特性，</p>
+
+<ul>
+  <li>定义和使用数组及对象</li>
+  <li>数组及对象的遍历</li>
+  <li>遍历过程中索引的获取</li>
+  <li><code class="language-plaintext highlighter-rouge">@mixin</code> 的使用，参数的传递</li>
+  <li><code class="language-plaintext highlighter-rouge">@mixin</code> 中 <code class="language-plaintext highlighter-rouge">@content</code> 的使用</li>
+  <li><code class="language-plaintext highlighter-rouge">@mixin</code> 中向外传递参数</li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child">:nth-child()</a></li>
+  <li><a href="https://sass-lang.com/documentation/values/lists">SASS documentation - Lists</a></li>
+  <li><a href="https://sass-lang.com/documentation/values/maps">SASS documentation - Maps</a></li>
+  <li><a href="https://sass-lang.com/documentation/at-rules/mixin#passing-arguments-to-content-blocks"><code class="language-plaintext highlighter-rouge">@content</code></a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/10/12/http-equiv-meta-%E6%A0%87%E7%AD%BE/" data-toggle="tooltip" data-placement="top" title="`http-equiv` meta 标签">
+                        Previous<br>
+                        <span>`http-equiv` meta 标签</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/10/15/CSS-ellipsis-%E4%B8%8E-padding-%E7%BB%93%E5%90%88%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/" data-toggle="tooltip" data-placement="top" title="CSS `ellipsis` 与 `padding` 结合时的问题">
+                        Next<br>
+                        <span>CSS `ellipsis` 与 `padding` 结合时的问题</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

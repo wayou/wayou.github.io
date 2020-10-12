@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="「SF-PLF」13 References - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  Hux: this chapter is very similar to TAPL - ch13 References
+But under a “formal verification” concept, it’s more interesting and practical and push you to think about it!
+
+">
+    
+    <meta property="article:published_time" content="2019-03-13T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Hux">
+    
+    
+    <meta property="article:tag" content="SF (软件基础)">
+    
+    <meta property="article:tag" content="PLF (编程语言基础)">
+    
+    <meta property="article:tag" content="Coq">
+    
+    <meta property="article:tag" content="笔记">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/03/13/sf-plf-13-references/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>「SF-PLF」13 References - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/03/13/sf-plf-13-references/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top invert">
+    
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header style-text" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29" title="SF (软件基础)">SF (软件基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29" title="PLF (编程语言基础)">PLF (编程语言基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=Coq" title="Coq">Coq</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+                        
+                    </div>
+                    <h1>「SF-PLF」13 References</h1>
+                    
+                    <h2 class="subheading">Programming Language Foundations - Typing Mutable References</h2>
+                    <span class="meta">Posted by Hux on March 13, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>Hux: this chapter is very similar to TAPL - ch13 References
+But under a “formal verification” concept, it’s more interesting and practical and push you to think about it!</p>
+</blockquote>
+
+<p><em>computational effects</em> - “side effects” of computation - <em>impure</em> features</p>
+<ul>
+  <li>assign to mutable variables (reference cells, arrays, mutable record fields, etc.)</li>
+  <li>perform input and output to files, displays, or network connections;</li>
+  <li>make non-local transfers of control via exceptions, jumps, or continuations;</li>
+  <li>engage in inter-process synchronization and communication</li>
+</ul>
+
+<blockquote>
+  <p>The main extension will be dealing explicitly with a</p>
+  <ul>
+    <li><em>store</em> (or <em>heap</em>) and</li>
+    <li><em>pointers</em> (or <em>reference</em>) that name <em>store locations</em>, or <em>address</em>…</li>
+  </ul>
+</blockquote>
+
+<p>interesting refinement: type preservation</p>
+
+<h2 id="definition">Definition</h2>
+
+<p>forms of assignments:</p>
+<ul>
+  <li>rare : Gallina   - No</li>
+  <li>some : ML family - Explicit <em>reference</em> and <em>dereference</em></li>
+  <li>most : C  family - Implicit …</li>
+</ul>
+
+<p>For formal study, use ML’s model.</p>
+
+<h2 id="syntax">Syntax</h2>
+
+<h3 id="types--terms">Types &amp; Terms</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">T</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w"> 
+    </span><span class="o">|</span><span class="w"> </span><span class="no">Nat</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">Unit</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">T</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">T</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">Ref</span><span class="w"> </span><span class="no">T</span><span class="w">
+
+</span><span class="no">t</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w"> 
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">                </span><span class="no">Terms</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">ref</span><span class="w"> </span><span class="no">t</span><span class="w">              </span><span class="no">allocation</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">!</span><span class="no">t</span><span class="w">                 </span><span class="no">dereference</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="no">t</span><span class="w">             </span><span class="no">assignment</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">l</span><span class="w">                  </span><span class="no">location</span><span class="w">
+</span></code></pre></div></div>
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">ty</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">Nat</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">ty</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">Unit</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">ty</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">Arrow</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">ty</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">ty</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">ty</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">Ref</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">ty</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">ty</span><span class="pi">.</span><span class="w">
+
+</span><span class="k">Inductive</span><span class="w"> </span><span class="no">tm</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="c">(* STLC with numbers: *)</span><span class="w">
+  </span><span class="o">...</span><span class="w">
+  </span><span class="c">(* New terms: *)</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">unit</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">tm</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">ref</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">tm</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">tm</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">deref</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">tm</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">tm</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">assign</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">tm</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">tm</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">tm</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">loc</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">tm</span><span class="pi">.</span><span class="w">         </span><span class="c">(** 这里表示 l 的方式是 wrap 一个 nat as loc **)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="typing">Typing</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                       Gamma |- t1 : T1
+                   ------------------------                         (T_Ref)
+                   Gamma |- ref t1 : Ref T1
+
+                    Gamma |- t1 : Ref T11
+                    ---------------------                         (T_Deref)
+                      Gamma |- !t1 : T11
+
+                    Gamma |- t1 : Ref T11
+                      Gamma |- t2 : T11
+                   ------------------------                      (T_Assign)
+                   Gamma |- t1 := t2 : Unit
+</code></pre></div></div>
+
+<h3 id="values-and-substitution">Values and Substitution</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">value</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">tm</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">...</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">v_unit</span><span class="w"> </span><span class="p">:</span><span class="w">     </span><span class="no">value</span><span class="w"> </span><span class="no">unit</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">v_loc</span><span class="w">  </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">l</span><span class="o">,</span><span class="w"> </span><span class="no">value</span><span class="w"> </span><span class="o">(</span><span class="no">loc</span><span class="w"> </span><span class="no">l</span><span class="o">).</span><span class="w">  </span><span class="c">(* &lt;-- 注意这里是一个 Π (l:nat) . value (loc l) *)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Fixpoint</span><span class="w"> </span><span class="kp">subst</span><span class="w"> </span><span class="o">(</span><span class="no">x</span><span class="p">:</span><span class="no">string</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">s</span><span class="p">:</span><span class="no">tm</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">t</span><span class="p">:</span><span class="no">tm</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">tm</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="kr">match</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="kp">with</span><span class="w">
+  </span><span class="o">...</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">unit</span><span class="w">         </span><span class="p">⇒</span><span class="w"> </span><span class="no">t</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">ref</span><span class="w"> </span><span class="no">t1</span><span class="w">       </span><span class="p">⇒</span><span class="w"> </span><span class="no">ref</span><span class="w"> </span><span class="o">(</span><span class="kp">subst</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">s</span><span class="w"> </span><span class="no">t1</span><span class="o">)</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">deref</span><span class="w"> </span><span class="no">t1</span><span class="w">     </span><span class="p">⇒</span><span class="w"> </span><span class="no">deref</span><span class="w"> </span><span class="o">(</span><span class="kp">subst</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">s</span><span class="w"> </span><span class="no">t1</span><span class="o">)</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">assign</span><span class="w"> </span><span class="no">t1</span><span class="w"> </span><span class="no">t2</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">assign</span><span class="w"> </span><span class="o">(</span><span class="kp">subst</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">s</span><span class="w"> </span><span class="no">t1</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="kp">subst</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">s</span><span class="w"> </span><span class="no">t2</span><span class="o">)</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">loc</span><span class="w"> </span><span class="p">_</span><span class="w">        </span><span class="p">⇒</span><span class="w"> </span><span class="no">t</span><span class="w">
+  </span><span class="kr">end</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="pragmatics">Pragmatics</h2>
+
+<h3 id="side-effects-and-sequencing">Side Effects and Sequencing</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>r:=succ(!r); !r
+</code></pre></div></div>
+
+<p>can be desugar to</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(\x:Unit. !r) (r:=succ(!r)).
+</code></pre></div></div>
+
+<p>then we can write some “imperative programming”</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>r:=succ(!r); 
+r:=succ(!r); 
+r:=succ(!r); 
+!r
+</code></pre></div></div>
+
+<h3 id="references-and-aliasing">References and Aliasing</h3>
+
+<p><em>shared reference</em> brings <em>_shared state</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let r = ref 5 in
+let s = r in
+s := 82;
+(!r)+1
+</code></pre></div></div>
+
+<h3 id="shared-state">Shared State</h3>
+
+<p><em>thunks</em> as <em>methods</em></p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+    <span class="kr">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">ref</span> <span class="mi">0</span> <span class="kr">in</span>
+    <span class="kr">let</span> <span class="n">incc</span> <span class="o">=</span> <span class="nf">\</span><span class="kr">_</span><span class="o">:</span><span class="kt">Unit</span><span class="o">.</span> <span class="p">(</span><span class="n">c</span> <span class="o">:=</span> <span class="n">succ</span> <span class="p">(</span><span class="o">!</span><span class="n">c</span><span class="p">);</span> <span class="o">!</span><span class="n">c</span><span class="p">)</span> <span class="kr">in</span>
+    <span class="kr">let</span> <span class="n">decc</span> <span class="o">=</span> <span class="nf">\</span><span class="kr">_</span><span class="o">:</span><span class="kt">Unit</span><span class="o">.</span> <span class="p">(</span><span class="n">c</span> <span class="o">:=</span> <span class="n">pred</span> <span class="p">(</span><span class="o">!</span><span class="n">c</span><span class="p">);</span> <span class="o">!</span><span class="n">c</span><span class="p">)</span> <span class="kr">in</span> <span class="p">(</span>
+      <span class="n">incc</span> <span class="n">unit</span><span class="p">;</span> 
+      <span class="n">incc</span> <span class="n">unit</span><span class="p">;</span>          <span class="c1">-- in real PL: the concrete syntax is `incc()`</span>
+      <span class="n">decc</span> <span class="n">unit</span>
+    <span class="p">)</span>
+
+</code></pre></div></div>
+
+<h3 id="objects">Objects</h3>
+
+<p><em>constructor</em> and <em>encapsulation</em>!</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+    <span class="n">newcounter</span> <span class="o">=</span>
+      <span class="nf">\</span><span class="kr">_</span><span class="o">:</span><span class="kt">Unit</span><span class="o">.</span>            <span class="c1">-- add `(self, init_val)` would make it more "real"</span>
+        <span class="kr">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">ref</span> <span class="mi">0</span> <span class="kr">in</span>  <span class="c1">-- private and only accessible via closure (特权方法)</span>
+        <span class="kr">let</span> <span class="n">incc</span> <span class="o">=</span> <span class="nf">\</span><span class="kr">_</span><span class="o">:</span><span class="kt">Unit</span><span class="o">.</span> <span class="p">(</span><span class="n">c</span> <span class="o">:=</span> <span class="n">succ</span> <span class="p">(</span><span class="o">!</span><span class="n">c</span><span class="p">);</span> <span class="o">!</span><span class="n">c</span><span class="p">)</span> <span class="kr">in</span>
+        <span class="kr">let</span> <span class="n">decc</span> <span class="o">=</span> <span class="nf">\</span><span class="kr">_</span><span class="o">:</span><span class="kt">Unit</span><span class="o">.</span> <span class="p">(</span><span class="n">c</span> <span class="o">:=</span> <span class="n">pred</span> <span class="p">(</span><span class="o">!</span><span class="n">c</span><span class="p">);</span> <span class="o">!</span><span class="n">c</span><span class="p">)</span> <span class="kr">in</span>
+        <span class="p">{</span> <span class="n">i</span><span class="o">=</span><span class="n">incc</span><span class="p">,</span> 
+          <span class="n">d</span><span class="o">=</span><span class="n">decc</span>  <span class="p">}</span>       <span class="c1">-- return a "record", or "struct", or "object"!</span>
+          
+</code></pre></div></div>
+
+<h3 id="references-to-compound-types-eg-function-type">References to Compound Types (e.g. Function Type)</h3>
+
+<p>Previously, we use <em>closure</em> to represent <em>map</em>, with <em>functional update</em>
+这里的”数组” （这个到底算不算数组估计都有争议，虽然的确提供了 index 但是这个显然是 O(n) 都不知道算不算 random access…
+并不是 in-place update 里面的数据的，仅仅是一个 <code class="language-plaintext highlighter-rouge">ref</code> 包住的 map 而已 （仅仅是多了可以 shared</p>
+
+<p>其实或许 <code class="language-plaintext highlighter-rouge">list (ref nat)</code> 也可以表达数组？ 反正都是 O(n) 每次都 linear search 也一样……</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+    <span class="n">newarray</span> <span class="o">=</span> <span class="nf">\</span><span class="kr">_</span><span class="o">:</span><span class="kt">Unit</span><span class="o">.</span> <span class="n">ref</span> <span class="p">(</span><span class="nf">\</span><span class="n">n</span><span class="o">:</span><span class="kt">Nat</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">lookup</span> <span class="o">=</span> <span class="nf">\</span><span class="n">a</span><span class="o">:</span><span class="kt">NatArray</span><span class="o">.</span> <span class="nf">\</span><span class="n">n</span><span class="o">:</span><span class="kt">Nat</span><span class="o">.</span> <span class="p">(</span><span class="o">!</span><span class="n">a</span><span class="p">)</span> <span class="n">n</span>   
+    <span class="n">update</span> <span class="o">=</span> <span class="nf">\</span><span class="n">a</span><span class="o">:</span><span class="kt">NatArray</span><span class="o">.</span> <span class="nf">\</span><span class="n">m</span><span class="o">:</span><span class="kt">Nat</span><span class="o">.</span> <span class="nf">\</span><span class="n">v</span><span class="o">:</span><span class="kt">Nat</span><span class="o">.</span>
+               <span class="kr">let</span> <span class="n">oldf</span> <span class="o">=</span> <span class="o">!</span><span class="n">a</span> <span class="kr">in</span>
+               <span class="n">a</span> <span class="o">:=</span> <span class="p">(</span><span class="nf">\</span><span class="n">n</span><span class="o">:</span><span class="kt">Nat</span><span class="o">.</span> <span class="kr">if</span> <span class="n">equal</span> <span class="n">m</span> <span class="n">n</span> <span class="kr">then</span> <span class="n">v</span> <span class="kr">else</span> <span class="n">oldf</span> <span class="n">n</span><span class="p">);</span>
+
+</code></pre></div></div>
+
+<h3 id="null-references">Null References</h3>
+
+<p><em>nullptr</em>!</p>
+
+<p>Deref a nullptr:</p>
+<ul>
+  <li>exception in Java/C#</li>
+  <li>insecure in C/C++     &lt;– violate memory safety!!</li>
+</ul>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+    <span class="kr">type</span> <span class="kt">Option</span> <span class="kt">T</span>   <span class="o">=</span> <span class="kt">Unit</span> <span class="o">+</span> <span class="kt">T</span>
+    <span class="kr">type</span> <span class="kt">Nullable</span> <span class="kt">T</span> <span class="o">=</span> <span class="kt">Option</span> <span class="p">(</span><span class="kt">Ref</span> <span class="kt">T</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>Why is <code class="language-plaintext highlighter-rouge">Option</code> outside?
+think about C, <code class="language-plaintext highlighter-rouge">nullptr</code> is A special <em>const</em> location, like <code class="language-plaintext highlighter-rouge">Unit</code> (<code class="language-plaintext highlighter-rouge">None</code> in terms of datacon) here.</p>
+
+<h3 id="garbage-collection">Garbage Collection</h3>
+
+<p>last issue: store <em>de-allocation</em></p>
+
+<blockquote>
+  <p>w/o GC, extremely difficult to achieve type safety…if a primitive for “explicit deallocation” provided
+one can easily create <em>dangling reference</em> i.e. references -&gt; deleted</p>
+</blockquote>
+
+<p>One type-unsafe example: (pseudo code)</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+   <span class="n">a</span> <span class="o">:</span> <span class="kt">Ref</span> <span class="kt">Nat</span> <span class="o">=</span> <span class="n">ref</span> <span class="mi">1</span><span class="p">;</span>       <span class="c1">-- alloc loc 0</span>
+   <span class="n">free</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>                   <span class="c1">-- free  loc 0</span>
+   <span class="n">b</span> <span class="o">:</span> <span class="kt">Ref</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="n">ref</span> <span class="kt">True</span><span class="p">;</span>   <span class="c1">-- alloc loc 0</span>
+   
+   <span class="n">a</span> <span class="o">:=</span> <span class="o">!</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span>                <span class="c1">-- BOOM!</span>
+
+</code></pre></div></div>
+
+<h2 id="operational-semantics">Operational Semantics</h2>
+
+<h3 id="locations">Locations</h3>
+
+<blockquote>
+  <p>what should be the <em>values</em> of type <code class="language-plaintext highlighter-rouge">Ref T</code>?</p>
+</blockquote>
+
+<p><code class="language-plaintext highlighter-rouge">ref</code> allocate some memory/storage!</p>
+
+<blockquote>
+  <p>run-time store is essentially big array of bytes.
+different datatype need to allocate different size of space (region)</p>
+</blockquote>
+
+<blockquote>
+  <p>we think store as <em>array of values</em>, <em>abstracting away different size of different values</em>
+we use the word <em>location</em> here to prevent from modeling <em>pointer arithmetic</em>, which is un-trackable by most type system</p>
+</blockquote>
+
+<p>location <code class="language-plaintext highlighter-rouge">n</code> is <code class="language-plaintext highlighter-rouge">float</code> doesn’t tell you anything about location <code class="language-plaintext highlighter-rouge">n+4</code>…</p>
+
+<h3 id="stores">Stores</h3>
+
+<p>we defined <code class="language-plaintext highlighter-rouge">replace</code> as <code class="language-plaintext highlighter-rouge">Fixpoint</code> since it’s computational and easier. The consequence is it has to be total.</p>
+
+<h3 id="reduction">Reduction</h3>
+
+<h2 id="typing-1">Typing</h2>
+
+<p>typing context:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">context</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="no">partial_map</span><span class="w"> </span><span class="no">ty</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="store-typings">Store typings</h3>
+
+<p>why not just make a <em>context</em> a map of pair? 
+we don’t want to complicate the dynamics of language,
+and this store typing is only for type check.</p>
+
+<h3 id="the-typing-relation">The Typing Relation</h3>
+
+<h2 id="properties">Properties</h2>
+
+<h3 id="well-typed-stores">Well-Typed Stores</h3>
+
+<h3 id="extending-store-typings">Extending Store Typings</h3>
+
+<h3 id="preservation-finally">Preservation, Finally</h3>
+
+<h3 id="substitution-lemma">Substitution Lemma</h3>
+
+<h3 id="assignment-preserves-store-typing">Assignment Preserves Store Typing</h3>
+
+<h3 id="weakening-for-stores">Weakening for Stores</h3>
+
+<h3 id="preservation">Preservation!</h3>
+
+<h3 id="progress">Progress</h3>
+
+<h2 id="references-and-nontermination">References and Nontermination</h2>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/03/12/sf-plf-12-records/" data-toggle="tooltip" data-placement="top" title="「SF-PLF」12 Records">
+                        Previous<br>
+                        <span>「SF-PLF」12 Records</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/03/14/sf-plf-14-record-sub/" data-toggle="tooltip" data-placement="top" title="「SF-PLF」14 RecordSub">
+                        Next<br>
+                        <span>「SF-PLF」14 RecordSub</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

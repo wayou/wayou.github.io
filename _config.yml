@@ -1,132 +1,78 @@
-# Hexo Configuration
-## Docs: http://hexo.io/docs/configuration.html
-## Source: https://github.com/hexojs/hexo/
+# Site settings
+title: 牛さんの部落格
+email: liuwayong@gmail.com
+description: notes about the coding life
+SEOTitle: 牛さんの部落格|刘哇勇的部落格
+header-img: img/home-bg.jpg
+keyword: "牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计"
+url: "https://huangxuan.me" # your host, for absolute URL
+baseurl: "" # for example, '/blog' if your blog hosted on 'host/blog'
 
-# Site
-title: 刘哇勇的部落格
-subtitle: 程序员小刘是个有理想的青年
-description: 刘哇勇的部落格，分享前端知识，记录生活点滴
-author: Wayou Liu
-language: zh-cn
-timezone:
-
-# URL
-## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://wayou.github.io
-root: /
-permalink: :year/:month/:day/:title/
-permalink_defaults:
-
-# Directory
-source_dir: source
-public_dir: public
-tag_dir: tags
-archive_dir: archives
-category_dir: categories
-code_dir: downloads/code
-i18n_dir: :lang
-skip_render:
-
-# Writing
-new_post_name: :year-:month-:day-:title.md # File name of new posts
-default_layout: post
-titlecase: false # Transform title into titlecase
-external_link: true # Open external links in new tab
-filename_case: 0
-render_drafts: false
-post_asset_folder: true
-relative_link: false
+# Publish posts or collection documents with a future date.
 future: true
-highlight:
-  enable: false
 
-# Category & Tag
-default_category: misc
-category_map:
-tag_map:
+# SNS settings
+RSS: true
+github_username: wayou
+twitter_username: liuwayong
 
-# Date / Time format
-## Hexo uses Moment.js to parse and display date
-## You can customize the date format as defined in
-## http://momentjs.com/docs/#/displaying/format/
-date_format: YYYY-MM-DD
-time_format: HH:mm:ss
+# Build settings
+permalink: pretty
+paginate: 10
+exclude: ["less", "node_modules", "Gruntfile.js", "package.json", "README.md"]
+anchorjs: true # if you want to customize anchor. check out line:181 of `post.html`
+# If you have timezone issue (e.g. #68) in China, uncomment to use this:
+timezone: CN
 
-# Pagination
-## Set per_page to 0 to disable pagination
-per_page: 10
-pagination_dir: page
+# Gems
+# from PR#40, to support local preview for Jekyll 3.0
+# make sure you have this gem installed
+# `$ gem install jekyll-paginate`
+plugins: [jekyll-paginate, octopress-escape-code]
 
-# Extensions
-## Plugins: http://hexo.io/plugins/
+escape_code: true
 
-sitemap:
-  path: sitemap.xml
+# Markdown settings
+# replace redcarpet to kramdown,
+# although redcarpet can auto highlight code, the lack of header-id make the catalog impossible, so I switch to kramdown
+# document: http://jekyllrb.com/docs/configuration/#kramdown
+highlighter: rouge
+markdown: kramdown
+kramdown:
+  input: GFM
+  auto_ids: true
+  syntax_highlighter: rouge
+  # syntax_highlighter_opts:
+  #   span:
+  #     line_numbers: false
+  #   block:
+  #     line_numbers: false
+  #     start_line: 1
 
-prism_plugin:
-  mode: 'preprocess'
-  # theme: 'duotone-sea'
-  theme: 'atom-dark'
+# Disqus settings
+# disqus_username: hux
 
-# add caption for iamges
-image_caption:
-  enable: true
-  class_name:
+# Netease settings
+netease_comment: false
 
-# deploy minify
-all_minifier: true
+# Analytics settings
+# Baidu Analytics
+# ba_track_id: [your track id]
 
-html_minifier:
-  enable: true
-  exclude:
+# Google Analytics
+# ga_track_id: "UA-49627206-1" # Format: UA-xxxxxx-xx
+# ga_domain: huangxuan.me
 
-css_minifier:
-  enable: true
-  exclude:
-    - '*.min.css'
+# Sidebar settings
+sidebar: false # whether or not using Sidebar.
 
-js_minifier:
-  enable: true
-  mangle: true
-  output:
-  compress:
-  exclude:
-    - '*.min.js'
+# Featured Tags
+featured-tags: false # whether or not using Feature-Tags
+featured-condition-size: 1 # A tag will be featured if the size of it is more than this condition value
 
-image_minifier:
-  enable: true
+# Progressive Web Apps
+chrome-tab-theme-color: "#000000"
+service-worker: true
 
-autoprefixer:
-  exclude:
-    - '*.min.css'
-  browsers:
-    - 'last 2 versions'
-
-## dev
-browsersync:
-  notify: false
-
-## feed
-feed:
-  type: atom
-  path: atom.xml
-  limit: 20
-
-marked:
-  gfm: true
-  breaks: false
-  tables: true
-
-server:
-  compress: true # false will cause chinese garblsh problem
-
-## themes: http://hexo.io/themes/
-theme: superme
-
-# Deployment
-## Docs: http://hexo.io/docs/deployment.html
-deploy:
-  type: git
-  repo: https://github.com/wayou/wayou.github.io.git
-  branch: gh-pages
-  message:
+# MathJax rendering for layout:page (e.g. post preview)
+page-mathjax: false

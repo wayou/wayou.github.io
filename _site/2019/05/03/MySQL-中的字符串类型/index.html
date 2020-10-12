@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="MySQL 中的字符串类型 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="MySQL 中的字符串类型
+
+字符类型包括：
+
+
+  CHAR
+  VARCHAR
+  BINARY
+  VARBINARY
+  BLOB
+  TEXT
+  ENUM
+  SET
+
+
+CHAR 与 VARCHAR
+
+CHAR(m) m 取值范围 0～255。列宽固定，存储时字符串右边会补空格，取出时自动去掉空格，除非开启了 PAD_CHAR_TO_FULL_LENGTH。
+
+对于值未超出的情...">
+    
+    <meta property="article:published_time" content="2019-05-03T14:05:00Z">
+    
+    
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/05/03/MySQL-%E4%B8%AD%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>MySQL 中的字符串类型 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/05/03/MySQL-%E4%B8%AD%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>MySQL 中的字符串类型</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on May 3, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="mysql-中的字符串类型">MySQL 中的字符串类型</h1>
+
+<p>字符类型包括：</p>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/char.html">CHAR</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/char.html">VARCHAR</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/binary-varbinary.html">BINARY</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/binary-varbinary.html">VARBINARY</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/blob.html">BLOB</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/blob.html">TEXT</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/enum.html">ENUM</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/set.html">SET</a></li>
+</ul>
+
+<h2 id="char-与-varchar">CHAR 与 VARCHAR</h2>
+
+<p>CHAR(m) m 取值范围 0～255。列宽固定，存储时字符串右边会补空格，取出时自动去掉空格，除非开启了 <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_pad_char_to_full_length">PAD_CHAR_TO_FULL_LENGTH</a>。</p>
+
+<p>对于值未超出的情况，VARCHAR 在存储及查询时皆会完整保留末尾的空格字符。</p>
+
+<p>VARCHAR(m) m 取值范围 0~65535，不定长度，根据存储的值而定，但上限为 m。存储时，会在值的前面预留一到两位用来存储字符串长度。0～255时预留一位，超过的情况使用两位来标识所存储的字符串的长度</p>
+
+<p>在非严格模式下，超过的非空格值会自动截断来存储，同时生成警告信息。建议开启严格模式以避免这种不完整数据的产生。</p>
+
+<p>对于超出的空格值，VARCHAR 会在插入钱截断并产生警告信息，而对于 CHAR 则没有警告信息，直接静默截断存储。</p>
+
+<p>以下表格以 m为4的情况展示了 非严格模式下 CHAR，VARCHAR 在存储不同长度字符串时的表现。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>CHAR(4)</th>
+      <th>Storage Required</th>
+      <th>VARCHAR(4)</th>
+      <th>Storage Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>’’</td>
+      <td>‘    ’</td>
+      <td>4 bytes</td>
+      <td>’’</td>
+      <td>1 byte</td>
+    </tr>
+    <tr>
+      <td>‘ab’</td>
+      <td>‘ab  ’</td>
+      <td>4 bytes</td>
+      <td>‘ab’</td>
+      <td>3 bytes</td>
+    </tr>
+    <tr>
+      <td>‘abcd’</td>
+      <td>‘abcd’</td>
+      <td>4 bytes</td>
+      <td>‘abcd’</td>
+      <td>5 bytes</td>
+    </tr>
+    <tr>
+      <td>‘abcdefgh’</td>
+      <td>‘abcd’</td>
+      <td>4 bytes</td>
+      <td>‘abcd’</td>
+      <td>5 byte</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>以下代码展示了两者在查询时对于末尾空格的处理情况。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; CREATE TABLE vc <span class="o">(</span>v VARCHAR<span class="o">(</span>4<span class="o">)</span>, c CHAR<span class="o">(</span>4<span class="o">))</span><span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+
+mysql&gt; INSERT INTO vc VALUES <span class="o">(</span><span class="s1">'ab  '</span>, <span class="s1">'ab  '</span><span class="o">)</span><span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; SELECT CONCAT<span class="o">(</span><span class="s1">'('</span>, v, <span class="s1">')'</span><span class="o">)</span>, CONCAT<span class="o">(</span><span class="s1">'('</span>, c, <span class="s1">')'</span><span class="o">)</span> FROM vc<span class="p">;</span>
++---------------------+---------------------+
+| CONCAT<span class="o">(</span><span class="s1">'('</span>, v, <span class="s1">')'</span><span class="o">)</span> | CONCAT<span class="o">(</span><span class="s1">'('</span>, c, <span class="s1">')'</span><span class="o">)</span> |
++---------------------+---------------------+
+| <span class="o">(</span>ab  <span class="o">)</span>              | <span class="o">(</span>ab<span class="o">)</span>                |
++---------------------+---------------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.06 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>在进行排序和字符串比较时，具体表现和使用的字符集（character set collation ）有关。</p>
+
+<h3 id="pad-属性">Pad 属性</h3>
+
+<p>Pad 即字符串长度不够时的补齐操作，一般是添加空格。大部分字符集都有一个  <code class="language-plaintext highlighter-rouge">PAD SPACE</code> 的补齐属性（pad attribute）。基于 UCA 9.0.0 的 Unicode 字符集其补齐属性为 <code class="language-plaintext highlighter-rouge">NO PAD</code> 。</p>
+
+<p>可通过查询 <code class="language-plaintext highlighter-rouge">INFORMATION_SCHEMA COLLATIONS</code> 表中的 <code class="language-plaintext highlighter-rouge">PAD_ATTRIBUTE</code> 列获取到和字符集的补齐属性。</p>
+
+<p>补齐属性直接影响非二进制字符串（CHAR, VARCHAR, and TEXT）进行比较时的末尾的空白会如何处理。</p>
+
+<p>对于 <code class="language-plaintext highlighter-rouge">NO PAD</code> 字符集，末尾的空白会参与字符串比较，<code class="language-plaintext highlighter-rouge">PAD SPACE</code> 末尾的空白则不影响比较结果，但在使用 <code class="language-plaintext highlighter-rouge">LIKE</code> 关键字时空白是会参与进来的。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; CREATE TABLE names <span class="o">(</span>myname CHAR<span class="o">(</span>10<span class="o">))</span><span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.03 sec<span class="o">)</span>
+
+mysql&gt; INSERT INTO names VALUES <span class="o">(</span><span class="s1">'Monty'</span><span class="o">)</span><span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; SELECT myname <span class="o">=</span> <span class="s1">'Monty'</span>, myname <span class="o">=</span> <span class="s1">'Monty  '</span> FROM names<span class="p">;</span>
++------------------+--------------------+
+| myname <span class="o">=</span> <span class="s1">'Monty'</span> | myname <span class="o">=</span> <span class="s1">'Monty  '</span> |
++------------------+--------------------+
+|                1 |                  1 |
++------------------+--------------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; SELECT myname LIKE <span class="s1">'Monty'</span>, myname LIKE <span class="s1">'Monty  '</span> FROM names<span class="p">;</span>
++---------------------+-----------------------+
+| myname LIKE <span class="s1">'Monty'</span> | myname LIKE <span class="s1">'Monty  '</span> |
++---------------------+-----------------------+
+|                   1 |                     0 |
++---------------------+-----------------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>对于要求列值要求在记录中唯一（<code class="language-plaintext highlighter-rouge">unique values</code>）的表格，在插入时需要格外注意，如果插入的值只包含空格的区别，在空格不影响比较结果的字符集中会报 <code class="language-plaintext highlighter-rouge">duplicate-key error</code>。比如已经有记录的值为 <code class="language-plaintext highlighter-rouge">a</code> 尝试插入 <code class="language-plaintext highlighter-rouge">a </code> 时会报错。</p>
+
+<h2 id="binary-与-varbinary">BINARY 与 VARBINARY</h2>
+
+<p>基本与 CHAR 和 VARCHAR 类似，不同点在于存储的是二进制字符值。存储长度的取值范围也一样，只是单位是字节而不是字符。</p>
+
+<p>写入时对于超出限制的值，会自动截断，除非开启 MySQL 的严格模式，此时会报错而非截断后成功写入。</p>
+
+<p>对于 <code class="language-plaintext highlighter-rouge">BINARY</code> 类型，存入的值长度不够时会自动补上二进制中的零 <code class="language-plaintext highlighter-rouge">0x00</code>。查询时也会返回补零后的值。在进行比较操作时，所有字节都参与计算，注意二进制的零值 <code class="language-plaintext highlighter-rouge">0x00</code> 与空格是不同的值，<code class="language-plaintext highlighter-rouge">0x00</code> &lt; 空格。</p>
+
+<p>以下代码展示了自动补零在存取时的表现，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; CREATE TABLE t <span class="o">(</span>c BINARY<span class="o">(</span>3<span class="o">))</span><span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+
+mysql&gt; INSERT INTO t SET c <span class="o">=</span> <span class="s1">'a'</span><span class="p">;</span>
+Query OK, 1 row affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+
+mysql&gt; SELECT HEX<span class="o">(</span>c<span class="o">)</span>, c <span class="o">=</span> <span class="s1">'a'</span>, c <span class="o">=</span> <span class="s1">'a\0\0'</span> from t<span class="p">;</span>
++--------+---------+-------------+
+| HEX<span class="o">(</span>c<span class="o">)</span> | c <span class="o">=</span> <span class="s1">'a'</span> | c <span class="o">=</span> <span class="s1">'a\0\0'</span> |
++--------+---------+-------------+
+| 610000 |       0 |           1 |
++--------+---------+-------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.09 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>所以如果你期望查询时得到与存储时一致的值，最好使用 <code class="language-plaintext highlighter-rouge">VARBINARY</code> 或 <code class="language-plaintext highlighter-rouge">BLOB</code> 类型。</p>
+
+<h2 id="blob-与--text-类型">BLOB 与  TEXT 类型</h2>
+
+<p>BLOB (binary large object) 即大型二进制形式的对象，用于数据量大的情况。BLOB 大类中具体包含：TINYBLOB, BLOB, MEDIUMBLOB 以及 LONGBLOB 四种数据类型，他们只存在存储上限的区别。</p>
+
+<p>文本类型 <code class="language-plaintext highlighter-rouge">TEXT</code> 下面同样包含不同上限的具体类型：TINYTEXT, TEXT, MEDIUMTEXT 及 LONGTEXT 。这四种类型功能及上限与 BLOB 中的四种类型一一对应，只是该类型用于字符而非二进制值。</p>
+
+<p>BLOB 类型内部处理时以二进制字符串的形式处理，在进行比较操作或排序时，按其表示的二进制数字来进行。而 TEXT 类型表示非二进制字符，在进行比较或排序时与字符集有关。</p>
+
+<p>非严格模式下写入一个超出长度的值时，会自动截断后存入，同时生成警告信息，这一行为可通过开启严格模式来避免。</p>
+
+<p>其中对于 TEXT 类型，截取末尾的空格字符时始终生成警告信息，与 MySQL 当前设置的模式无关。</p>
+
+<p>一般来说你可把 BLOB 看作是 VARBLOB，存储任意大的数据。TEXT 同理，可看成 VARCHAR。但还是有一些区别的：</p>
+
+<ul>
+  <li>建立索引时 BLOB 和 TEXT 需要指定长度（index prefix length），而 CHAR 和 VARCHAR 不需要。</li>
+  <li>BLOB 和 TEXT 类型没有默认值，不能设置 <code class="language-plaintext highlighter-rouge">DEFAULT</code> 属性。</li>
+</ul>
+
+<p>因为 BLOB 和 TEXT 所存的值有可能很大，实际使用时会遇到些限制，比如</p>
+
+<ul>
+  <li>排序时只取 <a href="https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_max_sort_length">max_sort_length</a> 的长度。该值默认为 1024，但可随时配置：</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SET max_sort_length <span class="o">=</span> 2000<span class="p">;</span>
+mysql&gt; SELECT <span class="nb">id</span>, comment FROM t
+    -&gt; ORDER BY comment<span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>查询 BLOB 和 TEXT 类型时其结果会处理到一个临时表中，而不是像其他类型一样放到内存里，因为内存中是不支持这两种类型的（关于原因详见 <a href="https://dev.mysql.com/doc/refman/8.0/en/internal-temporary-tables.html">Section 8.4.4, “Internal Temporary Table Use in MySQL</a>）。这里临时表的操作涉及到额外的文件 I/O，在查询时会影响性能，所以应该尽量避免这样的操作。</li>
+  <li>尽管  BLOB 和 TEXT 允许存储的值很大，实际使用时，其上限受内存及传输 buffer 大小的影响。</li>
+</ul>
+
+<h2 id="enum-类型">ENUM 类型</h2>
+
+<p>枚举值类型通过在创建表时指定该类型可接受的合法值列表，相比一般的字符类型有以下优势：</p>
+<ul>
+  <li>节省存储空间，枚举值实际存储时会转成数字。</li>
+  <li>语义化。相比 直接使用数字类型，枚举类型在查询时会返回其对应的字符串。</li>
+</ul>
+
+<h3 id="枚举的创建与使用">枚举的创建与使用</h3>
+
+<p>枚举中的项通过单引号指定，以下是一个创建和使用枚举类型的示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">shirts</span> <span class="p">(</span>
+    <span class="n">name</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span>
+    <span class="k">size</span> <span class="nb">ENUM</span><span class="p">(</span><span class="s1">'x-small'</span><span class="p">,</span> <span class="s1">'small'</span><span class="p">,</span> <span class="s1">'medium'</span><span class="p">,</span> <span class="s1">'large'</span><span class="p">,</span> <span class="s1">'x-large'</span><span class="p">)</span>
+<span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">shirts</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">size</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'dress shirt'</span><span class="p">,</span><span class="s1">'large'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'t-shirt'</span><span class="p">,</span><span class="s1">'medium'</span><span class="p">),</span>
+  <span class="p">(</span><span class="s1">'polo shirt'</span><span class="p">,</span><span class="s1">'small'</span><span class="p">);</span>
+<span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="k">size</span> <span class="k">FROM</span> <span class="n">shirts</span> <span class="k">WHERE</span> <span class="k">size</span> <span class="o">=</span> <span class="s1">'medium'</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">---------+--------+</span>
+<span class="o">|</span> <span class="n">name</span>    <span class="o">|</span> <span class="k">size</span>   <span class="o">|</span>
+<span class="o">+</span><span class="c1">---------+--------+</span>
+<span class="o">|</span> <span class="n">t</span><span class="o">-</span><span class="n">shirt</span> <span class="o">|</span> <span class="n">medium</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">---------+--------+</span>
+<span class="k">UPDATE</span> <span class="n">shirts</span> <span class="k">SET</span> <span class="k">size</span> <span class="o">=</span> <span class="s1">'small'</span> <span class="k">WHERE</span> <span class="k">size</span> <span class="o">=</span> <span class="s1">'large'</span><span class="p">;</span>
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>不支持在创建时使用表达式，比如下面这样是不行的：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">🚨</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">sizes</span> <span class="p">(</span>
+    <span class="k">size</span> <span class="nb">ENUM</span><span class="p">(</span><span class="s1">'small'</span><span class="p">,</span> <span class="n">CONCAT</span><span class="p">(</span><span class="s1">'med'</span><span class="p">,</span><span class="s1">'ium'</span><span class="p">),</span> <span class="s1">'large'</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="o">#</span> <span class="err">🚨</span>
+<span class="k">SET</span> <span class="o">@</span><span class="n">mysize</span> <span class="o">=</span> <span class="s1">'medium'</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">sizes</span> <span class="p">(</span>
+    <span class="k">size</span> <span class="nb">ENUM</span><span class="p">(</span><span class="s1">'small'</span><span class="p">,</span> <span class="o">@</span><span class="n">mysize</span><span class="p">,</span> <span class="s1">'large'</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="枚举项的数字值">枚举项的数字值</h3>
+
+<p>枚举列表中每项都对应一个数字值，是一个从 1 开始的索引值。枚举类型最多可包含 65,535 个候选项。</p>
+
+<p>对于写入的非法值会存储成 0，所以可通过查询为 0 的列找出所有这些非法的记录。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM tbl_name WHERE <span class="nv">enum_col</span><span class="o">=</span>0<span class="p">;</span>
+</code></pre></div></div>
+
+<p>NULL 的索引值是 NULL。</p>
+
+<p>以 <code class="language-plaintext highlighter-rouge">ENUM('Mercury', 'Venus', 'Earth')</code> 为例，以下表格展示了不同值其对应的索引值：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Index</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>NULL</td>
+      <td>NULL</td>
+    </tr>
+    <tr>
+      <td>’’</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>‘Mercury’</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>‘Venus’</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>‘Earth’</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>在需要数字的上下文中，枚举类型返回时会自动处理成数字，譬如：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT enum_col+0 FROM tbl_name<span class="p">;</span>
+</code></pre></div></div>
+
+<p>插入时，数字类型的值会自动与枚举中的索引对应，如果插入的数字带引号，即尝试以字符串形式存入，MySQL 会先从枚举列表中找，如果找不到相应的匹配项，会将这个插入值当索引处理。所以尽量不要设置数字类型的枚举，这导致存取时一些不可预测的情况发生。比如：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">numbers</span> <span class="nb">ENUM</span><span class="p">(</span><span class="s1">'0'</span><span class="p">,</span><span class="s1">'1'</span><span class="p">,</span><span class="s1">'2'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>当你存入数字 <code class="language-plaintext highlighter-rouge">2</code> 时，会解析对应到枚举中索引为 2 的值即 <code class="language-plaintext highlighter-rouge">'1'</code>。存入字符 <code class="language-plaintext highlighter-rouge">'2'</code> 时，与枚举中最后一项匹配。尝试存入 <code class="language-plaintext highlighter-rouge">'3'</code> 时，枚举值中没有相应的匹配，此时 MySQL 尝试将 3 当成索引存入，对应的值是枚举中的 <code class="language-plaintext highlighter-rouge">'2'</code>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; INSERT INTO t <span class="o">(</span>numbers<span class="o">)</span> VALUES<span class="o">(</span>2<span class="o">)</span>,<span class="o">(</span><span class="s1">'2'</span><span class="o">)</span>,<span class="o">(</span><span class="s1">'3'</span><span class="o">)</span><span class="p">;</span>
+mysql&gt; SELECT <span class="k">*</span> FROM t<span class="p">;</span>
++---------+
+| numbers |
++---------+
+| 1       |
+| 2       |
+| 2       |
++---------+
+</code></pre></div></div>
+
+<h3 id="查看枚举值">查看枚举值</h3>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/show-columns.html">SHOW COLUMNS FROM tbl_name LIKE ‘enum_col’</a> 可在结果中的 <code class="language-plaintext highlighter-rouge">Type</code> 列查看定义好的枚举其可选值有哪些。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW COLUMNS FROM enum_test LIKE <span class="s1">'n'</span><span class="p">;</span>
++-------+-------------------+------+-----+---------+-------+
+| Field | Type              | Null | Key | Default | Extra |
++-------+-------------------+------+-----+---------+-------+
+| n     | enum<span class="o">(</span><span class="s1">'0'</span>,<span class="s1">'1'</span>,<span class="s1">'2'</span><span class="o">)</span> | YES  |     | NULL    |       |
++-------+-------------------+------+-----+---------+-------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="排序规则">排序规则</h3>
+
+<p>排序时根据其在枚举列表中的索引来定。比如 ` ENUM(‘b’, ‘a’)<code class="language-plaintext highlighter-rouge"> 中 'b' 会排在 </code>a<code class="language-plaintext highlighter-rouge"> 前面，而不是按常理那样觉得 </code>a<code class="language-plaintext highlighter-rouge"> 是在 </code>b<code class="language-plaintext highlighter-rouge"> 前面的。为了避免这种不太直观的情况，在定义枚举时最好按字母顺序定义，也可以在使用 </code>ORDER BY<code class="language-plaintext highlighter-rouge"> 语句时通过指定排序类型来修正，即使用 </code>ORDER BY CAST(col as CHAR)<code class="language-plaintext highlighter-rouge"> 或 </code>ORDER BY CONCAT(col)`。</p>
+
+<p>空字符串会排在非空值前面，NULL 值在所有值前面。</p>
+
+<h2 id="set-类型">SET 类型</h2>
+
+<p>SET 类型是一组字符串值，它的值类似于枚举，必需是定义表时指定的候选值中所列出的值，不同点在于它可同时支持设置多个候选值，用逗号分隔（同时意味着候选值自身不能包含逗号）。</p>
+
+<p>比如类型为定义为 <code class="language-plaintext highlighter-rouge">SET('one', 'two') NOT NULL</code> 的列，可有以下合法的值：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>''
+'one'
+'two'
+'one,two'
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">SET</code> 最多可定义 64 个候选值。严格模式下，定义时如果指定了重复的候选值会抛错。候选值末尾的空白会自动截取掉。</p>
+
+<p>内部存储时其实存的是一个字节表。每个候选值都对应一个二进制值中的一位。比如定义如下的表：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">set_test</span><span class="p">(</span>
+    <span class="n">rowid</span> <span class="nb">INT</span> <span class="nb">UNSIGNED</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">myset</span> <span class="k">SET</span><span class="p">(</span><span class="s1">'Travel'</span><span class="p">,</span><span class="s1">'Sports'</span><span class="p">,</span><span class="s1">'Dancing'</span><span class="p">,</span><span class="s1">'Fine Dining'</span><span class="p">)</span>
+  <span class="p">);</span>
+</code></pre></div></div>
+
+<p>每个值对应一个二进制位数值，所以每个候选值也对应一个计算后的数字。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Element</th>
+      <th>SET Value</th>
+      <th>Decimal Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Travel</td>
+      <td>00000001</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Sports</td>
+      <td>00000010</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>Dancing</td>
+      <td>00000100</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>Fine Dining</td>
+      <td>00001000</td>
+      <td>8</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>这样在设置时，如果设置的是数字，会解析成对应的二进制形式，比如 9=8+1，对应 <code class="language-plaintext highlighter-rouge">Travel</code> 和 <code class="language-plaintext highlighter-rouge">Fine Dining</code>。所以实际设置成了 <code class="language-plaintext highlighter-rouge">Travel,Fine Dining</code>。</p>
+
+<p>同时 9 的二进制表示是 <code class="language-plaintext highlighter-rouge">00001001</code>，通过上面表格对比可知相应位（二进制中第0位和第三位）对应的值也是 <code class="language-plaintext highlighter-rouge">Travel/00000001</code> 和 <code class="language-plaintext highlighter-rouge">Fine Dining/00001000</code>。</p>
+
+<p>在设置时不关心候选值的顺序及次数，多次指定同一个候选值最终只会出现一次。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; CREATE TABLE myset <span class="o">(</span>col SET<span class="o">(</span><span class="s1">'a'</span>, <span class="s1">'b'</span>, <span class="s1">'c'</span>, <span class="s1">'d'</span><span class="o">))</span><span class="p">;</span>
+
+mysql&gt; INSERT INTO myset <span class="o">(</span>col<span class="o">)</span> VALUES 
+-&gt; <span class="o">(</span><span class="s1">'a,d'</span><span class="o">)</span>, <span class="o">(</span><span class="s1">'d,a'</span><span class="o">)</span>, <span class="o">(</span><span class="s1">'a,d,a'</span><span class="o">)</span>, <span class="o">(</span><span class="s1">'a,d,d'</span><span class="o">)</span>, <span class="o">(</span><span class="s1">'d,a,d'</span><span class="o">)</span><span class="p">;</span>
+Query OK, 5 rows affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+Records: 5  Duplicates: 0  Warnings: 0
+
+
+mysql&gt; SELECT col FROM myset<span class="p">;</span>
++------+
+| col  |
++------+
+| a,d  |
+| a,d  |
+| a,d  |
+| a,d  |
+| a,d  |
++------+
+5 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.04 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>通过 <a href="https://dev.mysql.com/doc/refman/8.0/en/string-functions.html#function_find-in-set"><code class="language-plaintext highlighter-rouge">FIND_IN_SET()</code></a> 及 <a href="https://dev.mysql.com/doc/refman/8.0/en/string-comparison-functions.html#operator_like"><code class="language-plaintext highlighter-rouge">LIKE</code></a> 来查询 SET 值。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM tbl_name WHERE FIND_IN_SET<span class="o">(</span><span class="s1">'value'</span>,set_col<span class="o">)&gt;</span>0<span class="p">;</span>
+mysql&gt; SELECT <span class="k">*</span> FROM tbl_name WHERE set_col LIKE <span class="s1">'%value%'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>以下用法也是可行的：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM tbl_name WHERE set_col &amp; 1<span class="p">;</span>
+mysql&gt; SELECT <span class="k">*</span> FROM tbl_name WHERE set_col <span class="o">=</span> <span class="s1">'val1,val2'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/string-types.html">MySQL Reference Manual - String Types</a></li>
+  <li><a href="http://download.nust.na/pub6/mysql/tech-resources/articles/mysql-set-datatype.html">The MySQL SET Datatype</a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/05/02/k-sum-%E9%97%AE%E9%A2%98/" data-toggle="tooltip" data-placement="top" title="k-sum 问题">
+                        Previous<br>
+                        <span>k-sum 问题</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/05/04/RabbitMQ-Node.js-%E7%A4%BA%E4%BE%8B/" data-toggle="tooltip" data-placement="top" title="RabbitMQ Node.js 示例">
+                        Next<br>
+                        <span>RabbitMQ Node.js 示例</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

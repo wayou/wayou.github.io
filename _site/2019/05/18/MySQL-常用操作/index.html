@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="MySQL 常用操作 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="MySQL 常用操作
+
+如果是本地开发，使用 GUI 工具比如官方的 MySQL Workbench 会省事很多，但命令行方式在服务器环境特别有用。
+
+另，如果官方的下载地址很慢的话，可尝试这个镜像，速度超快的。
+
+数据库
+
+创建数据库
+
+CREATE DATABASE &lt;db_name&gt;;
+
+
+删除数据库
+
+DROP DATABASE &lt;db_name&gt;; 
+
+
+注...">
+    
+    <meta property="article:published_time" content="2019-05-18T15:05:00Z">
+    
+    
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/05/18/MySQL-%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>MySQL 常用操作 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/05/18/MySQL-%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>MySQL 常用操作</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on May 18, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="mysql-常用操作">MySQL 常用操作</h1>
+
+<p>如果是本地开发，使用 GUI 工具比如官方的 <a href="https://www.mysql.com/products/workbench/">MySQL Workbench</a> 会省事很多，但命令行方式在服务器环境特别有用。</p>
+
+<p>另，如果官方的下载地址很慢的话，可尝试这个<a href="http://www.mirrorservice.org/sites/ftp.mysql.com/Downloads/MySQLGUITools/">镜像</a>，速度超快的。</p>
+
+<h2 id="数据库">数据库</h2>
+
+<h3 id="创建数据库">创建数据库</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="o">&lt;</span><span class="n">db_name</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="删除数据库">删除数据库</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DROP</span> <span class="k">DATABASE</span> <span class="o">&lt;</span><span class="n">db_name</span><span class="o">&gt;</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<p>注意 <code class="language-plaintext highlighter-rouge">DROP</code> 操作没有确认步骤，回车就执行了。所以进行删除操作时需要谨慎。</p>
+
+<h3 id="重命名数据库">重命名数据库</h3>
+
+<p><code class="language-plaintext highlighter-rouge">RENAME</code> 命令是用来对表进行重命名的，数据库没有对应的命令，只能间接实现。原理是将老数据库中的所有表重命名到新数据库下。当然，首先得创建新数据库。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">RENAME</span> <span class="k">TABLE</span> <span class="n">old_db</span><span class="p">.</span><span class="k">table</span> <span class="k">TO</span> <span class="n">new_db</span><span class="p">.</span><span class="k">table</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这是一个重复性的操作，所以可以通过脚本来实现，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql <span class="nt">-u</span> username <span class="nt">-ppassword</span> old_db <span class="nt">-sNe</span> <span class="s1">'show tables'</span> | <span class="k">while </span><span class="nb">read </span>table<span class="p">;</span> <span class="se">\ </span>
+    <span class="k">do </span>mysql <span class="nt">-u</span> username <span class="nt">-ppassword</span> <span class="nt">-sNe</span> <span class="s2">"rename table old_db.</span><span class="nv">$table</span><span class="s2"> to new_db.</span><span class="nv">$table</span><span class="s2">"</span><span class="p">;</span> <span class="k">done</span>
+</code></pre></div></div>
+
+<p>或，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for </span>table <span class="k">in</span> <span class="sb">`</span>mysql <span class="nt">-u</span> root <span class="nt">-ppassword</span> <span class="nt">-s</span> <span class="nt">-N</span> <span class="nt">-e</span> <span class="s2">"use old_db;show tables from old_db;"</span><span class="sb">`</span><span class="p">;</span> <span class="k">do </span>mysql <span class="nt">-u</span> root <span class="nt">-ppassword</span> <span class="nt">-s</span> <span class="nt">-N</span> <span class="nt">-e</span> <span class="s2">"use old_db;rename table old_db.</span><span class="nv">$table</span><span class="s2"> to new_db.</span><span class="nv">$table</span><span class="s2">;"</span><span class="p">;</span> <span class="k">done</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">-ppassword</code> 中 <code class="language-plaintext highlighter-rouge">password</code> 为你的密码，和 <code class="language-plaintext highlighter-rouge">-p</code> 之间没有空格。</p>
+
+<p>注：上面为 shell 脚本而非 sql 脚本，在 shell 中运行或保存成 shell 文件执行。</p>
+
+<h3 id="清空数据库">清空数据库</h3>
+
+<p>清空数据库，即清空数据库中所有表中的记录。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="n">FOREIGN_KEY_CHECKS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="o">@</span><span class="n">str</span> <span class="p">:</span><span class="o">=</span> <span class="n">CONCAT</span><span class="p">(</span><span class="s1">'TRUNCATE TABLE '</span><span class="p">,</span> <span class="n">table_schema</span><span class="p">,</span> <span class="s1">'.'</span><span class="p">,</span> <span class="k">table_name</span><span class="p">,</span> <span class="s1">';'</span><span class="p">)</span>
+<span class="k">FROM</span>   <span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span>
+<span class="k">WHERE</span>  <span class="n">table_type</span>   <span class="o">=</span> <span class="s1">'BASE TABLE'</span>
+  <span class="k">AND</span>  <span class="n">table_schema</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">'db1_name'</span><span class="p">,</span><span class="s1">'db2_name'</span><span class="p">);</span>
+
+<span class="k">PREPARE</span> <span class="n">stmt</span> <span class="k">FROM</span> <span class="o">@</span><span class="n">str</span><span class="p">;</span>
+
+<span class="k">EXECUTE</span> <span class="n">stmt</span><span class="p">;</span>
+
+<span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> <span class="n">stmt</span><span class="p">;</span>
+
+<span class="k">SET</span> <span class="n">FOREIGN_KEY_CHECKS</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="导出数据库">导出数据库</h3>
+
+<p>导出操作是通过 <code class="language-plaintext highlighter-rouge">mysqldump</code> 命令行工具来完成的。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> <span class="n">mysqldump</span> <span class="o">-</span><span class="n">u</span> <span class="o">&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">p</span> <span class="c1">--databases [db1] [db2]... &gt; backup.sql</span>
+</code></pre></div></div>
+
+<p>默认导出时是带数据记录的，可通过 <code class="language-plaintext highlighter-rouge">--no-data</code> 只导出表结构，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> <span class="n">mysqldump</span> <span class="o">-</span><span class="n">u</span> <span class="o">&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">p</span> <span class="c1">--no-data --databases [db1] [db2]... &gt; backup.sql</span>
+</code></pre></div></div>
+
+<p>更多 <code class="language-plaintext highlighter-rouge">mysqldump</code> 相关的参数可参见<a href="https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html">这里</a>。</p>
+
+<h3 id="导入数据库">导入数据库</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> <span class="n">mysql</span> <span class="o">-</span><span class="n">u</span> <span class="n">username</span> <span class="o">-</span><span class="n">ppassword</span> <span class="n">database_name</span> <span class="o">&lt;</span> <span class="n">backup</span><span class="p">.</span><span class="k">sql</span>
+</code></pre></div></div>
+
+<h2 id="表">表</h2>
+
+<h3 id="创建表">创建表</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="p">[</span><span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span><span class="p">]</span> <span class="k">table_name</span><span class="p">(</span>
+    <span class="n">column_list</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="重命名表">重命名表</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">RENAME</span> <span class="k">TABLE</span> <span class="n">tb1</span> <span class="k">TO</span> <span class="n">tb2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>如果想一次重命名多张表，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">RENAME</span> <span class="k">TABLE</span> <span class="n">tb1</span> <span class="k">TO</span> <span class="n">tb2</span><span class="p">,</span> <span class="n">tb3</span> <span class="k">TO</span> <span class="n">tb4</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="删除表">删除表</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DROP</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>同时删除多张表，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">table1</span><span class="p">,</span><span class="n">table2</span><span class="p">...;</span>
+</code></pre></div></div>
+
+<p>像这种操作表记录的，如果表存在外键关联，一般会报错，如果你明显知道自己在干什么，且知道操作是安全的，可暂时关闭 MySQL 的外键检查，操作完成后再开启。后续的操作中遇到该报错可同样应用此设置。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="n">FOREIGN_KEY_CHECKS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> 
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">SET</span> <span class="n">FOREIGN_KEY_CHECKS</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<h3 id="清空表">清空表</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">TRUNCATE</span> <span class="p">[</span><span class="k">TABLE</span><span class="p">]</span> <span class="n">tbl_name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="添加删除主键">添加/删除主键</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">DROP</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">ADD</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> 
+</code></pre></div></div>
+
+<h4 id="变更主键">变更主键</h4>
+
+<p>已经设置主键的情况下想要变更主键，可以先去掉原来的主键，再新增主键。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">DROP</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">;</span> 
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">auto_increment</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="k">first</span><span class="p">;</span> 
+
+</code></pre></div></div>
+
+<h2 id="列">列</h2>
+
+<h3 id="更新列">更新列</h3>
+
+<p>更新列的定义可通过 <code class="language-plaintext highlighter-rouge">CHANGE</code> 或 <code class="language-plaintext highlighter-rouge">MODIFY</code>。 区别仅在于后者不需要重新指定一个新的一列名。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">MyTable</span> <span class="n">CHANGE</span> <span class="k">COLUMN</span> <span class="n">foo</span> <span class="n">bar</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">FIRST</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">MyTable</span> <span class="k">MODIFY</span> <span class="k">COLUMN</span> <span class="n">foo</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">AFTER</span> <span class="n">baz</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="添加列">添加列</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">tempID</span> <span class="nb">int</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="mi">3</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="添加列到指定位置">添加列到指定位置</h4>
+
+<p>默认会添加到表中最后一列，可通过 <code class="language-plaintext highlighter-rouge">AFTER</code> 来控制其位置。比如，将新增的列添加到 <code class="language-plaintext highlighter-rouge">ID</code> 列后面。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">tempID</span> <span class="nb">int</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="mi">3</span> <span class="k">AFTER</span> <span class="n">ID</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="添加列到首位">添加列到首位</h4>
+
+<p>如果想添加列到首位，通过 <code class="language-plaintext highlighter-rouge">AFTER</code> 就无法实现了，对应的也不是 <code class="language-plaintext highlighter-rouge">BEFORE</code>，而是使用 <code class="language-plaintext highlighter-rouge">FIRST</code>。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">user</span> 
+  <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">auto_increment</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="k">first</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<h3 id="删除列">删除列</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span> <span class="k">DROP</span> <span class="k">COLUMN</span> <span class="o">&lt;</span><span class="k">column_name</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>一次删除多列，</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">table</span>
+<span class="k">DROP</span> <span class="k">COLUMN</span> <span class="n">column_1</span><span class="p">,</span>
+<span class="k">DROP</span> <span class="k">COLUMN</span> <span class="n">column_2</span><span class="p">,</span>
+<span class="err">…</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="记录">记录</h2>
+
+<h3 id="插入记录">插入记录</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="k">table_name</span> <span class="p">(</span><span class="n">column1</span><span class="p">,</span> <span class="n">column2</span><span class="p">,</span> <span class="n">column3</span><span class="p">,</span> <span class="p">...)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="n">value1</span><span class="p">,</span> <span class="n">value2</span><span class="p">,</span> <span class="n">value3</span><span class="p">,</span> <span class="p">...);</span>
+</code></pre></div></div>
+
+<p>一次插入多条记录：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="k">table</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span><span class="n">c2</span><span class="p">,...)</span>
+<span class="k">VALUES</span> 
+   <span class="p">(</span><span class="n">v11</span><span class="p">,</span><span class="n">v12</span><span class="p">,...),</span>
+   <span class="p">(</span><span class="n">v21</span><span class="p">,</span><span class="n">v22</span><span class="p">,...),</span>
+    <span class="p">...</span>
+   <span class="p">(</span><span class="n">vnn</span><span class="p">,</span><span class="n">vn2</span><span class="p">,...);</span>
+</code></pre></div></div>
+
+<h3 id="删除记录">删除记录</h3>
+
+<p>删除满足条件的列：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="nv">`table_name`</span> <span class="p">[</span><span class="k">WHERE</span> <span class="n">condition</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>如果是删除某列其值介于一个区间，比如 id 在 50~100 的记录，可以这样：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="k">BETWEEN</span> <span class="mi">50</span> <span class="k">AND</span> <span class="mi">100</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>需要删除的记录，其某列的值，在一个可选的列表中，可以将 <code class="language-plaintext highlighter-rouge">WHERE</code> 搭配 <code class="language-plaintext highlighter-rouge">IN</code> 关键词：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="k">IN</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,...,</span><span class="mi">254</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>像上面范围命中时，还可配合 <code class="language-plaintext highlighter-rouge">&lt;&gt;</code> 不等于来进一步控制：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="k">BETWEEN</span> <span class="mi">1</span> <span class="k">AND</span> <span class="mi">254</span> <span class="k">AND</span> <span class="n">id</span><span class="o">&lt;&gt;</span><span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>范围的情况常用的场景是命中一个日期区间的记录：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="nv">`objects`</span>
+<span class="k">WHERE</span> <span class="p">(</span><span class="n">date_field</span> <span class="k">BETWEEN</span> <span class="s1">'2010-01-30 14:15:55'</span> <span class="k">AND</span> <span class="s1">'2010-09-29 10:15:55'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>处理日期区间时除了上面的 <code class="language-plaintext highlighter-rouge">BETWEEN</code> <code class="language-plaintext highlighter-rouge">AND</code>，还可通过大于小于运算符来进行：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="nv">`objects`</span>
+<span class="k">WHERE</span> <span class="p">(</span><span class="n">date_field</span> <span class="o">&lt;=</span> <span class="s1">'2010-01-30 14:15:55'</span> <span class="k">AND</span> <span class="n">date_field</span> <span class="o">&gt;=</span> <span class="s1">'2010-09-29 10:15:55'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="更新记录">更新记录</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="p">[</span><span class="n">LOW_PRIORITY</span><span class="p">]</span> <span class="p">[</span><span class="k">IGNORE</span><span class="p">]</span> <span class="k">table_name</span> 
+<span class="k">SET</span> 
+    <span class="n">column_name1</span> <span class="o">=</span> <span class="n">expr1</span><span class="p">,</span>
+    <span class="n">column_name2</span> <span class="o">=</span> <span class="n">expr2</span><span class="p">,</span>
+    <span class="p">...</span>
+<span class="p">[</span><span class="k">WHERE</span>
+    <span class="n">condition</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">employees</span> 
+<span class="k">SET</span> 
+    <span class="n">lastname</span> <span class="o">=</span> <span class="s1">'Hill'</span><span class="p">,</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="s1">'mary.hill@classicmodelcars.com'</span>
+<span class="k">WHERE</span>
+    <span class="n">employeeNumber</span> <span class="o">=</span> <span class="mi">1056</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="外键">外键</h2>
+
+<h3 id="创建外键">创建外键</h3>
+
+<p>外键可在创建表时指定，通过 <code class="language-plaintext highlighter-rouge">FOREIGN KEY</code> 关键字。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CONSTRAINT</span> <span class="k">constraint_name</span>
+<span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="n">foreign_key_name</span> <span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+<span class="k">REFERENCES</span> <span class="n">parent_table</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+<span class="k">ON</span> <span class="k">DELETE</span> <span class="n">action</span>
+<span class="k">ON</span> <span class="k">UPDATE</span> <span class="n">action</span>
+</code></pre></div></div>
+
+<p>示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">Orders</span> <span class="p">(</span>
+    <span class="n">OrderID</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">OrderNumber</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">PersonID</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">OrderID</span><span class="p">),</span>
+    <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">PersonID</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">Persons</span><span class="p">(</span><span class="n">PersonID</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>对于已经存在的表，使用 <code class="language-plaintext highlighter-rouge">ALTER TABLE</code> 配合 <code class="language-plaintext highlighter-rouge">ADD FOREIGN KEY</code> 来完成。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">table_name</span>
+<span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="k">constraint_name</span>
+<span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="n">foreign_key_name</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+<span class="k">REFERENCES</span> <span class="n">parent_table</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+<span class="k">ON</span> <span class="k">DELETE</span> <span class="n">action</span>
+<span class="k">ON</span> <span class="k">UPDATE</span> <span class="n">action</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">Orders</span>
+<span class="k">ADD</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">PersonID</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">Persons</span><span class="p">(</span><span class="n">PersonID</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>创建的同时可指定一个外键名，否则 MySQL 会自己生成一个。这个名字在删除时有用。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">Orders</span>
+<span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="n">FK_PersonOrder</span>
+<span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">PersonID</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="n">Persons</span><span class="p">(</span><span class="n">PersonID</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="外键删除">外键删除</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">table_name</span> 
+<span class="k">DROP</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="k">constraint_name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="创建并查看表的关系图">创建并查看表的关系图</h2>
+
+<p>有一样是命令行无法进行的，那就是生成数据库整体的表关系图(<a href="https://dev.mysql.com/doc/workbench/en/wb-creating-eer-diagram.html">EER 图</a>)。这个需要借助文章开头提到的 GUI 工具 MySQL Workbench。</p>
+
+<p>方法是从菜单中 <code class="language-plaintext highlighter-rouge">database</code> -&gt; <code class="language-plaintext highlighter-rouge">Reverse Engineer... </code> 进入，然后跟着向导一步步直到结束，便创建好了相应数据库的表间关系图。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57940394-ff31f080-78fe-11e9-8010-96cb561734c1.png" alt="MySQL Reverse Engineer 菜单" /></p>
+<p align="center">MySQL Reverse Engineer 菜单</p>
+
+<p>生成结果示例：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/57940601-5e900080-78ff-11e9-809e-118d12a6d910.png" alt="MySQL EER 图" /></p>
+<p align="center">MySQL EER 图</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/67093/how-do-i-quickly-rename-a-mysql-database-change-schema-name">How do I quickly rename a MySQL database (change schema name)?</a></li>
+  <li><a href="https://stackoverflow.com/a/47016383/1553656">Truncate all tables in a MySQL database in one command?</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html">4.5.4 mysqldump — A Database Backup Program</a></li>
+  <li><a href="https://stackoverflow.com/questions/17666249/how-to-import-an-sql-file-using-the-command-line-in-mysql">How to import an SQL file using the command line in MySQL?</a></li>
+  <li><a href="http://www.mysqltutorial.org/mysql-insert-statement.aspx">MySQL Insert</a></li>
+  <li><a href="https://stackoverflow.com/questions/15504020/delete-many-rows-from-a-table-using-id-in-mysql">Delete many rows from a table using id in Mysql</a></li>
+  <li><a href="https://stackoverflow.com/questions/14767174/modify-column-vs-change-column">Modify column Vs change column</a></li>
+  <li><a href="http://www.mysqltutorial.org/mysql-drop-column/">MySQL DROP COLUMN</a></li>
+  <li><a href="https://www.w3schools.com/sql/sql_foreignkey.asp">SQL FOREIGN KEY Constraint</a></li>
+  <li><a href="http://www.mysqltutorial.org/mysql-foreign-key/">MySQL Foreign Key</a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/05/17/MySQL-GROUP-BY-%E7%9A%84%E9%97%AE%E9%A2%98/" data-toggle="tooltip" data-placement="top" title="MySQL GROUP BY 的问题">
+                        Previous<br>
+                        <span>MySQL GROUP BY 的问题</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/05/19/koa-router-%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0%E4%B8%8E%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%BB%93%E5%90%88/" data-toggle="tooltip" data-placement="top" title="koa-router 路由参数与前端路由的结合">
+                        Next<br>
+                        <span>koa-router 路由参数与前端路由的结合</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

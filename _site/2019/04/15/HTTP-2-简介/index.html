@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="HTTP/2 简介 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="HTTP/2 简介
+
+支撑现有 Web 服务的 HTTP 协议距离其发布时的 1997 年已经有些年月了，随后的 HTTP/1.1 版本发布自 1999 年。随着技术的进步和需求的进化，对于数据快速高效地传输，HTTP/1.1 显得捉襟见肘，大部分优化是在应用层来做的，因为协议是改不了的嘛，比如雪碧图减少请求数，域名共享（Domain sharing）增加同时建立的请求数。
+
+SPDY 与 ...">
+    
+    <meta property="article:published_time" content="2019-04-15T15:04:00Z">
+    
+    
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/04/15/HTTP-2-%E7%AE%80%E4%BB%8B/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>HTTP/2 简介 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/04/15/HTTP-2-%E7%AE%80%E4%BB%8B/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>HTTP/2 简介</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on April 15, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="http2-简介">HTTP/2 简介</h1>
+
+<p>支撑现有 Web 服务的 HTTP 协议距离其发布时的 1997 年已经有些年月了，随后的 HTTP/1.1 版本发布自 1999 年。随着技术的进步和需求的进化，对于数据快速高效地传输，HTTP/1.1 显得捉襟见肘，大部分优化是在应用层来做的，因为协议是改不了的嘛，比如雪碧图减少请求数，域名共享（Domain sharing）增加同时建立的请求数。</p>
+
+<h2 id="spdy-与-http2">SPDY 与 HTTP/2</h2>
+
+<p>早在 2009 年，Google 便尝试推出了一个叫 SPDY 的实验性协议来对 HTTP/1.1 进行升级优化。在一个工作了这么久的协议上进行大的改进，如何做到对现有应用影响最小又收效显著，相信每个对历史代码有重构的开发者来说是能够体会的。所以 Google 在尝试对协议进行优化时，其目标是：</p>
+
+<ul>
+  <li>减少 50% 页面加载耗时（PLT/Page Load Time）</li>
+  <li>做到无须开发者适配网页</li>
+  <li>简化部署和避免对现有网络设施进行大改动</li>
+  <li>与开源社区一同推进实施</li>
+  <li>采集实际运行时的性能数据以评估实施结果</li>
+</ul>
+
+<blockquote>
+  <p>为了达到减少 50% 页面加载耗时的目标，分帧层便是在这时引入的。</p>
+</blockquote>
+
+<p>在最初的内部实验结果中，页面加载耗时的提升相当显著，达到了 55%。随后该协议在主流浏览器中得以实现，Chrome, Firefix 及  Opera，各大小公司也开始在其服务中部署实施。借着 SPDY 这波势头，HTTP 工作组 （HTTP Working Group/HTTP-WG）以其为基础开始了 HTTP/2 的提案，随后两者并行发展，SPDY 可看成是 HTTP/2 的一个实验分支，在这上面进行新功能开发和测试，然后将稳定的功能提交到 HTTP/2 草案中。</p>
+
+<p>经过长时间的不断测试演进，2015 年 HTTP/2 通过了可发布的标准，是时，Chrome 团队给出了废弃 SPDY 的日程，开始了 HTTP/2 的时代。但其实早在此协议正式通过前，已经有好些浏览器及站点完整地实施了 HTTP/2，享受到了性能上的巨大提升。</p>
+
+<p>HTTP/2 对于现有应用层的东西没有改变，比如 HTTP 动词，状态码，请求响应头。它的变动主要在数据格式及传输上，通过新增的分帧层（Frame layer）将这些变动和应用层隔离，所以对于应用层来说是透明的，现有 Web 应用可以不经任何修改就切到 HTTP/2。</p>
+
+<h2 id="关于版本">关于版本</h2>
+
+<h3 id="为何不是-http12">为何不是 HTTP/1.2</h3>
+
+<p>为了达到预期的性能优化，HTTP/2 中新增了二进制分帧层，这与现有 HTTP/1.1 协议的服务器及客户端是不兼容的，所以版本号来了个大升级。</p>
+
+<p>除非你是服务器的开发者，需要关注这些底层的实现，否则对于应用来说，这些优化是服务器和客户端替你实现的，无须关心。</p>
+
+<h3 id="如何看站点使用的-http-版本">如何看站点使用的 HTTP 版本</h3>
+
+<p>最简单的办法，通过浏览器的开发者工具中的网络面板查看。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56092937-5bb38180-5ef5-11e9-9749-ddf1dd98d776.png" alt="Chrome DevTools 网络面板中查看 HTTP 版本" /></p>
+<p align="center">Chrome DevTools 网络面板中查看 HTTP 版本</p>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">Protocal</code> 一列显示 <code class="language-plaintext highlighter-rouge">h2</code> 即为 HTTP/2 协议。</p>
+
+<p>也可使用 <code class="language-plaintext highlighter-rouge">curl</code> 查看到 HTTP/2 的返回。因为只需要查看响应头，所以加 <code class="language-plaintext highlighter-rouge">-I</code> 参数即可。</p>
+
+<blockquote>
+  <p>-I, –head</p>
+
+  <p>(HTTP FTP FILE) Fetch the headers only!  HTTP-servers  feature  the  command HEAD  which this uses to get nothing but the header of a document. When used on an FTP or FILE file, curl displays the file size  and  last  modification time only.</p>
+
+  <p>– <em>来自 curl 工具 man 页面对 <code class="language-plaintext highlighter-rouge">-I</code> 参数的解释。</em></p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-I</span> &lt;url&gt;
+</code></pre></div></div>
+
+<p>以下是 Bing 中国及百度的返回。</p>
+
+<details>
+<summary>
+对 Bing 中国使用 curl 查看返回的结果
+</summary>
+
+```diff
+$ curl -I https://cn.bing.com
++ HTTP/2 302
+cache-control: private
+content-length: 139
+content-type: text/html; charset=utf-8
+location: https://www4.bing.com/
+vary: Accept-Encoding
+set-cookie: ...
+set-cookie: ...
+set-cookie: ...
+set-cookie:...
+set-cookie: ...
+date: Sun, 14 Apr 2019 06:29:36 GMT
+```
+
+</details>
+
+<details>
+<summary>
+对 百度使用 curl 查看返回的结果
+</summary>
+
+
+```diff
+$ curl -I https://www.baidu.com
++ HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Cache-Control: private, no-cache, no-store, proxy-revalidate, no-transform
+Connection: Keep-Alive
+Content-Length: 277
+Content-Type: text/html
+Date: Sun, 14 Apr 2019 06:30:43 GMT
+Etag: "575e1f5c-115"
+Last-Modified: Mon, 13 Jun 2016 02:50:04 GMT
+Pragma: no-cache
+Server: bfe/1.0.8.18
+```
+
+</details>
+
+<p>通过返回可以了解到，Bing 中国站点已经启用 HTTP/2，百度使用的是 HTTP/1.1。</p>
+
+<h2 id="二进制分帧层">二进制分帧层</h2>
+
+<p>HTTP/2 所有优化中，最关键的技术点莫过于二进制分帧层（Binary framing layer）了，它负责 HTTP 消息在服务器与客户端之间封装及传输。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56092981-fdd36980-5ef5-11e9-9a87-77674f2dc853.png" alt="来自 Web Fundamentals 关于二进制分帧层的示意图" /></p>
+<p align="center">来自 Web Fundamentals 关于二进制分帧层的示意图</p>
+
+<p>从示意图可看出新引入的分帧层位于 HTTP 应用层与套接字接口（socket interface ）之间。上层 HTTP API 相关的部分比如 HTTP 动词，headers 并不受影响，所以做到了既有的应用无需做适配。但真实的 HTTP 消息在传输时，经过分帧层的处理，数据被划分成了更小单位的帧，以二进制的形式传送。所以浏览器与服务器需要处理对这种新增二进制数据的解析。</p>
+
+<h2 id="流消息与帧">流，消息与帧</h2>
+
+<p>进一步了解 HTTP/2 中数据传输前，先来理解一些新的概念。</p>
+
+<h3 id="流stream">流/Stream</h3>
+
+<p>客户端与服务器建立连接后，两者之间一个双向的数据流，也可理解为管道，一次可传输一个或多个<strong>消息（Message）</strong>。每个流都有唯一标识和一个可选的优先级。</p>
+
+<h3 id="消息message">消息/Message</h3>
+
+<p>一序列有序的<strong>帧（Frame）</strong>，对应一个完整请求（Request）或响应（Response）数据。</p>
+
+<h3 id="帧frame">帧/Frame</h3>
+
+<p>HTTP/2 中数据传输的最小单位，每一帧都包含一个头部（frame header）以标识该帧属于哪个<strong>流（Stream）</strong>。同时帧里还会承载特定数据的传输，比如请求头，请求数据，响应头，响应数据。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56092992-1c396500-5ef6-11e9-85ad-1b53578c4eda.png" alt="来自 Web Fundamentals 关于 HTTP/2 中一个 TCP 链接的示意图" /></p>
+<p align="center">来自 Web Fundamentals 关于 HTTP/2 中一个 TCP 链接的示意图</p>
+
+<p>所有通信都通过一个 TCP 链接进行，其中可承载任意数量的流。 来自不同流的帧数据在 TCP 连接中是混合着传输的，这使得帧在传输时是非常高效的，数据到达后会通过其中的头部来重新进行组装，还原到原来所属的流中。上图中可看出可各术语的包含关系。</p>
+
+<p>简单理解，HTTP/2 中将通信数据切分成一小片一小片的帧并以二进制形式传输，在单个 TCP 中多路复用（multiplexed）。这是 HTTP/2 提供的基础特性，为其他性能优化提供了技术上的保障。</p>
+
+<h2 id="请求与响应的多路复用">请求与响应的多路复用</h2>
+
+<p>HTTP/1.1 协议下，客户端如果想并行加载资源，需要建立多个 TCP 连接，每个请求单独一个。这样的效率是不高的，比如 header 中的 cookie 冗余，客户端能够同时发起的链接也有限，建立 TCP 连接成本很大，然而这个建立好的连接却没有被充分利用，只能返回一个响应。</p>
+
+<p>HTTP/2 中通过将请求数据分帧，在同一个 TCP 链接中交错传输，在接收方再重新将分片的数据组装回来，同时数据的传输双向同时并行，提高了连接的利用效率，也避免了建立多个 TCP 连接的资源和时间消耗。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56093014-3ffcab00-5ef6-11e9-8e84-875f653866f4.png" alt="来自 Web Fundamentals 关于 HTTP/2 协议下连接的示意图" /></p>
+<p align="center">来自 Web Fundamentals 关于 HTTP/2 协议下连接的示意图</p>
+
+<p>上面示例中，服务器通过 stream 1 和 stream 3 向客户端发送数据，同时客户端也在通过 stream 5 向服务器发送数据。</p>
+
+<p>HTTP/2 提供的这种分帧数据传输带来了一系列建立在其之上的优化：</p>
+
+<ul>
+  <li>并行发起多个请求和发送多个响应，互不阻塞。</li>
+  <li>多个请求与响应并行地在一个 TCP 连接中完成。</li>
+  <li>HTTP/1.1 中一些优化可以去掉了（比如 <a href="https://hpbn.co/optimizing-application-delivery/#optimizing-for-http1x">Optimizing for HTTP/1.x</a> 中提到的雪碧图，域名共享）。</li>
+  <li>通过减少了不必要的连接及优化现有网络机制减少了时延，加快了页面加载速度。</li>
+  <li>…</li>
+</ul>
+
+<h2 id="流处理的优先级">流处理的优先级</h2>
+
+<p>来自不同请求的数据都在同一个连接中双向并行传输，这些帧的顺序及优先级该如何设置才能让信息处理得高效，这成了一个问题的关键。所以 HTTP/2 中为流提供了权重（weight）和依赖两个属性：</p>
+
+<ul>
+  <li>每个流都可设置一个介于 1~256 之间的权重。</li>
+  <li>第个流都可设置其依赖于另一个流。</li>
+</ul>
+
+<p>结合以上两个因素可以分析形成一个对流数据的优先级树（prioritization tree），根据它客户端可做出如何接收数据的最佳决策，服务器也可以根据它来决定如何优先处理哪些请求，进行合理的 CPU ，内存及其他资源的分配。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56093030-5c004c80-5ef6-11e9-9f02-acf4bf2be1e6.png" alt="来自 Web Fundamentals 关于优先级树的示意图" /></p>
+<p align="center">来自 Web Fundamentals 关于优先级树的示意图</p>
+
+<p>前面介绍流的时候有提到其身上有个唯一的身分标识，通过这个标识，一个流可指定依赖于另一个流，形成父子关系。如果流没有指定依赖，默认依赖于根节点（root stream）。这个依赖关系很好理解，就是被依赖的流数据应该优先被处理及返回，想象一下页面中 JS 资源的相互依赖。</p>
+
+<p>多个流数据所依赖的流相同，即拥有同一个父级，则根据他们的权重来决定处理的优先级和资源分配。</p>
+
+<p>比如上图中第一个情况，权重值为 12 流 A 和权重为 4 的流 B 都没有显式指定依赖，他们隐式依赖于 root stream，在处理他们优先级时 A 为 12/(12+4)，B 为 4/(12+4)。</p>
+
+<p>第二个情况下，D 先于 C 拥有全部优先级，处理完成后才是 C。其他情况推而广之同样的逻辑。</p>
+
+<p>更重要的是，这些优先级可随时根据情况而动态调整。比如浏览器可根据用户的交互动态调整资源的优先级，重新分配，以达到资源加载的最优效果。</p>
+
+<h2 id="单个源对应一个持久的连接">单个源对应一个持久的连接</h2>
+
+<p>基于 HTTP/2 将所有请求分片后在一个连接中传输处理的特点，对于一个域（origin），只需要建立一个长久的连接即可。大多数 HTTP 通信是瞬时的，而 TCP 是为长连接批量数据传输而设计。通过始终复用该连接，可以达到减少重复建立连接的不必要资源消耗，极大地减少网络时延，同时也会减少持有多个连接带来的内存等资源的消耗。</p>
+
+<h2 id="流的控制">流的控制</h2>
+
+<p>流的控制是这么一种机制，它防止在接收方已经无暇接收或疲于处理时，发送方仍不断发送数据。比如服务器压力过大，无法处理更多请求时；比如浏览器中请求视频资源，但用户点击了暂停，不想再继续加载后续的数据；或链路中有多层代理时，不同节点处理能力不一致，需要平衡一下数据传输量。</p>
+
+<p>TCP 中是有流控制机制的，但无法满足 HTTP/2 中分帧情况下的控制需求，因此 HTTP/2 提供了一些基础设施（building blocks）让浏览器和服务器可实现自己的控制逻辑，或更加底层的控制：</p>
+
+<ul>
+  <li>流控制是定向的，每个接收方可根据需求设置其接收的阈值。</li>
+  <li>流控制基于约定。每个接收方在连接之处告之它的流控制阈值（以字节为单位），每当接收到 <code class="language-plaintext highlighter-rouge">DATA</code> 帧时减少而发送 <code class="language-plaintext highlighter-rouge">WINDOW_UPDATE</code> 帧时增大。</li>
+  <li>流控制不能被关闭。通过 <code class="language-plaintext highlighter-rouge">SETTING</code> 帧客户端与服务器建立连接时，就初始化了两端的流控制阈值（默认为 65,535 字节）。但接收方可自行设置这个初始值，然后在每次接收到数据后发送 <code class="language-plaintext highlighter-rouge">WINDOW_UPDATE</code> 来维护这个阈值。</li>
+  <li>流控制不是端对端的控制，链路上不同节点可根据自身情况来进行。</li>
+</ul>
+
+<h2 id="服务端推送">服务端推送</h2>
+
+<p>另一个 HTTP/2 带来的特性便是允许服务器向单个请求发送多次响应。典型的场景便是 Web 网页。浏览器请求网页后分析其中的资源，然后再请求相应的其他资源。这一过程完全可以省掉，转而由服务器一并发送。因为文档在服务器这边，服务器是知道该页面还需要哪些资源的。下图展示了对于客户端的请求，服务器推送了额外资源的情况。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56093051-7e926580-5ef6-11e9-9109-a5f5c9996e03.png" alt="来自 Web Fundamentals 的插图展示了服务器推送" /></p>
+<p align="center">来自 Web Fundamentals 的插图展示了服务器推送</p>
+
+<p>服务器通过发送 <code class="language-plaintext highlighter-rouge">PUSH_PROMISE</code> 帧描述即将主动推送的资源，里面包含的只是资源的响应头 <code class="language-plaintext highlighter-rouge">HEADER</code>，而不是实际的响应 <code class="language-plaintext highlighter-rouge">DATA</code>。浏览器收到后可根据情况发送 <code class="language-plaintext highlighter-rouge">RST_STREAM</code> 帧来取消（比如该资源已经加载过在本地有缓存）。</p>
+
+<h2 id="头部信息的压缩">头部信息的压缩</h2>
+
+<p>每次 HTTP 的数据传输都包含了大量头部以描述请求的目的和传送的资源的属性，这些 header 通过普通字符串的形式发送，带上 cookie 时其大小可达几 Kb 。HTTP/2 中使用 HPACK 格式来对这些头信息进行压缩优化：</p>
+
+<ul>
+  <li>对头信息使用哈夫曼编码（Huffman code）进行压缩。</li>
+  <li>要求客户端及服务器同时维护一个指向上一次请求头中字段的索引列表，这样在后续传输中可高效地对之前传输过的字段进行编码。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56093058-99fd7080-5ef6-11e9-8bdc-924eca65b21d.png" alt="来自 Web Fundamentals 的插图展示 header 压缩的工作流程" /></p>
+<p align="center">来自 Web Fundamentals 的插图展示 header 压缩的工作流程</p>
+
+<p>从对上图的理解可以看出，新发送的头部只需要包含变更的部分，而剩余的部分可通过本地索引找出，无须再次发送。</p>
+
+<h2 id="一个本地示例">一个本地示例</h2>
+
+<p>是时候 show me the code 了。下面的示例来自 <a href="https://nodejs.org/api/http2.html#http2_server_side_example">Node.js 中 HTTP/2 的文档</a>。</p>
+
+<p>服务端代码：</p>
+
+<p><em>server.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">http2</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">http2</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">fs</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http2</span><span class="p">.</span><span class="nx">createSecureServer</span><span class="p">({</span>
+  <span class="na">key</span><span class="p">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="dl">'</span><span class="s1">localhost-privkey.pem</span><span class="dl">'</span><span class="p">),</span>
+  <span class="na">cert</span><span class="p">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="dl">'</span><span class="s1">localhost-cert.pem</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">});</span>
+<span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">'</span><span class="s1">error</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">));</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">'</span><span class="s1">stream</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">stream</span><span class="p">,</span> <span class="nx">headers</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// stream is a Duplex</span>
+  <span class="nx">stream</span><span class="p">.</span><span class="nx">respond</span><span class="p">({</span>
+    <span class="dl">'</span><span class="s1">content-type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">text/html</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">:status</span><span class="dl">'</span><span class="p">:</span> <span class="mi">200</span>
+  <span class="p">});</span>
+  <span class="nx">stream</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;h1&gt;Hello World&lt;/h1&gt;</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8443</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>因为浏览器不支持未加密的 HTTP/2，所以需要创建本地证书来启用 HTTPS。</p>
+
+<p>通过如下命令创建本地证书。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>openssl req <span class="nt">-x509</span> <span class="nt">-newkey</span> rsa:2048 <span class="nt">-nodes</span> <span class="nt">-sha256</span> <span class="nt">-subj</span> <span class="s1">'/CN=localhost'</span> <span class="se">\</span>
+  <span class="nt">-keyout</span> localhost-privkey.pem <span class="nt">-out</span> localhost-cert.pem
+</code></pre></div></div>
+
+<p>然后启动服务器就可以在浏览器中访问查看了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>node node.js
+</code></pre></div></div>
+
+<p>打开浏览器访问 <code class="language-plaintext highlighter-rouge">https://localhost:8443</code>。注意一定是带 <code class="language-plaintext highlighter-rouge">https</code> 访问，protocal 省略的情况下会以 HTTP/1.1 协议访问，这样是访问不到页面的，因为 server 端代码中没有使用 <code class="language-plaintext highlighter-rouge">allowHTTP1</code> 开启对 HTTP/1.1 回退的支持。这里开启也没有意义，因为我们在测试 HTTP/2 不是么。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56093067-abdf1380-5ef6-11e9-9db6-6682b5291e66.png" alt="本地 Node.js 搭建的 HTTP/2 示例" /></p>
+<p align="center">本地 Node.js 搭建的 HTTP/2 示例</p>
+
+<p>也可通过 curl 工具访问查看：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-ki</span>  https://localhost:8443
+
+HTTP/2 200
+content-type: text/html
+<span class="nb">date</span>: Sun, 14 Apr 2019 08:44:34 GMT
+
+&lt;h1&gt;Hello World&lt;/h1&gt;⏎
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">-k</code>（<code class="language-plaintext highlighter-rouge">--insecure</code>）参数表示允许不安全的连接，本地测试时需要加上，不然访问不了。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developers.google.com/web/fundamentals/performance/http2/">Web Fundamentals - Introduction to HTTP/2</a></li>
+  <li><a href="https://stackoverflow.com/questions/36940691/how-do-i-know-if-my-website-is-being-served-over-http-or-http-2">How do I know if my website is being served over HTTP or HTTP/2?</a></li>
+  <li><a href="https://nodejs.org/api/http2.html">Node.js 文档 - HTTP/2</a></li>
+  <li><a href="https://webapplog.com/http2-node/">Easy HTTP/2 Server with Node.js and Express.js</a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/04/14/TypeScript-%E4%B8%AD%E9%9D%9E%E4%BB%A3%E7%A0%81%E6%A8%A1%E5%9D%97%E7%9A%84%E5%AF%BC%E5%85%A5/" data-toggle="tooltip" data-placement="top" title="TypeScript 中非代码模块的导入">
+                        Previous<br>
+                        <span>TypeScript 中非代码模块的导入</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/04/16/React-+-TypeScript-%E5%85%83%E7%B4%A0%E5%BC%95%E7%94%A8%E7%9A%84%E4%BC%A0%E9%80%92/" data-toggle="tooltip" data-placement="top" title="React + TypeScript：元素引用的传递">
+                        Next<br>
+                        <span>React + TypeScript：元素引用的传递</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

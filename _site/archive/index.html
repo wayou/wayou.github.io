@@ -1,0 +1,3146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Archive - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="keep hungry keep foolish">
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/archive/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>Archive - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/archive/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- 
+Credits: this page shamelessly borrowed a lot from:
+https://github.com/kitian616/jekyll-TeXt-theme
+-->
+<!-- Page Header -->
+
+
+
+
+
+
+
+<header class="intro-header" style="background-image: url('/img/tag-bg.jpg')">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading" id="tag-heading">
+        
+          <h1>Archive</h1>
+          <span class="subheading">keep hungry keep foolish</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+		<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+			<!-- Tags (as filter) -->
+			<div id='tag_cloud' class="tags tags-sup js-tags">
+				<a class="tag-button--all" data-encode="">
+					Show All
+					<sup>275</sup>
+				</a>
+
+				
+        
+				
+				
+				
+				<a data-sort="0236"
+					data-encode="%E7%AC%94%E8%AE%B0"
+					class="tag-button"
+					title="笔记" rel="39">
+					笔记
+					<sup>39</sup>
+				</a>
+				
+				<a data-sort="0239"
+					data-encode="Coq"
+					class="tag-button"
+					title="Coq" rel="36">
+					Coq
+					<sup>36</sup>
+				</a>
+				
+				<a data-sort="0239"
+					data-encode="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29"
+					class="tag-button"
+					title="SF (软件基础)" rel="36">
+					SF (软件基础)
+					<sup>36</sup>
+				</a>
+				
+				<a data-sort="0256"
+					data-encode="PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29"
+					class="tag-button"
+					title="PLF (编程语言基础)" rel="19">
+					PLF (编程语言基础)
+					<sup>19</sup>
+				</a>
+				
+				<a data-sort="0259"
+					data-encode="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29"
+					class="tag-button"
+					title="LF (逻辑基础)" rel="16">
+					LF (逻辑基础)
+					<sup>16</sup>
+				</a>
+				
+				<a data-sort="0268"
+					data-encode="javascript"
+					class="tag-button"
+					title="javascript" rel="7">
+					javascript
+					<sup>7</sup>
+				</a>
+				
+				<a data-sort="0272"
+					data-encode="%E5%9F%BA%E7%A1%80"
+					class="tag-button"
+					title="基础" rel="3">
+					基础
+					<sup>3</sup>
+				</a>
+				
+				<a data-sort="0272"
+					data-encode="C"
+					class="tag-button"
+					title="C" rel="3">
+					C
+					<sup>3</sup>
+				</a>
+				
+				<a data-sort="0272"
+					data-encode="C%2B%2B"
+					class="tag-button"
+					title="C++" rel="3">
+					C++
+					<sup>3</sup>
+				</a>
+				
+				<a data-sort="0273"
+					data-encode="V8"
+					class="tag-button"
+					title="V8" rel="2">
+					V8
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0273"
+					data-encode="algorithm"
+					class="tag-button"
+					title="algorithm" rel="2">
+					algorithm
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0273"
+					data-encode="css"
+					class="tag-button"
+					title="css" rel="2">
+					css
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0273"
+					data-encode="git"
+					class="tag-button"
+					title="git" rel="2">
+					git
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0273"
+					data-encode="other"
+					class="tag-button"
+					title="other" rel="2">
+					other
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="%E7%BC%96%E8%AF%91"
+					class="tag-button"
+					title="编译" rel="1">
+					编译
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="CS+Idols"
+					class="tag-button"
+					title="CS Idols" rel="1">
+					CS Idols
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="QC+%28Quickcheck%29"
+					class="tag-button"
+					title="QC (Quickcheck)" rel="1">
+					QC (Quickcheck)
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="angular"
+					class="tag-button"
+					title="angular" rel="1">
+					angular
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="bug"
+					class="tag-button"
+					title="bug" rel="1">
+					bug
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="chrome"
+					class="tag-button"
+					title="chrome" rel="1">
+					chrome
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="clang"
+					class="tag-button"
+					title="clang" rel="1">
+					clang
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="html"
+					class="tag-button"
+					title="html" rel="1">
+					html
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="iOS"
+					class="tag-button"
+					title="iOS" rel="1">
+					iOS
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="mysql"
+					class="tag-button"
+					title="mysql" rel="1">
+					mysql
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="react"
+					class="tag-button"
+					title="react" rel="1">
+					react
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="security"
+					class="tag-button"
+					title="security" rel="1">
+					security
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0274"
+					data-encode="webpack"
+					class="tag-button"
+					title="webpack" rel="1">
+					webpack
+					<sup>1</sup>
+				</a>
+			</div>
+
+            <!-- Article List -->
+			<div class="mini-post-list js-result d-none"><section>
+				<span class="fa listing-seperator">
+					<span class="tag-text">2020</span>
+				</span><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/23/Chrome-Tab-Group-%E7%9A%84%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA/">
+				        <h2 class="post-title">
+                            Chrome Tab Group 的自动创建
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/21/Whistle-mock-%E9%85%8D%E7%BD%AE/">
+				        <h2 class="post-title">
+                            Whistle mock 配置
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/21/%E9%85%8D%E7%BD%AE-mac-%E9%82%AE%E4%BB%B6%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%B0%86%E9%82%AE%E4%BB%B6%E5%88%86%E7%B1%BB/">
+				        <h2 class="post-title">
+                            配置 mac 邮件客户端将邮件分类
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/17/%E9%85%8D%E7%BD%AE-ESLint-%E8%87%AA%E5%8A%A8%E6%A0%BC%E5%BC%8F%E5%8C%96%E8%87%AA%E9%97%AD%E5%90%88%E6%A0%87%E7%AD%BE-Self-closing-tag/">
+				        <h2 class="post-title">
+                            配置 ESLint 自动格式化自闭合标签（Self closing tag）
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/16/iTerm2-%E5%AE%89%E8%A3%85-SF-Mono-%E5%AD%97%E4%BD%93/">
+				        <h2 class="post-title">
+                            iTerm2 安装 SF Mono 字体
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/16/Nest-%E5%9C%A8%E6%97%A5%E5%BF%97%E4%B8%AD%E6%89%93%E5%8D%B0%E5%AF%B9%E8%B1%A1/">
+				        <h2 class="post-title">
+                            Nest 在日志中打印对象
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/15/iTerm2-%E8%AE%BE%E7%BD%AE%E7%9A%84%E5%90%8C%E6%AD%A5/">
+				        <h2 class="post-title">
+                            iTerm2 设置的同步
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/14/%E9%94%81%E5%AE%9A%E9%A1%B9%E7%9B%AE%E7%9A%84-node-%E7%89%88%E6%9C%AC/">
+				        <h2 class="post-title">
+                            锁定项目的 node 版本
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/12/Mac-%E8%AE%BE%E7%BD%AE%E4%BB%BB%E6%84%8F%E5%BC%80%E6%9C%BA%E5%AF%86%E7%A0%81/">
+				        <h2 class="post-title">
+                            Mac 设置任意开机密码
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/10/%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%A7%81%E6%9C%89-npm-%E6%BA%90%E7%9A%84%E8%AE%BE%E7%BD%AE/">
+				        <h2 class="post-title">
+                            项目中私有 npm 源的设置
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/10/npm-install-%E6%97%B6-postinstall-%E8%84%9A%E6%9C%AC%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            npm install 时 postinstall 脚本找不到的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/10/xed-%E5%91%BD%E4%BB%A4%E4%B8%8D%E5%8F%AF%E7%94%A8%E7%9A%84%E4%BF%AE%E6%AD%A3/">
+				        <h2 class="post-title">
+                            `xed` 命令不可用的修正
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/10/Postman-%E8%B0%83%E8%AF%95-HTTPS-%E6%8E%A5%E5%8F%A3%E6%97%B6%E5%8E%BB%E6%8E%89%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81/">
+				        <h2 class="post-title">
+                            Postman 调试 HTTPS 接口时去掉证书验证
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/08/Mac-%E6%8A%B9%E6%8E%89%E7%A3%81%E7%9B%98%E5%A4%B1%E8%B4%A5%E7%9A%84%E8%A7%A3%E5%86%B3/">
+				        <h2 class="post-title">
+                            Mac 抹掉磁盘失败的解决
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/08/iTerm2-Session-%E5%85%B1%E4%BA%AB/">
+				        <h2 class="post-title">
+                            iTerm2 Session 共享
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/04/Nest-%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E6%9C%8D%E5%8A%A1%E4%B8%8E-404-%E7%9A%84%E5%A4%84%E7%90%86/">
+				        <h2 class="post-title">
+                            Nest 静态文件服务与 404 的处理
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/09/02/%E8%85%BE%E8%AE%AF%E4%BA%91%E5%89%8D%E7%AB%AF%E5%9B%A2%E9%98%9F%E4%BA%BA%E6%89%8D%E3%81%AE%E5%8B%9F%E9%9B%86%E4%B8%AD/">
+				        <h2 class="post-title">
+                            腾讯云前端团队人才の募集中
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/28/Crontab-%E7%9A%84%E4%BD%BF%E7%94%A8/">
+				        <h2 class="post-title">
+                            Crontab 的使用
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/26/npm-ci-%E4%B8%8E-install-%E7%9A%84%E5%8C%BA%E5%88%AB/">
+				        <h2 class="post-title">
+                            npm ci 与 install 的区别
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/20/%E5%8E%BB%E6%8E%89-echo-%E7%BB%93%E5%B0%BE%E7%9A%84%E6%8D%A2%E8%A1%8C/">
+				        <h2 class="post-title">
+                            去掉 echo 结尾的换行
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/20/npm-script-%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0/">
+				        <h2 class="post-title">
+                            npm script 中使用命令行参数
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/20/%E4%BD%BF%E7%94%A8-shell-%E5%91%BD%E4%BB%A4%E8%BF%9B%E8%A1%8C%E6%9F%A5%E6%89%BE%E6%9B%BF%E6%8D%A2/">
+				        <h2 class="post-title">
+                            使用 shell 命令进行查找替换
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/17/Xcode-%E8%B0%83%E8%AF%95%E6%97%B6%E6%89%93%E5%8D%B0%E5%8F%98%E9%87%8F%E5%80%BC/">
+				        <h2 class="post-title">
+                            Xcode 调试时打印变量值
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/12/Xcode-%E4%B8%AD%E9%80%9A%E8%BF%87-target-%E8%BF%90%E8%A1%8C%E5%A4%9A%E4%B8%AA-c-%E7%A8%8B%E5%BA%8F/">
+				        <h2 class="post-title">
+                            Xcode 中通过 target 运行多个 c 程序
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/11/dev-null/">
+				        <h2 class="post-title">
+                            `/dev/null`
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/11/%E5%8D%87%E7%BA%A7-mac-Big-Sur-%E5%90%8E%E8%99%9A%E6%8B%9F%E6%9C%BA-Parallels-Desktop-%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E7%9A%84%E8%A7%A3%E5%86%B3/">
+				        <h2 class="post-title">
+                            升级 mac Big Sur 后虚拟机 Parallels Desktop 无法启动的解决
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/08/11/%E5%88%A9%E7%94%A8%E5%B1%95%E5%BC%80%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%AE%80%E5%8C%96%E5%AF%B9%E8%B1%A1%E4%B8%8A%E5%B1%9E%E6%80%A7%E6%B7%BB%E5%8A%A0%E7%9A%84%E6%93%8D%E4%BD%9C/">
+				        <h2 class="post-title">
+                            利用展开操作符简化对象上属性添加的操作
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/07/17/yarn-%E5%AE%89%E8%A3%85%E6%97%B6-No-Xcode-or-CLT-version-detected-%E9%94%99%E8%AF%AF%E7%9A%84%E8%A7%A3%E5%86%B3/">
+				        <h2 class="post-title">
+                            yarn 安装时 `No Xcode or CLT version detected` 错误的解决
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="clang">
+				    <a href="/2020/07/17/clang-b-%E7%9A%84%E4%BD%BF%E7%94%A8/">
+				        <h2 class="post-title">
+                            [clang] `` 的使用
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/07/17/NestJS-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%A4%BA%E4%BE%8B/">
+				        <h2 class="post-title">
+                            NestJS 微服务示例
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/06/24/iTerm2-%E4%B8%AD%E5%AE%9E%E7%8E%B0%E5%91%BD%E4%BB%A4%E5%AE%8C%E6%88%90%E6%97%B6%E8%BF%9B%E8%A1%8C%E9%80%9A%E7%9F%A5/">
+				        <h2 class="post-title">
+                            iTerm2 中实现命令完成时进行通知
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="%E7%AC%94%E8%AE%B0,%E5%9F%BA%E7%A1%80,C,C%2B%2B">
+				    <a href="/2020/06/21/data-rep-float/">
+				        <h2 class="post-title">
+                            Data Representation - Floating Point Numbers
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            「数据表示」浮点数
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="%E7%AC%94%E8%AE%B0,%E5%9F%BA%E7%A1%80,C,C%2B%2B">
+				    <a href="/2020/06/21/data-rep-todo/">
+				        <h2 class="post-title">
+                            Data Representation - TODO
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            「数据表示」待写
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/06/20/Node.js-%E4%B8%AD%E8%8E%B7%E5%8F%96%E6%9C%AC%E6%9C%BA%E5%85%AC%E7%BD%91-IP/">
+				        <h2 class="post-title">
+                            Node.js 中获取本机公网 IP
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/06/19/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84-SOLID-%E5%8E%9F%E5%88%99/">
+				        <h2 class="post-title">
+                            面向对象编程中的 SOLID 原则
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/06/19/Cookie-%E7%9A%84%E4%B8%8B%E5%8F%91%E4%B8%8E%E5%9B%9E%E4%BC%A0/">
+				        <h2 class="post-title">
+                            Cookie 的下发与回传
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="%E7%AC%94%E8%AE%B0,%E5%9F%BA%E7%A1%80,C,C%2B%2B">
+				    <a href="/2020/06/19/data-rep-int/">
+				        <h2 class="post-title">
+                            Data Representation - Integer
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            「数据表示」整数
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/06/14/pip-install-%E5%AE%89%E8%A3%85-Python-%E4%BE%9D%E8%B5%96%E6%97%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/">
+				        <h2 class="post-title">
+                            pip install 安装 Python 依赖时权限问题的解决
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/06/12/MySQL-%E7%89%88%E6%9C%AC%E5%9B%9E%E9%80%80/">
+				        <h2 class="post-title">
+                            MySQL 版本回退
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/06/05/Docker-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8D%E8%B6%B3%E8%AD%A6%E5%91%8A%E7%9A%84%E6%B6%88%E9%99%A4/">
+				        <h2 class="post-title">
+                            Docker 配置文件权限不足警告的消除
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/06/04/Git-%E8%A7%A3%E5%86%B3%E5%86%B2%E7%AA%81%E6%97%B6%E6%8C%87%E5%AE%9A%E4%BD%BF%E7%94%A8%E6%9D%A5%E8%87%AA%E8%B0%81%E7%9A%84%E5%8F%98%E6%9B%B4/">
+				        <h2 class="post-title">
+                            Git 解决冲突时指定使用来自谁的变更
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/06/03/Redis-%E7%9A%84%E4%BD%BF%E7%94%A8/">
+				        <h2 class="post-title">
+                            Redis 的使用
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/28/%E6%96%B0%E8%A3%85-MySQL-%E6%97%A0%E6%B3%95%E7%99%BB%E5%85%A5%E7%9A%84%E8%A7%A3%E5%86%B3/">
+				        <h2 class="post-title">
+                            新装 MySQL 无法登入的解决
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/28/VS-Code-%E4%B8%AD%E5%AE%9A%E4%B9%89%E5%8F%AF%E6%8A%98%E5%8F%A0%E7%9A%84%E4%BB%A3%E7%A0%81%E6%AE%B5/">
+				        <h2 class="post-title">
+                            VS Code 中定义可折叠的代码段
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/26/%E5%88%A9%E7%94%A8-CSS-%E7%9A%84-prefers-color-scheme-%E9%80%82%E9%85%8D-mac-%E9%BB%91%E8%89%B2%E6%A8%A1%E5%BC%8F/">
+				        <h2 class="post-title">
+                            利用 CSS 的 `prefers-color-scheme` 适配 mac 黑色模式
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/26/TypeScript-%E4%B8%AD-Optional-Chaining-%E5%92%8C-Nullish-Coalescing/">
+				        <h2 class="post-title">
+                            TypeScript 中 Optional Chaining 和 Nullish Coalescing
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/25/rz-sz-%E5%91%BD%E4%BB%A4%E5%8D%A1%E4%BD%8F%E7%9A%84%E8%A7%A3%E5%86%B3/">
+				        <h2 class="post-title">
+                            `rz/sz` 命令卡住的解决
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/23/git-rebase-%E6%97%B6-library-not-loaded-%E7%9A%84%E9%94%99%E8%AF%AF/">
+				        <h2 class="post-title">
+                            git rebase 时 library not loaded 的错误
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/23/Objective-C-%E4%B8%AD%E4%B8%8D%E5%B8%A6%E5%8A%A0%E5%87%8F%E5%8F%B7%E7%9A%84%E6%96%B9%E6%B3%95/">
+				        <h2 class="post-title">
+                            Objective-C 中不带加减号的方法
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/23/iOS-%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8%E7%9A%84%E8%B0%83%E8%AF%95/">
+				        <h2 class="post-title">
+                            iOS 本地存储的调试
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/18/%E5%88%A9%E7%94%A8-Node.js-%E7%9A%84-promisify-%E5%B0%86%E5%9B%9E%E8%B0%83%E8%BD%AC-Promise/">
+				        <h2 class="post-title">
+                            利用 Node.js 的 promisify 将回调转 Promise
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/17/%E8%AF%95%E7%94%A8-Deno/">
+				        <h2 class="post-title">
+                            试用 Deno
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/17/%E5%88%9B%E5%BB%BA-fish-shell-%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8%E6%96%87%E4%BB%B6/">
+				        <h2 class="post-title">
+                            创建 fish shell 自动补全文件
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/15/TypeScript-%E9%A1%B9%E7%9B%AE-rootDir-%E8%AE%BE%E7%BD%AE%E5%8F%8A%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B9%8B%E5%A4%96%E8%B5%84%E6%BA%90%E7%9A%84%E5%BC%95%E7%94%A8/">
+				        <h2 class="post-title">
+                            TypeScript 项目 `rootDir` 设置及根目录之外资源的引用
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/13/%E9%85%8D%E7%BD%AE-mac-Finder-%E5%A7%8B%E7%BB%88%E5%9C%A8%E6%96%B0%E6%A0%87%E7%AD%BE%E4%B8%AD%E6%89%93%E5%BC%80/">
+				        <h2 class="post-title">
+                            配置 mac Finder 始终在新标签中打开
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/13/%E5%88%9B%E5%BB%BA-Yarn-NPM-%E8%84%9A%E6%89%8B%E6%9E%B6%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E9%A1%B9%E7%9B%AE/">
+				        <h2 class="post-title">
+                            创建 Yarn/NPM 脚手架快速生成项目
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/13/Kafka-%E7%9A%84%E5%AE%89%E8%A3%85%E5%8F%8A%E5%90%AF%E5%8A%A8/">
+				        <h2 class="post-title">
+                            Kafka 的安装及启动
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/13/MySQL-%E9%87%8D%E7%BD%AE-root-%E5%AF%86%E7%A0%81/">
+				        <h2 class="post-title">
+                            MySQL 重置 root 密码
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/MySQL-INNODB-%E4%B8%8E-MYISAM-%E7%9A%84%E5%8C%BA%E5%88%AB/">
+				        <h2 class="post-title">
+                            MySQL INNODB 与 MYISAM 的区别
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/Emscripten-%E5%AE%89%E8%A3%85/">
+				        <h2 class="post-title">
+                            Emscripten 安装
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/MySQL-%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            MySQL 不同版本数据导入的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/%E5%88%A9%E7%94%A8-ps-%E5%91%BD%E4%BB%A4%E6%9F%A5%E7%9C%8B%E8%BF%9B%E7%A8%8B%E7%9A%84%E4%BD%8D%E7%BD%AE/">
+				        <h2 class="post-title">
+                            利用 ps 命令查看进程的位置
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/killall-%E4%B8%AD%E7%9A%84-signal/">
+				        <h2 class="post-title">
+                            killall 中的 signal
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/std-fopen-%E4%B8%AD-r+-%E4%B8%8E-w+-%E7%9A%84%E5%8C%BA%E5%88%AB/">
+				        <h2 class="post-title">
+                            `std::fopen` 中 `r+` 与 `w+` 的区别
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/.o-.a-%E5%92%8C-.so-%E6%96%87%E4%BB%B6/">
+				        <h2 class="post-title">
+                            `.o`，`.a` 和 `.so` 文件
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/%E8%B7%A8%E5%9F%9F%E5%8F%8A%E8%A7%A3%E5%86%B3/">
+				        <h2 class="post-title">
+                            跨域及解决
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/iTerm2-%E4%BC%9A%E8%AF%9D%E7%AA%97%E5%8F%A3%E7%9A%84%E6%81%A2%E5%A4%8D/">
+				        <h2 class="post-title">
+                            iTerm2 会话窗口的恢复
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/09/%E5%86%85%E5%AE%B9%E5%8D%8F%E5%95%86-Content-Nagotiation/">
+				        <h2 class="post-title">
+                            内容协商/ Content Nagotiation
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/05/05/pl-chart/">
+				        <h2 class="post-title">
+                            My Programming Languages Spectrum
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            我的编程语言光谱
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="other">
+				    <a href="/2020/04/25/Mac-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8F%8A%E9%87%8D%E8%A3%85%E7%B3%BB%E7%BB%9F/">
+				        <h2 class="post-title">
+                            Mac 格式化及重装系统
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="iOS">
+				    <a href="/2020/04/25/iOS-webview-%E6%A0%87%E9%A2%98%E5%8F%98%E6%9B%B4%E7%9A%84%E6%A3%80%E6%B5%8B/">
+				        <h2 class="post-title">
+                            iOS webview 标题变更的检测
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="other">
+				    <a href="/2020/04/24/%E5%AE%89%E8%A3%85%E5%B9%B6%E5%88%87%E6%8D%A2%E5%88%B0-fish-shell/">
+				        <h2 class="post-title">
+                            安装并切换到 fish shell
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/04/17/%E9%85%8D%E7%BD%AE-VSCode-%E4%BB%A5%E6%B6%88%E9%99%A4-Angular-%E9%A1%B9%E7%9B%AE%E4%B8%AD%E8%A3%85%E9%A5%B0%E5%99%A8%E7%9A%84%E6%8A%A5%E9%94%99%E4%BF%A1%E6%81%AF/">
+				        <h2 class="post-title">
+                            配置 VSCode 以消除 Angular 项目中装饰器的报错信息
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/04/12/node-sass-%E5%AE%89%E8%A3%85%E6%97%B6%E7%89%88%E6%9C%AC%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            node-sass 安装时版本的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/03/01/Objective-C-%E4%B8%AD%E8%AE%A1%E6%97%B6%E5%99%A8%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%8F%96%E6%B6%88/">
+				        <h2 class="post-title">
+                            Objective-C 中计时器设置与取消
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/02/28/%E4%B8%8A%E4%BC%A0%E5%BA%94%E7%94%A8%E8%87%B3-App-Store-%E4%B8%AD%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3/">
+				        <h2 class="post-title">
+                            上传应用至 App Store 中的问题及解决
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/02/27/Pod-install-%E6%97%B6-Ruby-%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            Pod install 时 Ruby 环境问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/02/16/Flutter-%E7%BC%96%E8%AF%91%E6%97%B6%E7%9A%84%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            Flutter 编译时的权限问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/01/28/Homebrew-%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            Homebrew 安装问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2020/01/23/GitHub-%E5%9B%BE%E7%89%87%E8%B5%84%E6%BA%90%E6%97%A0%E6%B3%95%E5%8A%A0%E8%BD%BD%E7%9A%84%E8%A7%A3%E5%86%B3/">
+				        <h2 class="post-title">
+                            GitHub 图片资源无法加载的解决
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div></section><section>
+				<span class="fa listing-seperator">
+					<span class="tag-text">2019</span>
+				</span><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/23/%E7%A7%BB%E9%99%A4-Android-Studio-%E5%AF%BC%E8%88%AA%E6%A0%8F%E4%B8%8A%E7%9A%84-Git-%E8%8F%9C%E5%8D%95/">
+				        <h2 class="post-title">
+                            移除 Android Studio 导航栏上的 Git 菜单
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/15/UIStackView-%E7%9A%84%E8%83%8C%E6%99%AF/">
+				        <h2 class="post-title">
+                            UIStackView 的背景
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/14/Objective-C-%E8%83%8C%E6%99%AF%E6%8B%89%E4%BC%B8/">
+				        <h2 class="post-title">
+                            Objective-C 背景拉伸
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/14/CSS-background-%E7%9A%84%E7%AE%80%E5%86%99/">
+				        <h2 class="post-title">
+                            CSS background 的简写
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/08/Objective-C-%E4%B8%AD%E5%AE%9E%E7%8E%B0-Monkey-Patching/">
+				        <h2 class="post-title">
+                            Objective-C 中实现 Monkey-Patching
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/08/CocoaTouch-View-Controller-%E7%9B%B8%E5%85%B3/">
+				        <h2 class="post-title">
+                            CocoaTouch View Controller 相关
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/07/CocoaPods-%E7%9A%84%E4%BD%BF%E7%94%A8/">
+				        <h2 class="post-title">
+                            CocoaPods 的使用
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/06/Objective-C-%E4%B8%AD%E4%BD%BF%E7%94%A8-Swift-%E4%BB%A3%E7%A0%81/">
+				        <h2 class="post-title">
+                            Objective-C 中使用 Swift 代码
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/06/iOS-%E5%BA%94%E7%94%A8%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96/">
+				        <h2 class="post-title">
+                            iOS 应用的本地化
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/03/clang-format-%E7%9A%84-Xcode-%E9%9B%86%E6%88%90/">
+				        <h2 class="post-title">
+                            clang-format 的 Xcode 集成
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/12/01/Objective-C-%E5%B1%9E%E6%80%A7%E7%9A%84%E5%A3%B0%E6%98%8E%E5%8F%8A-@dynamic/">
+				        <h2 class="post-title">
+                            Objective-C 属性的声明及 @dynamic
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/11/30/Intersection-Observer-API/">
+				        <h2 class="post-title">
+                            Intersection Observer API
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/11/27/Objective-C-%E5%8F%98%E5%8F%82%E5%87%BD%E6%95%B0/">
+				        <h2 class="post-title">
+                            Objective-C 变参函数
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/11/25/Xcode-%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E9%BB%91%E5%B1%8F%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            Xcode 真机调试黑屏的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/11/23/ipa-%E6%96%87%E4%BB%B6%E4%B8%AD%E8%B5%84%E6%BA%90%E7%9A%84%E8%A7%A3%E6%9E%90/">
+				        <h2 class="post-title">
+                            ipa 文件中资源的解析
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/10/15/CSS-ellipsis-%E4%B8%8E-padding-%E7%BB%93%E5%90%88%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            CSS `ellipsis` 与 `padding` 结合时的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/10/14/%E5%88%A9%E7%94%A8-SASS-%E7%AE%80%E5%8C%96-nth-child-%E6%A0%B7%E5%BC%8F%E7%9A%84%E7%94%9F%E6%88%90/">
+				        <h2 class="post-title">
+                            利用 SASS 简化 `nth-child` 样式的生成
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/10/12/http-equiv-meta-%E6%A0%87%E7%AD%BE/">
+				        <h2 class="post-title">
+                            `http-equiv` meta 标签
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/10/11/Currying-%E5%8F%8A%E5%BA%94%E7%94%A8/">
+				        <h2 class="post-title">
+                            Currying 及应用
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/10/10/Mac-%E5%8B%BF%E6%89%B0%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%BF%AB%E6%8D%B7%E9%94%AE/">
+				        <h2 class="post-title">
+                            Mac 勿扰模式的快捷键
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/10/09/%E4%BB%8E-axios-%E6%BA%90%E7%A0%81%E4%B8%AD%E4%BA%86%E8%A7%A3%E5%88%B0%E7%9A%84-Promise-%E9%93%BE%E4%B8%8E%E8%AF%B7%E6%B1%82%E7%9A%84%E5%8F%96%E6%B6%88/">
+				        <h2 class="post-title">
+                            从 axios 源码中了解到的 Promise 链与请求的取消
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/10/08/%E7%90%86%E8%A7%A3-Redux-%E7%9A%84%E4%B8%AD%E9%97%B4%E4%BB%B6/">
+				        <h2 class="post-title">
+                            理解 Redux 的中间件
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/09/29/React-+-TypeScript-%E5%AE%9E%E7%8E%B0%E6%B3%9B%E5%9E%8B%E7%BB%84%E4%BB%B6/">
+				        <h2 class="post-title">
+                            React + TypeScript 实现泛型组件
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/09/27/git-clone-%E4%BB%93%E5%BA%93%E7%9A%84%E9%83%A8%E5%88%86%E4%BB%A3%E7%A0%81/">
+				        <h2 class="post-title">
+                            git clone 仓库的部分代码
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/09/26/JavaScript-Map-%E5%92%8C-Set/">
+				        <h2 class="post-title">
+                            JavaScript Map 和 Set
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/09/25/C++-%E5%8F%98%E9%87%8F%E5%88%A4%E5%AE%9A%E7%9A%84%E8%9E%BA%E6%97%8B%E6%B3%95%E5%88%99/">
+				        <h2 class="post-title">
+                            C++ 变量判定的螺旋法则
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/09/24/React-+-TypeScript-%E9%BB%98%E8%AE%A4-Props-%E7%9A%84%E5%A4%84%E7%90%86/">
+				        <h2 class="post-title">
+                            React + TypeScript 默认 Props 的处理
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/09/23/TypeScript-%E5%8F%82%E6%95%B0%E5%B1%9E%E6%80%A7/">
+				        <h2 class="post-title">
+                            TypeScript 参数属性
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="CS+Idols">
+				    <a href="/2019/09/13/peter-john-landin/">
+				        <h2 class="post-title">
+                            Peter John Landin
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            「计算机科学偶像」- 彼得·约翰·兰丁
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,QC+%28Quickcheck%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/09/02/sf-qc-02-typeclasses/">
+				        <h2 class="post-title">
+                            「SF-QC」2 TypeClasses
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Quickcheck - A Tutorial on Typeclasses in Coq
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/08/03/CSS-transition-%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC/">
+				        <h2 class="post-title">
+                            CSS transition 的默认值
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/08/02/MediaDevices.getUserMedia-undefined-%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            `MediaDevices.getUserMedia` `undefined` 的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/08/01/Koa-%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-HTTPS-%E7%8E%AF%E5%A2%83/">
+				        <h2 class="post-title">
+                            Koa 本地搭建 HTTPS 环境
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/07/08/CSS-%E5%88%A9%E7%94%A8-padding-bottom-%E5%AE%9E%E7%8E%B0%E5%9B%BA%E5%AE%9A%E6%AF%94%E4%BE%8B%E7%9A%84%E5%AE%B9%E5%99%A8/">
+				        <h2 class="post-title">
+                            CSS 利用 `padding-bottom` 实现固定比例的容器
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/30/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">
+				        <h2 class="post-title">
+                            进程与线程
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/29/CSS-%E9%80%89%E6%8B%A9%E5%99%A8%E6%9D%83%E9%87%8D%E8%AE%A1%E7%AE%97%E8%A7%84%E5%88%99/">
+				        <h2 class="post-title">
+                            CSS 选择器权重计算规则
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/27/Make-%E7%BC%96%E8%AF%91%E8%84%9A%E6%9C%AC%E4%B8%8A%E6%89%8B/">
+				        <h2 class="post-title">
+                            Make 编译脚本上手
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/26/%E5%88%A9%E7%94%A8-chunked-%E7%B1%BB%E5%9E%8B%E5%93%8D%E5%BA%94%E5%AE%9E%E7%8E%B0%E5%90%8E%E5%8F%B0%E8%AF%B7%E6%B1%82%E7%9A%84%E7%9B%91%E5%90%AC/">
+				        <h2 class="post-title">
+                            利用 chunked 类型响应实现后台请求的监听
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/25/C-C++-%E4%B8%AD%E7%9A%84%E5%AE%8F-Macro/">
+				        <h2 class="post-title">
+                            C/C++ 中的宏/Macro
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/24/SSL-TLS-%E9%93%BE%E6%8E%A5%E7%9A%84%E5%BB%BA%E7%AB%8B-%E6%8F%A1%E6%89%8B/">
+				        <h2 class="post-title">
+                            SSL/TLS 链接的建立/握手
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/23/C-C++-%E4%B8%AD-printf-%E6%A0%BC%E5%BC%8F%E5%8C%96/">
+				        <h2 class="post-title">
+                            C/C++ 中 `printf` 格式化
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/22/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB/">
+				        <h2 class="post-title">
+                            多媒体文件的容器与编解码器的关系
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/21/Unix-%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84-Make-%E4%B8%89%E8%BF%9E/">
+				        <h2 class="post-title">
+                            Unix 开发中的 Make 三连
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/20/shell-%E4%B8%AD%E9%95%BF%E5%91%BD%E4%BB%A4%E7%9A%84%E6%8D%A2%E8%A1%8C%E5%A4%84%E7%90%86/">
+				        <h2 class="post-title">
+                            shell 中长命令的换行处理
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/19/TypeScript-this-%E5%85%A5%E5%8F%82/">
+				        <h2 class="post-title">
+                            TypeScript `this` 入参
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/18/C++-float-vs-double/">
+				        <h2 class="post-title">
+                            C++ `float` vs `double`
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/17/C++-endl-%E4%B8%8E-n-%E7%9A%84%E5%8C%BA%E5%88%AB/">
+				        <h2 class="post-title">
+                            C++ `endl` 与 `
+` 的区别
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/16/HTML-capture-%E5%B1%9E%E6%80%A7/">
+				        <h2 class="post-title">
+                            HTML `capture` 属性
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/15/Xcode-%E4%B8%AD%E9%85%8D%E7%BD%AE-clang-format-%E6%A0%BC%E5%BC%8F%E5%8C%96-C++-%E4%BB%A3%E7%A0%81/">
+				        <h2 class="post-title">
+                            Xcode 中配置 clang-format 格式化 C++ 代码
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/14/ES-%E6%8F%90%E6%A1%88%E7%9A%84%E5%90%84%E7%8A%B6%E6%80%81/">
+				        <h2 class="post-title">
+                            ES 提案的各状态
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/13/TypeScript-%E8%A3%85%E9%A5%B0%E5%99%A8%E7%9A%84%E6%89%A7%E8%A1%8C%E5%8E%9F%E7%90%86/">
+				        <h2 class="post-title">
+                            TypeScript 装饰器的执行原理
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/12/TCP-%E4%B8%8E-UDP/">
+				        <h2 class="post-title">
+                            TCP 与 UDP
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/11/React-controlled-%E5%8F%8A-uncontrolled-%E7%BB%84%E4%BB%B6/">
+				        <h2 class="post-title">
+                            React `controlled` 及 `uncontrolled` 组件
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/10/%E5%B0%BE%E8%B0%83%E7%94%A8%E5%8F%8A%E9%80%92%E5%BD%92%E4%BC%98%E5%8C%96/">
+				        <h2 class="post-title">
+                            尾调用及递归优化
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/09/MySQL-SQL_MODE-%E7%9A%84%E8%AE%BE%E7%BD%AE/">
+				        <h2 class="post-title">
+                            MySQL SQL_MODE 的设置
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/07/MySQL-explicit_defaults_for_timestamp-%E4%B8%8E-TIMESTAMP/">
+				        <h2 class="post-title">
+                            MySQL `explicit_defaults_for_timestamp` 与 TIMESTAMP
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/05/TypeScript-unknown-%E7%B1%BB%E5%9E%8B/">
+				        <h2 class="post-title">
+                            TypeScript unknown 类型
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/03/JavaScript-%E5%AE%9E%E7%8E%B0%E9%A1%B5%E9%9D%A2%E4%B8%AD%E5%BD%95%E9%9F%B3%E5%8A%9F%E8%83%BD/">
+				        <h2 class="post-title">
+                            JavaScript 实现页面中录音功能
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/03/Koa-%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%89%A7%E8%A1%8C/">
+				        <h2 class="post-title">
+                            Koa 中间件的执行
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/06/01/Koa-%E4%B8%AD%E5%AE%9E%E7%8E%B0-chunked-%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93/">
+				        <h2 class="post-title">
+                            Koa 中实现 chunked 数据传输
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/31/WebAssembly-%E4%B8%8A%E6%89%8B/">
+				        <h2 class="post-title">
+                            WebAssembly 上手
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/30/TypeScript-%E8%A3%85%E9%A5%B0%E5%99%A8/">
+				        <h2 class="post-title">
+                            TypeScript 装饰器 
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/29/TypeScript-infer-%E5%85%B3%E9%94%AE%E5%AD%97/">
+				        <h2 class="post-title">
+                            TypeScript `infer` 关键字
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/28/Vim-%E6%8F%92%E4%BB%B6%E7%9A%84%E5%AE%89%E8%A3%85/">
+				        <h2 class="post-title">
+                            Vim 插件的安装
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/26/MySQL-EXPLAIN-%E8%AF%AD%E5%8F%A5/">
+				        <h2 class="post-title">
+                            MySQL EXPLAIN 语句
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/26/%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B(AOP)/">
+				        <h2 class="post-title">
+                            面向切面编程(AOP)
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/25/CSS-%E7%B1%BB%E5%90%8D%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            CSS 类名的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/24/MySQL-%E4%BA%8B%E5%8A%A1/">
+				        <h2 class="post-title">
+                            MySQL 事务
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/23/NGINX-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/">
+				        <h2 class="post-title">
+                            NGINX 反向代理
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/21/NGINX-%E9%85%8D%E7%BD%AE%E6%B8%85%E5%8D%95/">
+				        <h2 class="post-title">
+                            NGINX 配置清单
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/20/Koa-%E6%8F%90%E4%BA%A4%E5%92%8C%E6%8E%A5%E6%94%B6-JSON-%E8%A1%A8%E5%8D%95%E6%95%B0%E6%8D%AE/">
+				        <h2 class="post-title">
+                            Koa 提交和接收 JSON 表单数据
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/19/koa-router-%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0%E4%B8%8E%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%BB%93%E5%90%88/">
+				        <h2 class="post-title">
+                            koa-router 路由参数与前端路由的结合
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/18/MySQL-%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/">
+				        <h2 class="post-title">
+                            MySQL 常用操作
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/17/MySQL-GROUP-BY-%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            MySQL GROUP BY 的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/15/JavaScript-%E4%B8%AD%E5%AE%9E%E7%8E%B0-sleep/">
+				        <h2 class="post-title">
+                            JavaScript 中实现 sleep
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/15/MySQL-UNION-%E6%9F%A5%E8%AF%A2/">
+				        <h2 class="post-title">
+                            MySQL UNION 查询
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/13/MySQL-%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/">
+				        <h2 class="post-title">
+                            MySQL 联表查询
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/12/MySQL-%E8%A1%A8%E5%92%8C%E5%88%97%E7%9A%84%E6%B3%A8%E9%87%8A/">
+				        <h2 class="post-title">
+                            MySQL 表和列的注释
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/11/MySQL-%E5%A4%96%E9%94%AE/">
+				        <h2 class="post-title">
+                            MySQL 外键
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/10/HTTP-%E5%93%8D%E5%BA%94%E7%9A%84%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/">
+				        <h2 class="post-title">
+                            HTTP 响应的分块传输
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/09/MySQL-%E4%B8%AD%E7%9A%84%E7%B4%A2%E5%BC%95/">
+				        <h2 class="post-title">
+                            MySQL 中的索引
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/09/protected-vs-private/">
+				        <h2 class="post-title">
+                            `protected` vs `private`
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/07/MySQL-%E7%A4%BA%E4%BE%8B%E6%95%B0%E6%8D%AE%E5%BA%93/">
+				        <h2 class="post-title">
+                            MySQL 示例数据库
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/07/Linux-%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4-Cheat-Sheet/">
+				        <h2 class="post-title">
+                            Linux 网络相关命令 Cheat Sheet
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/06/Koa-+-GraphQL-%E7%A4%BA%E4%BE%8B/">
+				        <h2 class="post-title">
+                            Koa + GraphQL 示例
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/05/HTTP-%E7%8A%B6%E6%80%81%E7%A0%81%E5%8F%8A%E5%90%AB%E4%B9%89/">
+				        <h2 class="post-title">
+                            HTTP 状态码及含义
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/04/RabbitMQ-Node.js-%E7%A4%BA%E4%BE%8B/">
+				        <h2 class="post-title">
+                            RabbitMQ Node.js 示例
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/03/MySQL-%E4%B8%AD%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B/">
+				        <h2 class="post-title">
+                            MySQL 中的字符串类型
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/02/k-sum-%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            k-sum 问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/05/01/MySQL-%E4%B8%AD%E7%9A%84%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B/">
+				        <h2 class="post-title">
+                            MySQL 中的日期时间类型
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/30/MySQL-%E4%B8%AD%E7%9A%84%E6%95%B0%E5%AD%97%E7%B1%BB%E5%9E%8B/">
+				        <h2 class="post-title">
+                            MySQL 中的数字类型
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/29/TypeScript-%E5%AE%9E%E7%8E%B0%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97/">
+				        <h2 class="post-title">
+                            TypeScript 实现任务队列
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/27/Node.js-+-MySQL-%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/">
+				        <h2 class="post-title">
+                            Node.js + MySQL 实现数据的增删改查
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/27/SASS-%E4%B8%AD%E5%8F%98%E9%87%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC/">
+				        <h2 class="post-title">
+                            SASS 中变量的默认值
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="mysql">
+				    <a href="/2019/04/26/MySQL-%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/">
+				        <h2 class="post-title">
+                            MySQL 上手教程
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/25/%E4%BC%98%E9%9B%85%E5%9C%B0-async-await/">
+				        <h2 class="post-title">
+                            优雅地 async/await
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/24/%E7%90%86%E8%A7%A3-KMP-%E7%AE%97%E6%B3%95/">
+				        <h2 class="post-title">
+                            理解 KMP 算法
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/23/CSS-fixed-%E5%AE%9A%E4%BD%8D%E5%85%83%E7%B4%A0%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            CSS fixed 定位元素失效的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/22/%E5%85%B3%E4%BA%8E-JavaScript-%E4%B8%AD%E7%9A%84%E7%BB%A7%E6%89%BF/">
+				        <h2 class="post-title">
+                            关于 JavaScript 中的继承
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/21/React-%E8%99%9A%E6%8B%9F-DOM-%E7%9A%84%E5%B7%AE%E5%BC%82%E6%A3%80%E6%B5%8B%E6%9C%BA%E5%88%B6/">
+				        <h2 class="post-title">
+                            React 虚拟 DOM 的差异检测机制
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D/">
+				        <h2 class="post-title">
+                            下拉框中选项的快速定位
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/19/%E7%90%86%E8%A7%A3-Node.js-%E7%9A%84-Event-loop/">
+				        <h2 class="post-title">
+                            理解 Node.js 的 Event loop
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/18/%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%B8%AD%E7%9A%84-vi-%E6%A8%A1%E5%BC%8F/">
+				        <h2 class="post-title">
+                            命令行中的 vi 模式
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/17/Shim-%E4%B8%8E-Polyfill/">
+				        <h2 class="post-title">
+                            Shim 与 Polyfill
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/16/React-+-TypeScript-%E5%85%83%E7%B4%A0%E5%BC%95%E7%94%A8%E7%9A%84%E4%BC%A0%E9%80%92/">
+				        <h2 class="post-title">
+                            React + TypeScript：元素引用的传递
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/15/HTTP-2-%E7%AE%80%E4%BB%8B/">
+				        <h2 class="post-title">
+                            HTTP/2 简介
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/14/TypeScript-%E4%B8%AD%E9%9D%9E%E4%BB%A3%E7%A0%81%E6%A8%A1%E5%9D%97%E7%9A%84%E5%AF%BC%E5%85%A5/">
+				        <h2 class="post-title">
+                            TypeScript 中非代码模块的导入
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/13/Node.js-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%E7%9A%84%E7%BC%96%E5%86%99/">
+				        <h2 class="post-title">
+                            Node.js 命令行工具的编写
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD/">
+				        <h2 class="post-title">
+                            TypeScript 中的方法重载
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/11/TypeScript-%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/">
+				        <h2 class="post-title">
+                            TypeScript 上手教程
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/10/Egg.js-%E4%B8%AD%E5%85%A5%E5%8F%82%E7%9A%84%E6%A0%A1%E9%AA%8C/">
+				        <h2 class="post-title">
+                            Egg.js 中入参的校验
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/09/koa-%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+				        <h2 class="post-title">
+                            koa 中的错误处理
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/08/HTTP-%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3/">
+				        <h2 class="post-title">
+                            HTTP 缓存相关
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/06/React-%E4%B8%AD%E9%98%BB%E6%AD%A2%E4%BA%8B%E4%BB%B6%E5%86%92%E6%B3%A1%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            React 中阻止事件冒泡的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/05/%E5%85%B3%E9%97%AD-Mac-%E6%8B%BC%E5%86%99%E8%87%AA%E5%8A%A8%E7%BA%A0%E6%AD%A3%E4%B8%8E%E6%A8%AA%E7%BA%BF%E8%BD%AC%E6%8D%A2/">
+				        <h2 class="post-title">
+                            关闭 Mac 拼写自动纠正与横线转换
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            Puppeteer 截图及相关问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/02/macOS-%E7%A6%81%E7%94%A8%E7%A8%8B%E5%BA%8F%E7%9A%84%E9%BB%91%E8%89%B2%E6%A8%A1%E5%BC%8F-Dark-Mode/">
+				        <h2 class="post-title">
+                            macOS 禁用程序的黑色模式/Dark Mode
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/04/02/Linux-%E4%B8%AD%E6%9F%A5%E7%9C%8B%E8%BF%9B%E7%A8%8B%E5%8F%8A%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5/">
+				        <h2 class="post-title">
+                            Linux 中查看进程及资源使用情况
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/03/31/%E7%90%86%E8%A7%A3-Linux-%E4%B8%AD-ls-%E7%9A%84%E8%BE%93%E5%87%BA/">
+				        <h2 class="post-title">
+                            理解 Linux 中 `ls` 的输出
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/03/31/Node.js-%E4%B8%AD%E7%9A%84-stream/">
+				        <h2 class="post-title">
+                            Node.js 中的 stream
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/03/31/Accept-%E4%B8%8E-Content-Type/">
+				        <h2 class="post-title">
+                            Accept 与 Content-Type
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/03/28/TypeScript-type-alias-%E4%B8%8E-interface/">
+				        <h2 class="post-title">
+                            TypeScript: type alias 与 interface
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/03/26/Node.js-%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3/">
+				        <h2 class="post-title">
+                            Node.js 调试相关
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/19/sf-plf-19-partial-eval/">
+				        <h2 class="post-title">
+                            「SF-PLF」19 PE
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Partial Evaluation
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/18/sf-plf-18-use-auto/">
+				        <h2 class="post-title">
+                            「SF-PLF」18 UseAuto
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Theory And Practice Of Automation In Coq Proofs
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/17/sf-plf-17-use-tactics/">
+				        <h2 class="post-title">
+                            「SF-PLF」17 UseTactics
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Tactic Library For Coq
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/16/sf-plf-16-lib-tactics/">
+				        <h2 class="post-title">
+                            「SF-PLF」16 LibTactics
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - A Collection of Handy General-Purpose Tactics
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/15/sf-plf-15-norm-STLC/">
+				        <h2 class="post-title">
+                            「SF-PLF」15 Norm
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Normalization of STLC
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/14/sf-plf-14-record-sub/">
+				        <h2 class="post-title">
+                            「SF-PLF」14 RecordSub
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Subtyping with Records
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/13/sf-plf-13-references/">
+				        <h2 class="post-title">
+                            「SF-PLF」13 References
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Typing Mutable References
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/12/sf-plf-12-records/">
+				        <h2 class="post-title">
+                            「SF-PLF」12 Records
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Adding Records To STLC
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/11/sf-plf-11-typechecking/">
+				        <h2 class="post-title">
+                            「SF-PLF」11. TypeChecking
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - A Typechecker for STLC
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/03/10/Webpack-SplitChunksPlugin-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F/">
+				        <h2 class="post-title">
+                            Webpack SplitChunksPlugin 的三种模式
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/10/sf-plf-10-subtyping/">
+				        <h2 class="post-title">
+                            「SF-PLF」10 Sub
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Subtyping (子类型化)
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/03/09/React-useEffect-%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            React useEffect 相关问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/09/sf-plf-09-more-STLC/">
+				        <h2 class="post-title">
+                            「SF-PLF」9 MoreStlc
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - More on The Simply Typed Lambda-Calculus
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/08/sf-plf-08-STLC-prop/">
+				        <h2 class="post-title">
+                            「SF-PLF」8 StlcProp
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Properties of STLC
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/07/sf-plf-07-STLC/">
+				        <h2 class="post-title">
+                            「SF-PLF」7 Stlc
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - The Simply Typed Lambda-Calculus
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/06/sf-plf-06-types/">
+				        <h2 class="post-title">
+                            「SF-PLF」6 Types
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Type Systems
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/05/sf-plf-05-smallstep/">
+				        <h2 class="post-title">
+                            「SF-PLF」5 Smallstep
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Small-Step Operational Semantics
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/04/sf-plf-04-hoare-logic/">
+				        <h2 class="post-title">
+                            「SF-PLF」4 HoareAsLogic
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Hoare Logic as a Logic
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/03/sf-plf-03-hoare-2/">
+				        <h2 class="post-title">
+                            「SF-PLF」3 Hoare2
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Hoare Logic, Part II
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/02/sf-plf-02-hoare-1/">
+				        <h2 class="post-title">
+                            「SF-PLF」2 Hoare
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Hoare Logic, Part I 
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/03/01/Chrome-%E8%87%AA%E5%8A%A8%E4%B8%BA%E6%96%B0%E5%BC%80%E6%A0%87%E7%AD%BE%E9%A1%B5%E8%87%AA%E5%8A%A8%E6%89%93%E5%BC%80-DevTool/">
+				        <h2 class="post-title">
+                            Chrome 自动为新开标签页自动打开 DevTool
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/03/01/sf-plf-01-equiv/">
+				        <h2 class="post-title">
+                            「SF-PLF」1 Equiv
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Programming Language Foundations - Program Equivalence (程序的等价关系)
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/02/14/React-Hooks-%E6%96%B9%E5%BC%8F%E4%B8%8B-props-%E5%88%B0-state-%E7%9A%84%E5%80%BC%E5%90%8C%E6%AD%A5/">
+				        <h2 class="post-title">
+                            React Hooks 方式下 props 到 state 的值同步 
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/02/01/JSON-Web-Token-%E4%BB%8B%E7%BB%8D/">
+				        <h2 class="post-title">
+                            JSON Web Token 介绍
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/01/29/transform-%E7%BC%A9%E6%94%BE%E5%90%8E%E7%9A%84%E6%BB%9A%E5%8A%A8%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            transform 缩放后的滚动问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2019/01/28/iOS-%E5%BE%AE%E4%BF%A1%E4%B8%AD%E9%9F%B3%E9%A2%91-preload-%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            iOS 微信中音频 preload 的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/16/sf-lf-16-auto/">
+				        <h2 class="post-title">
+                            「SF-LC」16 Auto
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - More Automation
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/15/sf-lf-15-extraction/">
+				        <h2 class="post-title">
+                            「SF-LC」15 Extraction
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Extracting ML From Coq
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/14/sf-lf-14-imp-ceval/">
+				        <h2 class="post-title">
+                            「SF-LC」14 ImpCEvalFun
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - An Evaluation Function For Imp
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/13/sf-lf-13-imp-parser/">
+				        <h2 class="post-title">
+                            「SF-LC」13 ImpParser
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Lexing And Parsing In Coq
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/12/sf-lf-12-imp/">
+				        <h2 class="post-title">
+                            「SF-LC」12 Imp
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Simple Imperative Programs
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/11/sf-lf-11-rel/">
+				        <h2 class="post-title">
+                            「SF-LC」11 Rel
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Properties of Relations
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/10/sf-lf-10-ind-principle/">
+				        <h2 class="post-title">
+                            「SF-LC」10 IndPrinciples
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Induction Principles
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/09/sf-lf-09-proof-object/">
+				        <h2 class="post-title">
+                            「SF-LC」9 ProofObjects
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - The Curry-Howard Correspondence 
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/08/sf-lf-08-map/">
+				        <h2 class="post-title">
+                            「SF-LC」8 Maps
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Total and Partial Maps
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/07/sf-lf-07-indprop/">
+				        <h2 class="post-title">
+                            「SF-LC」7 Ind Prop
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Inductively Defined Propositions (归纳定义命题)
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/06/sf-lf-06-logic/">
+				        <h2 class="post-title">
+                            「SF-LC」6 Logic
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Logic in Coq
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/05/sf-lf-05-tactics/">
+				        <h2 class="post-title">
+                            「SF-LC」5 Tactics
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - More Basic Tactics
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/04/sf-lf-04-poly/">
+				        <h2 class="post-title">
+                            「SF-LC」4 Poly
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Polymorphism and Higher-Order Functions
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/03/sf-lf-03-list/">
+				        <h2 class="post-title">
+                            「SF-LC」3 List
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Working with Structured Data
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/02/sf-lf-02-induction/">
+				        <h2 class="post-title">
+                            「SF-LC」2 Induction
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Proof by Induction
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29,SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29,Coq,%E7%AC%94%E8%AE%B0">
+				    <a href="/2019/01/01/sf-lf-01-basics/">
+				        <h2 class="post-title">
+                            「SF-LC」1 Basics
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            Logical Foundations - Functional Programming in Coq
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div></section><section>
+				<span class="fa listing-seperator">
+					<span class="tag-text">2018</span>
+				</span><div class="post-preview item" data-tags="">
+				    <a href="/2018/12/27/React-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/">
+				        <h2 class="post-title">
+                            React 性能优化：事件处理器的正确使用
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2018/12/25/JS-%E4%B8%AD%E5%88%9B%E5%BB%BA%E7%BB%99%E5%AE%9A%E9%95%BF%E5%BA%A6%E7%9A%84%E6%95%B0%E7%BB%84/">
+				        <h2 class="post-title">
+                            JS 中创建给定长度的数组
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2018/09/15/%E8%A7%84%E9%81%BF-React-%E7%BB%84%E4%BB%B6%E4%B8%AD%E7%9A%84-bind(this)/">
+				        <h2 class="post-title">
+                            规避 React 组件中的 `bind(this)`
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2018/08/26/sth.-101/">
+				        <h2 class="post-title">
+                            sth. 101
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="security">
+				    <a href="/2018/08/12/Content-Security-Policy-(CSP)-%E4%BB%8B%E7%BB%8D/">
+				        <h2 class="post-title">
+                            Content Security Policy (CSP) 介绍
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2018/08/11/SLA-%E4%B8%8E-SLO/">
+				        <h2 class="post-title">
+                            SLA 与 SLO
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2018/08/05/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%97%AE%E9%A2%98%E9%9B%86%E9%94%A6/">
+				        <h2 class="post-title">
+                            微信小程序问题集锦
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2018/06/12/React-%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98-Higher-Order-Components/">
+				        <h2 class="post-title">
+                            React 代码复用的问题 - Higher-Order Components
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2018/06/04/%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%81%AE%E7%BD%A9%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            字符串遮罩的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="git">
+				    <a href="/2018/05/02/gitignore-%E6%B7%BB%E5%8A%A0%E6%96%87%E4%BB%B6%E4%B8%8D%E7%94%9F%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            gitignore 添加文件不生效的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="javascript">
+				    <a href="/2018/04/01/%E4%B8%80%E4%BB%BD%E6%9C%89%E7%82%B9%E8%BF%87%E6%97%B6%E7%9A%84-JS-%E9%A3%8E%E6%A0%BC%E6%8C%87%E5%8D%97-Google-JavaScript-Style-Guide/">
+				        <h2 class="post-title">
+                            一份有点过时的 JS 风格指南 - Google JavaScript Style Guide
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="bug,html">
+				    <a href="/2018/03/14/%E8%A1%A8%E6%A0%BC%E5%8D%95%E5%85%83%E6%A0%BC%E5%90%88%E5%B9%B6%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            表格单元格合并的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="V8,chrome">
+				    <a href="/2018/03/13/Chrome-DevTools-%E4%B8%AD%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%E8%B0%83%E8%AF%95-%E8%AE%A9%E7%9B%B8%E5%AE%9C%E4%B9%9F%E4%B8%8D%E5%86%8D%E7%9A%B1%E7%9C%89/">
+				        <h2 class="post-title">
+                            Chrome DevTools 中内存溢出的调试，让相宜也不再皱眉
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="V8,%E7%BC%96%E8%AF%91">
+				    <a href="/2018/03/12/%E7%BC%96%E8%AF%91%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B/">
+				        <h2 class="post-title">
+                            编译了解一下
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="javascript,webpack">
+				    <a href="/2018/02/27/webpack-v4-%E5%8D%87%E7%BA%A7%E5%B0%9D%E9%B2%9C/">
+				        <h2 class="post-title">
+                            webpack v4 升级尝鲜
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="javascript,react">
+				    <a href="/2018/02/05/%E5%BF%83%E4%B8%AD%E6%97%A0%E8%B7%AF%E7%94%B1-%E5%A4%84%E5%A4%84%E7%9A%86%E8%87%AA%E7%94%B1-react-router-v4-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1/">
+				        <h2 class="post-title">
+                            心中无路由，处处皆自由/react-router v4 动态路由
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="git">
+				    <a href="/2018/01/24/%E8%AF%B4%E5%87%BA%E6%9D%A5%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E4%BF%A1-Git-%E5%8F%AF%E4%BB%A5%E8%87%AA%E5%8A%A8%E6%89%BE-Bug/">
+				        <h2 class="post-title">
+                            说出来你可能不信，Git 可以自动找 Bug
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2018/01/18/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82/">
+				        <h2 class="post-title">
+                            Webpack 调教之参数的投喂
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="css">
+				    <a href="/2018/01/12/CSS-%E5%B1%9E%E6%80%A7%E6%8E%92%E5%BA%8F%E5%8D%83%E5%8D%83%E4%B8%87-%E6%88%91%E5%8F%AA%E7%88%B1%E9%82%A3%E4%B8%80%E7%A7%8D/">
+				        <h2 class="post-title">
+                            CSS 属性排序千千万，我只爱那一种
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2018/01/03/%E4%BA%8B%E4%BB%B6%E7%9A%84%E5%86%92%E6%B3%A1%E4%B8%8E%E6%8D%95%E8%8E%B7/">
+				        <h2 class="post-title">
+                            事件的冒泡与捕获
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div></section><section>
+				<span class="fa listing-seperator">
+					<span class="tag-text">2017</span>
+				</span><div class="post-preview item" data-tags="algorithm">
+				    <a href="/2017/12/28/%E6%8E%92%E5%88%97%E7%BB%84%E5%90%88%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                             排列组合问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="algorithm">
+				    <a href="/2017/12/06/%E7%90%86%E8%A7%A3%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-O(log-n)/">
+				        <h2 class="post-title">
+                            理解时间复杂度 O(log n)
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="javascript">
+				    <a href="/2017/12/05/source-map-%E7%9A%84%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/">
+				        <h2 class="post-title">
+                            source map 的原理探究
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="javascript">
+				    <a href="/2017/12/02/%E5%89%8D%E7%AB%AF%E5%BC%82%E5%B8%B8%E7%9B%91%E6%8E%A7/">
+				        <h2 class="post-title">
+                            前端异常监控
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="javascript">
+				    <a href="/2017/11/30/apply-vs-call-vs-bind/">
+				        <h2 class="post-title">
+                            apply vs call vs bind 
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="css">
+				    <a href="/2017/11/30/CSS-%E7%9B%92%E6%A8%A1%E5%9E%8B/">
+				        <h2 class="post-title">
+                            CSS 盒模型
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="angular">
+				    <a href="/2017/11/28/%E6%AD%A3%E7%A1%AE%E5%9C%B0%E4%BD%BF%E7%94%A8-Angular-Directive-%E4%B8%AD%E7%9A%84-compile-controller-%E4%B8%8E-link/">
+				        <h2 class="post-title">
+                            正确地使用 Angular Directive 中的 compile，controller 与 link
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="javascript">
+				    <a href="/2017/11/27/JS-%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0/">
+				        <h2 class="post-title">
+                            JS 模板引擎的简单实现
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2017/11/14/Emoji-%E4%B8%8E%E6%96%87%E6%9C%AC%E9%87%8D%E5%8F%A0%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            Emoji 与文本重叠的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div><div class="post-preview item" data-tags="">
+				    <a href="/2017/11/07/iOS-11-%E4%B8%AD-fixed-%E5%AE%B9%E5%99%A8%E4%B8%AD-%E8%BE%93%E5%85%A5%E6%A1%86%E5%85%89%E6%A0%87%E9%94%99%E4%BD%8D%E7%9A%84%E9%97%AE%E9%A2%98/">
+				        <h2 class="post-title">
+                            iOS 11 中 fixed 容器中 输入框光标错位的问题
+				        </h2>
+				        
+				    </a>
+					<hr>
+				</div></section>
+			</div>
+		</div>
+	</div>
+</div>
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    async('/js/jquery.tagcloud.js', function () {
+        $.fn.tagcloud.defaults = {
+            //size: {start: 1, end: 1, unit: 'em'},
+            color: { start: '#bbbbee', end: '#2f93b4' },
+        };
+        $('#tag_cloud a').tagcloud();
+    })
+</script>
+<script src='/js/archive.js '></script>
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

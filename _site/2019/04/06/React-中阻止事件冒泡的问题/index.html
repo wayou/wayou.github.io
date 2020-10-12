@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="React 中阻止事件冒泡的问题 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="React 中阻止事件冒泡的问题
+
+在正式开始前，先来看看 JS 中事件的触发与事件处理器的执行。
+
+JS 中事件的监听与处理
+
+事件捕获与冒泡
+
+DOM 事件会先后经历 捕获 与 冒泡 两个阶段。捕获即事件沿着 DOM 树由上往下传递，到达触发事件的元素后，开始由下往上冒泡。
+
+
+  IE9 及之前的版本只支持冒泡
+
+
+                  |  A
+ -----------...">
+    
+    <meta property="article:published_time" content="2019-04-06T17:04:00Z">
+    
+    
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/04/06/React-%E4%B8%AD%E9%98%BB%E6%AD%A2%E4%BA%8B%E4%BB%B6%E5%86%92%E6%B3%A1%E7%9A%84%E9%97%AE%E9%A2%98/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>React 中阻止事件冒泡的问题 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/04/06/React-%E4%B8%AD%E9%98%BB%E6%AD%A2%E4%BA%8B%E4%BB%B6%E5%86%92%E6%B3%A1%E7%9A%84%E9%97%AE%E9%A2%98/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>React 中阻止事件冒泡的问题</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on April 6, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="react-中阻止事件冒泡的问题">React 中阻止事件冒泡的问题</h1>
+
+<p>在正式开始前，先来看看 JS 中事件的触发与事件处理器的执行。</p>
+
+<h2 id="js-中事件的监听与处理">JS 中事件的监听与处理</h2>
+
+<h3 id="事件捕获与冒泡">事件捕获与冒泡</h3>
+
+<p>DOM 事件会先后经历 <strong>捕获</strong> 与 <strong>冒泡</strong> 两个阶段。捕获即事件沿着 DOM 树由上往下传递，到达触发事件的元素后，开始由下往上冒泡。</p>
+
+<blockquote>
+  <p>IE9 及之前的版本只支持冒泡</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                  |  A
+ -----------------|--|-----------------
+ | Parent         |  |                |
+ |   -------------|--|-----------     |
+ |   |Children    V  |          |     |
+ |   ----------------------------     |
+ |                                    |
+ --------------------------------------
+</code></pre></div></div>
+
+<h3 id="事件处理器">事件处理器</h3>
+
+<p>默认情况下，事件处理器是在事件的冒泡阶段执行，无论是直接设置元素的 <code class="language-plaintext highlighter-rouge">onclick</code> 属性还是通过 <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener"><code class="language-plaintext highlighter-rouge">EventTarget.addEventListener()</code></a> 来绑定，后者在没有设置 <code class="language-plaintext highlighter-rouge">useCapture</code> 参数为 <code class="language-plaintext highlighter-rouge">true</code> 的情况下。</p>
+
+<p>考察下面的示例：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;button</span> <span class="na">onclick=</span><span class="s">"btnClickHandler(event)"</span><span class="nt">&gt;</span>CLICK ME<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">document clicked</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="kd">function</span> <span class="nx">btnClickHandler</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">btn clicked</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>输出:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>btn clicked
+document clicked
+</code></pre></div></div>
+
+<h3 id="阻止事件的冒泡">阻止事件的冒泡</h3>
+
+<p>通过调用事件身上的 <code class="language-plaintext highlighter-rouge">stopPropagation()</code> 可阻止事件冒泡，这样可实现只我们想要的元素处理该事件，而其他元素接收不到。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;button</span> <span class="na">onclick=</span><span class="s">"btnClickHandler(event)"</span><span class="nt">&gt;</span>CLICK ME<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span>
+    <span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span>
+    <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">document clicked</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="kc">false</span>
+  <span class="p">);</span>
+
+  <span class="kd">function</span> <span class="nx">btnClickHandler</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">btn clicked</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>btn clicked
+</code></pre></div></div>
+
+<h3 id="一个阻止冒泡的应用场景">一个阻止冒泡的应用场景</h3>
+
+<p>常见的弹窗组件中，点击弹窗区域之外关闭弹窗的功能，可通过阻止事件冒泡来方便地实现，而不用这种方式的话，会引入复杂的判断当前点击坐标是否在弹窗之外的复杂逻辑。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// close dialog</span>
+<span class="p">});</span>
+
+<span class="nx">dialogElement</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">event</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>但如果你尝试在 React 中实现上面的逻辑，一开始的尝试会让你怀疑人生。</p>
+
+<h2 id="react-下事件执行的问题">React 下事件执行的问题</h2>
+
+<p>了解 JS 中事件的基础后，会觉得一切都没什么复杂。但在引入 React 后，事情开始起变化。将上面阻止冒泡的逻辑在 React 里实现一下，代码大概像这样：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">documentClickHandler</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">documentClickHandler</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="p">},</span> <span class="p">[]);</span>
+
+  <span class="kd">function</span> <span class="nx">documentClickHandler</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">document clicked</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">btnClickHandler</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">btn clicked</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">btnClickHandler</span><span class="p">}</span><span class="o">&gt;</span><span class="nx">CLICK</span> <span class="nx">ME</span><span class="o">&lt;</span><span class="sr">/button&gt;</span><span class="err">;
+</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>输出:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>btn clicked
+document clicked
+</code></pre></div></div>
+
+<p>document 上的事件处理器正常执行了，并没有因为我们在按钮里面调用 <code class="language-plaintext highlighter-rouge">event.stopPropagation()</code> 而阻止。</p>
+
+<p>那么问题出在哪？</p>
+
+<h3 id="react-中事件处理的原理">React 中事件处理的原理</h3>
+
+<p>考虑下面的示例代码并思考点击按钮后的输出。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">ReactDOM</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react-dom</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">window</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">document:bedore react mount</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">body</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">documentHandler</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">document within react</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">documentHandler</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">documentHandler</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="p">},</span> <span class="p">[]);</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">div</span>
+      <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">raect:container</span><span class="dl">"</span><span class="p">);</span>
+      <span class="p">}}</span>
+    <span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">button</span>
+        <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">react:button</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}}</span>
+      <span class="o">&gt;</span>
+        <span class="nx">CLICK</span> <span class="nx">ME</span>
+      <span class="o">&lt;</span><span class="sr">/button</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">App</span> <span class="o">/&gt;</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">root</span><span class="dl">"</span><span class="p">));</span>
+
+<span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">document:after react mount</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>现在对代码做一些变动，在 body 的事件处理器中把冒泡阻止，再思考其输出。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">document.body.addEventListener("click", event =&gt; {
+</span><span class="gi">+  event.stopPropagation();
+</span>  console.log("body");
+<span class="err">});</span>
+</code></pre></div></div>
+
+<p>下面是剧透环节，如果你懒得自己实验的话。</p>
+
+<p>点击按钮后的输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>body
+document:bedore react mount
+react:button
+raect:container
+document:after react mount
+document within react
+window
+</code></pre></div></div>
+
+<p>bdoy 上阻止冒泡后，你可能会觉得，既然 body 是按钮及按钮容器的父级，那么按钮及容器的事件会正常执行，事件到达 body 后， body 的事件处理器执行，然后就结束了。 document 上的事件处理器一个也不执行。</p>
+
+<p>事实上，按钮及按钮容器上的事件处理器也没执行，只有 body 执行了。</p>
+
+<p>输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>body
+</code></pre></div></div>
+
+<p>通过下面的分析，你能够完全理解上面的结果。</p>
+
+<h4 id="syntheticevent">SyntheticEvent</h4>
+
+<p>React 有自身的一套事件系统，叫作 <a href="https://reactjs.org/docs/events.html">SyntheticEvent</a>。叫什么不重要，实现上，其实就是通过在 document 上注册事件代理了组件树中所有的事件（<a href="https://github.com/facebook/react/issues/4335#issuecomment-120269153">facebook/react#4335</a>），并且它监听的是 document 冒泡阶段。你完全可以忽略掉 SyntheticEvent 这个名词，如果觉得它有点让事情变得高大上或者增加了一些神秘的话。</p>
+
+<p>除了事件系统，它有自身的一套，另外还需要理解的是，界面上展示的 DOM 与我们代码中的 DOM 组件，也是两样东西，需要在概念上区分开来。</p>
+
+<p>所以，当你在页面上点击按钮，事件开始在原生 DOM 上走捕获冒泡流程。React 监听的是 document 上的冒泡阶段。事件冒泡到 document 后，React 将事件再派发到组件树中，然后事件开始在组件树 DOM 中走捕获冒泡流程。</p>
+
+<p>现在来尝试理解一下输出结果：</p>
+
+<ul>
+  <li>事件最开始从原生 DOM 按钮一路冒泡到 body，body 的事件处理器执行，输出 <code class="language-plaintext highlighter-rouge">body</code>。注意此时流程还没进入 React。为什么？因为 React 监听的是 document 上的事件。</li>
+  <li>继续往上事件冒泡到 document。
+    <ul>
+      <li>事件到达 document 之后，发现 document 上面一共绑定了三个事件处理器，分别是代码中通过 <code class="language-plaintext highlighter-rouge">document.addEventListener</code> 在 <code class="language-plaintext highlighter-rouge">ReactDOM.render</code> 前后调用的，以及一个隐藏的事件处理器，是 <a href="https://github.com/facebook/react/blob/e8857918422b5ce8505ba5ce4a2d153e509c17a1/packages/react-dom/src/events/ReactBrowserEventEmitter.js#L105-L173">ReactDOM 绑定的</a>，也就是前面提到的 React 用来代理事件的那个处理器。</li>
+      <li>同一元素上如果对同一类型的事件绑定了多个处理器，会按照绑定的顺序来执行。</li>
+      <li>所以 <code class="language-plaintext highlighter-rouge">ReactDOM.render</code> 之前的那个处理器先执行，输出 <code class="language-plaintext highlighter-rouge">document:before react mount</code>。</li>
+      <li>然后是 React 的事件处理器。此时，流程才真正进入 React，走进我们的组件。组件里面就好理解了，从 button 冒泡到 container，依次输出。</li>
+      <li>最后 <code class="language-plaintext highlighter-rouge">ReactDOM.render</code> 之后的那个处理器先执行，输出 <code class="language-plaintext highlighter-rouge">document:after react mount</code>。</li>
+    </ul>
+  </li>
+  <li>事件完成了在 document 上的冒泡，往上到了 window，执行相应的处理器并输出 <code class="language-plaintext highlighter-rouge">window</code>。</li>
+</ul>
+
+<p>理解 <strong>React 是通过监听 document 冒泡阶段来代理组件中的事件</strong>，这点很重要。同时，区分原生 DOM 与 React 组件，也很重要。并且，React 组件上的事件处理器接收到的 <code class="language-plaintext highlighter-rouge">event</code> 对象也有别于原生的事件对象，不是同一个东西。但这个对象上有个 <code class="language-plaintext highlighter-rouge">nativeEvent</code> 属性，可获取到原生的事件对象，后面会用到和讨论它。</p>
+
+<p>紧接着的代码的改动中，我们在 body 上阻止了事件冒泡，这样事件在 body 就结束了，没有到达 document，那么 React 的事件就不会被触发，所以 React 组件树中，按钮及容器就没什么反应。如果没理解到这点，光看表象还以为是 bug。</p>
+
+<p>进而可以理解，如果在 <code class="language-plaintext highlighter-rouge">ReactDOM.render()</code> 之前的的 document 事件处理器上将冒泡结束掉，同样会影响 React 的执行。只不过这里需要调用的不是 <code class="language-plaintext highlighter-rouge">event.stopPropagation()</code>，而是 <code class="language-plaintext highlighter-rouge">event.stopImmediatePropagation()</code>。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">document.addEventListener("click", event =&gt; {
+</span><span class="gi">+  event.stopImmediatePropagation();
+</span>  console.log("document:bedore react mount");
+<span class="err">});</span>
+</code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>body
+document:bedore react mount
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">stopImmediatePropagation</code> 会产生这样的效果，即，如果同一元素上同一类型的事件（这里是 <code class="language-plaintext highlighter-rouge">click</code>）绑定了多个事件处理器，本来这些处理器会按绑定的先后来执行，但如果其中一个调用了 <code class="language-plaintext highlighter-rouge">stopImmediatePropagation</code>，不但会阻止事件冒泡，还会阻止这个元素后续其他事件处理器的执行。</p>
+
+<p>所以，虽然都是监听 document 上的点击事件，但 <code class="language-plaintext highlighter-rouge">ReactDOM.render()</code> 之前的这个处理器要先于 React，所以 React 对 document 的监听不会触发。</p>
+
+<h3 id="解答前面按钮未能阻止冒泡的问题">解答前面按钮未能阻止冒泡的问题</h3>
+
+<details>
+<summary>如果你已经忘了，这是相应的代码及输出。</summary>
+ 
+ ```js
+function App() {
+  useEffect(() =&gt; {
+    document.addEventListener("click", documentClickHandler);
+    return () =&gt; {
+      document.removeEventListener("click", documentClickHandler);
+    };
+  }, []);
+
+  function documentClickHandler() {
+    console.log("document clicked");
+  }
+
+  function btnClickHandler(event) {
+    event.stopPropagation();
+    console.log("btn clicked");
+  }
+
+  return &lt;button onClick={btnClickHandler}&gt;CLICK ME&lt;/button&gt;;
+}
+```
+
+输出:
+
+```
+btn clicked
+document clicked
+```
+
+</details>
+
+<p>到这里，已经可以解答为什么 React 组件中 button 的事件处理器中调用 <code class="language-plaintext highlighter-rouge">event.stopPropagation()</code> 没有阻止 document 的点击事件执行的问题了。因为 button 事件处理器的执行前提是事件达到 document 被 React 接收到，然后 React 将事件派发到 button 组件。既然在按钮的事件处理器执行之前，事件已经达到 document 了，那当然就无法在按钮的事件处理器进行阻止了。</p>
+
+<h2 id="问题的解决">问题的解决</h2>
+
+<p>要解决这个问题，这里有不止一种方法。</p>
+
+<h3 id="用-window-替换-document">用 <code class="language-plaintext highlighter-rouge">window</code> 替换 <code class="language-plaintext highlighter-rouge">document</code></h3>
+
+<p>来自 <a href="https://github.com/facebook/react/issues/4335#issuecomment-421705171">React issue 回答</a>中提供的这个方法是最快速有效的。使用 window 替换掉 document 后，前面的代码可按期望的方式执行。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function App() {
+</span>  useEffect(() =&gt; {
+<span class="gi">+    window.addEventListener("click", documentClickHandler);
+</span>    return () =&gt; {
+<span class="gi">+      window.removeEventListener("click", documentClickHandler);
+</span>    };
+  }, []);
+
+  function documentClickHandler() {
+    console.log("document clicked");
+  }
+
+  function btnClickHandler(event) {
+    event.stopPropagation();
+    console.log("btn clicked");
+  }
+
+  return &lt;button onClick={btnClickHandler}&gt;CLICK ME&lt;/button&gt;;
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>这里 button 事件处理器上接到到的 event 来自 React 系统，也就是 document 上代理过来的，所以通过它阻止冒泡后，事件到 document 就结束了，而不会往上到 window。</p>
+
+<h3 id="eventstopimmediatepropagation"><code class="language-plaintext highlighter-rouge">Event.stopImmediatePropagation()</code></h3>
+
+<p>组件中事件处理器接收到的 <code class="language-plaintext highlighter-rouge">event</code> 事件对象是 React 包装后的 SyntheticEvent 事件对象。但可通过它的 <code class="language-plaintext highlighter-rouge">nativeEvent</code> 属性获取到原生的 DOM 事件对象。通过调用这个原生的事件对象上的 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/stopImmediatePropagation"><code class="language-plaintext highlighter-rouge">stopImmediatePropagation()</code></a> 方法可达到阻止冒泡的目的。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function btnClickHandler(event) {
+</span><span class="gi">+  event.nativeEvent.stopImmediatePropagation();
+</span>  console.log("btn clicked");
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>至于原理，其实前面已经有展示过。React 在 render 时监听了 document 冒泡阶段的事件，当我们的 <code class="language-plaintext highlighter-rouge">App</code> 组件执行时，准确地说是渲染完成后（<code class="language-plaintext highlighter-rouge">useEffect</code> 渲染完成后执行），又在 document 上注册了 click 的监听。此时 document 上有两个事件处理器了，并且组件中的这个顺序在 React 后面。</p>
+
+<p>当调用 <code class="language-plaintext highlighter-rouge">event.nativeEvent.stopImmediatePropagation()</code> 后，阻止了 document 上同类型后续事件处理器的执行，达到了想要的效果。</p>
+
+<p>但这种方式有个缺点很明显，那就是要求需要被阻止的事件是在 React render 之后绑定，如果在之前绑定，是达不到效果的。</p>
+
+<h3 id="通过元素自身来绑定事件处理器">通过元素自身来绑定事件处理器</h3>
+
+<p>当绕开 React 直接通过调用元素自己身上的方法来绑定事件时，此时走的是原生 DOM 的流程，都没在 React 的流程里面。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">btnElement</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">documentClickHandler</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">btnElement</span><span class="p">.</span><span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">btnElement</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">btnClickHandler</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">documentClickHandler</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">btnElement</span><span class="p">.</span><span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">btnElement</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">btnClickHandler</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">};</span>
+  <span class="p">},</span> <span class="p">[]);</span>
+
+  <span class="kd">function</span> <span class="nx">documentClickHandler</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">document clicked</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">btnClickHandler</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">btn clicked</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">btnElement</span><span class="p">}</span><span class="o">&gt;</span><span class="nx">CLICK</span> <span class="nx">ME</span><span class="o">&lt;</span><span class="sr">/button&gt;</span><span class="err">;
+</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>很明显这样是能解决问题，但你根本不会想要这样做。代码丑陋，不直观也不易理解。</p>
+
+<h2 id="结论">结论</h2>
+
+<p>注意区分 React 组件的事件及原生 DOM 事件，一般情况下，尽量使用 React 的事件而不要混用。如果必需要混用比如监听 document，window 上的事件，处理 <code class="language-plaintext highlighter-rouge">mousemove</code>，<code class="language-plaintext highlighter-rouge">resize</code> 等这些场景，那么就需要注意本文提到的顺序问题，不然容易出 bug。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://github.com/facebook/react/issues/4335">e.stopPropagation() seems to not be working as expect. #4335</a></li>
+  <li><a href="https://stackoverflow.com/questions/24415631/reactjs-syntheticevent-stoppropagation-only-works-with-react-events">ReactJS SyntheticEvent stopPropagation() only works with React events?</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/stopImmediatePropagation">Event.stopImmediatePropagation()</a></li>
+  <li><a href="https://reactjs.org/docs/events.html#supported-events">SyntheticEvent</a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/04/05/%E5%85%B3%E9%97%AD-Mac-%E6%8B%BC%E5%86%99%E8%87%AA%E5%8A%A8%E7%BA%A0%E6%AD%A3%E4%B8%8E%E6%A8%AA%E7%BA%BF%E8%BD%AC%E6%8D%A2/" data-toggle="tooltip" data-placement="top" title="关闭 Mac 拼写自动纠正与横线转换">
+                        Previous<br>
+                        <span>关闭 Mac 拼写自动纠正与横线转换</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/04/08/HTTP-%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3/" data-toggle="tooltip" data-placement="top" title="HTTP 缓存相关">
+                        Next<br>
+                        <span>HTTP 缓存相关</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

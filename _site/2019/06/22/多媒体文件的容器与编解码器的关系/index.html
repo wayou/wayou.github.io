@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="多媒体文件的容器与编解码器的关系 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="多媒体文件的容器与编解码器的关系
+
+音视频文件的格式各类繁多，但我们在说格式的时候，一般是指文件后缀，比如 .mp3 .mp4。
+
+从编程的角度来说，一个多媒体文件包含两部分，容器（container） 与编解码算法（codec），容器便是多媒体文件中众多数据的封装后对外的呈现，表现出来就是文件的扩展名，而编解码算法，则是播放该多媒体文件所需要和使用的算法。具体来说，
+
+
+  
+    容器...">
+    
+    <meta property="article:published_time" content="2019-06-22T15:06:00Z">
+    
+    
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/06/22/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>多媒体文件的容器与编解码器的关系 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/06/22/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>多媒体文件的容器与编解码器的关系</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on June 22, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="多媒体文件的容器与编解码器的关系">多媒体文件的容器与编解码器的关系</h1>
+
+<p>音视频文件的格式各类繁多，但我们在说格式的时候，一般是指文件后缀，比如 <code class="language-plaintext highlighter-rouge">.mp3</code> <code class="language-plaintext highlighter-rouge">.mp4</code>。</p>
+
+<p>从编程的角度来说，一个多媒体文件包含两部分，<a href="http://en.wikipedia.org/wiki/Digital_container_format">容器（container）</a> 与<a href="http://en.wikipedia.org/wiki/Codec">编解码算法（codec）</a>，容器便是多媒体文件中众多数据的封装后对外的呈现，表现出来就是文件的扩展名，而编解码算法，则是播放该多媒体文件所需要和使用的算法。具体来说，</p>
+
+<ul>
+  <li>
+    <p><strong>容器</strong> 可看成是一个盒子，里面存放了该多媒体文件的所有信息，比如视频，包含音频和视频数据及相应所使用的编解码算法，以及其他视频相关的元数据，比如标题，作者信息，字幕文件等。同样是视频文件，如果根据所包含的音频及视频各类的不同，会形成不同的容器。容器体现在文件的扩展名上，对用户来说比较显而易见。常见的容器包括 OGG, Matroska, AVI, MPEG。</p>
+  </li>
+  <li>
+    <p><strong>编解码算法</strong> 是多媒体文件中数据所使用的编码算法，这体现在，你需要有一个支持相应编码的解码器，才能播放得了。这里算法的作用主要体现在压缩原始的媒体信息，使之在一个合理可接受的范围内，方便全输与使用。已经存在的压缩算法各类繁多，他们对不同类型的数据有各有优缺点，所以不能说哪种算法是最优的，只有最适合的。</p>
+  </li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/59859856-1fe2df80-93b0-11e9-8808-86c5770c292b.jpg" alt="多媒体文件中容器与编解码算法的关系示意图--图片来自 pitivi.org" /></p>
+<p align="center">多媒体文件中容器与编解码算法的关系示意图 -- 图片来自 <a href="http://www.pitivi.org/manual/codecscontainers.html">pitivi.org</a></p>
+
+<h2 id="常见视频格式">常见视频格式</h2>
+
+<p>以下是来自维基百科 <a href="https://en.wikipedia.org/wiki/Video_file_format">Video file format</a> 条目中的表格：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>扩展名</th>
+      <th>容器格式</th>
+      <th>视频编码格式</th>
+      <th>音频编码格式</th>
+      <th>备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>WebM</td>
+      <td>.webm</td>
+      <td>Matroska</td>
+      <td>VP8, VP9, AV1</td>
+      <td>Vorbis, Opus</td>
+      <td>Royalty-free format created for HTML5 video.</td>
+    </tr>
+    <tr>
+      <td>Matroska</td>
+      <td>.mkv</td>
+      <td>Matroska</td>
+      <td>any</td>
+      <td>any</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Flash Video (FLV)</td>
+      <td>.flv</td>
+      <td>FLV</td>
+      <td>VP6, Sorenson Spark, Screen video, Screen video 2, H.264</td>
+      <td>MP3, ADPCM, Nellymoser, Speex, AAC</td>
+      <td>Use of the H.264 and AAC compression formats in the FLV file format has some limitations and authors of Flash Player strongly encourage everyone to embrace the new standard F4V file format[2] de facto standard for web-based streaming video (over RTMP).</td>
+    </tr>
+    <tr>
+      <td>F4V</td>
+      <td>.flv</td>
+      <td>MPEG-4 Part 12</td>
+      <td>H.264</td>
+      <td>MP3, AAC</td>
+      <td>Replacement for FLV.</td>
+    </tr>
+    <tr>
+      <td>Vob</td>
+      <td>.vob</td>
+      <td>VOB</td>
+      <td>H.262/MPEG-2 Part 2 or MPEG-1 Part 2</td>
+      <td>PCM, DTS, MPEG-1, Audio Layer II (MP2), or Dolby Digital (AC-3)</td>
+      <td>Files in VOB format have .vob filename extension and are typically stored in the VIDEO_TS folder at the root of a DVD. The VOB format is based on the MPEG program stream format.</td>
+    </tr>
+    <tr>
+      <td>Ogg Video</td>
+      <td>.ogv, .ogg</td>
+      <td>Ogg</td>
+      <td>Theora, Dirac</td>
+      <td>Vorbis, FLAC</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Dirac</td>
+      <td>.drc</td>
+      <td>?</td>
+      <td>Dirac</td>
+      <td>?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>GIF</td>
+      <td>.gif</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>none</td>
+      <td>Simple animation, inefficient compression, no sound, widely supported</td>
+    </tr>
+    <tr>
+      <td>Video alternative to GIF</td>
+      <td>.gifv</td>
+      <td>HTML</td>
+      <td>any</td>
+      <td>none</td>
+      <td>Not standardized, and not a real video file in the classical meaning since it merely references the real video file (e.g. a .webm file), which has to exist separately elsewhere. A .gifv “file” is simply a HTML webpage which includes a HTML5 video tag, where the video has no sound. As there were large communities online which create art using the medium of short soundless videos in GIF format, GIFV was created as a functionally similar replacement with vastly smaller filesizes than the inefficient GIF format.</td>
+    </tr>
+    <tr>
+      <td>Multiple-image Network Graphics</td>
+      <td>.mng</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>none</td>
+      <td>Inefficient, not widely used.</td>
+    </tr>
+    <tr>
+      <td>AVI</td>
+      <td>.avi</td>
+      <td>AVI</td>
+      <td>any</td>
+      <td>any</td>
+      <td>Uses RIFF</td>
+    </tr>
+    <tr>
+      <td>MPEG Transport Stream</td>
+      <td>.MTS, .M2TS</td>
+      <td>AVCHD</td>
+      <td>AVCHD (MPEG-4 / H.264 )</td>
+      <td>Dolby AC-3 or uncompressed linear PCM</td>
+      <td>The standard video format used by many Sony and Panasonic HD camcorders. It is also used for storing high definition video on Blu-ray discs.</td>
+    </tr>
+    <tr>
+      <td>QuickTime File Format</td>
+      <td>.mov, .qt</td>
+      <td>QuickTime</td>
+      <td>many[3]</td>
+      <td>AAC, MP3, others[3]</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Windows Media Video</td>
+      <td>.wmv</td>
+      <td>ASF</td>
+      <td>Windows Media Video, Windows Media Video Screen, Windows Media Video Image</td>
+      <td>Windows Media Audio, Sipro ACELP.net</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Raw video format</td>
+      <td>.yuv</td>
+      <td>Further documentation needed</td>
+      <td>Doesn’t apply</td>
+      <td>Doesn’t apply</td>
+      <td>Supports all resolutions, sampling structures, and frame rates</td>
+    </tr>
+    <tr>
+      <td>RealMedia (RM)</td>
+      <td>.rm</td>
+      <td>RealMedia</td>
+      <td>RealVideo</td>
+      <td>RealAudio</td>
+      <td>Made for RealPlayer</td>
+    </tr>
+    <tr>
+      <td>RealMedia Variable Bitrate (RMVB)</td>
+      <td>.rmvb</td>
+      <td>RealMedia Variable Bitrate</td>
+      <td>RealVideo</td>
+      <td>RealAudio</td>
+      <td>Made for RealPlayer</td>
+    </tr>
+    <tr>
+      <td>Advanced Systems Format (ASF)</td>
+      <td>.asf</td>
+      <td>ASF</td>
+      <td>any</td>
+      <td>any</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>AMV video format</td>
+      <td>.amv</td>
+      <td>Modified version of AVI[4]</td>
+      <td>Variant of Motion JPEG</td>
+      <td>Variant of IMA, ADPCM</td>
+      <td>Proprietary video file format produced for MP4 players and S1 MP3 players with video playback</td>
+    </tr>
+    <tr>
+      <td>MPEG-4 Part 14 (MP4)</td>
+      <td>.mp4, .m4p (with DRM), .m4v</td>
+      <td>MPEG-4 Part 12</td>
+      <td>H.264, MPEG-4 Part 2, MPEG-2, MPEG-1</td>
+      <td>Advanced Audio Coding, MP3, others</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>MPEG-1</td>
+      <td>.mpg, .mp2, .mpeg, .mpe, .mpv</td>
+      <td>MPEG-1 part 1</td>
+      <td>MPEG-1 part 2</td>
+      <td>MPEG-1 Audio Layer I, MPEG-1 Audio Layer I, MPEG-1 Audio Layer III (MP3)</td>
+      <td>Old, but very widely used due to installed base.</td>
+    </tr>
+    <tr>
+      <td>MPEG-2 – Video</td>
+      <td>.mpg, .mpeg, .m2v</td>
+      <td>?</td>
+      <td>H.262</td>
+      <td>AAC, MP3, MPEG-2 Part 3, others</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>M4V – (file format for videos for iPods and PlayStation Portables developed by Apple)</td>
+      <td>.m4v</td>
+      <td>MPEG-4 Part 12</td>
+      <td>H.264</td>
+      <td>AAC, Dolby Digital</td>
+      <td>Developed by Apple, used in iTunes. Very similar to MP4 format, but may optionally have DRM.</td>
+    </tr>
+    <tr>
+      <td>SVI</td>
+      <td>.svi</td>
+      <td>MPEG-4 utilising a special header</td>
+      <td>?</td>
+      <td>?</td>
+      <td>Samsung video format for portable players</td>
+    </tr>
+    <tr>
+      <td>3GPP</td>
+      <td>.3gp</td>
+      <td>MPEG-4 Part 12</td>
+      <td>MPEG-4 Part 2, H.263, H.264</td>
+      <td>AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2)</td>
+      <td>Common video format for cell phones</td>
+    </tr>
+    <tr>
+      <td>3GPP2</td>
+      <td>.3g2</td>
+      <td>MPEG-4 Part 12</td>
+      <td>MPEG-4 Part 2, H.263, H.264</td>
+      <td>AMR-NB, AMR-WB, AMR-WB+, AAC-LC, HE-AAC v1 or Enhanced aacPlus (HE-AAC v2), EVRC, SMV or VMR-WB</td>
+      <td>Common video format for cell phones</td>
+    </tr>
+    <tr>
+      <td>Material Exchange Format (MXF)</td>
+      <td>.mxf</td>
+      <td>MXF</td>
+      <td>?</td>
+      <td>?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>ROQ</td>
+      <td>.roq</td>
+      <td>?</td>
+      <td>?</td>
+      <td>?</td>
+      <td>used by Quake 3[5]</td>
+    </tr>
+    <tr>
+      <td>Nullsoft Streaming Video (NSV)</td>
+      <td>.nsv</td>
+      <td>NSV</td>
+      <td>?</td>
+      <td>?</td>
+      <td>For streaming video content over the Internet</td>
+    </tr>
+    <tr>
+      <td>Flash Video (FLV)</td>
+      <td>.flv .f4v .f4p .f4a .f4b</td>
+      <td>Audio, video, text, data</td>
+      <td>Adobe Flash Platform</td>
+      <td>SWF, F4V, ISO base media file format</td>
+      <td>Developed by the Adobe Flash Platform</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="常见音频格式">常见音频格式</h2>
+
+<p>以下是来自维基百科 <a href="https://en.wikipedia.org/wiki/Audio_file_format">Audio file format</a> 条目中的表格：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>扩展名</th>
+      <th>所属公司</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>.3gp</td>
+      <td> </td>
+      <td>Multimedia container format can contain proprietary formats as AMR, AMR-WB or AMR-WB+, but also some open formats</td>
+    </tr>
+    <tr>
+      <td>.aa</td>
+      <td>Audible.com (Amazon.com)</td>
+      <td>A low-bitrate audiobook container format with DRM, containing audio encoded as either MP3 or the ACELP speech codec.</td>
+    </tr>
+    <tr>
+      <td>.aac</td>
+      <td> </td>
+      <td>The Advanced Audio Coding format is based on the MPEG-2 and MPEG-4 standards. AAC files are usually ADTS or ADIF containers.</td>
+    </tr>
+    <tr>
+      <td>.aax</td>
+      <td>Audible.com (Amazon.com)</td>
+      <td>An Audiobook format, which is a variable-bitrate (allowing high quality) M4B file encrypted with DRM. MPB contains AAC or ALAC encoded audio in an MPEG-4 container. (More details below.)</td>
+    </tr>
+    <tr>
+      <td>.act</td>
+      <td> </td>
+      <td>ACT is a lossy ADPCM 8 kbit/s compressed audio format recorded by most Chinese MP3 and MP4 players with a recording function, and voice recorders</td>
+    </tr>
+    <tr>
+      <td>.aiff</td>
+      <td>Apple</td>
+      <td>A standard uncompressed CD-quality, audio file format used by Apple. Established 3 years prior to Microsoft’s uncompressed version wav.</td>
+    </tr>
+    <tr>
+      <td>.amr</td>
+      <td> </td>
+      <td>AMR-NB audio, used primarily for speech.</td>
+    </tr>
+    <tr>
+      <td>.ape</td>
+      <td>Matthew T. Ashland</td>
+      <td>Monkey’s Audio lossless audio compression format.</td>
+    </tr>
+    <tr>
+      <td>.au</td>
+      <td>Sun Microsystems</td>
+      <td>The standard audio file format used by Sun, Unix and Java. The audio in au files can be PCM or compressed with the μ-law, a-law or G729 codecs.</td>
+    </tr>
+    <tr>
+      <td>.awb</td>
+      <td> </td>
+      <td>AMR-WB audio, used primarily for speech, same as the ITU-T’s G.722.2 specification.</td>
+    </tr>
+    <tr>
+      <td>.dct</td>
+      <td>NCH Software</td>
+      <td>A variable codec format designed for dictation. It has dictation header information and can be encrypted (as may be required by medical confidentiality laws). A proprietary format of NCH Software.</td>
+    </tr>
+    <tr>
+      <td>.dss</td>
+      <td>Olympus</td>
+      <td>DSS files are an Olympus proprietary format. It is a fairly old and poor codec. GSM or MP3 are generally preferred where the recorder allows. It allows additional data to be held in the file header.</td>
+    </tr>
+    <tr>
+      <td>.dvf</td>
+      <td>Sony</td>
+      <td>A Sony proprietary format for compressed voice files; commonly used by Sony dictation recorders.</td>
+    </tr>
+    <tr>
+      <td>.flac</td>
+      <td> </td>
+      <td>A file format for the Free Lossless Audio Codec, an open-source lossless compression codec.</td>
+    </tr>
+    <tr>
+      <td>.gsm</td>
+      <td> </td>
+      <td>Designed for telephony use in Europe, gsm is a very practical format for telephone quality voice. It makes a good compromise between file size and quality. Note that wav files can also be encoded with the gsm codec.</td>
+    </tr>
+    <tr>
+      <td>.iklax</td>
+      <td>iKlax</td>
+      <td>An iKlax Media proprietary format, the iKlax format is a multi-track digital audio format allowing various actions on musical data, for instance on mixing and volumes arrangements.</td>
+    </tr>
+    <tr>
+      <td>.ivs</td>
+      <td>3D Solar UK Ltd</td>
+      <td>A proprietary version with Digital Rights Management developed by 3D Solar UK Ltd for use in music downloaded from their Tronme Music Store and interactive music and video player.</td>
+    </tr>
+    <tr>
+      <td>.m4a</td>
+      <td> </td>
+      <td>An audio-only MPEG-4 file, used by Apple for unprotected music downloaded from their iTunes Music Store.  Audio within the m4a file is typically encoded with AAC, although lossless ALAC may also be used.</td>
+    </tr>
+    <tr>
+      <td>.m4b</td>
+      <td> </td>
+      <td>An Audiobook / podcast extension with AAC or ALAC encoded audio in an MPEG-4 container.  Both M4A and M4B formats can contain metadata including chapter markers, images, and hyperlinks, but M4B allows “bookmarks” (remembering the last listening spot), whereas M4A does not.[7]</td>
+    </tr>
+    <tr>
+      <td>.m4p</td>
+      <td>Apple</td>
+      <td>A version of AAC with proprietary Digital Rights Management developed by Apple for use in music downloaded from their iTunes Music Store.</td>
+    </tr>
+    <tr>
+      <td>.mmf</td>
+      <td>Yamaha, Samsung</td>
+      <td>A Samsung audio format that is used in ringtones. Developed by Yamaha (SMAF stands for “Synthetic music Mobile Application Format”, and is a multimedia data format invented by the Yamaha Corporation, .mmf file format).</td>
+    </tr>
+    <tr>
+      <td>.mp3</td>
+      <td> </td>
+      <td>MPEG Layer III Audio. It is the most common sound file format used today.</td>
+    </tr>
+    <tr>
+      <td>.mpc</td>
+      <td> </td>
+      <td>Musepack or MPC (formerly known as MPEGplus, MPEG+ or MP+) is an open source lossy audio codec, specifically optimized for transparent compression of stereo audio at bitrates of 160–180 kbit/s.</td>
+    </tr>
+    <tr>
+      <td>.msv</td>
+      <td>Sony</td>
+      <td>A Sony proprietary format for Memory Stick compressed voice files.</td>
+    </tr>
+    <tr>
+      <td>.nmf</td>
+      <td>NICE</td>
+      <td>NICE Media Player audio file</td>
+    </tr>
+    <tr>
+      <td>.nsf</td>
+      <td>Nintendo</td>
+      <td>The NES Sound Format (.nsf) is used for storing and playing music from the NES and related systems.[8]</td>
+    </tr>
+    <tr>
+      <td>.ogg, .oga, .mogg</td>
+      <td>Xiph.Org Foundation</td>
+      <td>A free, open source container format supporting a variety of formats, the most popular of which is the audio format Vorbis. Vorbis offers compression similar to MP3 but is less popular. Mogg, the “Multi-Track-Single-Logical-Stream Ogg-Vorbis”, is the multi-channel or multi-track Ogg file format.</td>
+    </tr>
+    <tr>
+      <td>.opus</td>
+      <td>Internet Engineering Task Force</td>
+      <td>A lossy audio compression format developed by the Internet Engineering Task Force (IETF) and made especially suitable for interactive real-time applications over the Internet. As an open format standardised through RFC 6716, a reference implementation is provided under the 3-clause BSD license.</td>
+    </tr>
+    <tr>
+      <td>.ra, .rm</td>
+      <td>RealNetworks</td>
+      <td>A RealAudio format designed for streaming audio over the Internet. The .ra format allows files to be stored in a self-contained fashion on a computer, with all of the audio data contained inside the file itself.</td>
+    </tr>
+    <tr>
+      <td>.raw</td>
+      <td> </td>
+      <td>A raw file can contain audio in any format but is usually used with PCM audio data. It is rarely used except for technical tests.</td>
+    </tr>
+    <tr>
+      <td>.sln</td>
+      <td> </td>
+      <td>Signed Linear PCM format used by Asterisk. Prior to v.10 the standard formats were 16-bit Signed Linear PCM sampled at 8 kHz and at 16 kHz. With v.10 many more sampling rates were added.[9]</td>
+    </tr>
+    <tr>
+      <td>.tta</td>
+      <td> </td>
+      <td>The True Audio, real-time lossless audio codec.</td>
+    </tr>
+    <tr>
+      <td>.voc</td>
+      <td>Creative Technology</td>
+      <td>The file format consists of a 26-byte header and a series of subsequent data blocks containing the audio information</td>
+    </tr>
+    <tr>
+      <td>.vox</td>
+      <td> </td>
+      <td>The vox format most commonly uses the Dialogic ADPCM (Adaptive Differential Pulse Code Modulation) codec. Similar to other ADPCM formats, it compresses to 4-bits. Vox format files are similar to wave files except that the vox files contain no information about the file itself so the codec sample rate and number of channels must first be specified in order to play a vox file.</td>
+    </tr>
+    <tr>
+      <td>.wav</td>
+      <td> </td>
+      <td>Standard audio file container format used mainly in Windows PCs. Commonly used for storing uncompressed (PCM), CD-quality sound files, which means that they can be large in size—around 10 MB per minute. Wave files can also contain data encoded with a variety of (lossy) codecs to reduce the file size (for example the GSM or MP3 formats). Wav files use a RIFF structure.</td>
+    </tr>
+    <tr>
+      <td>.wma</td>
+      <td>Microsoft</td>
+      <td>Windows Media Audio format, created by Microsoft. Designed with Digital Rights Management (DRM) abilities for copy protection.</td>
+    </tr>
+    <tr>
+      <td>.wv</td>
+      <td> </td>
+      <td>Format for wavpack files.</td>
+    </tr>
+    <tr>
+      <td>.webm</td>
+      <td> </td>
+      <td>Royalty-free format created for HTML5 video.</td>
+    </tr>
+    <tr>
+      <td>.8svx</td>
+      <td>Electronic Arts</td>
+      <td>The IFF-8SVX format for 8-bit sound samples, created by Electronic Arts in 1984 at the birth of the Amiga.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="http://www.pitivi.org/manual/codecscontainers.html">Understanding codecs and containers</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Video_file_format">Video file format</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Audio_file_format">Audio file format</a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/06/21/Unix-%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84-Make-%E4%B8%89%E8%BF%9E/" data-toggle="tooltip" data-placement="top" title="Unix 开发中的 Make 三连">
+                        Previous<br>
+                        <span>Unix 开发中的 Make 三连</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/06/23/C-C++-%E4%B8%AD-printf-%E6%A0%BC%E5%BC%8F%E5%8C%96/" data-toggle="tooltip" data-placement="top" title="C/C++ 中 `printf` 格式化">
+                        Next<br>
+                        <span>C/C++ 中 `printf` 格式化</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

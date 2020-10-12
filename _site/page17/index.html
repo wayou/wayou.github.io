@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="notes about the coding life">
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/page17/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/page17/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Page Header -->
+
+
+
+
+
+
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading">
+        
+          <h1>牛さんの部落格</h1>
+          <span class="subheading"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
+<!-- NO SIDEBAR -->
+    <!-- PostList Container -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
+                
+<div class="post-preview">
+  <a href="/2019/05/07/Linux-%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4-Cheat-Sheet/">
+    <h2 class="post-title">Linux 网络相关命令 Cheat Sheet</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     Linux 网络相关命令 Cheat Sheet
+
+以下漫画形式呈现的常用 Linux 网络相关命令速查表来自 twitter - 🔎Julia Evans🔍@b0rk。
+
+
+
+相关资源
+
+
+  twitter - 🔎Julia Evans🔍@b0rk
+
+
+ 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on May 7, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/05/06/Koa-+-GraphQL-%E7%A4%BA%E4%BE%8B/">
+    <h2 class="post-title">Koa + GraphQL 示例</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     Koa + GraphQL 示例
+
+初始化项目
+
+创建 graphql-example 文件夹进入后初始化一个 package.json 文件。
+$ mkdir graphql-example &amp;&amp; cd $_
+$ yarn init -y
+
+
+安装依赖
+
+使用 koa-graphql 配合 koa-mount 两个 npm 模块来使用 GraphQL。同时需要安装 grap... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on May 6, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/05/05/HTTP-%E7%8A%B6%E6%80%81%E7%A0%81%E5%8F%8A%E5%90%AB%E4%B9%89/">
+    <h2 class="post-title">HTTP 状态码及含义</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     HTTP 状态码及含义
+
+来自 Koa.js 官方文档中关于设置请求响应的部分 response.status=，列出了从 1xx ~ 5xx HTTP 状态码及含义，现摘录如下：
+
+
+  100 “continue”
+  101 “switching protocols”
+  102 “processing”
+  200 “ok”
+  201 “created”
+  202 “accept... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on May 5, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/05/04/RabbitMQ-Node.js-%E7%A4%BA%E4%BE%8B/">
+    <h2 class="post-title">RabbitMQ Node.js 示例</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     RabbitMQ Node.js 示例
+
+RabbitQM 处理和管理消息队列的中间人（broker）。可简单理解为邮局，你在程序中写好消息，指定好收件人，剩下的事件就是 RabbitMQ 的工作了，它会保证收件人正确收到邮件。
+
+任何发送邮件的程序都是 Producer，消息队列可理解为邮筒，新件将堆积在此处。所有待处理的消息都以队列形式存储，总体上看来就是一个巨大的消息 buffer，至... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on May 4, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/05/03/MySQL-%E4%B8%AD%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B/">
+    <h2 class="post-title">MySQL 中的字符串类型</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     MySQL 中的字符串类型
+
+字符类型包括：
+
+
+  CHAR
+  VARCHAR
+  BINARY
+  VARBINARY
+  BLOB
+  TEXT
+  ENUM
+  SET
+
+
+CHAR 与 VARCHAR
+
+CHAR(m) m 取值范围 0～255。列宽固定，存储时字符串右边会补空格，取出时自动去掉空格，除非开启了 PAD_CHAR_TO_FULL_LENGTH。
+
+对于值未超出的情... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on May 3, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/05/02/k-sum-%E9%97%AE%E9%A2%98/">
+    <h2 class="post-title">k-sum 问题</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     k-sum 问题
+
+问题描述
+
+给定一个数组及数字 k ，从数组中找出所有相加结果为 k 的组合。
+
+示例:
+
+给定数组 [1,1,1] 令 k=2，输出：
+
+ [[1,1]]
+
+给定数组 [10, 1, 2, 7, 6, 1, 5] 令 k=8，输出：
+
+ [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ]
+
+
+分析
+
+这里的思路是把 k 逐步... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on May 2, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/05/01/MySQL-%E4%B8%AD%E7%9A%84%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B/">
+    <h2 class="post-title">MySQL 中的日期时间类型</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     MySQL 中的日期时间类型
+
+日期时间类型中包含以下几种数据类型：
+
+
+  DATE
+  TIME
+  DATETIME
+  TIMESTAMP
+  YEAR
+
+
+各类型都有具体的取值范围，超出或非法的其他值时，MySQL 会回退到 0。TIMESTAMP 类型是个例外，给它设置一个超出范围的值时，将保存上该类型允许的最大值。
+
+MySQL 按标准格式 YYYY-MM-DD hh:mm:s... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on May 1, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/30/MySQL-%E4%B8%AD%E7%9A%84%E6%95%B0%E5%AD%97%E7%B1%BB%E5%9E%8B/">
+    <h2 class="post-title">MySQL 中的数字类型</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     MySQL 中的数字类型
+
+MySQL 中数据类型常用的就三大类：
+
+
+  数字类型/numeric types
+  日期和时间/date and time types
+  字符类型/string (character and byte) types
+
+
+另外还包含两个没那么常用的大类：
+
+
+  特殊类型/spatial types
+  JSON
+
+
+继续之前，先来看一些单位上的约定和概念，... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 30, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/29/TypeScript-%E5%AE%9E%E7%8E%B0%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97/">
+    <h2 class="post-title">TypeScript 实现任务队列</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     TypeScript 实现任务队列
+
+业务中经常会有一些批量操作的任务，比如使用 JavaScript 预加载一组图片，批量上传一些资源。如果这些任务一次性启动，势必会消耗很多资源和带宽。理想的做法应该对这些任务进行限制，比如一次只跑几个，当其中一些任务完成后，再添加新的任务到队列。
+
+总的来说，我们需要这样一个服务，它提供一个添加任务的方法，内部将添加的方法维护在一个数组。然后根据设置的阈... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 29, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/27/Node.js-+-MySQL-%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/">
+    <h2 class="post-title">Node.js + MySQL 实现数据的增删改查</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     Node.js + MySQL 实现数据的增删改查
+
+通过完成一个 todo 应用展示 Node.js + MySQL 增删改查的功能。这里后台使用 Koa 及其相应的一些中间件作为 server 提供服务。
+
+初始化项目
+
+$ mkdir node-crud &amp;&amp; cd $_
+$ yarn init -y &amp;&amp; npx gitignore node
+
+
+上面... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 27, 2019
+  </p>
+</div>
+<hr />
+
+
+<!-- Pager -->
+
+<ul class="pager">
+  
+  <li class="previous">
+    <a
+      href="/page16"
+      >&larr;</a
+    >
+  </li>
+   
+  <li class="next">
+    <a
+      href="/page18"
+      >&rarr;</a
+    >
+  </li>
+  
+</ul>
+
+
+            </div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        
+	</div>
+</div>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

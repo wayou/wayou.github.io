@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="前端异常监控 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="前端异常监控
+
+如果说前端的异常监控有个救星的话，我想那就是 window.onerror 这个全局错误监听事件了。它给了我们统一处理前端全局错误的机会，使得错误上报有了一线生机。
+
+window.onerror = function(messageOrEvent, source, lineno, colno, error) { ... }
+
+
+
+  message: 错误信息，在 HTML...">
+    
+    <meta property="article:published_time" content="2017-12-02T07:12:00Z">
+    
+    
+    
+    <meta property="article:tag" content="javascript">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2017/12/02/%E5%89%8D%E7%AB%AF%E5%BC%82%E5%B8%B8%E7%9B%91%E6%8E%A7/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>前端异常监控 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2017/12/02/%E5%89%8D%E7%AB%AF%E5%BC%82%E5%B8%B8%E7%9B%91%E6%8E%A7/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=javascript" title="javascript">javascript</a>
+                        
+                    </div>
+                    <h1>前端异常监控</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on December 2, 2017</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h2 id="前端异常监控">前端异常监控</h2>
+
+<p>如果说前端的异常监控有个救星的话，我想那就是 <code class="language-plaintext highlighter-rouge">window.onerror</code> 这个全局错误监听事件了。它给了我们统一处理前端全局错误的机会，使得错误上报有了一线生机。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">messageOrEvent</span><span class="p">,</span> <span class="nx">source</span><span class="p">,</span> <span class="nx">lineno</span><span class="p">,</span> <span class="nx">colno</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>message: 错误信息，在 HTML 中的 <code class="language-plaintext highlighter-rouge">onerror</code> 属性中设置的回调可以传递事件</li>
+  <li>source: 出错文件的 url</li>
+  <li>lineno: 出错位置的行数</li>
+  <li>colno: 出错时的列数</li>
+  <li>error: 出错时的 Error 对象。</li>
+</ul>
+
+<p>实践中发现最后个参数 Error 对象中的值因浏览器的实现各有差异，比如 Chrome 中包含 <code class="language-plaintext highlighter-rouge">message</code> 和 <code class="language-plaintext highlighter-rouge">stack</code>，而 Safari 中则包含了前面四个参数的所有值。这在下面的示例代码的结果中可以看得出来。</p>
+
+<h3 id="牵出来溜一溜">牵出来溜一溜</h3>
+
+<p><em>注意</em>
+<code class="language-plaintext highlighter-rouge">window.onerror</code> 需要在有服务端的情况下才能正常工作，本地直接打开页面测试获取不到任何有用的错误信息。可以在命令行启动一个简单的服务端来进行测试。
+因为 Mac 自带 Python，一般需要用到服务端的时候，我喜欢用 Python 自带的 <code class="language-plaintext highlighter-rouge">SimpleHTTPServer</code>：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python <span class="nt">-m</span> SimpleHTTPServer
+or
+python3 <span class="nt">-m</span> http.server
+</code></pre></div></div>
+
+<p>以下代码我们对全局错误进行监听，然后将错误打印到页面：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">source</span><span class="p">,</span> <span class="nx">line</span><span class="p">,</span> <span class="nx">col</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">printError</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">printError</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">source</span><span class="p">,</span> <span class="nx">line</span><span class="p">,</span> <span class="nx">col</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">detail</span> <span class="o">=</span>
+        <span class="dl">'</span><span class="s1">msg:</span><span class="dl">'</span> <span class="o">+</span>
+        <span class="nx">msg</span> <span class="o">+</span>
+        <span class="dl">'</span><span class="se">\n</span><span class="s1">course:</span><span class="dl">'</span> <span class="o">+</span>
+        <span class="nx">source</span> <span class="o">+</span>
+        <span class="dl">'</span><span class="se">\n</span><span class="s1">line:</span><span class="dl">'</span> <span class="o">+</span>
+        <span class="nx">line</span> <span class="o">+</span>
+        <span class="dl">'</span><span class="se">\n</span><span class="s1">col:</span><span class="dl">'</span> <span class="o">+</span>
+        <span class="nx">col</span> <span class="o">+</span>
+        <span class="dl">'</span><span class="se">\n</span><span class="s1">error:</span><span class="dl">'</span> <span class="o">+</span>
+        <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyNames</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span>
+    <span class="kd">var</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">pre</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">div</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">detail</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后在页面放上按钮以触发错误。这里测试了两种错误，一种运行时 JS 的抛错，另一种手动在代码中抛出的错误。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;button</span> <span class="na">onclick=</span><span class="s">"excptionGenerate()"</span><span class="nt">&gt;</span>点我执行出错代码<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;button</span> <span class="na">onclick=</span><span class="s">"throwError()"</span><span class="nt">&gt;</span>点我手动抛出异常<span class="nt">&lt;/button&gt;</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/chrome-error-print.png" alt="Chrome 中异常的捕获与打印" /></p>
+
+<p><em>Chrome 中异常的捕获与打印</em></p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/safari-error-print.png" alt="Safari 中异常的捕获与打印" /></p>
+
+<p><em>Safari 中异常的捕获与打印</em></p>
+
+<h3 id="浏览器兼容性">浏览器兼容性</h3>
+
+<p>要知道，最初版本的全局错误监听事件是这样的：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">messageOrEvent</span><span class="p">,</span> <span class="nx">source</span><span class="p">,</span> <span class="nx">lineno</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>后来才增加了 <code class="language-plaintext highlighter-rouge">colno</code> 和 <code class="language-plaintext highlighter-rouge">error</code>。而后来加的这两个参数其实是非常有用的。</p>
+
+<p>因为线上代码一般为压缩过的代码，所有内容都在一行，假如没有提供发生问题的列数，这样的错误日志要追查起来很不方便。
+错误对象则直接提供了错误堆栈信息（通过 <code class="language-plaintext highlighter-rouge">error.stack</code> 访问），就像我们在浏览器控制台看到的一样，对于定位问题十分有帮助。</p>
+
+<p>主流浏览器中， Chrome， Safari 已经完成了5个参数的支持。</p>
+
+<p>Firefox 从 31 开始支持了完整的5个参数。</p>
+
+<p>截止到目前， 微软的 Edge 浏览器还没有实现对新增两个参数的支持。其实现情况可以在<a href="https://developer.microsoft.com/en-us/microsoft-edge/platform/status/runtimeerrorreportingerrorevent/?q=onerror">这里</a>查阅得到。</p>
+
+<ul>
+  <li>小贴士 *
+    <blockquote>
+      <p>过程中顺便发现了微软Edge<a href="https://developer.microsoft.com/en-us/microsoft-edge/platform/catalog/?page=1&amp;q=queryselector">这个API Catalog页面</a>可以查到主流浏览器对名前端特性的实现情况，数据比 caniuse 全，譬如 <code class="language-plaintext highlighter-rouge">window.onerror</code> 在 caniuse 上则没有。</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/ms-edge-onerror-compatability.png" alt="MS Edge 浏览器对 `window.onerror` 第五个参数的实现情况" /></p>
+
+<p><em>MS Edge 浏览器对 <code class="language-plaintext highlighter-rouge">window.onerror</code> 第五个参数的实现情况</em></p>
+
+<p>从这里也可以看到，其他主流浏览器都已经有了完整的支持。</p>
+
+<p>IE，（逃~）</p>
+
+<h3 id="垫片">垫片</h3>
+
+<p>对于不提供第5个参数的环境，我们是拿不到错误堆栈信息的。这种情况下对错误的追查帮助不大。</p>
+
+<p>但是，手动在代码中捕获并抛出的错误，是带了堆栈信息的。这就有了补救的希望。我们可以将可能出错的地方，或者我们期望进行监控的地方，使用 try catch。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">tryCatchError</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="nx">a</span><span class="p">();</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">printError</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">printError</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">detail</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">error:</span><span class="dl">'</span> <span class="o">+</span>
+            <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyNames</span><span class="p">(</span><span class="nx">error</span><span class="p">))</span> <span class="o">+</span>
+            <span class="dl">'</span><span class="se">\n\n</span><span class="dl">'</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">code</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">div</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">detail</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>同时在页面中添加按钮来调用新的测试函数。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;button</span> <span class="na">onclick=</span><span class="s">"tryCatchError()"</span><span class="nt">&gt;</span>利用 try catch 捕获异常并打印错误堆栈<span class="nt">&lt;/button&gt;</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/try-catch-print.png" alt="try catch 中打印错误" /></p>
+
+<p><em>try catch 中打印错误</em></p>
+
+<p>我们看到，这种方式确实能得到详细的报错堆栈。</p>
+
+<h4 id="这一段其实无关紧要">这一段其实无关紧要</h4>
+
+<p>因为最后两个参数是后面加的，有理由相信，在很老很老很老的 Chrome 版本中，也是不支持全部5个参数的。来自Ben Vinegar的<a href="https://blog.sentry.io/2016/01/04/client-javascript-reporting-window-onerror.html">这篇文章</a>指出 Chrome 46 开始支持全部5个参数的。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/chrome-onerr-compatability.png" alt="" /></p>
+
+<p>为此我们不妨找一个老版本来验一下。我去 <a href="https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html">Chrome 的历史仓库中</a> 下到了 <a href="https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Mac/100293/">Chromium 15</a> （Chrome 正式发布前的开发版）。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/chromium-15.png" alt="拥有历史厚重感的老版本 Chrome" /></p>
+
+<p><em>拥有历史厚重感的老版本 Chrome</em></p>
+
+<p>打开它，仿佛打开了一个刚出土的文物，在 Retina 屏上，它的皮肤已经略出了清晰的锯齿，这是历史的厚重，这是岁月刻下的痕迹。</p>
+
+<p>不过还好，它的功能依然完好，跑起来我们的示例代码来驾轻就熟。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/chrome-15-without-last-2-arguments.png" alt="老版本的 Chrome 果然是没有后两位参数的" /></p>
+
+<p><em>老版本的 Chrome 果然是没有后两位参数的</em></p>
+
+<h3 id="全局无法捕获的情况">全局无法捕获的情况</h3>
+
+<p>除了考虑上面的浏览器兼容性问题外，还有其他一些情况，也是无法通过这个全局的 onerror 获取到详细报错信息的。</p>
+
+<h4 id="跨域情况的错误捕获cdn">跨域情况的错误捕获(CDN)</h4>
+
+<p><code class="language-plaintext highlighter-rouge">window.onerror</code> 有个限制，来自非同域的代码有报错，不会给出错误的详细信息，只能得到一个 <code class="language-plaintext highlighter-rouge">Script error.</code>。这是浏览器出于安全考虑，不向第三方泄露信息而做的一个措施。但往往线上代码大部分都部署在 CDN，所以这个限制的影响还挺常见。</p>
+
+<p>不过还好，某些浏览器中可以通过配置来更改这一行为，让我们能正常拿到报错的详细信息。</p>
+
+<p>还有一点，就是虽然在 <code class="language-plaintext highlighter-rouge">window.onerror</code> 中倒不到详细的报错信息，但在浏览器控制台是可以看到详细信息的。</p>
+
+<p><em>如果是跨域脚本，则提示去控制台查看报错信息</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">url</span><span class="p">,</span> <span class="nx">lineNo</span><span class="p">,</span> <span class="nx">columnNo</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">string</span> <span class="o">=</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">substring</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">script error</span><span class="dl">"</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">string</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">substring</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">){</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">Script Error: See Browser Console for Detail</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="dl">'</span><span class="s1">Message: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">msg</span><span class="p">,</span>
+            <span class="dl">'</span><span class="s1">URL: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">url</span><span class="p">,</span>
+            <span class="dl">'</span><span class="s1">Line: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">lineNo</span><span class="p">,</span>
+            <span class="dl">'</span><span class="s1">Column: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">columnNo</span><span class="p">,</span>
+            <span class="dl">'</span><span class="s1">Error object: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>
+        <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="dl">'</span><span class="s1"> - </span><span class="dl">'</span><span class="p">);</span>
+
+        <span class="nx">alert</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>控制台能看到对于线上的错误监控来说没多大用，还是得解决上报的问题。我们来看看如何设置跨域脚本让我们可以捕获时拿到错误堆栈信息。</p>
+
+<p>下面看跨域脚本的配置。</p>
+
+<ul>
+  <li>CDN 上开启允许跨域
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Access-Control-Allow-Origin:*
+或者
+Access-Control-Allow-Origin: domain of your site
+</code></pre></div>    </div>
+  </li>
+  <li>然后 script 标签上设置跨域标识为匿名</li>
+</ul>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">crossorigin=</span><span class="s">"anonymous"</span> <span class="na">src=</span><span class="s">"//url/for/your/cdn/scripts"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>唯一需要注意的是，一旦在前端设置了 <code class="language-plaintext highlighter-rouge">crossorigin</code>，要确保服务端相应设置了允许跨域的响应头，否则整个脚本文件会加载失败，影响页面正常功能。</p>
+
+<p>目前来看，除了 Opera外，各主流浏览器都有支持此属性。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-exception-report/assets/cors-loading-browser-compatability.png" alt="跨域脚本加载浏览器兼容性" /></p>
+
+<p><em>跨域脚本加载浏览器兼容性</em></p>
+
+<h4 id="iframe-中异常的捕获">iframe 中异常的捕获</h4>
+
+<p>iframe 中发生异常，外界的 <code class="language-plaintext highlighter-rouge">onerror</code> 是不会触发的。但如果 iframe 地址同域，那么我们就可以设置 iframe 的全局 <code class="language-plaintext highlighter-rouge">onerror</code> 进行监听。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">myiframe</span><span class="dl">"</span><span class="p">).</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nx">onerror</span><span class="o">=</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">error!!</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>以上代码需要保证在 iframe 加载完成后进行。</p>
+
+<p>非同域情况下，如果 ifame 内的内容不来自第三方，也就是你自己可以控制，那么可以通过与 iframe 内进行通信的方式，将异常信息抛出来。iframe 通信试有很多，譬如 <code class="language-plaintext highlighter-rouge">postMessage</code>。这里不展开了。</p>
+
+<p>非同域且内容不受自己控制的情况下，除了在控制台查看错误详细信息，真的没其他办法可以捕获了。</p>
+
+<h4 id="代码压缩在错误捕获中的还原">代码压缩在错误捕获中的还原</h4>
+
+<p>线上代码一般是压缩过的，如何更友好地展示还原事件发生地，对于错误上报也是个挑战。因为在错误监听的回调里面提供了列数，所以对于压缩后的代码，定位起位置来也不是难事，再结合错误对象里的报错堆栈信息，能够很好地定位代码的位置及原因。</p>
+
+<p>关于压缩后的代码，有 sourse map 可以映射到源码，如果我们在异常捕获时通过与 soruce map 文件结合起来，那么就有可能在还原错误时分析出其在未压缩源码中的位置。目前来看，已经有相关的服务实现了这一功能，<a href="https://docs.sentry.io/clients/javascript/sourcemaps/">sentry 的文档</a>中有提到。</p>
+
+<p>前面讨论了一下错误详细信息的获取，最终我们是想在客户端收集到这些信息，再加上 ua, 发生错误的时间，设备相关信息等上报到服务端。总之，能够获取到信息越全越好，方便我们后期定位处理问题。当然，这套体系，市面上是有现成库已经做了的，来自 GitHub的这个代码仓库<a href="https://github.com/cheeaun/javascript-error-logging">cheeaun/javascript-error-logging</a>收集了前端异常监控相关的资源，从 <a href="https://github.com/topics/error-monitoring">GitHub 这个专题页面</a>也能找到许多。上面的坑库里面也都会覆盖到。</p>
+
+<p>Happy troubleshooting :)</p>
+
+<h3 id="相关资料">相关资料</h3>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror">GlobalEventHandlers.onerror</a></li>
+  <li><a href="https://danlimerick.wordpress.com/2014/01/18/how-to-catch-javascript-errors-with-window-onerror-even-on-chrome-and-firefox/">How to catch JavaScript Errors with window.onerror (even on Chrome and Firefox)</a></li>
+  <li><a href="https://stackoverflow.com/questions/5913978/cryptic-script-error-reported-in-javascript-in-chrome-and-firefox">Cryptic “Script Error.” reported in Javascript in Chrome and Firefox</a></li>
+  <li><a href="https://blog.sentry.io/2016/01/04/client-javascript-reporting-window-onerror.html">Capture and report JavaScript errors with window.onerror</a></li>
+  <li><a href="https://developer.microsoft.com/en-us/microsoft-edge/platform/catalog/?page=1&amp;q=queryselector">MS Edge API Catalog</a></li>
+  <li><a href="https://trackjs.com/blog/script-error-javascript-forensics/">Script Error: JavaScript Forensics</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes">CORS settings attributes</a></li>
+  <li><a href="https://stackoverflow.com/questions/6327128/can-i-catch-exception-of-iframe-in-parent-window-of-iframe">can I catch exception of Iframe in parent window of Iframe</a></li>
+</ul>
+
+<p><strong>后记</strong></p>
+
+<p>后续可以开垦的点：</p>
+
+<ul>
+  <li>本地模拟跨域</li>
+  <li>自己实现异常上报的库</li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2017/11/30/apply-vs-call-vs-bind/" data-toggle="tooltip" data-placement="top" title="apply vs call vs bind ">
+                        Previous<br>
+                        <span>apply vs call vs bind </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2017/12/05/source-map-%E7%9A%84%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/" data-toggle="tooltip" data-placement="top" title="source map 的原理探究">
+                        Next<br>
+                        <span>source map 的原理探究</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="从 axios 源码中了解到的 Promise 链与请求的取消 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="从 axios 源码中了解到的 Promise 链与请求的取消
+
+axios 中一个请求取消的示例：
+
+
+
+axios 取消请求的示例代码
+
+
+```ts
+import React, { useState, useEffect } from "react";
+import axios, { AxiosResponse } from "axios";
+
+export default funct...">
+    
+    <meta property="article:published_time" content="2019-10-09T17:10:00Z">
+    
+    
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/10/09/%E4%BB%8E-axios-%E6%BA%90%E7%A0%81%E4%B8%AD%E4%BA%86%E8%A7%A3%E5%88%B0%E7%9A%84-Promise-%E9%93%BE%E4%B8%8E%E8%AF%B7%E6%B1%82%E7%9A%84%E5%8F%96%E6%B6%88/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>从 axios 源码中了解到的 Promise 链与请求的取消 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/10/09/%E4%BB%8E-axios-%E6%BA%90%E7%A0%81%E4%B8%AD%E4%BA%86%E8%A7%A3%E5%88%B0%E7%9A%84-Promise-%E9%93%BE%E4%B8%8E%E8%AF%B7%E6%B1%82%E7%9A%84%E5%8F%96%E6%B6%88/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>从 axios 源码中了解到的 Promise 链与请求的取消</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on October 9, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="从-axios-源码中了解到的-promise-链与请求的取消">从 axios 源码中了解到的 Promise 链与请求的取消</h1>
+
+<p><a href="https://github.com/axios/axios">axios</a> 中一个请求取消的示例：</p>
+
+<details>
+<summary>
+axios 取消请求的示例代码
+</summary>
+
+```ts
+import React, { useState, useEffect } from "react";
+import axios, { AxiosResponse } from "axios";
+
+export default function App() {
+  const [index, setIndex] = useState(0);
+  const [imgUrl, setImgUrl] = useState("");
+  useEffect(() =&gt; {
+    console.log(`loading ${index}`);
+    const source = axios.CancelToken.source();
+    axios
+      .get("https://dog.ceo/api/breeds/image/random", {
+        cancelToken: source.token
+      })
+      .then((res: AxiosResponse&lt;{ message: string; status: string }&gt;) =&gt; {
+        console.log(`${index} done`);
+        setImgUrl(res.data.message);
+      })
+      .catch(err =&gt; {
+        if (axios.isCancel(source)) {
+          console.log(err.message);
+        }
+      });
+
+    return () =&gt; {
+      console.log(`canceling ${index}`);
+      source.cancel(`canceling ${index}`);
+    };
+  }, [index]);
+
+  return (
+    <div>
+      &lt;button
+        onClick={() =&gt; {
+          setIndex(index + 1);
+        }}
+      &gt;
+        click
+      &lt;/button&gt;
+      <div>
+        &lt;img src={imgUrl} alt="" /&gt;
+      </div>
+    </div>
+  );
+}
+```
+
+</details>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/66497032-6f2f5600-eaee-11e9-882a-d33b8c6e2c7d.gif" alt="axios 中一个请求取消的示例" /></p>
+<p align="center">axios 中一个请求取消的示例</p>
+
+<p>通过解读其源码不难实现出一个自己的版本。Here we go…</p>
+
+<h2 id="promise-链与拦截器">Promise 链与拦截器</h2>
+
+<p>这个和请求的取消其实关系不大，但不妨先来了解一下，axios 中如何组织起来一个 Promise 链（Promise chain），从而实现在请求前后可执行一个拦截器（Interceptor）的。</p>
+
+<p>简单来说，通过 axios 发起的请求，可在请求前后执行一些函数，来实现特定功能，比如请求前添加一些自定义的 header，请求后进行一些数据上的统一转换等。</p>
+
+<h3 id="用法">用法</h3>
+
+<p>首先，通过 axios 实例配置需要执行的拦截器：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">axios</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">before request</span><span class="dl">'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+  <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+  <span class="p">});</span>
+
+<span class="nx">axios</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">after response</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+  <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+  <span class="p">});</span>
+</code></pre></div></div>
+
+<p>然后每次请求前后都会打印出相应信息，拦截器生效了。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">axios</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://dog.ceo/api/breeds/image/random</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">load success</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>下面编写一个页面，放置一个按钮，点击后发起请求，后续示例中将一直使用该页面来测试。</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">axios</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">axios</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">sendRequest</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">axios</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span>
+      <span class="nx">config</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">before request</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+      <span class="p">},</span>
+      <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">);</span>
+
+    <span class="nx">axios</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span>
+      <span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">after response</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+      <span class="p">},</span>
+      <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">);</span>
+
+    <span class="nx">axios</span><span class="p">({</span>
+      <span class="na">url</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://dog.ceo/api/breeds/image/random</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span>
+    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">load success</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">};</span>
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="nx">sendRequest</span><span class="si">}</span><span class="p">&gt;</span>click me<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>点击按钮后运行结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>before request
+after response
+load success
+</code></pre></div></div>
+
+<h3 id="拦截器机制的实现">拦截器机制的实现</h3>
+
+<p>实现分两步走，先看请求前的拦截器。</p>
+
+<h4 id="请求前拦截器的实现">请求前拦截器的实现</h4>
+
+<p>Promise 的常规用法如下：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span><span class="nx">reject</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>假如我们封装一个类似 axios 的请求库，可以这么写：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kr">interface</span> <span class="nx">Config</span> <span class="p">{</span>
+  <span class="nl">url</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">POST</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">request</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">method</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">resolve</span><span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>除了像上面那个直接 <code class="language-plaintext highlighter-rouge">new</code> 一个 Promise 外，其实任意对象值都可以形成一个 Promise，方法是调用 <code class="language-plaintext highlighter-rouge">Promise.resolve</code>，</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">value</span><span class="p">).</span><span class="nx">then</span><span class="p">(()</span><span class="o">=&gt;</span><span class="p">{</span> <span class="cm">/**... */</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<p>这种方式创建 Promise 的好处是，我们可以从 <code class="language-plaintext highlighter-rouge">config</code> 开始，创建一个 Promise 链，在真实的请求发出前，先执行一些函数，像这样：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">request</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">config</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">interceptor 1</span><span class="dl">"</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">config</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">interceptor 2</span><span class="dl">"</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">config</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+        <span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">method</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+        <span class="nx">xhr</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">resolve</span><span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+        <span class="p">};</span>
+        <span class="nx">xhr</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+        <span class="p">};</span>
+        <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>将前面示例中 axios 替换为我们自己写的 <code class="language-plaintext highlighter-rouge">request</code> 函数，示例可以正常跑起来，输出如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interceptor 1
+interceptor 2
+load success
+</code></pre></div></div>
+
+<p>这里，已经实现了 axios 中请求前拦截器的功能。仔细观察，上面三个 <code class="language-plaintext highlighter-rouge">then</code> 当中的函数，形成了一个 Promise 链，在这个链中顺次执行，每一个都可以看成一个拦截器，即使是执行发送请求的那个 <code class="language-plaintext highlighter-rouge">then</code>。</p>
+
+<p>于是我们可以将他们抽取成三个函数，每个函数就是一个<strong>拦截器</strong>。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">interceptor1</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">interceptor 1</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">interceptor2</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">interceptor 2</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">xmlHttpRequest</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">method</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">resolve</span><span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span> <span class="k">as</span> <span class="kr">any</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>接下来要做的，就是从 Promise 链的头部 <code class="language-plaintext highlighter-rouge">Promise.resolve(config)</code> 开始，将上面三个函数串起来。借助 <a href="https://en.wikipedia.org/wiki/Monkey_patch">Monkey patch</a> 这不难实现：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">request</span><span class="o">&lt;</span><span class="nx">T</span> <span class="o">=</span> <span class="kr">any</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">chain</span><span class="p">:</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">config</span><span class="p">);</span>
+  <span class="nx">chain</span> <span class="o">=</span> <span class="nx">chain</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">interceptor1</span><span class="p">);</span>
+  <span class="nx">chain</span> <span class="o">=</span> <span class="nx">chain</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">interceptor2</span><span class="p">);</span>
+  <span class="nx">chain</span> <span class="o">=</span> <span class="nx">chain</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">xmlHttpRequest</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">chain</span> <span class="k">as</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后，将上面硬编码的写法程式化一下，就实现了任意个请求前拦截器的功能。</p>
+
+<p>扩展配置，以接收拦截器：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Config</span> <span class="p">{</span>
+  <span class="nl">url</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">POST</span><span class="dl">"</span><span class="p">;</span>
+  <span class="nl">interceptors</span><span class="p">?:</span> <span class="nx">Interceptor</span><span class="o">&lt;</span><span class="nx">Config</span><span class="o">&gt;</span><span class="p">[];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>创建一个数组，将执行请求的函数做为默认的元素放进去，然后将用户配置的拦截器压入数组前面，这样形成了一个拦截器的数组。最后再遍历这个数组形成 Promise 链。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">request</span><span class="o">&lt;</span><span class="nx">T</span> <span class="o">=</span> <span class="kr">any</span><span class="o">&gt;</span><span class="p">({</span> <span class="nx">interceptors</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">...</span><span class="nx">config</span> <span class="p">}:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// 发送请求的拦截器为默认，用户配置的拦截器压入数组前面</span>
+  <span class="kd">const</span> <span class="nx">tmpInterceptors</span><span class="p">:</span> <span class="nx">Interceptor</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">xmlHttpRequest</span><span class="p">];</span>
+  <span class="nx">interceptors</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">interceptor</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">tmpInterceptors</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="nx">interceptor</span><span class="p">);</span>
+  <span class="p">});</span>
+  <span class="kd">let</span> <span class="nx">chain</span><span class="p">:</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">config</span><span class="p">);</span>
+  <span class="nx">tmpInterceptors</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">interceptor</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">chain</span> <span class="o">=</span> <span class="nx">chain</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">interceptor</span><span class="p">)));</span>
+  <span class="k">return</span> <span class="nx">chain</span> <span class="k">as</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>使用：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">request</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://dog.ceo/api/breeds/image/random</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">interceptors</span><span class="p">:</span> <span class="p">[</span><span class="nx">interceptor1</span><span class="p">,</span> <span class="nx">interceptor2</span><span class="p">]</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">load success</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interceptor 2
+interceptor 1
+load success
+</code></pre></div></div>
+
+<p><em>注意这里顺序为传入的拦截器的反序，不过这不重要，可通过传递的顺序来控制。</em></p>
+
+<h4 id="响应后拦截器">响应后拦截器</h4>
+
+<p>上面实现了在请求前执行一序列拦截函数，同理，如果将拦截器压入到数组后面，即执行请求那个函数的后面，便实现了响应后的拦截器。</p>
+
+<p>继续扩展配置，将请求与响应的拦截器分开：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Config</span> <span class="p">{</span>
+  <span class="nl">url</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">POST</span><span class="dl">"</span><span class="p">;</span>
+  <span class="nl">interceptors</span><span class="p">?:</span> <span class="p">{</span>
+    <span class="na">request</span><span class="p">:</span> <span class="nx">Interceptor</span><span class="o">&lt;</span><span class="nx">Config</span><span class="o">&gt;</span><span class="p">[];</span>
+    <span class="nl">response</span><span class="p">:</span> <span class="nx">Interceptor</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span><span class="p">[];</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>更新 <code class="language-plaintext highlighter-rouge">request</code> 方法，请求前拦截器的逻辑不变，将新增的响应拦截器通过 <code class="language-plaintext highlighter-rouge">push</code> 压入数组后面：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">function</span> <span class="nx">request</span><span class="o">&lt;</span><span class="nx">T</span> <span class="o">=</span> <span class="kr">any</span><span class="o">&gt;</span><span class="p">({</span>
+  <span class="nx">interceptors</span> <span class="o">=</span> <span class="p">{</span> <span class="na">request</span><span class="p">:</span> <span class="p">[],</span> <span class="na">response</span><span class="p">:</span> <span class="p">[]</span> <span class="p">},</span>
+  <span class="p">...</span><span class="nx">config</span>
+<span class="p">}:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">tmpInterceptors</span><span class="p">:</span> <span class="nx">Interceptor</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">xmlHttpRequest</span><span class="p">];</span>
+  <span class="nx">interceptors</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">interceptor</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">tmpInterceptors</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="nx">interceptor</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="nx">interceptors</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">interceptor</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">tmpInterceptors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">interceptor</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="kd">let</span> <span class="nx">chain</span><span class="p">:</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">config</span><span class="p">);</span>
+  <span class="nx">tmpInterceptors</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">interceptor</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">chain</span> <span class="o">=</span> <span class="nx">chain</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">interceptor</span><span class="p">)));</span>
+  <span class="k">return</span> <span class="nx">chain</span> <span class="k">as</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>类似 <code class="language-plaintext highlighter-rouge">interceptor1</code> <code class="language-plaintext highlighter-rouge">interceptor2</code>，新增两个拦截器用于响应后执行，</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">interceptor3</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">res</span><span class="p">:</span> <span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">interceptor 3</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">res</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">interceptor4</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">res</span><span class="p">:</span> <span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">interceptor 4</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">res</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>测试代码：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">request</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://dog.ceo/api/breeds/image/random</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">interceptors</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">request</span><span class="p">:</span> <span class="p">[</span><span class="nx">interceptor1</span><span class="p">,</span> <span class="nx">interceptor2</span><span class="p">],</span>
+    <span class="na">response</span><span class="p">:</span> <span class="p">[</span><span class="nx">interceptor3</span><span class="p">,</span> <span class="nx">interceptor4</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">load success</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interceptor 2
+interceptor 1
+interceptor 3
+interceptor 4
+load success
+</code></pre></div></div>
+
+<p>不难看出，当我们发起一次 axios 请求时，其实是发起了一次 Promise 链，链上的函数顺次执行。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>request interceptor 1
+request interceptor 2
+...
+request
+response interceptor 1
+response interceptor 2
+...
+</code></pre></div></div>
+
+<p>因为拉弓没有回头箭，请求发出后，能够取消的是后续操作，而不是请求本身，所以上面的 Promise 链中，需要实现 <code class="language-plaintext highlighter-rouge">request</code> 之后的拦截器和后续回调的取消执行。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>request interceptor 1
+request interceptor 2
+...
+request
+# 🚫 后续操作不再执行
+response interceptor 1
+response interceptor 2
+...
+</code></pre></div></div>
+
+<h2 id="请求的取消">请求的取消</h2>
+
+<h3 id="promise-链的中断">Promise 链的中断</h3>
+
+<p>中断 Promise 链的执行，可通过 throw 异常来实现。</p>
+
+<p>添加一个中间函数，将执行请求的函数进行封装，无论其成功与否，都抛出异常将后续执行中断。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">adapter</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">xmlHttpRequest</span><span class="p">(</span><span class="nx">config</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span>
+    <span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="dl">"</span><span class="s2">baddie!</span><span class="dl">"</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="dl">"</span><span class="s2">baddie!</span><span class="dl">"</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>更新 <code class="language-plaintext highlighter-rouge">request</code> 函数使用 <code class="language-plaintext highlighter-rouge">adapter</code> 而不是直接使用 <code class="language-plaintext highlighter-rouge">xmlHttpRequest</code>：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function request&lt;T = any&gt;({
+</span>  interceptors = { request: [], response: [] },
+  ...config
+<span class="err">}:</span> Config) {
+<span class="gd">-  const tmpInterceptors: Interceptor&lt;any&gt;[] = [xmlHttpRequest];
+</span><span class="gi">+  const tmpInterceptors: Interceptor&lt;any&gt;[] = [adapter];
+</span>  interceptors.request.forEach(interceptor =&gt; {
+    tmpInterceptors.unshift(interceptor);
+  });
+
+  interceptors.response.forEach(interceptor =&gt; {
+    tmpInterceptors.push(interceptor);
+  });
+
+  let chain: Promise&lt;any&gt; = Promise.resolve(config);
+  tmpInterceptors.forEach(interceptor =&gt; (chain = chain.then(interceptor)));
+  return chain as Promise&lt;T&gt;;
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>再次执行其输出结果为：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interceptor 2
+interceptor 1
+Uncaught (in promise) baddie!
+</code></pre></div></div>
+
+<h3 id="请求取消的实现">请求取消的实现</h3>
+
+<p>按照 axios 的实现思路，要实现请求的取消，需要先创建一个 token，通过该 token 可调用一个 <code class="language-plaintext highlighter-rouge">cancel</code> 方法；通过将 token 传递到配置中，在发起请求时对 token 进行检查以判定该 token 是否执行过取消，如果是则利用上面的思路，将 Promise 链中断掉。</p>
+
+<h4 id="构造-token">构造 token</h4>
+
+<p>所以不难看出，这里的 token 对象至少：</p>
+
+<ul>
+  <li>有一个 <code class="language-plaintext highlighter-rouge">cancel</code> 方法</li>
+  <li>有一个字段记录 <code class="language-plaintext highlighter-rouge">cancel</code> 方法是否被调用过</li>
+</ul>
+
+<p>额外地，</p>
+
+<ul>
+  <li>如果有一个字段记录取消的原因，那也不错。</li>
+</ul>
+
+<p>由此我们得到这么一个类：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">CancelTokenSource</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="nx">_canceled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="kd">get</span> <span class="nx">canceled</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_canceled</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">private</span> <span class="nx">_message</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">unknown reason</span><span class="dl">"</span><span class="p">;</span>
+  <span class="kd">get</span> <span class="nx">message</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_message</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nx">cancel</span><span class="p">(</span><span class="nx">reason</span><span class="p">?:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">canceled</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_message</span> <span class="o">=</span> <span class="nx">reason</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_canceled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="添加-token-到配置">添加 token 到配置</h4>
+
+<p>扩展配置，以接收一个用来取消的 token 对象：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">interface Config {
+</span>  url: string;
+  method: "GET" | "POST";
+<span class="gi">+  cancelToken?: CancelTokenSource;
+</span>  interceptors?: {
+    request: Interceptor&lt;Config&gt;[];
+    response: Interceptor&lt;any&gt;[];
+  };
+<span class="err">}</span>
+</code></pre></div></div>
+
+<h4 id="请求逻辑中处理取消">请求逻辑中处理取消</h4>
+
+<p>同时更新 <code class="language-plaintext highlighter-rouge">xmlHttpRequest</code> 函数，判断 token 的状态是否调用过取消，如果是则调用 <code class="language-plaintext highlighter-rouge">xhr.abort()</code>，同时添加 <code class="language-plaintext highlighter-rouge">onabort</code> 回调以 reject 掉 Promise:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+function xmlHttpRequest&lt;T&gt;(config: Config) {
+  return new Promise&lt;T&gt;((resolve, reject) =&gt; {
+    const xhr = new XMLHttpRequest();
+    xhr.open(config.method, config.url);
+    xhr.onload = () =&gt; {
+      resolve(xhr.responseText as any);
+    };
+    xhr.onerror = err =&gt; {
+      reject(err);
+    };
+<span class="gi">+    xhr.onabort = () =&gt; {
++      reject();
++    };
++    if (config.cancelToken) {
++      xhr.abort();
++    }
+</span>    xhr.send();
+  });
+<span class="err">}</span>
+</code></pre></div></div>
+
+<h4 id="取消的调用">取消的调用</h4>
+
+<p>将抛异常的代码抽取成方法以在多处调用，更新 <code class="language-plaintext highlighter-rouge">adapter</code> 的逻辑，在没有取消的情况下正常返回和 reject。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">throwIfCancelRequested</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">cancelToken</span> <span class="o">&amp;&amp;</span> <span class="nx">config</span><span class="p">.</span><span class="nx">cancelToken</span><span class="p">.</span><span class="nx">canceled</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="nx">config</span><span class="p">.</span><span class="nx">cancelToken</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">adapter</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">throwIfCancelRequested</span><span class="p">(</span><span class="nx">config</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">xmlHttpRequest</span><span class="p">(</span><span class="nx">config</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span>
+    <span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">throwIfCancelRequested</span><span class="p">(</span><span class="nx">config</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">res</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">throwIfCancelRequested</span><span class="p">(</span><span class="nx">config</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="测试请求的取消">测试请求的取消</h4>
+
+<p>似乎一切 okay，接下来测试一波。以下代码期望每次点击按钮发起请求，请求前先取消掉之前的请求。为了区分每次不同的请求，添加 <code class="language-plaintext highlighter-rouge">index</code> 变量，按钮点击时自增。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useEffect</span><span class="p">,</span> <span class="nx">useState</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">index</span><span class="p">,</span> <span class="nx">setIndex</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">token</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CancelTokenSource</span><span class="p">();</span>
+    <span class="nx">request</span><span class="p">({</span>
+      <span class="na">url</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://dog.ceo/api/breeds/image/random</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">cancelToken</span><span class="p">:</span> <span class="nx">token</span><span class="p">,</span>
+      <span class="na">interceptors</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">request</span><span class="p">:</span> <span class="p">[</span><span class="nx">interceptor1</span><span class="p">,</span> <span class="nx">interceptor2</span><span class="p">],</span>
+        <span class="na">response</span><span class="p">:</span> <span class="p">[</span><span class="nx">interceptor3</span><span class="p">,</span> <span class="nx">interceptor4</span><span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">})</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`load </span><span class="p">${</span><span class="nx">index</span><span class="p">}</span><span class="s2"> success`</span><span class="p">);</span>
+      <span class="p">})</span>
+      <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">outer catch </span><span class="dl">"</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+      <span class="p">});</span>
+
+    <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">token</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="s2">`just cancel </span><span class="p">${</span><span class="nx">index</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="p">},</span> <span class="p">[</span><span class="nx">index</span><span class="p">]);</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">button</span>
+        <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">setIndex</span><span class="p">(</span><span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="p">}}</span>
+      <span class="o">&gt;</span>
+        <span class="nx">click</span> <span class="nx">me</span>
+      <span class="o">&lt;</span><span class="sr">/button</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>加载页面进行测试，<code class="language-plaintext highlighter-rouge">useEffect</code> 会在页面加载后首次运行，会触发一次完整的请求流程。然后连续点击两次按钮，以取消掉两次中的前一次。运行结果：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">interceptor</span> <span class="mi">2</span>
+<span class="nx">interceptor</span> <span class="mi">1</span>
+<span class="nx">interceptor</span> <span class="mi">3</span>
+<span class="nx">interceptor</span> <span class="mi">4</span>
+<span class="nx">load</span> <span class="mi">0</span> <span class="nx">success</span>
+
+<span class="nx">interceptor</span> <span class="mi">2</span>
+<span class="nx">interceptor</span> <span class="mi">1</span>
+
+<span class="nx">interceptor</span> <span class="mi">2</span>
+<span class="nx">interceptor</span> <span class="mi">1</span>
+<span class="nx">outer</span> <span class="k">catch</span>  <span class="nx">just</span> <span class="nx">cancel</span> <span class="mi">1</span>
+<span class="nx">interceptor</span> <span class="mi">3</span>
+<span class="nx">interceptor</span> <span class="mi">4</span>
+<span class="nx">load</span> <span class="mi">2</span> <span class="nx">success</span>
+</code></pre></div></div>
+
+<h4 id="现有实现中的问题">现有实现中的问题</h4>
+
+<p>从输出来看，</p>
+<ul>
+  <li>第一部分为首次请求，是一次正常的请求。</li>
+  <li>第二部分为第一次点击的请求拦截器的执行。</li>
+  <li>第三部分为第二次点击，将第一次请求进行了取消，然后完成一次完整的请求。</li>
+</ul>
+
+<p>从输出和网络请求来看，有两个问题：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">xhr.abort()</code> 没有生效，连续的两次点击中，浏览器调试工具中会有两条状态为 200 的请求。</li>
+  <li>第一条请求后续的回调确实被取消掉了，但它是在等待请求成功后，在成功回调中取消的，这点可通过在取消函数中添加标志位来查看。</li>
+</ul>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">throwIfCancelRequested</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">,</span> <span class="nx">flag</span><span class="p">?:</span> <span class="kr">number</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">cancelToken</span> <span class="o">&amp;&amp;</span> <span class="nx">config</span><span class="p">.</span><span class="nx">cancelToken</span><span class="p">.</span><span class="nx">canceled</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">flag</span><span class="p">);</span>
+    <span class="k">throw</span> <span class="nx">config</span><span class="p">.</span><span class="nx">cancelToken</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">adapter</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">throwIfCancelRequested</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">xmlHttpRequest</span><span class="p">(</span><span class="nx">config</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span>
+    <span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">//ℹ 后续输出证明，实际生效的是此处</span>
+      <span class="nx">throwIfCancelRequested</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">res</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">//ℹ 而非此处，即使取消的动作是在请求进行过程中</span>
+      <span class="nx">throwIfCancelRequested</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">interceptor</span> <span class="mi">2</span>
+<span class="nx">interceptor</span> <span class="mi">1</span>
+<span class="nx">interceptor</span> <span class="mi">2</span>
+<span class="nx">interceptor</span> <span class="mi">1</span>
+<span class="mi">2</span>
+<span class="nx">outer</span> <span class="k">catch</span>  <span class="nx">just</span> <span class="nx">cancel</span> <span class="mi">1</span>
+<span class="nx">interceptor</span> <span class="mi">3</span>
+<span class="nx">interceptor</span> <span class="mi">4</span>
+<span class="nx">load</span> <span class="mi">2</span> <span class="nx">success</span>
+</code></pre></div></div>
+
+<h4 id="优化">优化</h4>
+
+<p>下面的优化需要解决上面的问题。所用到的方法便是 <a href="https://github.com/axios/axios/blob/master/lib/cancel/CancelToken.js#L17">axios 中的逻辑</a>，也是一开始看源码会不太理解的地方。</p>
+
+<p>其实外部调用 <code class="language-plaintext highlighter-rouge">cancel()</code> 的时机并不确定，所以 token 对象上记录其是否被取消的字段，何时被置为 <code class="language-plaintext highlighter-rouge">true</code> 是不确定的，因此，我们取消请求的逻辑（<code class="language-plaintext highlighter-rouge">xhr.abort()</code>）应该是在一个 Promise 中来完成。</p>
+
+<p>因此，在 <code class="language-plaintext highlighter-rouge">CancelTokenSource</code> 类中，创建一个 Promise 类型的字段，它会在 <code class="language-plaintext highlighter-rouge">cancel()</code> 方法被调用的时候 resolve 掉。</p>
+
+<p>更新后的 <code class="language-plaintext highlighter-rouge">CancelTokenSource</code> 类：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">CancelTokenSource</span> <span class="p">{</span>
+  <span class="k">public</span> <span class="nx">promise</span><span class="p">:</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">unknown</span><span class="o">&gt;</span><span class="p">;</span>
+  <span class="k">private</span> <span class="nx">resolvePromise</span><span class="o">!</span><span class="p">:</span> <span class="p">(</span><span class="nx">value</span><span class="p">?:</span> <span class="kr">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+  <span class="kd">constructor</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">resolvePromise</span> <span class="o">=</span> <span class="nx">resolve</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+  <span class="k">private</span> <span class="nx">_canceled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="kd">get</span> <span class="nx">canceled</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_canceled</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">private</span> <span class="nx">_message</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">unknown reason</span><span class="dl">"</span><span class="p">;</span>
+  <span class="kd">get</span> <span class="nx">message</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_message</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nx">cancel</span><span class="p">(</span><span class="nx">reason</span><span class="p">?:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">_message</span> <span class="o">=</span> <span class="nx">reason</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_canceled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">resolvePromise</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>更新后访问 <code class="language-plaintext highlighter-rouge">canceled</code> 字段的逻辑：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">xmlHttpRequest</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">config</span><span class="p">:</span> <span class="nx">Config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">method</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">resolve</span><span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span> <span class="k">as</span> <span class="kr">any</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onabort</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">reject</span><span class="p">();</span>
+    <span class="p">};</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">cancelToken</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">config</span><span class="p">.</span><span class="nx">cancelToken</span><span class="p">.</span><span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">xhr</span><span class="p">.</span><span class="nx">abort</span><span class="p">();</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="测试优化后的版本">测试优化后的版本</h4>
+
+<p>输出结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interceptor 2
+interceptor 1
+interceptor 3
+interceptor 4
+load 0 success
+
+interceptor 2
+interceptor 1
+
+interceptor 2
+3
+interceptor 1
+outer catch  just cancel 1
+interceptor 3
+interceptor 4
+load 2 success
+</code></pre></div></div>
+
+<p>浏览器调试工具的网络会有一次飘红被 <code class="language-plaintext highlighter-rouge">abort</code> 掉的请求，同时上面的输出（生效的地方是 3 而非 2）显示被取消的请求正确地 reject 掉了。</p>
+
+<h2 id="完整代码">完整代码</h2>
+
+<details>
+<summary>
+自己实现的请求取消机制完整代码
+</summary>
+
+```tsx
+import React, { useState, useEffect } from "react";
+
+class CancelTokenSource {
+  public promise: Promise<unknown>;
+  private resolvePromise!: (value?: any) =&gt; void;
+  constructor() {
+    this.promise = new Promise(resolve =&gt; {
+      this.resolvePromise = resolve;
+    });
+  }
+  private _canceled = false;
+  get canceled() {
+    return this._canceled;
+  }
+  private _message = "unknown reason";
+  get message() {
+    return this._message;
+  }
+
+  cancel(reason?: string) {
+    if (reason) {
+      this._message = reason;
+    }
+    this._canceled = true;
+    this.resolvePromise();
+  }
+}
+
+type Interceptor<T> = (value: T) =&gt; T | Promise<T>;
+
+interface Config {
+  url: string;
+  method: "GET" | "POST";
+  cancelToken?: CancelTokenSource;
+  interceptors?: {
+    request: Interceptor<Config>[];
+    response: Interceptor<any>[];
+  };
+}
+
+function interceptor1(config: Config) {
+  console.log("interceptor 1");
+  return config;
+}
+function interceptor2(config: Config) {
+  console.log("interceptor 2");
+  return config;
+}
+
+function interceptor3<T>(res: T) {
+  console.log("interceptor 3");
+  return res;
+}
+
+function interceptor4<T>(res: T) {
+  console.log("interceptor 4");
+  return res;
+}
+
+function xmlHttpRequest<T>(config: Config) {
+  return new Promise<T>((resolve, reject) =&gt; {
+    const xhr = new XMLHttpRequest();
+    xhr.open(config.method, config.url);
+    xhr.onload = () =&gt; {
+      resolve(xhr.responseText as any);
+    };
+    xhr.onerror = err =&gt; {
+      reject(err);
+    };
+    xhr.onabort = () =&gt; {
+      reject();
+    };
+    if (config.cancelToken) {
+      config.cancelToken.promise.then(() =&gt; {
+        xhr.abort();
+      });
+    }
+    xhr.send();
+  });
+}
+
+function throwIfCancelRequested(config: Config, flag?: number) {
+  if (config.cancelToken &amp;&amp; config.cancelToken.canceled) {
+    console.log(flag);
+    throw config.cancelToken.message;
+  }
+}
+
+function adapter(config: Config) {
+  throwIfCancelRequested(config, 1);
+  return xmlHttpRequest(config).then(
+    res =&gt; {
+      throwIfCancelRequested(config, 2);
+      return res;
+    },
+    err =&gt; {
+      throwIfCancelRequested(config, 3);
+      return Promise.reject(err);
+    }
+  );
+}
+
+function request&lt;T = any&gt;({
+  interceptors = { request: [], response: [] },
+  ...config
+}: Config) {
+  const tmpInterceptors: Interceptor<any>[] = [adapter];
+  interceptors.request.forEach(interceptor =&gt; {
+    tmpInterceptors.unshift(interceptor);
+  });
+
+  interceptors.response.forEach(interceptor =&gt; {
+    tmpInterceptors.push(interceptor);
+  });
+
+  let chain: Promise<any> = Promise.resolve(config);
+  tmpInterceptors.forEach(interceptor =&gt; (chain = chain.then(interceptor)));
+  return chain as Promise<T>;
+}
+
+export default function App() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() =&gt; {
+    const token = new CancelTokenSource();
+    request({
+      url: "https://dog.ceo/api/breeds/image/random",
+      method: "GET",
+      cancelToken: token,
+      interceptors: {
+        request: [interceptor1, interceptor2],
+        response: [interceptor3, interceptor4]
+      }
+    })
+      .then(res =&gt; {
+        console.log(`load ${index} success`);
+      })
+      .catch(err =&gt; {
+        console.log("outer catch ", err);
+      });
+
+    return () =&gt; {
+      token.cancel(`just cancel ${index}`);
+    };
+  }, [index]);
+
+  return (
+    <div>
+      &lt;button
+        onClick={() =&gt; {
+          setIndex(index + 1);
+        }}
+      &gt;
+        click me
+      &lt;/button&gt;
+    </div>
+  );
+}
+```
+
+&lt;/details&gt;
+
+![运行效果](https://user-images.githubusercontent.com/3783096/66497136-99811380-eaee-11e9-963d-5d8fd664562f.gif)
+<p align="center">运行效果</p>
+
+
+## 相关资源
+
+- [axios](https://github.com/axios/axios)
+
+    
+</T></any></any></T></T></T></T></any></Config></T></T></unknown></details>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/10/08/%E7%90%86%E8%A7%A3-Redux-%E7%9A%84%E4%B8%AD%E9%97%B4%E4%BB%B6/" data-toggle="tooltip" data-placement="top" title="理解 Redux 的中间件">
+                        Previous<br>
+                        <span>理解 Redux 的中间件</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/10/10/Mac-%E5%8B%BF%E6%89%B0%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%BF%AB%E6%8D%B7%E9%94%AE/" data-toggle="tooltip" data-placement="top" title="Mac 勿扰模式的快捷键">
+                        Next<br>
+                        <span>Mac 勿扰模式的快捷键</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

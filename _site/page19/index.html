@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="notes about the coding life">
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/page19/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/page19/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Page Header -->
+
+
+
+
+
+
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading">
+        
+          <h1>牛さんの部落格</h1>
+          <span class="subheading"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
+<!-- NO SIDEBAR -->
+    <!-- PostList Container -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
+                
+<div class="post-preview">
+  <a href="/2019/04/17/Shim-%E4%B8%8E-Polyfill/">
+    <h2 class="post-title">Shim 与 Polyfill</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     Shim 与 Polyfill
+
+
+  Shim: 用来向后兼容。比如 requestIdleCallback，为了在旧的环境中不报错，可以加 shim。
+    
+      使用环境中现有的 api 来实现，不会引入额外的依赖或其他技术。
+    
+  
+  Polyfill: 用来增强，添加新功能。比如 IE7 不支持 localStorage，能添加 polyfill 来支持。
+  ... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 17, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/16/React-+-TypeScript-%E5%85%83%E7%B4%A0%E5%BC%95%E7%94%A8%E7%9A%84%E4%BC%A0%E9%80%92/">
+    <h2 class="post-title">React + TypeScript：元素引用的传递</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     React + TypeScript：元素引用的传递
+
+React 中需要操作元素时，可通过 findDOMNode() 或通过 createRef() 创建对元素的引用来实现。前者官方不推荐，所以这里讨论后者及其与 TypeScript 结合时如何工作。
+
+React 中的元素引用
+
+正常的组件中，可通过创建对元素的引用来获取到某元素然后进行相应操作。比如元素加载后将焦点定位到输入框。
+
+... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 16, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/15/HTTP-2-%E7%AE%80%E4%BB%8B/">
+    <h2 class="post-title">HTTP/2 简介</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     HTTP/2 简介
+
+支撑现有 Web 服务的 HTTP 协议距离其发布时的 1997 年已经有些年月了，随后的 HTTP/1.1 版本发布自 1999 年。随着技术的进步和需求的进化，对于数据快速高效地传输，HTTP/1.1 显得捉襟见肘，大部分优化是在应用层来做的，因为协议是改不了的嘛，比如雪碧图减少请求数，域名共享（Domain sharing）增加同时建立的请求数。
+
+SPDY 与 ... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 15, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/14/TypeScript-%E4%B8%AD%E9%9D%9E%E4%BB%A3%E7%A0%81%E6%A8%A1%E5%9D%97%E7%9A%84%E5%AF%BC%E5%85%A5/">
+    <h2 class="post-title">TypeScript 中非代码模块的导入</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     TypeScript 中非代码模块的导入
+
+需要理解的是，TypeScript 作为语言，他只处理代码模块。其他类型的文件这种非代码模块的导入，讲道理是通过另外的打包工具来完成的，比如 Web 应用中的图片，样式，JSON 还有 HTML 模板文件。只是我们需要在 TypeScript 层面解决模块解析报错的问题。
+
+通配符模块声明
+
+直接导入非代码模块，TypeScript 会报错。
+
+/... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 14, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/13/Node.js-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%E7%9A%84%E7%BC%96%E5%86%99/">
+    <h2 class="post-title">Node.js 命令行工具的编写</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     Node.js 命令行工具的编写
+
+日常开发中，编写 Node.js 命令行工具来完成一些小任务是很常见的操作。其编写也不难，和日常编写 Node.js 代码并无二致。
+
+package.json 中的 bin 字段
+
+一个 npm 模块，如果在 package.json 中指定了 bin 字段，那说明该模块提供了可在命令行执行的命令，这些命令就是在 bin 字段中指定的。
+
+package... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 13, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD/">
+    <h2 class="post-title">TypeScript 中的方法重载</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     TypeScript 中的方法重载
+
+方法重载（overload）在传统的静态类型语言中是很常见的。JavaScript 作为动态语言， 是没有重载这一说的。一是它的参数没有类型的区分，二是对参数个数也没有检查。虽然语言层面无法自动进行重载，但借助其动态的特性，我们可以在代码中手动检查入参的类型，或者通过 arguments 获取到参数个数，从而实现根据不同的入参做不同的操作。
+
+比如有一个... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 12, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/11/TypeScript-%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/">
+    <h2 class="post-title">TypeScript 上手教程</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     TypeScript 上手教程
+
+无疑，对于大型项目来说，Vanilla Js 无法满足工程需求。早在 2016 年 Anuglar 在项目中引入 TypeScript 时，大概也是考虑到强类型约束对于大型工程的必要性，具体选型考虑可参考这篇文章。然后可以看到 TypeScript 在社区中逐渐升温。但凡社区中举足轻重的库，如果不是原生使用 TypeScript 编写，那么也是通过声明文件的... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 11, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/10/Egg.js-%E4%B8%AD%E5%85%A5%E5%8F%82%E7%9A%84%E6%A0%A1%E9%AA%8C/">
+    <h2 class="post-title">Egg.js 中入参的校验</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     Egg.js 中入参的校验
+
+日常作业中免不了频繁处理 GET/POST 的入参，你当然可以每个 action 中都重复地去做这些事情，
+
+
+  从 query 或 body 取出入参，
+  对可选的入参进行判空，
+  处理入参的类型转换，
+  对入参进行逻辑校验，数字是否超限，类型是否非法等…
+
+
+但这些通用的逻辑可通过抽取到插件或服务中，避免代码冗余和重复劳动。
+
+egg-validat... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 10, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/09/koa-%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+    <h2 class="post-title">koa 中的错误处理</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     koa 中的错误处理
+
+不像 express 中在末尾处注册一个声明为 (err, req, res, next) 中间件的方式，koa 刚好相反，在开头进行注册。
+
+app.use(async (ctx, next) =&gt; {
+  try {
+    await next();
+  } catch (err) {
+    ctx.status = err.status || 500;... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 9, 2019
+  </p>
+</div>
+<hr />
+
+<div class="post-preview">
+  <a href="/2019/04/08/HTTP-%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3/">
+    <h2 class="post-title">HTTP 缓存相关</h2>
+    
+  </a>
+  <div class="post-content-preview">
+     HTTP 缓存相关
+
+网络中数据传输是很耗时的，数据要在漫长的路径中奔波，客户端在数据完整到达前只能等待。如果能够复用已经请求过的资源，势必会让整个页面加载高效许多。这可以通过合理地设置服务器的缓存，与浏览器的缓存机制配合以达到最优。
+
+缓存设置得当不但可减少用户等待时间，提升体验，还节省服务器开销省流量带宽。
+
+缓存的配置有两种策略：
+
+
+  稳定的内容 + 长期缓存
+  经常变动的内容 ... 
+  </div>
+  <p class="post-meta">
+    Posted by 牛さんの部落格 on April 8, 2019
+  </p>
+</div>
+<hr />
+
+
+<!-- Pager -->
+
+<ul class="pager">
+  
+  <li class="previous">
+    <a
+      href="/page18"
+      >&larr;</a
+    >
+  </li>
+   
+  <li class="next">
+    <a
+      href="/page20"
+      >&rarr;</a
+    >
+  </li>
+  
+</ul>
+
+
+            </div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        
+	</div>
+</div>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

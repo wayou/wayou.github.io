@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="CSS 盒模型 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="CSS 盒模型
+
+编程中我们常讲万物皆对象，面向对象编程嘛。写 CSS 的时候，则万物皆矩形，元素即方块。
+
+
+
+CSS 盒模型镇楼图 - 图片来自 W3C
+
+页面中的元素，包含内容块（content），内边距（padding），边框（border）以及外边距（margin）四个区域。每个部分都有其自己的范围及边界。
+
+四个边界线
+
+上图中每条线代表了一种边界。由这些边界线定义出来的区域便是...">
+    
+    <meta property="article:published_time" content="2017-11-30T13:11:00Z">
+    
+    
+    
+    <meta property="article:tag" content="css">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2017/11/30/CSS-%E7%9B%92%E6%A8%A1%E5%9E%8B/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>CSS 盒模型 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2017/11/30/CSS-%E7%9B%92%E6%A8%A1%E5%9E%8B/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=css" title="css">css</a>
+                        
+                    </div>
+                    <h1>CSS 盒模型</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on November 30, 2017</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h2 id="css-盒模型">CSS 盒模型</h2>
+
+<p>编程中我们常讲万物皆对象，面向对象编程嘛。写 CSS 的时候，则万物皆矩形，元素即方块。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/boxdim.png" alt="CSS 盒模型镇楼图" /></p>
+
+<p><em>CSS 盒模型镇楼图 - 图片来自 W3C</em></p>
+
+<p>页面中的元素，包含内容块（content），内边距（padding），边框（border）以及外边距（margin）四个区域。每个部分都有其自己的范围及边界。</p>
+
+<h3 id="四个边界线">四个边界线</h3>
+
+<p>上图中每条线代表了一种边界。由这些边界线定义出来的区域便是以上四个部分。</p>
+
+<ul>
+  <li>
+    <p>内容块（content）边界线<br />
+指的是正中间包含长宽（<a href="https://www.w3.org/TR/CSS2/visudet.html#Computing_widths_and_margins">width</a>,<a href="https://www.w3.org/TR/CSS2/visudet.html#Computing_heights_and_margins">height</a>）属性的内容盒子的边界线，也称作内边界线，其大小一般由该元素<a href="https://www.w3.org/TR/CSS2/conform.html#rendered-content">渲染的内容</a>决定，四个方向的内边界线定义出了内容盒子。</p>
+  </li>
+  <li>
+    <p>内边距（padding）边界线<br />
+包含内边距的边框，如果元素的内边距为0，那边这个边框就与内容块边界线重叠。</p>
+  </li>
+  <li>
+    <p>边框（border）边界线<br />
+包含元素边框属性的边界线，如果元素的边框为0，那边这个边框就与内边距的边界线重叠。</p>
+  </li>
+  <li>
+    <p>外边距（margin）边界线<br />
+包围着元素外边距区域的边界线，如果元素的外边界为0，那么这个边界线就与边框的边界线重叠。</p>
+  </li>
+</ul>
+
+<p>以上每个边界线都可以细分为上下左右四个方向。</p>
+
+<h3 id="元素的大小">元素的大小</h3>
+
+<p>元素内容区域的大小，即元素的长宽，由许多因素决定：</p>
+
+<ul>
+  <li>元素是否设置了长宽属性</li>
+  <li>元素是否包含内容或者子元素</li>
+  <li>是否为表格元素</li>
+  <li>…</li>
+</ul>
+
+<p>所以，关于元素长宽的问题单独在 <a href="https://www.w3.org/TR/CSS2/visudet.html">visual formatting model details</a>有讨论。</p>
+
+<h3 id="背景色">背景色</h3>
+
+<p>除外边距始终为透明外，其他区域的背景色由元素的 <code class="language-plaintext highlighter-rouge">background</code> 属性来决定。</p>
+
+<h3 id="一个示例">一个示例</h3>
+
+<p>拿 W3C 的示例代码来看看上述概念的具体体现。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"&gt;</span>
+<span class="nt">&lt;HTML&gt;</span>
+  <span class="nt">&lt;HEAD&gt;</span>
+    <span class="nt">&lt;TITLE&gt;</span>Examples of margins, padding, and borders<span class="nt">&lt;/TITLE&gt;</span>
+    <span class="nt">&lt;STYLE</span> <span class="na">type=</span><span class="s">"text/css"</span><span class="nt">&gt;</span>
+      UL { 
+        background: yellow; 
+        margin: 12px 12px 12px 12px;
+        padding: 3px 3px 3px 3px;
+                                     /* No borders set */
+      }
+      LI { 
+        color: white;                /* text color is white */ 
+        background: blue;            /* Content, padding will be blue */
+        margin: 12px 12px 12px 12px;
+        padding: 12px 0px 12px 12px; /* Note 0px padding right */
+        list-style: none             /* no glyphs before a list item */
+                                     /* No borders set */
+      }
+      LI.withborder {
+        border-style: dashed;
+        border-width: medium;        /* sets border width on all sides */
+        border-color: lime;
+      }
+    <span class="nt">&lt;/STYLE&gt;</span>
+  <span class="nt">&lt;/HEAD&gt;</span>
+  <span class="nt">&lt;BODY&gt;</span>
+    <span class="nt">&lt;UL&gt;</span>
+      <span class="nt">&lt;LI&gt;</span>First element of list
+      <span class="nt">&lt;LI</span> <span class="na">class=</span><span class="s">"withborder"</span><span class="nt">&gt;</span>Second element of list is
+           a bit longer to illustrate wrapping.
+    <span class="nt">&lt;/UL&gt;</span>
+  <span class="nt">&lt;/BODY&gt;</span>
+<span class="nt">&lt;/HTML&gt;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>感觉这种大写的标签才是正规的 XML 语言该有的样子。</p>
+</blockquote>
+
+<p>然后下面是它给出的效果图：</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/boxdimeg.png" alt="CSS 盒模型示例" /></p>
+
+<p><em>CSS 盒模型示意</em></p>
+
+<p>我不想吐槽官方文档这个示例图了，显示严重偏色不说，<code class="language-plaintext highlighter-rouge">li</code> 之间的外边距塌缩（margin collapsing，这一概念后面会介绍）从图中硬是看不出来。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/boxdimeg-fixed.png" alt="CSS 盒模型示例" /></p>
+
+<p><em>CSS 盒模型示例</em></p>
+
+<h3 id="外边距属性">外边距属性</h3>
+
+<p>外边距属性包含 <code class="language-plaintext highlighter-rouge">margin-top</code>,<code class="language-plaintext highlighter-rouge">margin-right</code>,<code class="language-plaintext highlighter-rouge">margin-bottom</code>,<code class="language-plaintext highlighter-rouge">margin-left</code> 以及 <code class="language-plaintext highlighter-rouge">margin</code>。其中 <code class="language-plaintext highlighter-rouge">margin</code> 是前四种的一种简写，即可以通过它一次性设置四个方向的外边距属性值。外边距属性适用于所有元素，除了非替代型行内元素。</p>
+
+<p><em>科普小贴士</em></p>
+<blockquote>
+  <p>替代型元素（replaced elements）与非替代型元素（non-replaced elements）。前者指内容不由外部提供的元素，大部分 HTML 元素为这一类。后者是指元素内容由嵌入而来，譬如 img, applet, input, textarea, select 还有 object 等，为典型的替换型元素。</p>
+</blockquote>
+
+<p>需要说明一下的是 <code class="language-plaintext highlighter-rouge">margin</code> 的值。</p>
+
+<ul>
+  <li>如果 <code class="language-plaintext highlighter-rouge">margin</code> 只有一个值，则四个方向都用这个值</li>
+  <li>如果 <code class="language-plaintext highlighter-rouge">margin</code> 只有两个值，则 <code class="language-plaintext highlighter-rouge">margin-top</code> <code class="language-plaintext highlighter-rouge">margin-bottom</code> 合用第一个值， <code class="language-plaintext highlighter-rouge">margin-right</code> <code class="language-plaintext highlighter-rouge">margin-left</code> 合用第二个值</li>
+  <li>如果 <code class="language-plaintext highlighter-rouge">margin</code> 只有三个值，则 <code class="language-plaintext highlighter-rouge">margin-top</code> 使用第一个值，<code class="language-plaintext highlighter-rouge">margin-right</code> 使用第二个值，<code class="language-plaintext highlighter-rouge">margin-bottom</code> 使用第三个值，<code class="language-plaintext highlighter-rouge">margin-left</code> 复制与之对应的 <code class="language-plaintext highlighter-rouge">margin-right</code> 的值<br />
+```css
+margin: 1em 2em 3em;</li>
+</ul>
+
+<p>/<em>相当于：</em>/
+margin-top: 1em;
+margin-right: 2em;
+margin-bottom: 3em;
+margin-left: 2em;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* 如果 `margin` 只有四个值，则四个方向按上右下左的顺序对应取值
+
+#### 外边距的塌缩/ Margin Collapsing
+
+关于外边距，有个有趣的点需要提一下，即外边距的塌缩（margin collapsing）。
+
+毗邻元素或者父子元素间，垂直方向的外边距如果没有边框，内边距等隔开，则两者的外边距会相遇，此时会发生塌缩，合二为一。
+
+下面是个很好的例子，展示了嵌套情况下，垂直方向相遇后塌缩成一个外边距的情况，非常的明显。
+
+```html
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;title&gt;&lt;/title&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;style&gt;
+        .box {
+            margin: 10px;
+        }
+
+        .a {
+            background: #777;
+        }
+
+        .b {
+            background: #999;
+        }
+
+        .c {
+            background: #bbb;
+        }
+
+        .d {
+            background: #ddd;
+        }
+
+        .e {
+            background: #fff;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+    &lt;div class="box a"&gt;
+        &lt;div class="box b"&gt;
+            &lt;div class="box c"&gt;
+                &lt;div class="box d"&gt;
+                    &lt;div class="box e"&gt;
+                        这里嵌套的 div 元素，每个都有 10px 的外边距，且都有不同的背景色，他们垂直方向的外边距会因为 margin collapsing 而塌缩成一个，水平方向的外边距则不会。
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/margin-collapsing.png" alt="外边距的塌缩" /></p>
+
+<p><em>外边距的塌缩</em></p>
+
+<p>从上面提到的条件来看，之所以发生塌缩，是因为两个外边距直接相遇，而中间没有阻拦。如果想防止塌缩，那么思路就很简单了，为每个元素设置边框，或者内边距都可以。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.box</span> <span class="p">{</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-box-model/assets/margin-collapsing-fixed-with-border.png" alt="使用边框修复外边距的塌缩" /></p>
+
+<p><em>使用边框修复外边距的塌缩</em></p>
+
+<p>另外，绝对或相对定位，发生浮动这些元素，不会发生外边距的塌缩。</p>
+
+<p>两个外边距发生塌缩的必要条件是：</p>
+
+<ul>
+  <li>都属于未脱离文档流（in flow）的<a href="https://www.w3.org/TR/CSS2/visuren.html#block-boxes">块级元素</a>，且在同<a href="https://www.w3.org/TR/CSS2/visuren.html#block-formatting">一块级格式上下文</a>。</li>
+  <li>中间没有行级盒子（line box），浮动清除（clear），内边距（padding）或者边框（border）隔开</li>
+  <li>两者都属于垂直方向且满足毗邻的条件，即无论是父子包含关系或者兄弟毗邻关系，需要两者直接相遇的情况
+    <ul>
+      <li>父容器上外边距与子元素的上外边距</li>
+      <li>元素下外边距与毗邻的下一个兄妹元素的上外边距</li>
+      <li>父容器下外边距与子元素下外边距</li>
+      <li>元素本身的上外边距与下外边距，在自身高度为0的时候，即空元素</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="塌缩时合并后的外边距计算规则">塌缩时合并后的外边距计算规则</h4>
+
+<ul>
+  <li>正常情况两个外边距合并时取值较大的那个</li>
+  <li>如果其中一个是负值，则合并后的外边距为两者相加的结果</li>
+  <li>如果两者都是负值则取绝对值较大的</li>
+</ul>
+
+<p><em>科普小贴士</em></p>
+<blockquote>
+  <p>in flow 与 out of flow
+根节点元素（前端页面中一般为 html）, 绝对及固定定位的元素，属于脱离文档流的情况，叫作 out of flow。没有脱离文档流的元素叫作 in flow。</p>
+</blockquote>
+
+<blockquote>
+  <p><a href="https://stackoverflow.com/a/32022060/1553656">行级盒子（line box）</a>。 指的是一行内的矩形区域。如果多个行内元素无法在一行显示，则会形成多行，每一行是一个 line box。最好的例子是段落（p 标签），多行情况下它就是一个垂直方向上叠加的多个行级盒子。</p>
+</blockquote>
+
+<h3 id="内边距属性">内边距属性</h3>
+
+<p>与外边距不同，它的值不能为负数。其他与外边距类似，<code class="language-plaintext highlighter-rouge">padding</code> 是四个方向的缩略形式。其接收到的值与四个方向的映射关系与外边距的规则是一致的。</p>
+
+<p>内边距区域的颜色由元素的 <code class="language-plaintext highlighter-rouge">background</code> 属性指定。</p>
+
+<h3 id="边框属性">边框属性</h3>
+
+<p>边框属性包括宽度（width）, 颜色（color）及样式（style）。</p>
+
+<h3 id="border-width">border-width</h3>
+
+<p><code class="language-plaintext highlighter-rouge">border-width</code>指定的是边框的宽度。除了常规的值外，还有预设三个语义化的值 <code class="language-plaintext highlighter-rouge">thin</code>，<code class="language-plaintext highlighter-rouge">medium</code> 和 <code class="language-plaintext highlighter-rouge">thick</code>，具体的效果各浏览器的实现会有差异。</p>
+
+<p>同样分为四个方向上的分值：</p>
+
+<ul>
+  <li>border-top-width</li>
+  <li>border-right-width</li>
+  <li>border-bottom-width</li>
+  <li>border-left-width</li>
+</ul>
+
+<p>因为 <code class="language-plaintext highlighter-rouge">border-width</code> 是上述四个分量的缩写，可以通过 <code class="language-plaintext highlighter-rouge">border-width</code> 一次性指定。接收到值的个数与四个方向上的映射规则同外边距属性。</p>
+
+<h3 id="border-color">border-color</h3>
+
+<p>同样，<code class="language-plaintext highlighter-rouge">border-color</code> 也是分为四个方向上的分量值，可以通过 <code class="language-plaintext highlighter-rouge">border-color</code> 这一简写形式一次性指定。</p>
+
+<p>当元素没有显式指定时，其值沿用元素的 <code class="language-plaintext highlighter-rouge">color</code> 值。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">p</span> <span class="p">{</span> 
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span> 
+  <span class="nl">background</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span> 
+  <span class="nl">border</span><span class="p">:</span> <span class="nb">solid</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>上面 <code class="language-plaintext highlighter-rouge">p</code> 标签的边框颜色将会是红色。</p>
+
+<h3 id="border-style">border-style</h3>
+
+<p>边框的样式，它的值有如下几种：</p>
+
+<ul>
+  <li>none - 无边框，此时边框宽度为0。在有冲突的值被设置的情况下，它有最低的优先级。</li>
+  <li>hidden - 同 <code class="language-plaintext highlighter-rouge">none</code>，但在冲突情况下有最高优先级。</li>
+  <li>dotted - 由圆点排列围绕而成的边。</li>
+  <li>dashed - 虚线样式。</li>
+  <li>solid - 实线。</li>
+  <li>double - 双实线，两条线及之间的间距加起来的宽度为 border-wdith。</li>
+  <li>groove - 雕刻样式，凹陷的样式，与 ridge 相反。</li>
+  <li>ridge - 浮雕样式，突起状，与 groove 相反。</li>
+  <li>inset - 内边线样式。</li>
+  <li>outset - 外边线样式。</li>
+</ul>
+
+<p>由于 <code class="language-plaintext highlighter-rouge">border-style</code> 初始值是 <code class="language-plaintext highlighter-rouge">none</code>，所以没有显式指定元素的 <code class="language-plaintext highlighter-rouge">border-style</code> 时，是看不见边框的。</p>
+
+<p>对于以上的 <code class="language-plaintext highlighter-rouge">border-color</code>，<code class="language-plaintext highlighter-rouge">border-width</code> 及 <code class="language-plaintext highlighter-rouge">border-style</code>，可以通过 <code class="language-plaintext highlighter-rouge">border</code> 属性来一次性指定。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>border: &lt;br-width&gt; || &lt;br-style&gt; || &lt;color&gt;
+</code></pre></div></div>
+
+<p>与 <code class="language-plaintext highlighter-rouge">margin</code>，<code class="language-plaintext highlighter-rouge">padding</code>不同的是，<code class="language-plaintext highlighter-rouge">border</code> 是一次性指定四个方向的值，如果需要设置某个方向的值，只能单独使用该方向的边框属性来设置。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://www.w3.org/TR/CSS2/box.html#img-boxdim">Box model</a></li>
+  <li><a href="https://www.w3.org/TR/CSS2/visuren.html">Visual formatting model</a></li>
+  <li><a href="https://stackoverflow.com/questions/12468176/what-is-a-non-replaced-inline-element">what is a non-replaced inline element?</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Block_formatting_context">Block formatting context</a></li>
+  <li><a href="https://stackoverflow.com/a/40325328/1553656">In the CSS Visual Formatting Model, what does “the flow of an element” mean?</a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2017/11/28/%E6%AD%A3%E7%A1%AE%E5%9C%B0%E4%BD%BF%E7%94%A8-Angular-Directive-%E4%B8%AD%E7%9A%84-compile-controller-%E4%B8%8E-link/" data-toggle="tooltip" data-placement="top" title="正确地使用 Angular Directive 中的 compile，controller 与 link">
+                        Previous<br>
+                        <span>正确地使用 Angular Directive 中的 compile，controller 与 link</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2017/11/30/apply-vs-call-vs-bind/" data-toggle="tooltip" data-placement="top" title="apply vs call vs bind ">
+                        Next<br>
+                        <span>apply vs call vs bind </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

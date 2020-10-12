@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="「SF-LC」2 Induction - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="Review (only in slide)
+">
+    
+    <meta property="article:published_time" content="2019-01-02T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Hux">
+    
+    
+    <meta property="article:tag" content="LF (逻辑基础)">
+    
+    <meta property="article:tag" content="SF (软件基础)">
+    
+    <meta property="article:tag" content="Coq">
+    
+    <meta property="article:tag" content="笔记">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/01/02/sf-lf-02-induction/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>「SF-LC」2 Induction - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/01/02/sf-lf-02-induction/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top invert">
+    
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header style-text" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29" title="LF (逻辑基础)">LF (逻辑基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29" title="SF (软件基础)">SF (软件基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=Coq" title="Coq">Coq</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+                        
+                    </div>
+                    <h1>「SF-LC」2 Induction</h1>
+                    
+                    <h2 class="subheading">Logical Foundations - Proof by Induction</h2>
+                    <span class="meta">Posted by Hux on January 2, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h2 id="review-only-in-slide">Review (only in slide)</h2>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">review2</span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">b</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="no">orb</span><span class="w"> </span><span class="no">true</span><span class="w"> </span><span class="no">b</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">true</span><span class="pi">.</span><span class="w">
+</span><span class="k">Theorem</span><span class="w"> </span><span class="no">review3</span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">b</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="no">orb</span><span class="w"> </span><span class="no">b</span><span class="w"> </span><span class="no">true</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">true</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Whether or not it can be just <code class="language-plaintext highlighter-rouge">simpl.</code> depending on the definition of <code class="language-plaintext highlighter-rouge">orb</code>.</p>
+
+<p>In <em>Proof Engineering</em>, we probably won’t need to include <code class="language-plaintext highlighter-rouge">review2</code> but need to include <code class="language-plaintext highlighter-rouge">review3</code> in library.</p>
+
+<blockquote>
+  <p>Why we have <code class="language-plaintext highlighter-rouge">simpl.</code> but not <code class="language-plaintext highlighter-rouge">refl.</code> ?</p>
+</blockquote>
+
+<h2 id="proving-0-is-a-neutral-element-for--additive-identity">Proving <code class="language-plaintext highlighter-rouge">0</code> is a “neutral element” for <code class="language-plaintext highlighter-rouge">+</code> (additive identity)</h2>
+
+<h3 id="proving-0--n--n">Proving <code class="language-plaintext highlighter-rouge">0 + n = n</code></h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">plus_O_n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">forall</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="o">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">n</span><span class="pi">.</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">intros</span><span class="w"> </span><span class="no">n</span><span class="pi">.</span><span class="w"> </span><span class="kp">simpl</span><span class="pi">.</span><span class="w"> </span><span class="ne">reflexivity</span><span class="pi">.</span><span class="w"> </span><span class="k">Qed</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This can be simply proved by <em>simplication</em> bcuz the definition of <code class="language-plaintext highlighter-rouge">+</code> is defined by pattern matching against 1st operand:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Fixpoint</span><span class="w"> </span><span class="no">plus</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">m</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="kr">match</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="kp">with</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">O</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">m</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">S</span><span class="w"> </span><span class="no">n'</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">S</span><span class="w"> </span><span class="o">(</span><span class="no">plus</span><span class="w"> </span><span class="no">n'</span><span class="w"> </span><span class="no">m</span><span class="o">)</span><span class="w">
+  </span><span class="kr">end</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>We can observe that if <code class="language-plaintext highlighter-rouge">n</code> is <code class="language-plaintext highlighter-rouge">0</code>(<code class="language-plaintext highlighter-rouge">O</code>), no matter <code class="language-plaintext highlighter-rouge">m</code> is, it returns <code class="language-plaintext highlighter-rouge">m</code> as is.</p>
+
+<h3 id="proving-n--0--n">Proving <code class="language-plaintext highlighter-rouge">n + 0 = n</code></h3>
+
+<h4 id="1st-try-simplication">1st try: Simplication</h4>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">plus_O_n_1</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">forall</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="o">,</span><span class="w">  </span><span class="no">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">n</span><span class="pi">.</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">intros</span><span class="w"> </span><span class="no">n</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">simpl</span><span class="pi">.</span><span class="w"> </span><span class="c">(* Does nothing! *)</span><span class="w">
+</span><span class="no">Abort</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This cannot be proved by <em>simplication</em> bcuz <code class="language-plaintext highlighter-rouge">n</code> is unknown so <em>unfold</em> the definition <code class="language-plaintext highlighter-rouge">+</code> won’t be able to simplify anything.</p>
+
+<h4 id="2nd-try-case-analysis">2nd try: Case Analysis</h4>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">plus_n_O_2</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">n</span><span class="p">:</span><span class="no">nat</span><span class="o">,</span><span class="w">
+  </span><span class="no">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">intros</span><span class="w"> </span><span class="no">n</span><span class="pi">.</span><span class="w"> </span><span class="kp">destruct</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="o">[|</span><span class="w"> </span><span class="no">n'</span><span class="o">]</span><span class="w"> </span><span class="no">eqn</span><span class="p">:</span><span class="no">E</span><span class="pi">.</span><span class="w">
+  </span><span class="o">-</span><span class="w"> </span><span class="c">(* n = 0 *)</span><span class="w">
+    </span><span class="ne">reflexivity</span><span class="pi">.</span><span class="w"> </span><span class="c">(* so far so good... *)</span><span class="w">
+  </span><span class="o">-</span><span class="w"> </span><span class="c">(* n = S n' *)</span><span class="w">
+    </span><span class="kp">simpl</span><span class="pi">.</span><span class="w"> </span><span class="c">(* ...but here we are stuck again *)</span><span class="w">
+</span><span class="no">Abort</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Our 2nd try is to use <em>case analysis</em> (<code class="language-plaintext highlighter-rouge">destruct</code>), but the proof stucks in <em>inductive case</em> since <code class="language-plaintext highlighter-rouge">n</code> can be infinitely large (destructed)</p>
+
+<h4 id="induction-to-the-resucue">Induction to the resucue</h4>
+
+<blockquote>
+  <p>To prove interesting facts about numbers, lists, and other inductively defined sets, we usually need a more powerful reasoning principle: induction.</p>
+</blockquote>
+
+<p>Princeple of induction over natural numbers (i.e. <em>mathematical induction</em>)</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">P</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span><span class="p">;</span><span class="w"> </span><span class="p">∀</span><span class="no">n'</span><span class="w"> </span><span class="no">P</span><span class="o">(</span><span class="no">n'</span><span class="o">)</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">P</span><span class="o">(</span><span class="no">S</span><span class="w"> </span><span class="no">n'</span><span class="o">)</span><span class="w">  </span><span class="o">====&gt;</span><span class="w">  </span><span class="no">P</span><span class="o">(</span><span class="no">n</span><span class="o">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>In Coq, like <code class="language-plaintext highlighter-rouge">destruct</code>, <code class="language-plaintext highlighter-rouge">induction</code> break <code class="language-plaintext highlighter-rouge">P(n)</code> into 2 subgoals:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">plus_n_O</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">n</span><span class="p">:</span><span class="no">nat</span><span class="o">,</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">intros</span><span class="w"> </span><span class="no">n</span><span class="pi">.</span><span class="w"> </span><span class="kp">induction</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="o">[|</span><span class="w"> </span><span class="no">n'</span><span class="w"> </span><span class="no">IHn'</span><span class="o">].</span><span class="w">
+  </span><span class="o">-</span><span class="w"> </span><span class="c">(* n = 0 *)</span><span class="w"> </span><span class="ne">reflexivity</span><span class="pi">.</span><span class="w">
+  </span><span class="o">-</span><span class="w"> </span><span class="c">(* n = S n' *)</span><span class="w"> </span><span class="kp">simpl</span><span class="pi">.</span><span class="w"> </span><span class="kp">rewrite</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="no">IHn'</span><span class="pi">.</span><span class="w"> </span><span class="ne">reflexivity</span><span class="pi">.</span><span class="w"> </span><span class="k">Qed</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="proving-n---n--0">Proving <code class="language-plaintext highlighter-rouge">n - n = 0</code></h2>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">minus_diag</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">n</span><span class="o">,</span><span class="w">
+  </span><span class="no">minus</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="c">(* WORKED IN CLASS *)</span><span class="w">
+  </span><span class="kp">intros</span><span class="w"> </span><span class="no">n</span><span class="pi">.</span><span class="w"> </span><span class="kp">induction</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="o">[|</span><span class="w"> </span><span class="no">n'</span><span class="w"> </span><span class="no">IHn'</span><span class="o">].</span><span class="w">
+  </span><span class="o">-</span><span class="w"> </span><span class="c">(* n = 0 *)</span><span class="w">
+    </span><span class="kp">simpl</span><span class="pi">.</span><span class="w"> </span><span class="ne">reflexivity</span><span class="pi">.</span><span class="w">
+  </span><span class="o">-</span><span class="w"> </span><span class="c">(* n = S n' *)</span><span class="w">
+    </span><span class="kp">simpl</span><span class="pi">.</span><span class="w"> </span><span class="kp">rewrite</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">IHn'</span><span class="pi">.</span><span class="w"> </span><span class="ne">reflexivity</span><span class="pi">.</span><span class="w"> </span><span class="k">Qed</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Noticed that the definition of <code class="language-plaintext highlighter-rouge">minus</code>:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">    </span><span class="k">Fixpoint</span><span class="w"> </span><span class="no">minus</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="w"> </span><span class="no">m</span><span class="p">:</span><span class="no">nat</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+      </span><span class="kr">match</span><span class="w"> </span><span class="no">n</span><span class="o">,</span><span class="w"> </span><span class="no">m</span><span class="w"> </span><span class="kp">with</span><span class="w">
+      </span><span class="o">|</span><span class="w"> </span><span class="no">O</span><span class="w">   </span><span class="o">,</span><span class="w"> </span><span class="p">_</span><span class="w">    </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">O</span><span class="w">
+      </span><span class="o">|</span><span class="w"> </span><span class="no">S</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="o">,</span><span class="w"> </span><span class="no">O</span><span class="w">    </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">n</span><span class="w">
+      </span><span class="o">|</span><span class="w"> </span><span class="no">S</span><span class="w"> </span><span class="no">n'</span><span class="o">,</span><span class="w"> </span><span class="no">S</span><span class="w"> </span><span class="no">m'</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">minus</span><span class="w"> </span><span class="no">n'</span><span class="w"> </span><span class="no">m'</span><span class="w">
+      </span><span class="kr">end</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="rewrite"><code class="language-plaintext highlighter-rouge">rewrite</code></h2>
+
+<p><code class="language-plaintext highlighter-rouge">rewrite</code> would do a (DFS) preorder traversal in the syntax tree.</p>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/01/01/sf-lf-01-basics/" data-toggle="tooltip" data-placement="top" title="「SF-LC」1 Basics">
+                        Previous<br>
+                        <span>「SF-LC」1 Basics</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/01/03/sf-lf-03-list/" data-toggle="tooltip" data-placement="top" title="「SF-LC」3 List">
+                        Next<br>
+                        <span>「SF-LC」3 List</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="MySQL 中的日期时间类型 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="MySQL 中的日期时间类型
+
+日期时间类型中包含以下几种数据类型：
+
+
+  DATE
+  TIME
+  DATETIME
+  TIMESTAMP
+  YEAR
+
+
+各类型都有具体的取值范围，超出或非法的其他值时，MySQL 会回退到 0。TIMESTAMP 类型是个例外，给它设置一个超出范围的值时，将保存上该类型允许的最大值。
+
+MySQL 按标准格式 YYYY-MM-DD hh:mm:s...">
+    
+    <meta property="article:published_time" content="2019-05-01T07:05:00Z">
+    
+    
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/05/01/MySQL-%E4%B8%AD%E7%9A%84%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>MySQL 中的日期时间类型 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/05/01/MySQL-%E4%B8%AD%E7%9A%84%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>MySQL 中的日期时间类型</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on May 1, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="mysql-中的日期时间类型">MySQL 中的日期时间类型</h1>
+
+<p>日期时间类型中包含以下几种数据类型：</p>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/datetime.html">DATE</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/time.html">TIME</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/datetime.html">DATETIME</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/datetime.html">TIMESTAMP</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/year.html">YEAR</a></li>
+</ul>
+
+<p>各类型都有具体的取值范围，超出或非法的其他值时，MySQL 会回退到 0。TIMESTAMP 类型是个例外，给它设置一个超出范围的值时，将保存上该类型允许的最大值。</p>
+
+<p>MySQL 按标准格式 <code class="language-plaintext highlighter-rouge">YYYY-MM-DD hh:mm:ss[.fraction]</code> 输出日期时间，但设置或进行日期时间相关的比较时却支持灵活的多种格式，会自动解析。具体支持的输入格式可参见 <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-literals.html">Section 9.1.3, “Date and Time Literals”</a>。其中 <code class="language-plaintext highlighter-rouge">fraction</code> 部分为秒后面的小数部分，取值范围为 0~6 位。</p>
+
+<p>虽然 MySQL 支持多种格式进行日期时间的设置，但日期部分要求必须是 年-月-日 的形式才能正确解析。比如 <code class="language-plaintext highlighter-rouge">98-09-04</code> 是按年月日顺序解析的，而不是英文里常用的月日年，或者日月年。</p>
+
+<p>年在只给了两位数的情况下，MySQL 尝试使用以下规则来补全：</p>
+<ul>
+  <li>给定的两位数为 70~99 时解析成 1970 ~ 1999。</li>
+  <li>给定为 00 ~ 69 时解析成 2000 ~ 2069。</li>
+</ul>
+
+<p>所以，为了避免不可预测的结果，使用时还是指定全一些。</p>
+
+<ul>
+  <li>在需要使用数字的语境下，MySQL 会将日期时间自动转成数字。同理，在需要日期时间的相关操作语境下，会尝试将数字解析成日期时间。</li>
+  <li>通过设置 MySQL 相关参数，日期类型可保存原本非法的值，比如开启 <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates">ALLOW_INVALID_DATES</a> 设置项时，可设置日期类型保存一个 <code class="language-plaintext highlighter-rouge">2009-11-31</code> 值，但正常情况下我们知道 11 月哪来什么 31 号。此时 MySQL 仅仅只是不检查月分与日期的关联性，但月分的取值范围 1~12 及日期的取值范围 1~31 还是要单独各自做校验的。</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; INSERT INTO todo <span class="o">(</span>title,created_on<span class="o">)</span> VALUES <span class="o">(</span><span class="s1">'blah'</span>,<span class="s1">'2019-09-31'</span><span class="o">)</span><span class="p">;</span>
+ERROR 1292 <span class="o">(</span>22007<span class="o">)</span>: Incorrect <span class="nb">date </span>value: <span class="s1">'2019-09-31'</span> <span class="k">for </span>column <span class="s1">'created_on'</span> at row 1
+
+mysql&gt; SET SESSION sql_mode <span class="o">=</span> <span class="s1">'ALLOW_INVALID_DATES'</span><span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+
+mysql&gt; INSERT INTO todo <span class="o">(</span>title,created_on<span class="o">)</span> VALUES <span class="o">(</span><span class="s1">'blah'</span>,<span class="s1">'2019-09-31'</span><span class="o">)</span><span class="p">;</span>
+Query OK, 1 row affected, 1 warning <span class="o">(</span>0.01 sec<span class="o">)</span>
+mysql&gt; SELECT <span class="k">*</span> FROM todo<span class="p">;</span>
++----+------+------------+
+| <span class="nb">id</span> | title | created_on    |
++----+------+------------+
+|  1 | blah | 2019-09-31 |
++----+------+------------+
+1 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>某些场景下你可能需要保存部分日期，比如用户只输入了年没输入月日。所以 MySQL 是支持将月日设置成 0，比如 <code class="language-plaintext highlighter-rouge">2019-00-00</code>。但这种情况下就无法从日期相关的操作中获得到准确的结果，比如使用 <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-sub"><code class="language-plaintext highlighter-rouge">DATE_SUB()</code></a> 或 <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-add"><code class="language-plaintext highlighter-rouge">DATE_ADD()</code></a> 函数时。禁用月日的零值可通过开启 MySQL 的 <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_no_zero_in_date"><code class="language-plaintext highlighter-rouge">NO_ZERO_IN_DATE</code></a> 模式。</p>
+
+<p>除了月日可零，MySQL 还支持设置年月日都零的值 <code class="language-plaintext highlighter-rouge">0000-00-00</code>，对于日期非必填的情况比较有用，因为此时它比单纯的 <code class="language-plaintext highlighter-rouge">NULL</code> 更有语义。可通过开启 MySQL 的 <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_no_zero_date">NO_ZERO_DATE</a> 模式来禁用这个全零的值。</p>
+
+<p>各日期时间零值格式如下，但实际时用时，直接简写成一个 0 效果是等效的。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Data Type</th>
+      <th>“Zero” Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DATE</td>
+      <td>‘0000-00-00’</td>
+    </tr>
+    <tr>
+      <td>TIME</td>
+      <td>‘00:00:00’</td>
+    </tr>
+    <tr>
+      <td>DATETIME</td>
+      <td>‘0000-00-00 00:00:00’</td>
+    </tr>
+    <tr>
+      <td>TIMESTAMP</td>
+      <td>‘0000-00-00 00:00:00’</td>
+    </tr>
+    <tr>
+      <td>YEAR</td>
+      <td>0000</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="datedatetime及-timestamp">DATE，DATETIME，及 TIMESTAMP</h2>
+
+<p>三者具有相关性，都支持多种格式的自动解析，详见 <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-literals.html">Date and Time Literals</a>。</p>
+
+<p><code class="language-plaintext highlighter-rouge">DATE</code> 日期格式不带时间 <code class="language-plaintext highlighter-rouge">TIME</code> 部分，查询时输出格式为 <code class="language-plaintext highlighter-rouge">YYYY-MM-DD</code>，取值范围为 <code class="language-plaintext highlighter-rouge">1000-01-01</code> 到 <code class="language-plaintext highlighter-rouge">9999-12-31</code>。</p>
+
+<p><code class="language-plaintext highlighter-rouge">DATETIME</code> 包含日期及时间，输出格式为 <code class="language-plaintext highlighter-rouge">YYYY-MM-DD hh:mm:ss</code>，取值范围 <code class="language-plaintext highlighter-rouge">1000-01-01 00:00:00</code> 到 <code class="language-plaintext highlighter-rouge">9999-12-31 23:59:59</code>。</p>
+
+<p><code class="language-plaintext highlighter-rouge">TIMESTAMP</code> 同 <code class="language-plaintext highlighter-rouge">DATETIME</code>，但取值范围基于 UTC 时间，较 <code class="language-plaintext highlighter-rouge">DATETIME</code> 要小，为 <code class="language-plaintext highlighter-rouge">1970-01-01 00:00:01</code> UTC 到 <code class="language-plaintext highlighter-rouge">2038-01-19 03:14:07</code> UTC。所以使用 TIMESTAMP 格式的时间，到 2038 年会溢出，这就是 <a href="https://en.wikipedia.org/wiki/Year_2038_problem">Year 2038 problem</a>。关于该问题的讨论和解决可参见这个 <a href="https://stackoverflow.com/a/2012620/1553656">StackOverflow 的回答</a>。</p>
+
+<p>既然如此，为何要使用这个取值范围更小的呢。<code class="language-plaintext highlighter-rouge">TIMESTAMP</code> 存储的值是带时区的。在存储时会根据当前时区转成 UTC（universal time zone） 存储，查询时也会根据时区从 UTC 转换到具体的时间。对于支持多语及国际化全球部署的应用来说，显得尤为方便。需要注意的是，这里操作基于的时区默认为服务器的时区，可通过改变 <a href="https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_time_zone"><code class="language-plaintext highlighter-rouge">time_zone</code></a> <code class="language-plaintext highlighter-rouge">SET GLOBAL time_zone=time_zone</code> 来修改。时区的设置也可以是以连接为单位，这样来自不同时区的请求可得到不同的时间。</p>
+
+<p><code class="language-plaintext highlighter-rouge">TIMESTAMP</code> 和 <code class="language-plaintext highlighter-rouge">DATETIME</code> 都可包含至多 6 位的小数来表示时间中毫秒（microseconds）的部分。所以，带上毫秒时完整的格式是 <code class="language-plaintext highlighter-rouge">YYYY-MM-DD hh:mm:ss[.fraction]</code>。前者取值范围为 <code class="language-plaintext highlighter-rouge">1970-01-01 00:00:01.000000</code> 到 <code class="language-plaintext highlighter-rouge">2038-01-19 03:14:07.999999</code>，后者为 <code class="language-plaintext highlighter-rouge">1000-01-01 00:00:00.000000</code> 到 <code class="language-plaintext highlighter-rouge">9999-12-31 23:59:59.999999</code>。</p>
+
+<p>在写入时，对于非法的日期时间值，将自动存成零值，即 ‘0000-00-00’ 或 ‘0000-00-00 00:00:00’。</p>
+
+<p>关于日期时间需要注意的点：</p>
+
+<ul>
+  <li>因为 MySQL 支持比较宽松的格式来设置日期时间，所以理论上你可以用你想用的值来做为数字之间的分界符，但使用时需要关注其解析的原理。比如给一个日期格式的列设置 <code class="language-plaintext highlighter-rouge">10:11:12</code>，虽然这个值看起来像时间类型，但还是可以正确在被解析成目标列的格式，即日期。如果这这个日期列设置 <code class="language-plaintext highlighter-rouge">10:45:15</code> 则会认为是非法值，因为 <code class="language-plaintext highlighter-rouge">45</code> 不是一个合法的月份值，所以存储时变成零值 <code class="language-plaintext highlighter-rouge">0000-00-00</code>。</li>
+  <li>日期时间与毫秒的分界符必需是小数点。</li>
+  <li>默认 MySQL 除了检查日月值是否有有效范围 1~ 31,1~12。还会将两者结合进来检查，比如 4 月没有 31。所以对于日期 <code class="language-plaintext highlighter-rouge">2004-04-31</code> 算是非法的，会变成零值 <code class="language-plaintext highlighter-rouge">0000-00-00</code>。如果不需要这样的约束检查，可开启 MySQL 的 <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates"><code class="language-plaintext highlighter-rouge">ALLOW_INVALID_DATES</code></a> 模式。</li>
+</ul>
+
+<h3 id="日期时间的自动初始化及更新">日期时间的自动初始化及更新</h3>
+
+<p><code class="language-plaintext highlighter-rouge">TIMESTAMP</code> 和 <code class="language-plaintext highlighter-rouge">DATETIME</code> 还支持自动初始化（auto-initialized）和更新到当前时间（auto-updated）。</p>
+
+<ul>
+  <li>创建表定义列时，指定 <code class="language-plaintext highlighter-rouge">DEFAULT CURRENT_TIMESTAMP</code> 来使相应的日期时间列自动初始化。</li>
+  <li>指定 <code class="language-plaintext highlighter-rouge">ON UPDATE CURRENT_TIMESTAMP</code> 来使相应的日期时间列自动更新。</li>
+</ul>
+
+<p>两者可同时作用于一个日期时间列，表示插入记录时自动初始化成当前时间，后续记录更新时自动更新到当前时间。</p>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">CURRENT_TIMESTAMP</code> 指代当前时间，与其有相同效果的还有 <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_current-timestamp"><code class="language-plaintext highlighter-rouge">CURRENT_TIMESTAMP()</code></a>, <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_now"><code class="language-plaintext highlighter-rouge">NOW()</code></a>, <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_localtime"><code class="language-plaintext highlighter-rouge">LOCALTIME</code></a>, <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_localtime"><code class="language-plaintext highlighter-rouge">LOCALTIME()</code></a>, <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_localtimestamp"><code class="language-plaintext highlighter-rouge">LOCALTIMESTAMP</code></a> 以及 <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_localtimestamp"><code class="language-plaintext highlighter-rouge">LOCALTIMESTAMP()</code></a>。</p>
+
+<p><code class="language-plaintext highlighter-rouge">DEFAULT</code> 除了可指定成当前时间外，也可指定一个任意的固定值，比如 <code class="language-plaintext highlighter-rouge">DEFAULT 0</code> 或 `DEFAULT ‘2000-01-01 00:00:00’。</p>
+
+<p>对于指定了自动初始化的列，插入时如果没指定该列的值，则会自动设置为当前的时间。</p>
+
+<p>对于指定为自动更新的列，一旦一条记录中有字段变更，该日期会自动更新成变更时的时间。如果不想它更新，可在插入其他值时手动设置一下该日期列为原有的值，让其保持不变。</p>
+
+<p><code class="language-plaintext highlighter-rouge">TIMESTAMP</code> 和 <code class="language-plaintext highlighter-rouge">DATETIME</code> 在列的定义时，如果指定了小数部分，那么在配合使用 <code class="language-plaintext highlighter-rouge">CURRENT_TIMESTAMP(fsp)</code> 时，这个小数部分的精度需要保持一致。比如：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- ✅</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t1</span> <span class="p">(</span>
+  <span class="n">ts</span> <span class="nb">TIMESTAMP</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CURRENT_TIMESTAMP</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- 🚨</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t1</span> <span class="p">(</span>
+  <span class="n">ts</span> <span class="nb">TIMESTAMP</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CURRENT_TIMESTAMP</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="time">TIME</h2>
+
+<p>时间 <code class="language-plaintext highlighter-rouge">TIME</code> 格式即日期时间中时间的部分，输出格式为 <code class="language-plaintext highlighter-rouge">hh:mm:ss</code> 或时间较大时为 <code class="language-plaintext highlighter-rouge">hhh:mm:ss</code>，取值范围 <code class="language-plaintext highlighter-rouge">-838:59:59</code> 到 <code class="language-plaintext highlighter-rouge">838:59:59</code>。同样地，也是支持带至多 6 位小数表示毫秒。</p>
+
+<p>设置时也是支持将多种格式自动解析。对于带冒号的情况，比如 <code class="language-plaintext highlighter-rouge">11:12</code> 解析成 <code class="language-plaintext highlighter-rouge">11:12:00</code> 而不是 <code class="language-plaintext highlighter-rouge">00:11:12</code>。不带冒号的情况，将最右边的两位数字解析成秒（按逝去的时间来解析），比如 <code class="language-plaintext highlighter-rouge">'1112'</code> 和 <code class="language-plaintext highlighter-rouge">1112</code> 不是 <code class="language-plaintext highlighter-rouge">11:12:00</code> 而会解析成 <code class="language-plaintext highlighter-rouge">00:11:12</code>。同理，<code class="language-plaintext highlighter-rouge">'12'</code> 和 <code class="language-plaintext highlighter-rouge">12 </code> 会解析成 <code class="language-plaintext highlighter-rouge">00:00:12</code>。</p>
+
+<h2 id="year">YEAR</h2>
+
+<p><code class="language-plaintext highlighter-rouge">YEAR</code> 表示日期中年的部分，是一个 1 字节大小的类型，可通过 <code class="language-plaintext highlighter-rouge">YEAR</code> 或 <code class="language-plaintext highlighter-rouge">YEAR(4)</code> 来声明，其展示宽度（display width）为 4。查询时输出格式为 <code class="language-plaintext highlighter-rouge">YYYY</code>，取值范围 1901 到 2155。 <code class="language-plaintext highlighter-rouge">0000</code> 也是合法的值。</p>
+
+<p>支持使用以下格式进行设置：</p>
+<ul>
+  <li>使用 1901 ~ 2155 间的四位数字值。</li>
+  <li>或将上面的数字以字符串形式给定。</li>
+  <li>1 ~ 99 之间的数字，此时 1 ~ 69 解析成 2001 ~ 2069，70 ~ 99 解析成 1970 ~ 1999.</li>
+  <li>其他可返回合法值的方法，比如 <a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_now"><code class="language-plaintext highlighter-rouge">NOW()</code></a>。</li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-types.html">11.3 Date and Time Types</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates">5.1.11 Server SQL Modes</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-literals.html">9.1.3 Date and Time Literals</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Year_2038_problem">Year 2038 problem</a></li>
+  <li><a href="https://stackoverflow.com/questions/409286/should-i-use-the-datetime-or-timestamp-data-type-in-mysql">Should I use the datetime or timestamp data type in MySQL?</a></li>
+  <li><a href="https://www.eversql.com/mysql-datetime-vs-timestamp-column-types-which-one-i-should-use/">MySQL Datetime vs Timestamp column types – which one I should use?</a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/04/30/MySQL-%E4%B8%AD%E7%9A%84%E6%95%B0%E5%AD%97%E7%B1%BB%E5%9E%8B/" data-toggle="tooltip" data-placement="top" title="MySQL 中的数字类型">
+                        Previous<br>
+                        <span>MySQL 中的数字类型</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/05/02/k-sum-%E9%97%AE%E9%A2%98/" data-toggle="tooltip" data-placement="top" title="k-sum 问题">
+                        Next<br>
+                        <span>k-sum 问题</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

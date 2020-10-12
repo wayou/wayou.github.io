@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="「SF-LC」9 ProofObjects - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  “Algorithms are the computational content of proofs.” —Robert Harper
+
+">
+    
+    <meta property="article:published_time" content="2019-01-09T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Hux">
+    
+    
+    <meta property="article:tag" content="LF (逻辑基础)">
+    
+    <meta property="article:tag" content="SF (软件基础)">
+    
+    <meta property="article:tag" content="Coq">
+    
+    <meta property="article:tag" content="笔记">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/01/09/sf-lf-09-proof-object/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>「SF-LC」9 ProofObjects - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/01/09/sf-lf-09-proof-object/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top invert">
+    
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header style-text" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29" title="LF (逻辑基础)">LF (逻辑基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29" title="SF (软件基础)">SF (软件基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=Coq" title="Coq">Coq</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+                        
+                    </div>
+                    <h1>「SF-LC」9 ProofObjects</h1>
+                    
+                    <h2 class="subheading">Logical Foundations - The Curry-Howard Correspondence </h2>
+                    <span class="meta">Posted by Hux on January 9, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>“Algorithms are the computational content of proofs.” —Robert Harper</p>
+</blockquote>
+
+<p>So the book material is designed to be gradually reveal the facts that</p>
+<blockquote>
+  <p>Programming and proving in Coq are two sides of the same coin.</p>
+</blockquote>
+
+<p>e.g.</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Inductive</code> is useds for both data types and propositions.</li>
+  <li><code class="language-plaintext highlighter-rouge">-&gt;</code> is used for both type of functions and logical implication.</li>
+</ul>
+
+<p>The fundamental idea of Coq is that:</p>
+
+<blockquote>
+  <p><em>provability</em> in Coq is represented by <em>concrete evidence</em>. When we construct the proof of a basic proposition, we are actually <em>building a tree of evidence</em>, which can be thought of as a data structure.</p>
+</blockquote>
+
+<p>e.g.</p>
+<ul>
+  <li>implication like <code class="language-plaintext highlighter-rouge">A → B</code>, its proof will be an <em>evidence transformer</em>: a recipe for converting evidence for A into evidence for B.</li>
+</ul>
+
+<blockquote>
+  <p>Proving manipulates evidence, much as programs manipuate data.</p>
+</blockquote>
+
+<h2 id="curry-howard-correspondence">Curry-Howard Correspondence</h2>
+
+<blockquote>
+  <p>deep connection between the world of logic and the world of computation:</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>propositions             ~  types
+proofs / evidence        ~  terms / data values 
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">ev_0 : even 0</code></p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ev_0</code> <strong>has type</strong>                             <code class="language-plaintext highlighter-rouge">even 0</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ev_0</code> <strong>is a proof of</strong> / <strong>is evidence for</strong>  <code class="language-plaintext highlighter-rouge">even 0</code></li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">ev_SS : ∀n, even n -&gt; even (S (S n))</code></p>
+<ul>
+  <li>takes a nat <code class="language-plaintext highlighter-rouge">n</code> and evidence for <code class="language-plaintext highlighter-rouge">even n</code> and yields evidence for <code class="language-plaintext highlighter-rouge">even (S (S n))</code>.</li>
+</ul>
+
+<p>This is <em>Props as Types</em>.</p>
+
+<h2 id="proof-objects">Proof Objects</h2>
+
+<p>Proofs are data! We can see the <em>proof object</em> that results from this <em>proof script</em>.</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Print</span><span class="w"> </span><span class="no">ev_4</span><span class="pi">.</span><span class="w">
+</span><span class="c">(* ===&gt; ev_4 = ev_SS 2 (ev_SS 0 ev_0) 
+             : even 4  *)</span><span class="w">
+
+</span><span class="k">Check</span><span class="w"> </span><span class="o">(</span><span class="no">ev_SS</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">(</span><span class="no">ev_SS</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="no">ev_0</span><span class="o">)).</span><span class="w">     </span><span class="c">(* concrete derivation tree, we r explicitly say the number tho *)</span><span class="w">
+</span><span class="c">(* ===&gt; even 4 *)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>These two ways are the same in principle!</p>
+
+<h2 id="proof-scripts">Proof Scripts</h2>
+
+<p><code class="language-plaintext highlighter-rouge">Show Proof.</code>  will show the <em>partially constructed</em> proof terms / objects.
+<code class="language-plaintext highlighter-rouge">?Goal</code> is the <em>unification variable</em>. (the hold we need to fill in to complete the proof)</p>
+
+<p>more complicated in branching cases
+one hole more subgoal</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">ev_4''</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="mi">4</span><span class="o">.</span><span class="w">   </span><span class="c">(*  match? (even 4) *)</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="no">Show</span><span class="w"> </span><span class="k">Proof</span><span class="pi">.</span><span class="w">              </span><span class="c">(*  ?Goal  *)</span><span class="w">
+  </span><span class="kp">apply</span><span class="w"> </span><span class="no">ev_SS</span><span class="pi">.</span><span class="w">
+  </span><span class="no">Show</span><span class="w"> </span><span class="k">Proof</span><span class="pi">.</span><span class="w">              </span><span class="c">(*  (ev_SS 2 ?Goal)  *)</span><span class="w">
+  </span><span class="kp">apply</span><span class="w"> </span><span class="no">ev_SS</span><span class="pi">.</span><span class="w">
+  </span><span class="no">Show</span><span class="w"> </span><span class="k">Proof</span><span class="pi">.</span><span class="w">              </span><span class="c">(*  (ev_SS 2 (ev_SS 0 ?Goal))  *)</span><span class="w">
+  </span><span class="kp">apply</span><span class="w"> </span><span class="no">ev_0</span><span class="pi">.</span><span class="w"> 
+  </span><span class="no">Show</span><span class="w"> </span><span class="k">Proof</span><span class="pi">.</span><span class="w">              </span><span class="c">(*  ?Goal (ev_SS 2 (ev_SS 0 ev_0))  *)</span><span class="w">
+</span><span class="k">Qed</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>Tactic proofs are useful and convenient, but they are not essential: 
+in principle, we can always construct the required evidence by hand</p>
+</blockquote>
+
+<p>Agda doesn’t have tactics built-in. (but also Interactive)</p>
+
+<h2 id="quantifiers-implications-functions">Quantifiers, Implications, Functions</h2>
+
+<p>In Coq’s <em>computational universe</em> (where data structures and programs live), to give <code class="language-plaintext highlighter-rouge">-&gt;</code>:</p>
+<ul>
+  <li>constructors (introduced by <code class="language-plaintext highlighter-rouge">Indutive</code>)</li>
+  <li>functions</li>
+</ul>
+
+<p>in Coq’s <em>logical universe</em> (where we carry out proofs), to give implication:</p>
+<ul>
+  <li>constructors</li>
+  <li>functions!</li>
+</ul>
+
+<p>So instead of writing proof scripts e.g._</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">ev_plus4</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">n</span><span class="o">,</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="o">(</span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="no">n</span><span class="o">).</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">intros</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="no">H</span><span class="pi">.</span><span class="w"> </span><span class="kp">simpl</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">apply</span><span class="w"> </span><span class="no">ev_SS</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">apply</span><span class="w"> </span><span class="no">ev_SS</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">apply</span><span class="w"> </span><span class="no">H</span><span class="pi">.</span><span class="w">
+</span><span class="k">Qed</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>we can give proof object, which is a <em>function</em> here, directly!</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">ev_plus4'</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">n</span><span class="o">,</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="o">(</span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="no">n</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">    </span><span class="c">(* ∀ is syntax for Pi? *)</span><span class="w">
+  </span><span class="kr">fun</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="o">)</span><span class="w">    </span><span class="p">⇒</span><span class="w"> 
+  </span><span class="kr">fun</span><span class="w"> </span><span class="o">(</span><span class="no">H</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="o">)</span><span class="w"> </span><span class="p">⇒</span><span class="w">
+    </span><span class="no">ev_SS</span><span class="w"> </span><span class="o">(</span><span class="no">S</span><span class="w"> </span><span class="o">(</span><span class="no">S</span><span class="w"> </span><span class="no">n</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="no">ev_SS</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="no">H</span><span class="o">).</span><span class="w">
+
+
+</span><span class="k">Definition</span><span class="w"> </span><span class="no">ev_plus4''</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">H</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="o">)</span><span class="w">           </span><span class="c">(* tricky: implicitly `Pi` when `n` get mentioned?  *)</span><span class="w">
+                    </span><span class="p">:</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="o">(</span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="no">n</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="no">ev_SS</span><span class="w"> </span><span class="o">(</span><span class="no">S</span><span class="w"> </span><span class="o">(</span><span class="no">S</span><span class="w"> </span><span class="no">n</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="no">ev_SS</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="no">H</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<p>two interesting facts:</p>
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">intros x</code> corresponds to <code class="language-plaintext highlighter-rouge">λx.</code> (or <code class="language-plaintext highlighter-rouge">Pi x.</code>??)</li>
+  <li><code class="language-plaintext highlighter-rouge">apply</code> corresponds to…not quite function application… but more like <em>filling the hole</em>.</li>
+  <li><code class="language-plaintext highlighter-rouge">even n</code> mentions the <em>value</em> of 1st argument <code class="language-plaintext highlighter-rouge">n</code>. i.e. <em>dependent type</em>!</li>
+</ol>
+
+<p>Recall Ari’s question in “applying theorem as function” e.g. <code class="language-plaintext highlighter-rouge">plus_comm</code> 
+why we can apply value in type-level fun.
+becuz of dependent type.</p>
+
+<p>Now we call them <code class="language-plaintext highlighter-rouge">dependent type function</code></p>
+
+<h3 id="-is-degenerated--pi"><code class="language-plaintext highlighter-rouge">→</code> is degenerated <code class="language-plaintext highlighter-rouge">∀</code> (<code class="language-plaintext highlighter-rouge">Pi</code>)</h3>
+
+<blockquote>
+  <p>Notice that both implication (<code class="language-plaintext highlighter-rouge">→</code>) and quantification (<code class="language-plaintext highlighter-rouge">∀</code>) correspond to functions on evidence. 
+In fact, they are really the same thing: <code class="language-plaintext highlighter-rouge">→</code> is just a shorthand for a degenerate use of <code class="language-plaintext highlighter-rouge">∀</code> where there is no dependency, i.e., no need to give a name to the type on the left-hand side of the arrow:</p>
+</blockquote>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="p">∀</span><span class="o">(</span><span class="no">x</span><span class="p">:</span><span class="no">nat</span><span class="o">),</span><span class="w"> </span><span class="no">nat</span><span class="w"> 
+</span><span class="o">=</span><span class="w"> </span><span class="p">∀</span><span class="o">(</span><span class="p">_:</span><span class="no">nat</span><span class="o">),</span><span class="w"> </span><span class="no">nat</span><span class="w"> 
+</span><span class="o">=</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">nat</span><span class="w">
+
+  </span><span class="p">∀</span><span class="no">n</span><span class="o">,</span><span class="w"> </span><span class="p">∀</span><span class="o">(</span><span class="no">E</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="o">),</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">).</span><span class="w">
+</span><span class="o">=</span><span class="w"> </span><span class="p">∀</span><span class="no">n</span><span class="o">,</span><span class="w"> </span><span class="p">∀</span><span class="o">(</span><span class="p">_</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="o">),</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">).</span><span class="w">
+</span><span class="o">=</span><span class="w"> </span><span class="p">∀</span><span class="no">n</span><span class="o">,</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>In general, <code class="language-plaintext highlighter-rouge">P → Q</code> is just syntactic sugar for <code class="language-plaintext highlighter-rouge">∀ (_:P), Q</code>.</p>
+</blockquote>
+
+<p>TaPL also mention this fact for <code class="language-plaintext highlighter-rouge">Pi</code>.</p>
+
+<h2 id="qa---slide-15">Q&amp;A - Slide 15</h2>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">∀ n, even n → even (4 + n)</code>. (<code class="language-plaintext highlighter-rouge">2 + n = S (S n)</code>)</li>
+</ol>
+
+<h2 id="programming-with-tactics">Programming with Tactics.</h2>
+
+<p>If we can build proofs by giving explicit terms rather than executing tactic scripts, 
+you may be wondering whether we can <em>build programs using tactics</em>? Yes!</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">add1</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">nat</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">intro</span><span class="w"> </span><span class="no">n</span><span class="pi">.</span><span class="w">
+  </span><span class="no">Show</span><span class="w"> </span><span class="k">Proof</span><span class="pi">.</span><span class="w">      
+</span><span class="c">(** 
+the goal (proof state):
+    
+    n : nat
+    =======
+    nat
+    
+the response:
+
+    (fun n : nat =&gt; ?Goal) 
+    
+What is really interesting here, is that the premies [n:nat] is actually the arguments!
+again, the process of applying tactics is _partial application_
+**)</span><span class="w">
+
+  </span><span class="kp">apply</span><span class="w"> </span><span class="no">S</span><span class="pi">.</span><span class="w">
+  </span><span class="no">Show</span><span class="w"> </span><span class="k">Proof</span><span class="pi">.</span><span class="w">      
+</span><span class="c">(** 
+    (fun n : nat =&gt; S ?Goal) 
+**)</span><span class="w">
+  </span><span class="kp">apply</span><span class="w"> </span><span class="no">n</span><span class="pi">.</span><span class="w"> 
+</span><span class="k">Defined</span><span class="pi">.</span><span class="w">
+
+</span><span class="k">Print</span><span class="w"> </span><span class="no">add1</span><span class="pi">.</span><span class="w">
+</span><span class="c">(* ==&gt; add1 = fun n : nat =&gt; S n
+            : nat -&gt; nat *)</span><span class="w">
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>Notice that we terminate the Definition with a <code class="language-plaintext highlighter-rouge">.</code> rather than with <code class="language-plaintext highlighter-rouge">:=</code> followed by a term.
+This tells Coq to enter <em>proof scripting mode</em> (w/o <code class="language-plaintext highlighter-rouge">Proof.</code>, which did nothing)</p>
+</blockquote>
+
+<blockquote>
+  <p>Also, we terminate the proof with <code class="language-plaintext highlighter-rouge">Defined</code> rather than <code class="language-plaintext highlighter-rouge">Qed</code>; this makes the definition <em>transparent</em> so that it can be used in computation like a normally-defined function
+(<code class="language-plaintext highlighter-rouge">Qed</code>-defined objects are <em>opaque</em> during computation.).</p>
+</blockquote>
+
+<p><code class="language-plaintext highlighter-rouge">Qed</code> make things <code class="language-plaintext highlighter-rouge">unfold</code>able, 
+thus <code class="language-plaintext highlighter-rouge">add 1</code> ends with <code class="language-plaintext highlighter-rouge">Qed</code> is not computable…
+(becuz of not even <code class="language-plaintext highlighter-rouge">unfold</code>able thus computation engine won’t deal with it)</p>
+
+<blockquote>
+  <p>Prof.Mtf: meaning “we don’t care about the details of Proof”</p>
+</blockquote>
+
+<p>see as well <a href="https://wiki.haskell.org/Smart_constructors">Smart Constructor</a></p>
+
+<blockquote>
+  <p>This feature is mainly useful for writing functions with dependent types</p>
+</blockquote>
+
+<p>In Coq      - you do as much as ML/Haskell when you can…?
+Unlike Agda - you program intensively in dependent type…?</p>
+
+<p>When Extracting to OCaml…Coq did a lot of <code class="language-plaintext highlighter-rouge">Object.magic</code> for coercion to bypass OCaml type system. (Coq has maken sure the type safety.)</p>
+
+<h2 id="logical-connectives-as-inductive-types">Logical Connectives as Inductive Types</h2>
+
+<blockquote>
+  <p>Inductive definitions are powerful enough to express most of the connectives we have seen so far. 
+Indeed, only universal quantification (with implication as a special case) is built into Coq; 
+all the others are defined inductively. 
+Wow…</p>
+</blockquote>
+
+<blockquote>
+  <p>CoqI: What’s Coq logic? Forall + Inductive type (+ coinduction), that’s it.</p>
+</blockquote>
+
+<h3 id="conjunctions">Conjunctions</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">and</span><span class="w"> </span><span class="o">(</span><span class="no">P</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+</span><span class="o">|</span><span class="w"> </span><span class="no">conj</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">and</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">Q</span><span class="pi">.</span><span class="w">
+
+</span><span class="k">Print</span><span class="w"> </span><span class="no">prod</span><span class="pi">.</span><span class="w">
+</span><span class="c">(* ===&gt;
+   Inductive prod (X Y : Type) : Type :=
+   | pair : X -&gt; Y -&gt; X * Y. *)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>similar to <code class="language-plaintext highlighter-rouge">prod</code> (product) type… more connections happening here.</p>
+
+<blockquote>
+  <p>This similarity should clarify why <code class="language-plaintext highlighter-rouge">destruct</code> and <code class="language-plaintext highlighter-rouge">intros</code> patterns can be used on a conjunctive hypothesis.</p>
+</blockquote>
+
+<blockquote>
+  <p>Similarly, the <code class="language-plaintext highlighter-rouge">split</code> tactic actually works for any inductively defined proposition with exactly one constructor
+(so here, <code class="language-plaintext highlighter-rouge">apply conj</code>, which will match the conclusion and generate two subgoal from assumptions )</p>
+</blockquote>
+
+<p>A <em>very direct</em> proof:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">and_comm'_aux</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="o">(</span><span class="no">H</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="p">∧</span><span class="w"> </span><span class="no">Q</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="p">∧</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="kr">match</span><span class="w"> </span><span class="no">H</span><span class="w"> </span><span class="kp">with</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">conj</span><span class="w"> </span><span class="no">HP</span><span class="w"> </span><span class="no">HQ</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">conj</span><span class="w"> </span><span class="no">HQ</span><span class="w"> </span><span class="no">HP</span><span class="w">
+  </span><span class="kr">end</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="disjunction">Disjunction</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">or</span><span class="w"> </span><span class="o">(</span><span class="no">P</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+</span><span class="o">|</span><span class="w"> </span><span class="no">or_introl</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">or</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">Q</span><span class="w">
+</span><span class="o">|</span><span class="w"> </span><span class="no">or_intror</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">or</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">Q</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>this explains why <code class="language-plaintext highlighter-rouge">destruct</code> works but <code class="language-plaintext highlighter-rouge">split</code> not..</p>
+
+<h2 id="qa---slide-22--24">Q&amp;A - Slide 22 + 24</h2>
+
+<p>Both Question asked about what’s the type of some expression</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">fun</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="o">(</span><span class="no">H1</span><span class="p">:</span><span class="w"> </span><span class="no">and</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">Q</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">H2</span><span class="p">:</span><span class="w"> </span><span class="no">and</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="no">R</span><span class="o">)</span><span class="w"> </span><span class="p">⇒</span><span class="w">
+    </span><span class="kr">match</span><span class="w"> </span><span class="o">(</span><span class="no">H1</span><span class="o">,</span><span class="no">H2</span><span class="o">)</span><span class="w"> </span><span class="kp">with</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">(</span><span class="no">conj</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="no">HP</span><span class="w"> </span><span class="p">_</span><span class="o">,</span><span class="w"> </span><span class="no">conj</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="no">HR</span><span class="o">)</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">conj</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">HP</span><span class="w"> </span><span class="no">HR</span><span class="w">
+    </span><span class="kr">end</span><span class="pi">.</span><span class="w">
+
+</span><span class="kr">fun</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="no">H</span><span class="w"> </span><span class="p">⇒</span><span class="w">
+    </span><span class="kr">match</span><span class="w"> </span><span class="no">H</span><span class="w"> </span><span class="kp">with</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">or_introl</span><span class="w"> </span><span class="no">HP</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">or_intror</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">HP</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">or_intror</span><span class="w"> </span><span class="no">HQ</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">or_introl</span><span class="w"> </span><span class="no">Q</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">HQ</span><span class="w">
+    </span><span class="kr">end</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+<p>But if you simply <code class="language-plaintext highlighter-rouge">Check</code> on them, you will get errors saying:
+<code class="language-plaintext highlighter-rouge">Error: The constructor conj (in type and) expects 2 arguments.</code> or 
+<code class="language-plaintext highlighter-rouge">Error: The constructor or_introl (in type or) expects 2 arguments.</code>.</p>
+
+<h3 id="coq-magics-implicit-implicit-and-overloading">Coq Magics, “Implicit” Implicit and Overloading??</h3>
+
+<p>So what’s the problem?
+Well, Coq did some magics…</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Print</span><span class="w"> </span><span class="no">and</span><span class="pi">.</span><span class="w">
+</span><span class="c">(* ===&gt; *)</span><span class="w">
+</span><span class="k">Inductive</span><span class="w"> </span><span class="no">and</span><span class="w"> </span><span class="o">(</span><span class="no">A</span><span class="w"> </span><span class="no">B</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">  </span><span class="no">conj</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">A</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">B</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">A</span><span class="w"> </span><span class="o">/\</span><span class="w"> </span><span class="no">B</span><span class="w">
+</span><span class="no">For</span><span class="w"> </span><span class="no">conj</span><span class="p">:</span><span class="w"> </span><span class="k">Arguments</span><span class="w"> </span><span class="no">A</span><span class="o">,</span><span class="w"> </span><span class="no">B</span><span class="w"> </span><span class="no">are</span><span class="w"> </span><span class="no">implicit</span><span class="w">
+</span></code></pre></div></div>
+
+<p>constructor <code class="language-plaintext highlighter-rouge">conj</code> has implicit type arg w/o using <code class="language-plaintext highlighter-rouge">{}</code> in <code class="language-plaintext highlighter-rouge">and</code> …</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">or</span><span class="w"> </span><span class="o">(</span><span class="no">A</span><span class="w"> </span><span class="no">B</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+    </span><span class="no">or_introl</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">A</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">A</span><span class="w"> </span><span class="o">\/</span><span class="w"> </span><span class="no">B</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="no">or_intror</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">B</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">A</span><span class="w"> </span><span class="o">\/</span><span class="w"> </span><span class="no">B</span><span class="w">
+
+</span><span class="no">For</span><span class="w"> </span><span class="no">or_introl</span><span class="o">,</span><span class="w"> </span><span class="no">when</span><span class="w"> </span><span class="no">applied</span><span class="w"> </span><span class="no">to</span><span class="w"> </span><span class="no">no</span><span class="w"> </span><span class="no">more</span><span class="w"> </span><span class="no">than</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="no">argument</span><span class="p">:</span><span class="w">
+  </span><span class="k">Arguments</span><span class="w"> </span><span class="no">A</span><span class="o">,</span><span class="w"> </span><span class="no">B</span><span class="w"> </span><span class="no">are</span><span class="w"> </span><span class="no">implicit</span><span class="w">
+</span><span class="no">For</span><span class="w"> </span><span class="no">or_introl</span><span class="o">,</span><span class="w"> </span><span class="no">when</span><span class="w"> </span><span class="no">applied</span><span class="w"> </span><span class="no">to</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="no">arguments</span><span class="p">:</span><span class="w">
+  </span><span class="no">Argument</span><span class="w"> </span><span class="no">A</span><span class="w"> </span><span class="no">is</span><span class="w"> </span><span class="no">implicit</span><span class="w">
+</span><span class="no">For</span><span class="w"> </span><span class="no">or_intror</span><span class="o">,</span><span class="w"> </span><span class="no">when</span><span class="w"> </span><span class="no">applied</span><span class="w"> </span><span class="no">to</span><span class="w"> </span><span class="no">no</span><span class="w"> </span><span class="no">more</span><span class="w"> </span><span class="no">than</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="no">argument</span><span class="p">:</span><span class="w">
+  </span><span class="k">Arguments</span><span class="w"> </span><span class="no">A</span><span class="o">,</span><span class="w"> </span><span class="no">B</span><span class="w"> </span><span class="no">are</span><span class="w"> </span><span class="no">implicit</span><span class="w">
+</span><span class="no">For</span><span class="w"> </span><span class="no">or_intror</span><span class="o">,</span><span class="w"> </span><span class="no">when</span><span class="w"> </span><span class="no">applied</span><span class="w"> </span><span class="no">to</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="no">arguments</span><span class="p">:</span><span class="w">
+  </span><span class="no">Argument</span><span class="w"> </span><span class="no">B</span><span class="w"> </span><span class="no">is</span><span class="w"> </span><span class="no">implicit</span><span class="w">
+</span></code></pre></div></div>
+
+<p>this is even more bizarre…
+constructor <code class="language-plaintext highlighter-rouge">or_introl</code> (and <code class="language-plaintext highlighter-rouge">or_intror</code>) are <em>overloaded</em>!! (WTF)</p>
+
+<p>And the questions’re still given as if they’re inside the modules we defined our plain version of <code class="language-plaintext highlighter-rouge">and</code> &amp; <code class="language-plaintext highlighter-rouge">or</code> (w/o any magics), thus we need <code class="language-plaintext highlighter-rouge">_</code> in the positions we instantiate <code class="language-plaintext highlighter-rouge">and</code> &amp; <code class="language-plaintext highlighter-rouge">or</code> so Coq will infer.</p>
+
+<h3 id="existential-quantification">Existential Quantification</h3>
+
+<blockquote>
+  <p>To give evidence for an existential quantifier, we package a witness <code class="language-plaintext highlighter-rouge">x</code> together with a proof that <code class="language-plaintext highlighter-rouge">x</code> satisfies the property <code class="language-plaintext highlighter-rouge">P</code>:</p>
+</blockquote>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">ex</span><span class="w"> </span><span class="o">{</span><span class="no">A</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">P</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">A</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="kr">Prop</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+</span><span class="o">|</span><span class="w"> </span><span class="no">ex_intro</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">x</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">A</span><span class="o">,</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">ex</span><span class="w"> </span><span class="no">P</span><span class="pi">.</span><span class="w">
+
+</span><span class="k">Check</span><span class="w"> </span><span class="no">ex</span><span class="pi">.</span><span class="w">                    </span><span class="c">(* ===&gt; *)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="o">(</span><span class="nv">?A</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kr">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> 
+</span><span class="k">Check</span><span class="w"> </span><span class="no">even</span><span class="pi">.</span><span class="w">                  </span><span class="c">(* ===&gt; *)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kr">Prop</span><span class="w">  </span><span class="c">(* ?A := nat  *)</span><span class="w">
+</span><span class="k">Check</span><span class="w"> </span><span class="no">ex</span><span class="w"> </span><span class="no">even</span><span class="pi">.</span><span class="w">               </span><span class="c">(* ===&gt; *)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> 
+</span><span class="k">Check</span><span class="w"> </span><span class="no">ex</span><span class="w"> </span><span class="o">(</span><span class="kr">fun</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="o">)</span><span class="w">   </span><span class="c">(* ===&gt; *)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w">     </span><span class="c">(* same *)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>one interesting fact is, <em>outside</em> of our module, the built-in Coq behaves differently (<em>magically</em>):</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Check</span><span class="w"> </span><span class="no">ev</span><span class="pi">.</span><span class="w">                    </span><span class="c">(* ===&gt; *)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="w"> </span><span class="o">(</span><span class="no">A</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">),</span><span class="w"> </span><span class="o">(</span><span class="no">A</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kr">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kr">Prop</span><span class="w">
+</span><span class="k">Check</span><span class="w"> </span><span class="no">even</span><span class="pi">.</span><span class="w">                  </span><span class="c">(* ===&gt; *)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kr">Prop</span><span class="w">  </span><span class="c">(* A := nat  *)</span><span class="w">
+</span><span class="k">Check</span><span class="w"> </span><span class="no">ex</span><span class="w"> </span><span class="o">(</span><span class="kr">fun</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="o">)</span><span class="w">   </span><span class="c">(* ===&gt; *)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∃</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="o">)</span><span class="w"> </span><span class="o">,</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w">  </span><span class="c">(* WAT !? *)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>A example of explicit proof object (that inhabit this type):</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">some_nat_is_even</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∃</span><span class="no">n</span><span class="o">,</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="no">ex_intro</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">(</span><span class="no">ev_SS</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">(</span><span class="no">ev_SS</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="no">ev_0</span><span class="o">)).</span><span class="w">
+</span></code></pre></div></div>
+
+<p>the <code class="language-plaintext highlighter-rouge">ex_intro</code> take <code class="language-plaintext highlighter-rouge">even</code> first then <code class="language-plaintext highlighter-rouge">4</code>…not sure why the order becomes this…</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Check</span><span class="w"> </span><span class="o">(</span><span class="no">ex_intro</span><span class="o">).</span><span class="w">            </span><span class="c">(* ===&gt; *)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">forall</span><span class="w"> </span><span class="o">(</span><span class="no">P</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nv">?A</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kr">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">x</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nv">?A</span><span class="o">),</span><span class="w"> </span><span class="no">P</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">ex</span><span class="w"> </span><span class="no">P</span><span class="w">
+</span></code></pre></div></div>
+
+<p>To prove <code class="language-plaintext highlighter-rouge">ex P</code>, given a witness <code class="language-plaintext highlighter-rouge">x</code> and a proof of <code class="language-plaintext highlighter-rouge">P x</code>. This desugar to <code class="language-plaintext highlighter-rouge">∃ x, P x</code></p>
+
+<ul>
+  <li>the <code class="language-plaintext highlighter-rouge">P</code> here, is getting applied when we define prop <code class="language-plaintext highlighter-rouge">∃ x, P x</code>.</li>
+  <li>but the <code class="language-plaintext highlighter-rouge">x</code> is not mentioned in type constructor…so it’s a <em>existential type</em>.
+    <ul>
+      <li>I don’t know why languages (including Haskell) use <code class="language-plaintext highlighter-rouge">forall</code> for <em>existential</em> tho.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">exists</code> tactic = applying <code class="language-plaintext highlighter-rouge">ex_intro</code></p>
+
+<h3 id="true-and-false">True and False</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">True</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">I</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">True</span><span class="pi">.</span><span class="w">
+
+</span><span class="c">(* with 0 constructors, no way of presenting evidence for False *)</span><span class="w">
+</span><span class="k">Inductive</span><span class="w"> </span><span class="no">False</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="o">.</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="equality">Equality</h2>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">eq</span><span class="w"> </span><span class="o">{</span><span class="no">X</span><span class="p">:</span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">X</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">X</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+</span><span class="o">|</span><span class="w"> </span><span class="no">eq_refl</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="no">x</span><span class="o">,</span><span class="w"> </span><span class="no">eq</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">x</span><span class="pi">.</span><span class="w">
+
+</span><span class="k">Notation</span><span class="w"> </span><span class="s2">"x == y"</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="no">eq</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="o">)</span><span class="w">
+                    </span><span class="o">(</span><span class="kp">at</span><span class="w"> </span><span class="no">level</span><span class="w"> </span><span class="mi">70</span><span class="o">,</span><span class="w"> </span><span class="no">no</span><span class="w"> </span><span class="no">associativity</span><span class="o">)</span><span class="w">
+                    </span><span class="p">:</span><span class="w"> </span><span class="no">type_scope</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>given a set <code class="language-plaintext highlighter-rouge">X</code>, it defines a <em>family</em> of propositions “x is equal to y,”, <em>indexed by</em> pairs of values (x and y) from <code class="language-plaintext highlighter-rouge">X</code>.</p>
+</blockquote>
+
+<blockquote>
+  <p>Can we also use it to construct evidence that <code class="language-plaintext highlighter-rouge">1 + 1 = 2</code>? 
+Yes, we can. Indeed, it is the very same piece of evidence!</p>
+</blockquote>
+
+<blockquote>
+  <p>The reason is that Coq treats as “the same” any two terms that are convertible according to a simple set of computation rules.</p>
+</blockquote>
+
+<p>nothing in the unification engine but we relies on the <em>reduction engine</em>.</p>
+
+<blockquote>
+  <p>Q: how much is it willing to do?<br />
+Mtf: just run them! (since Coq is total!)</p>
+</blockquote>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Lemma</span><span class="w"> </span><span class="no">four</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="o">.</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">apply</span><span class="w"> </span><span class="no">eq_refl</span><span class="pi">.</span><span class="w">
+</span><span class="k">Qed</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">reflexivity</code> tactic is essentially just shorthand for <code class="language-plaintext highlighter-rouge">apply eq_refl</code>.</p>
+
+<h2 id="slide-q--a">Slide Q &amp; A</h2>
+
+<ul>
+  <li>(4) has to be applicable thing, i.e. lambda, or “property” in the notion!</li>
+</ul>
+
+<p>In terms of provability of <code class="language-plaintext highlighter-rouge">reflexivity</code></p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span><span class="kr">fun</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">S</span><span class="w"> </span><span class="o">(</span><span class="no">S</span><span class="w"> </span><span class="no">n</span><span class="o">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="kr">fun</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="no">n</span><span class="o">)</span><span class="w">          </span><span class="c">(* reflexivity *)</span><span class="w">
+</span><span class="o">(</span><span class="kr">fun</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">S</span><span class="w"> </span><span class="o">(</span><span class="no">S</span><span class="w"> </span><span class="no">n</span><span class="o">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="kr">fun</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span><span class="w">          </span><span class="c">(* rewrite add_com *)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="inversion-again">Inversion, Again</h3>
+
+<blockquote>
+  <p>We’ve seen inversion used with both equality hypotheses and hypotheses about inductively defined propositions. Now that we’ve seen that these are actually the same thing</p>
+</blockquote>
+
+<p>In general, the <code class="language-plaintext highlighter-rouge">inversion</code> tactic…</p>
+
+<ol>
+  <li>take hypo <code class="language-plaintext highlighter-rouge">H</code> whose type <code class="language-plaintext highlighter-rouge">P</code> is inductively defined</li>
+  <li>for each constructor <code class="language-plaintext highlighter-rouge">C</code> in <code class="language-plaintext highlighter-rouge">P</code>
+    <ol>
+      <li>generate new subgoal (assume <code class="language-plaintext highlighter-rouge">H</code> was built with <code class="language-plaintext highlighter-rouge">C</code>)</li>
+      <li>add the arguments (i.e. evidences of premises) of <code class="language-plaintext highlighter-rouge">C</code> as extra hypo (to the context of subgoal)</li>
+      <li>(apply <code class="language-plaintext highlighter-rouge">constructor</code> theorem), match the conclusion of <code class="language-plaintext highlighter-rouge">C</code>, calculates a set of equalities (some extra restrictions)</li>
+      <li>adds these equalities</li>
+      <li>if there is contradiction, <code class="language-plaintext highlighter-rouge">discriminate</code>, solve subgoal.</li>
+    </ol>
+  </li>
+</ol>
+
+<h3 id="q">Q</h3>
+
+<blockquote>
+  <p>Q: Can we write <code class="language-plaintext highlighter-rouge">+</code> in a communitive way?<br />
+A: I don’t believe so.</p>
+</blockquote>
+
+<p><a href="https://en.wikipedia.org/wiki/Ground_truth">Ground truth</a></p>
+<ul>
+  <li>provided by direct observation (instead of inference)</li>
+</ul>
+
+<p><a href="https://en.wikipedia.org/wiki/Ground_expression#Ground_terms">Ground term</a></p>
+<ul>
+  <li>that does not contain any free variables.</li>
+</ul>
+
+<p>Groundness</p>
+<ul>
+  <li>根基性?</li>
+</ul>
+
+<blockquote>
+  <p>Weird <code class="language-plaintext highlighter-rouge">Axiomness</code> might break the soundness of generated code in OCaml…</p>
+</blockquote>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/01/08/sf-lf-08-map/" data-toggle="tooltip" data-placement="top" title="「SF-LC」8 Maps">
+                        Previous<br>
+                        <span>「SF-LC」8 Maps</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/01/10/sf-lf-10-ind-principle/" data-toggle="tooltip" data-placement="top" title="「SF-LC」10 IndPrinciples">
+                        Next<br>
+                        <span>「SF-LC」10 IndPrinciples</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

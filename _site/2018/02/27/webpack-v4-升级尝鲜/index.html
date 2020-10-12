@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="webpack v4 升级尝鲜 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="按照 webpack 其在 Github 上的日程表，不出意外地，本月迎来了 v4 正式版的发布，离发版狂魔的目标又近了一步。毕竟其发明者 Tobias 把正经工作辞掉全身心搞本工具，不多多发版也对不起观众不是。
+
+然而，正如你在使用 v3 时可以看到官方文档的匮乏，遑论这新鲜出炉还热乎的 v4 呢，所以文档什么的就别想了。
+
+但按奈不住猎奇，迅速装上进行了尝鲜升级。
+
+Changelog ...">
+    
+    <meta property="article:published_time" content="2018-02-27T18:02:00Z">
+    
+    
+    
+    <meta property="article:tag" content="javascript">
+    
+    <meta property="article:tag" content="webpack">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2018/02/27/webpack-v4-%E5%8D%87%E7%BA%A7%E5%B0%9D%E9%B2%9C/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>webpack v4 升级尝鲜 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2018/02/27/webpack-v4-%E5%8D%87%E7%BA%A7%E5%B0%9D%E9%B2%9C/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=javascript" title="javascript">javascript</a>
+                        
+                        <a class="tag" href="/archive/?tag=webpack" title="webpack">webpack</a>
+                        
+                    </div>
+                    <h1>webpack v4 升级尝鲜</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on February 27, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<p>按照 webpack 其在 Github 上的<a href="https://github.com/webpack/webpack/milestones">日程表</a>，不出意外地，本月迎来了 v4 正式版的发布，离发版狂魔的目标又近了一步。毕竟其发明者 <a href="https://medium.com/@sokra">Tobias</a> 把正经工作辞掉全身心搞本工具，不多多发版也对不起观众不是。</p>
+
+<p>然而，正如你在使用 v3 时可以看到官方文档的匮乏，遑论这新鲜出炉还热乎的 v4 呢，所以文档什么的就别想了。</p>
+
+<p>但按奈不住猎奇，迅速装上进行了尝鲜升级。</p>
+
+<h3 id="changelog--升级迁移">Changelog &amp; 升级迁移</h3>
+
+<p>官方的 <a href="https://github.com/webpack/webpack.js.org/issues/1706">Migration Guide</a> ，还在 WIP （work in progress），就是说，观望着社区的有志之士进行贡献，毕竟那么多受众嗷嗷待哺，相信不久会出炉。目前的升级，只能摸着石头过河了。所以老项目，先稳一稳，比较新的项目或者玩票性质的 side project，那必需用最新版啊，毕竟这样历史包袱最小。</p>
+
+<p>还是有很多途径可以了解到新版的有用信息的，</p>
+
+<ul>
+  <li>关注 <a href="https://medium.com/webpack">webpack 的 Medium 主页</a>，里面集中了核心贡献者写的文章，包含最新设计理念，功能介绍，使用指南等（是的，他们快把这里当成写文档的地方了）。</li>
+  <li>webpack 源码。随源码自带的 <a href="https://github.com/webpack/webpack/tree/master/examples">Examples</a> 更新是及时的，对于如何配置使用新版，有很大参考价值。即使是后面 v4 的文档到位了，源码依然是危急时刻的不二之选，如果你写过 webpack 插件，你会懂的。</li>
+  <li>最后，最直接的方式是迈开腿，get your hands dirty，装上新版亲自去探索。从 v3 切到 v4 后，报错一定是有的，逐个去排查，大部分应该都是插件在新的机制下不工作，或者 loader 报 warning。定位到对应组件，然后去其 github 项目页看其是否有针对 v4 适配的新版发布，以及 issues 页相关的升级适配讨论。</li>
+</ul>
+
+<p>下面借着 <a href="https://github.com/webpack/webpack/releases/tag/v4.0.0">Changelog</a> 说说升级点。</p>
+
+<h4 id="webpack-cli">webpack CLI</h4>
+
+<p>更新成 v4 后，最先映入眼帘的是之前的 <code class="language-plaintext highlighter-rouge">npm scripts</code> run 不起来了。新版中将 webpack 命令行工具拆分到单独的仓库中，所以需要额外安装 <code class="language-plaintext highlighter-rouge">webpack-cli</code>。</p>
+
+<blockquote>
+  <p>CLI has been move to webpack-cli, you need to install webpack-cli to use the CLI</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm i <span class="nt">-D</span> webpack-cli
+</code></pre></div></div>
+
+<h4 id="零配置不折腾">零配置，不折腾</h4>
+
+<p>webpack 常被诟病的一点是配置麻烦。对于小白用户或是想快速开始产品开发来说，它不让人省心。诚然，市面上有各种 Starter Kit/Boilerplate 集成了成套开发方案，总有一款大致满足需求，但难免也会根据业务自定义一些配置。</p>
+
+<p>本次新版本中引入了 <code class="language-plaintext highlighter-rouge">mode</code> 配置项，开发者可在裸奔 <code class="language-plaintext highlighter-rouge">none</code>，开发 <code class="language-plaintext highlighter-rouge">development</code> 以及产品 <code class="language-plaintext highlighter-rouge">production</code> 三种模式间选择。该配置项缺省情况下默认使用 <code class="language-plaintext highlighter-rouge">production</code> 模式。</p>
+
+<p>具体来说，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">development</code> 模式给你极致的开发体验，包含浏览器调试相关工具，极快的增量编译，丰富全面的报错信息…</li>
+  <li><code class="language-plaintext highlighter-rouge">production</code> 模式则包含大量发版优化，代码压缩，丝般润滑的运行时优化，开发相关代码的排除，易用，etc.</li>
+  <li><code class="language-plaintext highlighter-rouge">none</code> 不使用预设，等于老版本中全部自己配置的原始状态。</li>
+</ul>
+
+<p>注意这里裸奔模式并不推荐，正如 changelog 中据说：</p>
+
+<blockquote>
+  <p>There is a hidden none mode which disables everything</p>
+</blockquote>
+
+<p>它是隐藏起来的，没有正式介绍，将来文档中应该也不太提及。但通过 <a href="https://github.com/webpack/webpack/blob/master/schemas/WebpackOptions.json#L1119">webpack 源码中对于配置项的描述</a>来看，确实是存在的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">mode</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">description</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Enable production optimizations or development hints.</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">enum</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="dl">"</span><span class="s2">development</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">production</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">none</span><span class="dl">"</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+</code></pre></div></div>
+
+<p>其实就是将之前需要人肉重复进行的配置，优化及插件引入等工作，打包内置了，似乎0配置（#0CJS）就可以开车了，有点对标 <a href="https://parceljs.org/">parcel</a> 的意思。无论如何，套餐的出炉可以让大部分人可以享受到「约定大于配置」的省心了。</p>
+
+<p>所以，为原来的配置文件加上 <code class="language-plaintext highlighter-rouge">mode</code> 配置，然后可以删除很多冗余配置或插件了。</p>
+
+<ul>
+  <li>随着不同模式 webpack 会自动设置 <code class="language-plaintext highlighter-rouge">process.env.NODE_ENV</code> 为生产环境或产品环境，可以去掉项目中手动的设置。没有验证其设置的环境变量是否有跨平台兼容的问题，如果有的话，还需要借助 <a href="https://github.com/kentcdodds/cross-env">cross-env</a> 自己搞。</li>
+  <li><code class="language-plaintext highlighter-rouge">json-loader</code> 可以功成身退了，新版 webpack 默认支持 json 文件的加载。</li>
+  <li>NamedModulesPlugin 也隐退了，开发模式下自动开启。</li>
+</ul>
+
+<h4 id="全新的插件引擎">全新的插件引擎</h4>
+
+<p><a href="https://github.com/webpack/tapable">tapable</a> 整体更新带来 api 的变化。webpack 插件机制又是基于此库而生的。所以必然导致许多插件在新版 webpack 中会报错。其插件调用 api 变化了，同时好多 hook 也变了，有的已经不复存在。好在尝试后发现大部分重要的插件，尤其是官方 <a href="https://github.com/webpack-contrib">webpack-contrib</a> 维护的，都第一时间进行了适配。</p>
+
+<p>关于插件及 loader 的更新详见 <a href="https://medium.com/webpack/webpack-4-migration-guide-for-plugins-loaders-20a79b927202">webpack 4: migration guide for plugins/loaders</a>。</p>
+
+<h4 id="rip-commonschunkplugin">R.I.P. CommonsChunkPlugin</h4>
+
+<p>CommonsChunkPlugin，该插件抽取共用代码，进行代码拆分，对于减少冗余及合理打包功不可没。但在新版中移除了。
+别急，对应功能只是转移到了 <code class="language-plaintext highlighter-rouge">optimize.splitChunks</code> 与 <code class="language-plaintext highlighter-rouge">optimization.runtimeChunk</code> 配置项下，并且进行了加强与拓展。</p>
+
+<p>在满足预设条件时，会进行自动的 trunk 拆分和抽取。详见 <a href="https://gist.github.com/sokra/1522d586b8e5c0f5072d7565c2bee693">RIP CommonsChunkPlugin</a>
+或 <a href="https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366">webpack 4: Code Splitting, chunk graph and the splitChunks optimization</a>。</p>
+
+<h4 id="htmlwebpackplugin">HtmlWebpackPlugin</h4>
+
+<p>HtmlWebpackPlugin 的作者 Jan Nicklas 带着小婊子跑路了，以至于如此重要的插件没人进行 webpack v4 的更新适配。因为涉及到 html 的生成，对它的依赖度还挺高。无奈 webpack 官方 fork 了一分进行升级。
+所以暂时可以安装这个 fork 的版本。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm i <span class="nt">-D</span> html-webpack-plugin@webpack-contrib/html-webpack-plugin
+</code></pre></div></div>
+
+<p>前面 Jan 其实没跑路，按照 webpack 博客中的说法，人家只是劳务派遣出国了。等忙完这阵就回来更新！</p>
+
+<h4 id="ts-loader">ts-loader</h4>
+
+<p>非常给力的是 <a href="https://github.com/TypeStrong/ts-loader">ts-loader</a> 在 webpack 新版发布后第一时间进行了更新适配。如果项目中在用 TypsScript，那可以将 ts-loader 升级到最新的 <a href="https://github.com/TypeStrong/ts-loader/releases/tag/v4.0.0">v4.0.0</a> 就可以正常编译了。</p>
+
+<p>其实不止是 ts-loader， 官方 <a href="https://github.com/webpack-contrib">webpack-contrib</a> 名下维护的库存不算，其他库的更新响应也很及时，给我的感觉是 webpack 凭借其积攒的实力做到现在的人气，能够振臂一呼，拥趸者众，也是实至名归。</p>
+
+<h4 id="cache-loader">cache-loader</h4>
+
+<p><a href="https://github.com/webpack-contrib/cache-loader">cache-loader</a>，我主要配合 <a href="https://github.com/itgalaxy/webpack-modernizr-loader">webpack-modernizr-loader</a> 使用。后者可以读取 modernizr 配置文件，动态生成项目中需所依赖的 modernizr 库。因为 modernizr 配置文件不会经常变动，所以将生成的 modernizr 库存缓存起来就显得很有必要了。因为 cache-loader 的 peer dependencies 声明的是 webpack <code class="language-plaintext highlighter-rouge">^2.0.0 || ^3.0.0</code>，所以运行在 webpack v4 下会有 warning。问题倒不大，因为没有触碰 webpack 变更后的 api 所以能正常跑。将其升级到最新的 <a href="https://github.com/webpack-contrib/cache-loader/releases/tag/v1.2.1">v1.2.1</a> 可以解决掉 warning。</p>
+
+<p>loader 类的兼容一般都是这个原因，因为 peer dependency 报 warning。譬如 <a href="https://github.com/webpack-contrib/file-loader/releases/tag/v1.1.10">file-loader</a>，webpack-modernizr-loader 等。所以 loader 部分升级较为轻松。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://github.com/webpack/webpack/releases/tag/v4.0.0">webpack v4 changelog</a></li>
+  <li><a href="https://medium.com/webpack/webpack-4-released-today-6cdb994702d4">webpack 4: released today!!</a></li>
+  <li><a href="https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a">webpack 4: mode and optimization</a></li>
+  <li><a href="https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366">webpack 4: Code Splitting, chunk graph and the splitChunks optimization</a></li>
+  <li><a href="https://gist.github.com/sokra/1522d586b8e5c0f5072d7565c2bee693">RIP CommonsChunkPlugin</a></li>
+  <li><a href="https://medium.com/webpack/webpack-4-migration-guide-for-plugins-loaders-20a79b927202">webpack 4: migration guide for plugins/loaders</a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/02/05/%E5%BF%83%E4%B8%AD%E6%97%A0%E8%B7%AF%E7%94%B1-%E5%A4%84%E5%A4%84%E7%9A%86%E8%87%AA%E7%94%B1-react-router-v4-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1/" data-toggle="tooltip" data-placement="top" title="心中无路由，处处皆自由/react-router v4 动态路由">
+                        Previous<br>
+                        <span>心中无路由，处处皆自由/react-router v4 动态路由</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/03/12/%E7%BC%96%E8%AF%91%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B/" data-toggle="tooltip" data-placement="top" title="编译了解一下">
+                        Next<br>
+                        <span>编译了解一下</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="「SF-LC」3 List - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="Pair of Numbers
+">
+    
+    <meta property="article:published_time" content="2019-01-03T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Hux">
+    
+    
+    <meta property="article:tag" content="LF (逻辑基础)">
+    
+    <meta property="article:tag" content="SF (软件基础)">
+    
+    <meta property="article:tag" content="Coq">
+    
+    <meta property="article:tag" content="笔记">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/01/03/sf-lf-03-list/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>「SF-LC」3 List - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/01/03/sf-lf-03-list/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top invert">
+    
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header style-text" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29" title="LF (逻辑基础)">LF (逻辑基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29" title="SF (软件基础)">SF (软件基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=Coq" title="Coq">Coq</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+                        
+                    </div>
+                    <h1>「SF-LC」3 List</h1>
+                    
+                    <h2 class="subheading">Logical Foundations - Working with Structured Data</h2>
+                    <span class="meta">Posted by Hux on January 3, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h2 id="pair-of-numbers">Pair of Numbers</h2>
+
+<p>Q: Why name <code class="language-plaintext highlighter-rouge">inductive</code>? 
+A: Inductive means <em>building things bottom-up</em>, it doesn’t have to self-referencial (recursive)
+(see below <code class="language-plaintext highlighter-rouge">induction on lists</code> as well.)</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">natprod</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">pair</span><span class="w"> </span><span class="o">(</span><span class="no">n1</span><span class="w"> </span><span class="no">n2</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="o">).</span><span class="w">
+
+</span><span class="k">Notation</span><span class="w"> </span><span class="s2">"( x , y )"</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="no">pair</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Proof on pair cannot simply <code class="language-plaintext highlighter-rouge">simpl.</code></p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">surjective_pairing_stuck</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="o">(</span><span class="no">p</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">natprod</span><span class="o">),</span><span class="w">
+  </span><span class="no">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="no">fst</span><span class="w"> </span><span class="no">p</span><span class="o">,</span><span class="w"> </span><span class="no">snd</span><span class="w"> </span><span class="no">p</span><span class="o">).</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">simpl</span><span class="pi">.</span><span class="w"> </span><span class="c">(* Doesn't reduce anything! *)</span><span class="w">
+</span><span class="no">Abort</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>We have to <em>expose the structure</em>:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Theorem</span><span class="w"> </span><span class="no">surjective_pairing</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">∀</span><span class="o">(</span><span class="no">p</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">natprod</span><span class="o">),</span><span class="w">
+  </span><span class="no">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="no">fst</span><span class="w"> </span><span class="no">p</span><span class="o">,</span><span class="w"> </span><span class="no">snd</span><span class="w"> </span><span class="no">p</span><span class="o">).</span><span class="w">
+</span><span class="k">Proof</span><span class="pi">.</span><span class="w">
+  </span><span class="kp">intros</span><span class="w"> </span><span class="no">p</span><span class="pi">.</span><span class="w"> </span><span class="kp">destruct</span><span class="w"> </span><span class="no">p</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="o">[</span><span class="no">n</span><span class="w"> </span><span class="no">m</span><span class="o">**.</span><span class="w"> </span><span class="kp">simpl</span><span class="pi">.</span><span class="w"> </span><span class="ne">reflexivity</span><span class="pi">.</span><span class="w"> </span><span class="k">Qed</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>It only generate <strong>one subgoal</strong>, becasue</p>
+<blockquote>
+  <p>That’s because natprods can only be constructed in one way.</p>
+</blockquote>
+
+<h3 id="my-take-on-destruct">My take on <code class="language-plaintext highlighter-rouge">destruct</code></h3>
+
+<p><code class="language-plaintext highlighter-rouge">destruct</code></p>
+
+<ul>
+  <li>destruct <code class="language-plaintext highlighter-rouge">bool</code> to <code class="language-plaintext highlighter-rouge">true</code> and <code class="language-plaintext highlighter-rouge">false</code></li>
+  <li>destruct <code class="language-plaintext highlighter-rouge">nat</code>  to <code class="language-plaintext highlighter-rouge">O</code> and <code class="language-plaintext highlighter-rouge">S n'</code> (inductively defined)</li>
+  <li>destruct <code class="language-plaintext highlighter-rouge">pair</code> to <code class="language-plaintext highlighter-rouge">(n, m)</code></li>
+</ul>
+
+<p>The <strong>prove by case analysis (exhaustive)</strong> is just an application of the idea of <em>destruction</em>!</p>
+
+<p>the idea simply <em>destruct</em> the data type into its data constructors (representing ways of constructing this data)</p>
+
+<ul>
+  <li>Java class has only 1 way to construct (via its constructor)</li>
+  <li>Scala case class then have multiple way to construct</li>
+</ul>
+
+<h2 id="lists-of-numbers">Lists of Numbers</h2>
+
+<blockquote>
+  <p>Generalizing the definition of pairs</p>
+</blockquote>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">natlist</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">nil</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">cons</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">l</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">natlist</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The ability of quosiquotation using <code class="language-plaintext highlighter-rouge">Notation</code> is awesome:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Notation</span><span class="w"> </span><span class="s2">"x :: l"</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="no">cons</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">l</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="kp">at</span><span class="w"> </span><span class="no">level</span><span class="w"> </span><span class="mi">60</span><span class="o">,</span><span class="w"> </span><span class="no">right</span><span class="w"> </span><span class="no">associativity</span><span class="o">).</span><span class="w">
+</span><span class="k">Notation</span><span class="w"> </span><span class="s2">"[ ]"</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="no">nil</span><span class="pi">.</span><span class="w">
+</span><span class="k">Notation</span><span class="w"> </span><span class="s2">"[ x ; .. ; y ]"</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="no">cons</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">(</span><span class="no">cons</span><span class="w"> </span><span class="no">y</span><span class="w"> </span><span class="no">nil</span><span class="o">)</span><span class="w"> </span><span class="o">..).</span><span class="w">
+</span></code></pre></div></div>
+
+<p>It’s exactly like OCaml, even for <code class="language-plaintext highlighter-rouge">;</code>, <code class="language-plaintext highlighter-rouge">at level 60</code> means it’s tightly than <code class="language-plaintext highlighter-rouge">+ at level 50</code> .</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Notation</span><span class="w"> </span><span class="s2">"x ++ y"</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="o">(</span><span class="no">app</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">right</span><span class="w"> </span><span class="no">associativity</span><span class="o">,</span><span class="w"> </span><span class="kp">at</span><span class="w"> </span><span class="no">level</span><span class="w"> </span><span class="mi">60</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Instead of SML/OCaml’s <code class="language-plaintext highlighter-rouge">@</code>, Coq chooses Haskell’s <code class="language-plaintext highlighter-rouge">++</code>.</p>
+
+<h3 id="hd-with-default"><code class="language-plaintext highlighter-rouge">hd</code> with default</h3>
+
+<p>Coq function (for some reason) has to be <strong>total</strong>, so <code class="language-plaintext highlighter-rouge">hd</code> require a <code class="language-plaintext highlighter-rouge">default</code> value as 1st argument:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">hd</span><span class="w"> </span><span class="o">(</span><span class="no">default</span><span class="p">:</span><span class="no">nat</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">l</span><span class="p">:</span><span class="no">natlist</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="kr">match</span><span class="w"> </span><span class="no">l</span><span class="w"> </span><span class="kp">with</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">default</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">h</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">h</span><span class="w">
+  </span><span class="kr">end</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="induction-on-lists">Induction on Lists.</h2>
+
+<p>The definition of <em>inductive defined set</em></p>
+
+<blockquote>
+  <p>Each Inductive declaration defines a set of data values that can be <strong>built up</strong> using the declared constructors:</p>
+  <ul>
+    <li>a boolean can be either true or false;</li>
+    <li>a number can be either O or S applied to another number;</li>
+    <li>a list can be either nil or cons applied to a number and a list.</li>
+  </ul>
+</blockquote>
+
+<p>The reverse: reasoning <em>inductive defined sets</em></p>
+
+<blockquote>
+  <p>Moreover, applications of the declared constructors to one another are the 
+<strong>only</strong> possible shapes that elements of an inductively defined set can have,
+and this fact directly gives rise to a way of reasoning about inductively defined sets:</p>
+  <ul>
+    <li>a number is either O or else it is S applied to some smaller number;</li>
+    <li>a list is either nil or else it is cons applied to some number and some smaller list;</li>
+  </ul>
+</blockquote>
+
+<p>Reasoning lists</p>
+
+<blockquote>
+  <p>if we have in mind some proposition <code class="language-plaintext highlighter-rouge">P</code> that mentions a list <code class="language-plaintext highlighter-rouge">l</code> and we want to argue that <code class="language-plaintext highlighter-rouge">P</code> holds for <em>all</em> lists, 
+we can reason as follows</p>
+  <ol>
+    <li>First, show that <code class="language-plaintext highlighter-rouge">P</code> is <code class="language-plaintext highlighter-rouge">true</code> of <code class="language-plaintext highlighter-rouge">l</code> when <code class="language-plaintext highlighter-rouge">l</code> is <code class="language-plaintext highlighter-rouge">nil</code>.</li>
+    <li>Then show that <code class="language-plaintext highlighter-rouge">P</code> is true of <code class="language-plaintext highlighter-rouge">l</code> when <code class="language-plaintext highlighter-rouge">l</code> is <code class="language-plaintext highlighter-rouge">cons n l'</code> for some number <code class="language-plaintext highlighter-rouge">n</code> and some smaller list <code class="language-plaintext highlighter-rouge">l'</code>, assuming that <code class="language-plaintext highlighter-rouge">P</code> is <code class="language-plaintext highlighter-rouge">true</code> for <code class="language-plaintext highlighter-rouge">l'</code>.</li>
+  </ol>
+</blockquote>
+
+<h2 id="search">Search</h2>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Search</span><span class="w"> </span><span class="no">rev</span><span class="w">  </span><span class="c">(* list all theorems of [rev] *)</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="coq-conditionals-if-then-else">Coq Conditionals (<code class="language-plaintext highlighter-rouge">if then else</code>)</h2>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Fixpoint</span><span class="w"> </span><span class="no">nth_error'</span><span class="w"> </span><span class="o">(</span><span class="no">l</span><span class="p">:</span><span class="no">natlist</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">n</span><span class="p">:</span><span class="no">nat</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">natoption</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="kr">match</span><span class="w"> </span><span class="no">l</span><span class="w"> </span><span class="kp">with</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="no">None</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">a</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="no">l'</span><span class="w"> </span><span class="p">⇒</span><span class="w"> </span><span class="kr">if</span><span class="w"> </span><span class="no">n</span><span class="w"> </span><span class="o">=?</span><span class="w"> </span><span class="no">O</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="no">Some</span><span class="w"> </span><span class="no">a</span><span class="w">
+                        </span><span class="kr">else</span><span class="w"> </span><span class="no">nth_error'</span><span class="w"> </span><span class="no">l'</span><span class="w"> </span><span class="o">(</span><span class="no">pred</span><span class="w"> </span><span class="no">n</span><span class="o">)</span><span class="w">
+  </span><span class="kr">end</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>One small generalization: since the boolean type in Coq is not built-in. Coq actually supports conditional expr <strong>over any</strong> <em>inductive defined typewith two constructors</em>. First constructor is considered true and false for second.</p>
+
+<h2 id="stuck-in-proof">Stuck in Proof</h2>
+
+<p>could be many cases</p>
+
+<ul>
+  <li>wrong tactics</li>
+  <li>wrong theroem!! (might derive to counterexample)</li>
+  <li>wrong step (most hard to figure out)
+    <ul>
+      <li>induction on wrong things</li>
+    </ul>
+  </li>
+</ul>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/01/02/sf-lf-02-induction/" data-toggle="tooltip" data-placement="top" title="「SF-LC」2 Induction">
+                        Previous<br>
+                        <span>「SF-LC」2 Induction</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/01/04/sf-lf-04-poly/" data-toggle="tooltip" data-placement="top" title="「SF-LC」4 Poly">
+                        Next<br>
+                        <span>「SF-LC」4 Poly</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

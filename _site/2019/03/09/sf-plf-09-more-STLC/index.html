@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="「SF-PLF」9 MoreStlc - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  make the STLC into a PL!
+
+">
+    
+    <meta property="article:published_time" content="2019-03-09T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Hux">
+    
+    
+    <meta property="article:tag" content="SF (软件基础)">
+    
+    <meta property="article:tag" content="PLF (编程语言基础)">
+    
+    <meta property="article:tag" content="Coq">
+    
+    <meta property="article:tag" content="笔记">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/03/09/sf-plf-09-more-STLC/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>「SF-PLF」9 MoreStlc - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/03/09/sf-plf-09-more-STLC/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top invert">
+    
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header style-text" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29" title="SF (软件基础)">SF (软件基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29" title="PLF (编程语言基础)">PLF (编程语言基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=Coq" title="Coq">Coq</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+                        
+                    </div>
+                    <h1>「SF-PLF」9 MoreStlc</h1>
+                    
+                    <h2 class="subheading">Programming Language Foundations - More on The Simply Typed Lambda-Calculus</h2>
+                    <span class="meta">Posted by Hux on March 9, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>make the STLC into a PL!</p>
+</blockquote>
+
+<h2 id="simple-extensions-to-stlc">Simple Extensions to STLC</h2>
+
+<blockquote>
+  <p>其实这一部分我好像没有任何必要做笔记……</p>
+</blockquote>
+
+<h3 id="numbers">Numbers</h3>
+
+<p>See <code class="language-plaintext highlighter-rouge">StlcProp.v</code> exercise <code class="language-plaintext highlighter-rouge">stlc_arith</code>.</p>
+
+<h3 id="let-bindings">Let Bindings</h3>
+
+<ul>
+  <li>In PLT slide, we treat <code class="language-plaintext highlighter-rouge">let x   = t1 in e</code> as a derived form of <code class="language-plaintext highlighter-rouge">(λx   . e) t1</code>.</li>
+  <li>In PLT langF, we treat <code class="language-plaintext highlighter-rouge">let x:T = t1 in e</code> as a derived form of <code class="language-plaintext highlighter-rouge">(λx:T . e) t1</code>. (both require explicit type annotation)</li>
+</ul>
+
+<p>SF here, same as TaPL, treat it <em>less derived</em> by _compute the type <code class="language-plaintext highlighter-rouge">T1</code> from <code class="language-plaintext highlighter-rouge">t1</code>.</p>
+<ul>
+  <li>but TaPL treat it by desugar to <code class="language-plaintext highlighter-rouge">λ</code> later on, here we directly “execute” it via substituion.</li>
+</ul>
+
+<p>我想这里有一个原因是， <code class="language-plaintext highlighter-rouge">λ</code> 必须要可以独立被 typed，但是这时候我们还没有 <code class="language-plaintext highlighter-rouge">t1</code>，无法计算出 <code class="language-plaintext highlighter-rouge">T1</code>。而 <code class="language-plaintext highlighter-rouge">let</code> 的形式中包括了 <code class="language-plaintext highlighter-rouge">t1</code>，所以可以直接计算:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">t</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Terms</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="kr">let</span><span class="w"> </span><span class="no">x</span><span class="o">=</span><span class="no">t</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="no">t</span><span class="w">      </span><span class="kr">let</span><span class="o">-</span><span class="no">binding</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Reduction:
+
+                             t1 --&gt; t1'
+                 ----------------------------------               (ST_Let1)
+                 let x=t1 in t2 --&gt; let x=t1' in t2
+
+                    ----------------------------              (ST_LetValue)  &lt;-- substitute as λ
+                    let x=v1 in t2 --&gt; [x:=v1]t2
+
+Typing:
+
+         Gamma |- t1 \in T1      x|-&gt;T1; Gamma |- t2 \in T2
+         --------------------------------------------------        (T_Let)
+                    Gamma |- let x=t1 in t2 \in T2
+</code></pre></div></div>
+
+<h3 id="pairs-product-type">Pairs (Product Type)</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">t</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Terms</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">(</span><span class="no">t</span><span class="o">,</span><span class="no">t</span><span class="o">)</span><span class="w">             </span><span class="no">pair</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="nn">t</span><span class="p">.</span><span class="no">fst</span><span class="w">             </span><span class="kp">first</span><span class="w"> </span><span class="no">projection</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="nn">t</span><span class="p">.</span><span class="no">snd</span><span class="w">             </span><span class="no">second</span><span class="w"> </span><span class="no">projection</span><span class="w">
+
+</span><span class="no">v</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Values</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">(</span><span class="no">v</span><span class="o">,</span><span class="no">v</span><span class="o">)</span><span class="w">             </span><span class="no">pair</span><span class="w"> </span><span class="no">value</span><span class="w">
+
+</span><span class="no">T</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Types</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">T</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="no">T</span><span class="w">             </span><span class="no">product</span><span class="w"> </span><span class="no">type</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Reduction:
+
+                          t1 --&gt; t1'
+                     --------------------                        (ST_Pair1)
+                     (t1,t2) --&gt; (t1',t2)
+
+                          t2 --&gt; t2'
+                     --------------------                        (ST_Pair2)
+                     (v1,t2) --&gt; (v1,t2')
+
+                          t1 --&gt; t1'
+                      ------------------                          (ST_Fst1)
+                      t1.fst --&gt; t1'.fst
+
+                      ------------------                       (ST_FstPair)
+                      (v1,v2).fst --&gt; v1
+
+                          t1 --&gt; t1'
+                      ------------------                          (ST_Snd1)
+                      t1.snd --&gt; t1'.snd
+
+                      ------------------                       (ST_SndPair)
+                      (v1,v2).snd --&gt; v2
+
+
+Typing:
+
+           Gamma |- t1 \in T1     Gamma |- t2 \in T2
+           -----------------------------------------               (T_Pair)
+                   Gamma |- (t1,t2) \in T1*T2
+
+                    Gamma |- t \in T1*T2
+                    ---------------------                          (T_Fst)
+                    Gamma |- t.fst \in T1
+
+                    Gamma |- t \in T1*T2
+                    ---------------------                          (T_Snd)
+                    Gamma |- t.snd \in T2
+</code></pre></div></div>
+
+<h3 id="unit-singleton-type-单元类型">Unit (Singleton Type) 单元类型</h3>
+
+<p><code class="language-plaintext highlighter-rouge">unit</code> is the only value/normal form of type <code class="language-plaintext highlighter-rouge">Unit</code>, but not the only term (also any terms that would reduce to <code class="language-plaintext highlighter-rouge">unit</code>)</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">t</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Terms</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">unit</span><span class="w">              </span><span class="no">unit</span><span class="w">              </span><span class="o">--</span><span class="w"> </span><span class="no">often</span><span class="w"> </span><span class="no">written</span><span class="w"> </span><span class="err">`</span><span class="o">()</span><span class="err">`</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="no">well</span><span class="w">
+
+</span><span class="no">v</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Values</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">unit</span><span class="w">              </span><span class="no">unit</span><span class="w"> </span><span class="no">value</span><span class="w">
+
+</span><span class="no">T</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Types</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">Unit</span><span class="w">              </span><span class="no">unit</span><span class="w"> </span><span class="no">type</span><span class="w">         </span><span class="o">--</span><span class="w"> </span><span class="no">Haskell</span><span class="w"> </span><span class="no">even</span><span class="w"> </span><span class="no">write</span><span class="w"> </span><span class="no">this</span><span class="w"> </span><span class="err">`</span><span class="o">()</span><span class="err">`</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>No reduction rule!
+
+Typing:
+
+                     ----------------------                        (T_Unit)
+                     Gamma |- unit \in Unit
+</code></pre></div></div>
+
+<blockquote>
+  <p>wouldn’t every computation <em>living in</em> such a type be trivial?
+难道不是每个计算都不会在这样的类型中_居留_吗？</p>
+</blockquote>
+
+<blockquote>
+  <p>Where Unit really comes in handy is in richer languages with side effects
+在更丰富的语言中，使用 Unit 类型来处理副作用（side effect） 会很方便</p>
+</blockquote>
+
+<h3 id="sum-type-disjointed-union">Sum Type (Disjointed Union)</h3>
+
+<blockquote>
+  <p>deal with values that can take two distinct forms – binary sum type
+两个截然不同的 … “二元和”类型</p>
+</blockquote>
+
+<blockquote>
+  <p>We create elements of these types by <em>tagging</em> elements of the component types
+我们在创建这些类型的值时，会为值_标记_上其”成分”类型</p>
+</blockquote>
+
+<p>标签 <code class="language-plaintext highlighter-rouge">inl</code>, <code class="language-plaintext highlighter-rouge">inr</code> 可以看做为函数，即 <em>Data Constructor</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>inl : Nat  -&gt; Nat + Bool
+inr : Bool -&gt; Nat + Bool
+</code></pre></div></div>
+
+<blockquote>
+  <p>that <em>“inject”</em> (注入) elements of <code class="language-plaintext highlighter-rouge">Nat</code> or <code class="language-plaintext highlighter-rouge">Bool</code> into the left and right components of the sum type <code class="language-plaintext highlighter-rouge">Nat+Bool</code></p>
+</blockquote>
+
+<p>不过这里并没有把他们作为 function 来形式化，而是把 <code class="language-plaintext highlighter-rouge">inl</code> <code class="language-plaintext highlighter-rouge">inr</code> 作为关键字，把 <code class="language-plaintext highlighter-rouge">inl t</code> <code class="language-plaintext highlighter-rouge">inr t</code> 作为 primitive syntactic form…</p>
+
+<ul>
+  <li>In PLT slide, we use <code class="language-plaintext highlighter-rouge">L          (e)</code> and say the <code class="language-plaintext highlighter-rouge">T2</code> would be “guessed” to produce <code class="language-plaintext highlighter-rouge">T1 + T2</code>, as <em>TaPL option 1</em></li>
+  <li>In PLT langF, we use <code class="language-plaintext highlighter-rouge">L [T1 +T2] (e)</code> i.e. provide a explicit type annotation for the sum type, as <em>TaPL option 3</em> (ascription)</li>
+</ul>
+
+<p>SF here, use something in the middle:</p>
+<ul>
+  <li>you provide only <code class="language-plaintext highlighter-rouge">T2</code> to <code class="language-plaintext highlighter-rouge">L(t1)</code> and <code class="language-plaintext highlighter-rouge">T1</code> would be computed from <code class="language-plaintext highlighter-rouge">t1</code> to form the <code class="language-plaintext highlighter-rouge">T1 + T2</code>.</li>
+</ul>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">t</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Terms</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">inl</span><span class="w"> </span><span class="no">T</span><span class="w"> </span><span class="no">t</span><span class="w">           </span><span class="no">tagging</span><span class="w"> </span><span class="o">(</span><span class="no">left</span><span class="o">)</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">inr</span><span class="w"> </span><span class="no">T</span><span class="w"> </span><span class="no">t</span><span class="w">           </span><span class="no">tagging</span><span class="w"> </span><span class="o">(</span><span class="no">right</span><span class="o">)</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">case</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="no">of</span><span class="w">         </span><span class="no">case</span><span class="w">
+        </span><span class="no">inl</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">t</span><span class="w">
+      </span><span class="o">|</span><span class="w"> </span><span class="no">inr</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">t</span><span class="w">
+
+</span><span class="no">v</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Values</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">inl</span><span class="w"> </span><span class="no">T</span><span class="w"> </span><span class="no">v</span><span class="w">           </span><span class="no">tagged</span><span class="w"> </span><span class="no">value</span><span class="w"> </span><span class="o">(</span><span class="no">left</span><span class="o">)</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">inr</span><span class="w"> </span><span class="no">T</span><span class="w"> </span><span class="no">v</span><span class="w">           </span><span class="no">tagged</span><span class="w"> </span><span class="no">value</span><span class="w"> </span><span class="o">(</span><span class="no">right</span><span class="o">)</span><span class="w">
+
+</span><span class="no">T</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Types</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">T</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="no">T</span><span class="w">             </span><span class="no">sum</span><span class="w"> </span><span class="no">type</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Reduction:
+
+                           t1 --&gt; t1'
+                    ------------------------                       (ST_Inl)
+                    inl T2 t1 --&gt; inl T2 t1'
+
+                           t2 --&gt; t2'
+                    ------------------------                       (ST_Inr)
+                    inr T1 t2 --&gt; inr T1 t2'
+
+                           t0 --&gt; t0'
+           -------------------------------------------            (ST_Case)
+            case t0 of inl x1 =&gt; t1 | inr x2 =&gt; t2 --&gt;
+           case t0' of inl x1 =&gt; t1 | inr x2 =&gt; t2
+
+        -----------------------------------------------        (ST_CaseInl)
+        case (inl T2 v1) of inl x1 =&gt; t1 | inr x2 =&gt; t2
+                       --&gt;  [x1:=v1]t1
+
+        -----------------------------------------------        (ST_CaseInr)
+        case (inr T1 v2) of inl x1 =&gt; t1 | inr x2 =&gt; t2
+                       --&gt;  [x2:=v1]t2
+
+Typing:
+
+                      Gamma |- t1 \in T1
+               ------------------------------                       (T_Inl)
+               Gamma |- inl T2 t1 \in T1 + T2
+
+                      Gamma |- t2 \in T2
+               -------------------------------                      (T_Inr)
+                Gamma |- inr T1 t2 \in T1 + T2
+
+                    Gamma |- t \in T1+T2
+                 x1|-&gt;T1; Gamma |- t1 \in T
+                 x2|-&gt;T2; Gamma |- t2 \in T
+     ----------------------------------------------------          (T_Case)
+     Gamma |- case t of inl x1 =&gt; t1 | inr x2 =&gt; t2 \in T
+</code></pre></div></div>
+
+<h3 id="lists">Lists</h3>
+
+<blockquote>
+  <p>The typing features we have seen can be classified into</p>
+  <ul>
+    <li>基本类型   <em>base types</em> like <code class="language-plaintext highlighter-rouge">Bool</code>, and</li>
+    <li>类型构造子 <em>type constructors</em> like <code class="language-plaintext highlighter-rouge">→</code> and <code class="language-plaintext highlighter-rouge">*</code> that build new types from old ones.</li>
+  </ul>
+</blockquote>
+
+<blockquote>
+  <p>In principle, we could encode lists using pairs, sums and <em>recursive types</em>. (and <em>type operator</em> to give the type a name in SystemFω)</p>
+</blockquote>
+
+<blockquote>
+  <p>但是 recursive type 太 non-trivial 了……于是我们直接处理为一个特殊的类型吧</p>
+</blockquote>
+
+<ul>
+  <li>in PLT slide, again, we omit the type and simply write <code class="language-plaintext highlighter-rouge">nil : List T</code>
+    <ul>
+      <li>有趣的是, Prof.Mtf 并不满意这个，因为会有 <code class="language-plaintext highlighter-rouge">hd nil</code> 这样 stuck 的可能，所以额外给了一个用 <code class="language-plaintext highlighter-rouge">unlist</code> (unempty list) 的 def</li>
+    </ul>
+  </li>
+  <li>in PLT langF, we did use pairs + sums + recursive types:
+    <ul>
+      <li>langF <code class="language-plaintext highlighter-rouge">nil : all('a . rec('b . unit + ('a * 'b)))</code></li>
+      <li>StlcE <code class="language-plaintext highlighter-rouge">nil : ∀α     . µβ     . unit + (α ∗ β)</code></li>
+    </ul>
+  </li>
+  <li>in TaPL ch11, we manually provide <code class="language-plaintext highlighter-rouge">T</code> to all term (data constructor)
+    <ul>
+      <li>but actually, only <code class="language-plaintext highlighter-rouge">nil</code> need it! (others can be inferred by argument)</li>
+    </ul>
+  </li>
+</ul>
+
+<p>and that’s we did for SF here!</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">t</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Terms</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="no">T</span><span class="w">                          </span><span class="o">--</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="no">need</span><span class="w"> </span><span class="no">explicit</span><span class="w"> </span><span class="no">type</span><span class="w"> </span><span class="no">annotation</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">cons</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="no">t</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">lcase</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="no">of</span><span class="w"> </span><span class="no">nil</span><span class="w">  </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">t</span><span class="w">           </span><span class="o">--</span><span class="w"> </span><span class="no">a</span><span class="w"> </span><span class="no">special</span><span class="w"> </span><span class="no">case</span><span class="w"> </span><span class="no">for</span><span class="w"> </span><span class="no">list</span><span class="w">
+               </span><span class="o">|</span><span class="w"> </span><span class="no">x</span><span class="p">::</span><span class="no">x</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">t</span><span class="w">
+
+</span><span class="no">v</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Values</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="no">T</span><span class="w">             </span><span class="no">nil</span><span class="w"> </span><span class="no">value</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">cons</span><span class="w"> </span><span class="no">v</span><span class="w"> </span><span class="no">v</span><span class="w">          </span><span class="no">cons</span><span class="w"> </span><span class="no">value</span><span class="w">
+
+</span><span class="no">T</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Types</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">List</span><span class="w"> </span><span class="no">T</span><span class="w">            </span><span class="no">list</span><span class="w"> </span><span class="no">of</span><span class="w"> </span><span class="no">Ts</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Reduction:
+
+                            t1 --&gt; t1'
+                   --------------------------                    (ST_Cons1)
+                   cons t1 t2 --&gt; cons t1' t2
+
+                            t2 --&gt; t2'
+                   --------------------------                    (ST_Cons2)
+                   cons v1 t2 --&gt; cons v1 t2'
+
+                          t1 --&gt; t1'
+            -------------------------------------------         (ST_Lcase1)
+             (lcase t1 of nil =&gt; t2 | xh::xt =&gt; t3) --&gt;
+            (lcase t1' of nil =&gt; t2 | xh::xt =&gt; t3)
+
+           -----------------------------------------          (ST_LcaseNil)
+           (lcase nil T of nil =&gt; t2 | xh::xt =&gt; t3)
+                            --&gt; t2
+
+        ------------------------------------------------     (ST_LcaseCons)
+        (lcase (cons vh vt) of nil =&gt; t2 | xh::xt =&gt; t3)
+                      --&gt; [xh:=vh,xt:=vt]t3                  -- multiple substi
+
+
+Typing:
+
+                    -------------------------                       (T_Nil)
+                    Gamma |- nil T \in List T
+
+         Gamma |- t1 \in T      Gamma |- t2 \in List T
+         ---------------------------------------------             (T_Cons)
+                Gamma |- cons t1 t2 \in List T
+
+                    Gamma |- t1 \in List T1
+                    Gamma |- t2 \in T
+            (h|-&gt;T1; t|-&gt;List T1; Gamma) |- t3 \in T
+      ---------------------------------------------------         (T_Lcase)
+      Gamma |- (lcase t1 of nil =&gt; t2 | h::t =&gt; t3) \in T
+</code></pre></div></div>
+
+<h3 id="general-recursion-fixpoint">General Recursion (Fixpoint)</h3>
+
+<p>通用的递归，而非 primitive recursion (PFPL)</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fact</span> <span class="o">=</span> <span class="nf">\</span><span class="n">x</span><span class="o">:</span><span class="kt">Nat</span> <span class="o">.</span> <span class="kr">if</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span> <span class="kr">then</span> <span class="mi">1</span> <span class="kr">else</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">fact</span> <span class="p">(</span><span class="n">pred</span> <span class="n">x</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>这个在 Stlc 中不被允许，因为我们在定义 <code class="language-plaintext highlighter-rouge">fact</code> 的过程中发现了一个 free 的 <code class="language-plaintext highlighter-rouge">fact</code>，要么未定义，要么不是自己。
+所以我们需要 <code class="language-plaintext highlighter-rouge">Fixpoint</code></p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fact</span> <span class="o">=</span> <span class="n">fix</span> <span class="p">(</span><span class="nf">\</span><span class="n">fact</span><span class="o">:</span><span class="kt">Nat</span><span class="o">-&gt;</span><span class="kt">Nat</span><span class="o">.</span> 
+       <span class="nf">\</span><span class="n">x</span><span class="o">:</span><span class="kt">Nat</span> <span class="o">.</span> <span class="kr">if</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span> <span class="kr">then</span> <span class="mi">1</span> <span class="kr">else</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">fact</span> <span class="p">(</span><span class="n">pred</span> <span class="n">x</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">t</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                </span><span class="no">Terms</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="no">fix</span><span class="w"> </span><span class="no">t</span><span class="w">             </span><span class="no">fixed</span><span class="o">-</span><span class="no">point</span><span class="w"> </span><span class="no">operator</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Reduction:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                            t1 --&gt; t1'
+                        ------------------                        (ST_Fix1)
+                        fix t1 --&gt; fix t1'
+
+           --------------------------------------------         (ST_FixAbs)
+           fix (\xf:T1.t2) --&gt; [xf:=fix (\xf:T1.t2)] t2         -- fix f = f (fix f)
+</code></pre></div></div>
+
+<p>Typing:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                       Gamma |- t1 \in T1-&gt;T1
+                       ----------------------                       (T_Fix)
+                       Gamma |- fix t1 \in T1
+</code></pre></div></div>
+
+<h3 id="records">Records</h3>
+
+<p>这里的定义非常 informal:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">t</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                          </span><span class="no">Terms</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">{</span><span class="no">i1</span><span class="o">=</span><span class="no">t1</span><span class="o">,</span><span class="w"> </span><span class="o">...,</span><span class="w"> </span><span class="kr">in</span><span class="o">=</span><span class="no">tn</span><span class="o">}</span><span class="w">         </span><span class="no">record</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="nn">t</span><span class="p">.</span><span class="no">i</span><span class="w">                         </span><span class="no">projection</span><span class="w">
+
+</span><span class="no">v</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                          </span><span class="no">Values</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">{</span><span class="no">i1</span><span class="o">=</span><span class="no">v1</span><span class="o">,</span><span class="w"> </span><span class="o">...,</span><span class="w"> </span><span class="kr">in</span><span class="o">=</span><span class="no">vn</span><span class="o">}</span><span class="w">         </span><span class="no">record</span><span class="w"> </span><span class="no">value</span><span class="w">
+
+</span><span class="no">T</span><span class="w"> </span><span class="p">::</span><span class="o">=</span><span class="w">                          </span><span class="no">Types</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="o">{</span><span class="no">i1</span><span class="p">:</span><span class="no">T1</span><span class="o">,</span><span class="w"> </span><span class="o">...,</span><span class="w"> </span><span class="kr">in</span><span class="p">:</span><span class="no">Tn</span><span class="o">}</span><span class="w">         </span><span class="no">record</span><span class="w"> </span><span class="no">type</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Reduction:
+
+                          ti --&gt; ti'
+             ------------------------------------                  (ST_Rcd)
+                 {i1=v1, ..., im=vm, in=ti , ...}
+             --&gt; {i1=v1, ..., im=vm, in=ti', ...}
+
+                          t1 --&gt; t1'
+                        --------------                           (ST_Proj1)
+                        t1.i --&gt; t1'.i
+
+                  -------------------------                    (ST_ProjRcd)
+                  {..., i=vi, ...}.i --&gt; vi
+
+Typing:
+
+        Gamma |- t1 \in T1     ...     Gamma |- tn \in Tn
+      ----------------------------------------------------          (T_Rcd)
+      Gamma |- {i1=t1, ..., in=tn} \in {i1:T1, ..., in:Tn}
+
+                Gamma |- t \in {..., i:Ti, ...}
+                -------------------------------                    (T_Proj)
+                      Gamma |- t.i \in Ti
+</code></pre></div></div>
+
+<h3 id="其他">其他</h3>
+
+<p>提了一嘴</p>
+
+<ul>
+  <li>Variant</li>
+  <li>Recursive type <code class="language-plaintext highlighter-rouge">μ</code></li>
+</ul>
+
+<p>加起来就可以</p>
+<blockquote>
+  <p>give us enough mechanism to build <em>arbitrary inductive data types</em> like lists and trees from scratch</p>
+</blockquote>
+
+<p>Basically</p>
+
+<p>ADT = Unit + Product + Sum (Variant) + Function (Expo)</p>
+
+<p>但是 Coq 的 <code class="language-plaintext highlighter-rouge">Inductive</code> 还需要进一步的 Pi (Dependent Product), Sigma (Dependent Sum).</p>
+
+<h2 id="exercise-formalizing-the-extensions">Exercise: Formalizing the Extensions</h2>
+
+<h3 id="stlce-definitions">STLCE definitions</h3>
+
+<p>基本上就是把上面的 rule 用 AST 写进来</p>
+
+<h3 id="stlce-examples">STLCE examples</h3>
+
+<blockquote>
+  <p>a bit of Coq hackery to automate searching for typing derivation</p>
+</blockquote>
+
+<p>基本上就是自动化的 pattern matching + tactics</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Hint</span><span class="w"> </span><span class="no">Extern</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">(</span><span class="no">has_type</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="o">(</span><span class="no">app</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="p">_</span><span class="o">)</span><span class="w"> </span><span class="p">_</span><span class="o">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w">
+  </span><span class="kp">eapply</span><span class="w"> </span><span class="no">T_App</span><span class="p">;</span><span class="w"> </span><span class="kp">auto</span><span class="pi">.</span><span class="w">
+
+</span><span class="k">Hint</span><span class="w"> </span><span class="no">Extern</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">(</span><span class="no">has_type</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="o">(</span><span class="no">tlcase</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="p">_</span><span class="w"> </span><span class="p">_</span><span class="o">)</span><span class="w"> </span><span class="p">_</span><span class="o">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w">
+  </span><span class="kp">eapply</span><span class="w"> </span><span class="no">T_Lcase</span><span class="p">;</span><span class="w"> </span><span class="kp">auto</span><span class="pi">.</span><span class="w">
+
+</span><span class="k">Hint</span><span class="w"> </span><span class="no">Extern</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">(</span><span class="p">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">_</span><span class="o">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="kp">compute</span><span class="p">;</span><span class="w"> </span><span class="ne">reflexivity</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>效果非常酷：typecheck 只需要 <code class="language-plaintext highlighter-rouge">eauto</code>，reduction 只需要 <code class="language-plaintext highlighter-rouge">normalize</code>.</p>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/03/08/sf-plf-08-STLC-prop/" data-toggle="tooltip" data-placement="top" title="「SF-PLF」8 StlcProp">
+                        Previous<br>
+                        <span>「SF-PLF」8 StlcProp</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/03/09/React-useEffect-%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/" data-toggle="tooltip" data-placement="top" title="React useEffect 相关问题">
+                        Next<br>
+                        <span>React useEffect 相关问题</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

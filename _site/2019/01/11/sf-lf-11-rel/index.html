@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="「SF-LC」11 Rel - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  relation 与injective/surjective/bijective function 等相关的知识在 5. Tactics 里，为了避免每次都要 grep 我在这里写一下。
+
+">
+    
+    <meta property="article:published_time" content="2019-01-11T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Hux">
+    
+    
+    <meta property="article:tag" content="LF (逻辑基础)">
+    
+    <meta property="article:tag" content="SF (软件基础)">
+    
+    <meta property="article:tag" content="Coq">
+    
+    <meta property="article:tag" content="笔记">
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/01/11/sf-lf-11-rel/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>「SF-LC」11 Rel - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/01/11/sf-lf-11-rel/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top invert">
+    
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header style-text" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29" title="LF (逻辑基础)">LF (逻辑基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29" title="SF (软件基础)">SF (软件基础)</a>
+                        
+                        <a class="tag" href="/archive/?tag=Coq" title="Coq">Coq</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E7%AC%94%E8%AE%B0" title="笔记">笔记</a>
+                        
+                    </div>
+                    <h1>「SF-LC」11 Rel</h1>
+                    
+                    <h2 class="subheading">Logical Foundations - Properties of Relations</h2>
+                    <span class="meta">Posted by Hux on January 11, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>relation 与injective/surjective/bijective function 等相关的知识在 <code class="language-plaintext highlighter-rouge">5. Tactics</code> 里，为了避免每次都要 <code class="language-plaintext highlighter-rouge">grep</code> 我在这里写一下。</p>
+</blockquote>
+
+<h2 id="relations">Relations</h2>
+
+<h3 id="recalling-relation">Recalling <a href="https://en.wikipedia.org/wiki/Finitary_relation">Relation</a></h3>
+
+<p>from FCT/TAPL/Wiki…</p>
+<blockquote>
+  <p>a possible connection between the components of a k-tuple.</p>
+</blockquote>
+
+<p>I have been long confused with <em>Unary Relations vs. Binary Relation on the Same Set (homogeneous relation)</em>
+I thought they were same…but turns out they are totally different!</p>
+
+<h4 id="unary1-place-relation-is-predicate-or-property">Unary/1-place relation is <strong>Predicate</strong> or <strong>Property</strong>!</h4>
+
+<p>Either defined via set <code class="language-plaintext highlighter-rouge">X ⊆ P</code> or <code class="language-plaintext highlighter-rouge">x ∈ P</code>,
+or defined via function <code class="language-plaintext highlighter-rouge">P : X -&gt; Bool</code> or <code class="language-plaintext highlighter-rouge">P : X -&gt; {⊥, ⊤}</code>.
+(usually used in Math. Logic)</p>
+
+<p>Property = Indicator Fn = characteristic Fn = Boolean Predicate Fn = Predicate</p>
+<ul>
+  <li><a href="https://en.wikipedia.org/wiki/Property_(mathematics)">https://en.wikipedia.org/wiki/Property_(mathematics)</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Indicator_function">https://en.wikipedia.org/wiki/Indicator_function</a></li>
+</ul>
+
+<h4 id="binary-relation2-place-relation"><a href="https://en.wikipedia.org/wiki/Binary_relation">Binary Relation/2-place relation</a></h4>
+
+<p>Defined via two sets : <code class="language-plaintext highlighter-rouge">R ⊆ X × Y</code> or <code class="language-plaintext highlighter-rouge">x, y ∈ R</code> or <code class="language-plaintext highlighter-rouge">xRy</code>.  (where <code class="language-plaintext highlighter-rouge">x ∈ X, y ∈ Y</code>.)
+or via function <code class="language-plaintext highlighter-rouge">R: X × Y -&gt; Bool</code>.</p>
+
+<h5 id="homogeneous-relation-同类的关系"><a href="https://en.wikipedia.org/wiki/Binary_relation#Homogeneous_relation">Homogeneous Relation 同类（的）关系</a></h5>
+
+<p>Specifically! when <code class="language-plaintext highlighter-rouge">X = Y</code>, is called a <em>homogeneous relation</em>:</p>
+
+<p>Noticed that we are still concerning relations of <strong>2 elements</strong>!!, but they are from the same Set!
+(while 1-place relation concerning only 1 element.)</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>R ⊆ X × X
+xRy where x ∈ X, y ∈ X
+</code></pre></div></div>
+
+<p>it’s written/spoken <em>Binary</em> relation <strong>on/over</strong> Set <code class="language-plaintext highlighter-rouge">X</code>. 
+Properties e.g. <em>reflexive, symmetric, transitive</em>, are all properties of “Homogeneous Relation”!</p>
+
+<h3 id="back-to-coq">Back to Coq</h3>
+
+<p>“relation” is a general idea. but in Coq standard lib it means “binary relation on <em>a</em> set X”</p>
+<blockquote>
+  <p>Coq <code class="language-plaintext highlighter-rouge">identifier</code> relation will always refer to a binary relation between some set and itself.</p>
+</blockquote>
+
+<p>it’s defined as <em>a family of Prop parameterized by two elements of <code class="language-plaintext highlighter-rouge">X</code></em>:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="o">(</span><span class="no">X</span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="no">X</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">X</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="kr">Prop</span><span class="pi">.</span><span class="w">
+
+</span><span class="k">Check</span><span class="w"> </span><span class="no">le</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">nat</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kr">Prop</span><span class="pi">.</span><span class="w">
+</span><span class="k">Check</span><span class="w"> </span><span class="no">le</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">nat</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="basic-properties">Basic Properties</h2>
+
+<blockquote>
+  <p>ways to classifying relations.
+so theorems can be proved generically about certain sorts of relations</p>
+</blockquote>
+
+<p>It’s pretty fun to see all mathematical things defined in Coq!
+(much more constructive)</p>
+
+<h3 id="partial-function"><a href="https://en.wikipedia.org/wiki/Partial_function">Partial Function</a></h3>
+
+<blockquote>
+  <p>function is defined as <em>a special kind of binary relation</em>.</p>
+</blockquote>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">partial_function</span><span class="w"> </span><span class="o">{</span><span class="no">X</span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="p">∀</span><span class="no">x</span><span class="w"> </span><span class="no">y1</span><span class="w"> </span><span class="no">y2</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">X</span><span class="o">,</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y1</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y2</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">y1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">y2</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>meaning that foreach input <code class="language-plaintext highlighter-rouge">x ∈ X</code>, there is a <em>unique</em> <code class="language-plaintext highlighter-rouge">y ∈ Y</code> corresponded.</p>
+
+<p>But this only establish a <em>partial function</em>. 
+because it doesn’t say anything about <em>totality</em>,
+to define <em>total function</em>, we require <code class="language-plaintext highlighter-rouge">f</code> map every <code class="language-plaintext highlighter-rouge">x ∈ X</code>.</p>
+
+<ul>
+  <li>
+    <p><a href="https://en.wikipedia.org/wiki/Connex_relation">Total “Relation”</a></p>
+
+    <p>∀x ∀y (x ∈ X ∧ y ∈ X) ⇒ (xRy ∨ yRx).</p>
+  </li>
+</ul>
+
+<p>totally different with <em>total function</em> but ask the binary relation holds between every pair.</p>
+
+<h3 id="reflexive">Reflexive</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">transitive</span><span class="w"> </span><span class="o">{</span><span class="no">X</span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="p">∀</span><span class="no">a</span><span class="w"> </span><span class="no">b</span><span class="w"> </span><span class="no">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">X</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">a</span><span class="w"> </span><span class="no">b</span><span class="o">)</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">b</span><span class="w"> </span><span class="no">c</span><span class="o">)</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">a</span><span class="w"> </span><span class="no">c</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="transitive">Transitive</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">transitive</span><span class="w"> </span><span class="o">{</span><span class="no">X</span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="p">∀</span><span class="no">a</span><span class="w"> </span><span class="no">b</span><span class="w"> </span><span class="no">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">X</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">a</span><span class="w"> </span><span class="no">b</span><span class="o">)</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">b</span><span class="w"> </span><span class="no">c</span><span class="o">)</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">a</span><span class="w"> </span><span class="no">c</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="symmetric--antisymmetric">Symmetric &amp; Antisymmetric</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">symmetric</span><span class="w"> </span><span class="o">{</span><span class="no">X</span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="p">∀</span><span class="no">a</span><span class="w"> </span><span class="no">b</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">X</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">a</span><span class="w"> </span><span class="no">b</span><span class="o">)</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">b</span><span class="w"> </span><span class="no">a</span><span class="o">).</span><span class="w">
+  
+</span><span class="k">Definition</span><span class="w"> </span><span class="no">antisymmetric</span><span class="w"> </span><span class="o">{</span><span class="no">X</span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="p">∀</span><span class="no">a</span><span class="w"> </span><span class="no">b</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">X</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">a</span><span class="w"> </span><span class="no">b</span><span class="o">)</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="no">b</span><span class="w"> </span><span class="no">a</span><span class="o">)</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="no">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">b</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<h4 id="antisymmetric-vs-asymmetric-vs-non-symmetric-反对称-vs-非对称-vs-不-对称">Antisymmetric vs Asymmetric vs Non-symmetric (反对称 vs. 非对称 vs. 不-对称)</h4>
+
+<p>A relation is <strong>asymmetric</strong> if and only if it is both antisymmetric and irreflexive
+e.g. <code class="language-plaintext highlighter-rouge">&lt;=</code> is neither symmetric nor asymmetric, but it’s antisymmetric…
+反对称: 可以自反 (只能 reflexive 时对称) <code class="language-plaintext highlighter-rouge">&lt;=</code>
+非对称: 不能自反 <code class="language-plaintext highlighter-rouge">&lt;</code>
+不对称: 不是对称</p>
+
+<h3 id="equivalence">Equivalence</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">equivalence</span><span class="w"> </span><span class="o">{</span><span class="no">X</span><span class="p">:</span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">(</span><span class="no">reflexive</span><span class="w"> </span><span class="no">R</span><span class="o">)</span><span class="w"> </span><span class="p">∧</span><span class="w"> </span><span class="o">(</span><span class="no">symmetric</span><span class="w"> </span><span class="no">R</span><span class="o">)</span><span class="w"> </span><span class="p">∧</span><span class="w"> </span><span class="o">(</span><span class="no">transitive</span><span class="w"> </span><span class="no">R</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="partial-orders">Partial Orders</h3>
+
+<p>A partial order under which <em>every pair</em> of elements is <em>comparable</em> is called a <strong>total order</strong> or <strong>linear order</strong>
+In the Coq standard library it’s called just <code class="language-plaintext highlighter-rouge">order</code> for short:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">order</span><span class="w"> </span><span class="o">{</span><span class="no">X</span><span class="p">:</span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">(</span><span class="no">reflexive</span><span class="w"> </span><span class="no">R</span><span class="o">)</span><span class="w"> </span><span class="p">∧</span><span class="w"> </span><span class="o">(</span><span class="no">antisymmetric</span><span class="w"> </span><span class="no">R</span><span class="o">)</span><span class="w"> </span><span class="p">∧</span><span class="w"> </span><span class="o">(</span><span class="no">transitive</span><span class="w"> </span><span class="no">R</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="preorders">Preorders</h3>
+
+<p>a.k.a quasiorder</p>
+
+<p>The <em>subtyping</em> relations are usually preorders.</p>
+<blockquote>
+  <p>(TAPL p185) because of the record permutation rule…there are many pairs of distinct types where each is a subtype of the other.</p>
+</blockquote>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Definition</span><span class="w"> </span><span class="no">preorder</span><span class="w"> </span><span class="o">{</span><span class="no">X</span><span class="p">:</span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">(</span><span class="no">reflexive</span><span class="w"> </span><span class="no">R</span><span class="o">)</span><span class="w"> </span><span class="p">∧</span><span class="w"> </span><span class="o">(</span><span class="no">transitive</span><span class="w"> </span><span class="no">R</span><span class="o">).</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="reflexive-transitive-closure">Reflexive, Transitive Closure</h2>
+
+<blockquote>
+  <p><a href="https://en.wikipedia.org/wiki/Closure_(mathematics)#Binary_relation_closures">Closure</a>
+Closure can be considered as <a href="https://en.wikipedia.org/wiki/Binary_relation#Operations_on_binary_relations">Operations on bin-rel</a></p>
+</blockquote>
+
+<p>As properties such as <em>reflexive, transitive</em>, 
+the <strong>blah blah Closure</strong> are only talking about “homogeneous relations” i.e., Relation on a SINGLE set.</p>
+
+<h3 id="reflexive-closure"><a href="https://en.wikipedia.org/wiki/Reflexive_closure">Reflexive Closure</a></h3>
+
+<p>Def. smallest reflexive relation on <code class="language-plaintext highlighter-rouge">X</code> containing <code class="language-plaintext highlighter-rouge">R</code>.</p>
+
+<p>Operationally, as a <code class="language-plaintext highlighter-rouge">=</code> operator on a binary relation <code class="language-plaintext highlighter-rouge">R</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>R⁼ = R ∪ { (x, x) | x ∈ X }
+</code></pre></div></div>
+
+<p>and this obviously satisfy <code class="language-plaintext highlighter-rouge">R⁼ ⊇ R</code>.</p>
+
+<h3 id="transitive-closure"><a href="https://en.wikipedia.org/wiki/Transitive_closure">Transitive Closure</a></h3>
+
+<p>Def. smallest transitive relation on <code class="language-plaintext highlighter-rouge">X</code> containing <code class="language-plaintext highlighter-rouge">R</code>.</p>
+
+<p>Operationally, as a <code class="language-plaintext highlighter-rouge">+</code> operator on a binary relation <code class="language-plaintext highlighter-rouge">R</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>R+ = R ∪ { (x1,xn) | n &gt; 1 ∧ (x1,x2), ..., (xn-1,xn) ∈ R }
+</code></pre></div></div>
+
+<p>We can also constructively and inductively definition using <code class="language-plaintext highlighter-rouge">R^i</code> where <code class="language-plaintext highlighter-rouge">i = i-transitivity away</code>.</p>
+
+<h3 id="reflexive-transitive-closure-1">Reflexive, Transitive Closure</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>R* = R⁼ ∪ R+
+</code></pre></div></div>
+
+<h3 id="why-is-it-useful">Why is it useful?</h3>
+
+<blockquote>
+  <p>The idea is that <em>a relation is extended</em> s.t. 
+<em>the derived relation has the (reflexsive and) transitive property.</em> – Prof. Arthur</p>
+</blockquote>
+
+<blockquote>
+  <p>e.g.
+the “descendant” relation is the transitive closure of the “child” relation, 
+the “derives-star (⇒⋆)” relation is the reflexive-transitive closure of the “derives (⇒)” relation.
+the “ε-closure” relation is the reflexive-transitive closure of the “ε-transition” relation.
+the “Kleene-star (Σ⋆)” relation is the reflexive-transitive closure of the “concatentation” relation.</p>
+</blockquote>
+
+<p>Another way is to think them as “set closed under some operation”.</p>
+
+<h3 id="back-to-coq-1">Back to Coq</h3>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">clos_refl_trans</span><span class="w"> </span><span class="o">{</span><span class="no">A</span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">A</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">A</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">rt_step</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="w"> </span><span class="o">(</span><span class="no">H</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">clos_refl_trans</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="w">        </span><span class="c">(** original relation **)</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">rt_refl</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">clos_refl_trans</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">x</span><span class="w">                      </span><span class="c">(** reflexive  xRx              **)</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">rt_trans</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="w"> </span><span class="no">z</span><span class="w">                                         </span><span class="c">(** transitive xRy ∧ yRz → xRz  **)</span><span class="w">
+        </span><span class="o">(</span><span class="no">Hxy</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">clos_refl_trans</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="o">)</span><span class="w">
+        </span><span class="o">(</span><span class="no">Hyz</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">clos_refl_trans</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">y</span><span class="w"> </span><span class="no">z</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w">
+        </span><span class="no">clos_refl_trans</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">z</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The above version will generate 2 IHs in <code class="language-plaintext highlighter-rouge">rt_trans</code> case. (since the proof tree has 2 branches).</p>
+
+<p>Here is a better “linked-list”-ish one. (we will exclusively use this style)</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">clos_refl_trans_1n</span><span class="w"> </span><span class="o">{</span><span class="no">A</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">A</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">x</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">A</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">A</span><span class="w"> </span><span class="p">→</span><span class="w"> </span><span class="kr">Prop</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">rt1n_refl</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">clos_refl_trans_1n</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">x</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">rt1n_trans</span><span class="w"> </span><span class="o">(</span><span class="no">y</span><span class="w"> </span><span class="no">z</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">A</span><span class="o">)</span><span class="w">
+      </span><span class="o">(</span><span class="no">Hxy</span><span class="w">   </span><span class="p">:</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="o">)</span><span class="w"> 
+      </span><span class="o">(</span><span class="no">Hrest</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">clos_refl_trans_1n</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">y</span><span class="w"> </span><span class="no">z</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w">
+      </span><span class="no">clos_refl_trans_1n</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">z</span><span class="pi">.</span><span class="w">
+</span></code></pre></div></div>
+
+<p>In later chapter, we will define a decorator <code class="language-plaintext highlighter-rouge">multi</code> that can take any binary relation on a set and return its closure relation:</p>
+
+<div class="language-coq highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">Inductive</span><span class="w"> </span><span class="no">multi</span><span class="w"> </span><span class="o">(</span><span class="no">X</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">Type</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="no">R</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="o">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">relation</span><span class="w"> </span><span class="no">X</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">multi_refl</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">forall</span><span class="w"> </span><span class="no">x</span><span class="w">     </span><span class="p">:</span><span class="w"> </span><span class="no">X</span><span class="o">,</span><span class="w">                         </span><span class="no">multi</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">x</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="no">multi_step</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kr">forall</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="w"> </span><span class="no">z</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">X</span><span class="o">,</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">multi</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">y</span><span class="w"> </span><span class="no">z</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">multi</span><span class="w"> </span><span class="no">R</span><span class="w"> </span><span class="no">x</span><span class="w"> </span><span class="no">z</span><span class="w">
+</span></code></pre></div></div>
+
+<p>We name it <code class="language-plaintext highlighter-rouge">step</code>, standing for <em>doing one step of this relation</em>, and then we still have the rest (sub-structure) satisfied the closure relation.</p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/01/10/sf-lf-10-ind-principle/" data-toggle="tooltip" data-placement="top" title="「SF-LC」10 IndPrinciples">
+                        Previous<br>
+                        <span>「SF-LC」10 IndPrinciples</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/01/12/sf-lf-12-imp/" data-toggle="tooltip" data-placement="top" title="「SF-LC」12 Imp">
+                        Next<br>
+                        <span>「SF-LC」12 Imp</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

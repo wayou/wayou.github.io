@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="notes about the coding life">
+    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="JavaScript 实现页面中录音功能 - 牛さんの部落格|刘哇勇的部落格">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="JavaScript 实现页面中录音功能
+
+页面中实现录音需要使用浏览器提供的 Media​Recorder API，所以前提是需要浏览器支持 MediaStream Recording 相关的功能。
+
+以下代码默认工作在 Chrome 环境中。
+
+准备页面
+
+首先准备一个页面，其中内容很简单，一个录音按钮，一个用于播放的 &lt;audio&gt; 标签。
+
+&lt;!DOCTYPE ht...">
+    
+    <meta property="article:published_time" content="2019-06-03T18:06:00Z">
+    
+    
+    
+    
+    <meta property="og:image" content="http://0.0.0.0:4000">
+    <meta property="og:url" content="http://0.0.0.0:4000/2019/06/03/JavaScript-%E5%AE%9E%E7%8E%B0%E9%A1%B5%E9%9D%A2%E4%B8%AD%E5%BD%95%E9%9F%B3%E5%8A%9F%E8%83%BD/">
+    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
+    
+    <title>JavaScript 实现页面中录音功能 - 牛さんの部落格|刘哇勇的部落格</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/06/03/JavaScript-%E5%AE%9E%E7%8E%B0%E9%A1%B5%E9%9D%A2%E4%B8%AD%E5%BD%95%E9%9F%B3%E5%8A%9F%E8%83%BD/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">牛さんの部落格</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">关于</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script> <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>JavaScript 实现页面中录音功能</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by 牛さんの部落格 on June 3, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="javascript-实现页面中录音功能">JavaScript 实现页面中录音功能</h1>
+
+<p>页面中实现录音需要使用浏览器提供的 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder">Media​Recorder</a> API，所以前提是需要浏览器支持 <a href="https://w3c.github.io/mediacapture-record/#MediaRecorderAPI">MediaStream Recording</a> 相关的功能。</p>
+
+<p>以下代码默认工作在 Chrome 环境中。</p>
+
+<h2 id="准备页面">准备页面</h2>
+
+<p>首先准备一个页面，其中内容很简单，一个录音按钮，一个用于播放的 <code class="language-plaintext highlighter-rouge">&lt;audio&gt;</code> 标签。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"viewport"</span> <span class="na">content=</span><span class="s">"width=device-width, initial-scale=1.0"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"X-UA-Compatible"</span> <span class="na">content=</span><span class="s">"ie=edge"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;title&gt;</span>audio record<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"app"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"record-btn"</span><span class="nt">&gt;</span>record<span class="nt">&lt;/button&gt;</span>
+        <span class="nt">&lt;audio</span> <span class="na">controls</span> <span class="na">class=</span><span class="s">"audio-player"</span><span class="nt">&gt;&lt;/audio&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"./recorder.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<h2 id="获取录音权限">获取录音权限</h2>
+
+<p>因为录音需要使用设备的话筒，所以第一步应该是向用户索要录音的权限。这是通过 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia"><code class="language-plaintext highlighter-rouge">Media​Devices​.get​User​Media()</code></a> 来完成的，其用法为：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">(</span><span class="nx">constraints</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>其中 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Parameters"><code class="language-plaintext highlighter-rouge">constraints</code></a> 为需要获取的权限列表，这里只需要指定音频 <code class="language-plaintext highlighter-rouge">audio</code> 即可。</p>
+
+<p>其返回是个 Promise，因为用户何时进行授权是不确定的。通过在 Promise 的回调中进行授权成功或失败的处理。</p>
+
+<p>在使用前需要判断浏览器是否已经支持相应的 API，此时得到如下的代码：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">constraints</span> <span class="o">=</span> <span class="p">{</span> <span class="na">audio</span><span class="p">:</span> <span class="kc">true</span> <span class="p">};</span>
+  <span class="nb">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">(</span><span class="nx">constraints</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span>
+    <span class="nx">stream</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">授权成功！</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">授权失败！</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">浏览器不支持 getUserMedia</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>其中成功回调里得到的入参 <code class="language-plaintext highlighter-rouge">stream</code> 为 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream"><code class="language-plaintext highlighter-rouge">MediaStream</code></a> 对象。</p>
+
+<p>此时运行后可看到浏览器展示出了让用户授权使用麦克风的提示。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/58750750-a484c100-84c8-11e9-9785-94746d98dbd5.png" alt="向用户索要麦克风使用权限" /></p>
+<p align="center">向用户索要麦克风使用权限</p>
+
+<h2 id="创建录音实例">创建录音实例</h2>
+
+<p>将上一步获取到的 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream"><code class="language-plaintext highlighter-rouge">MediaStream</code></a> 传入 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder">Media​Recorder</a> 的构造器创建一个录音器的实例。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">mediaRecorder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MediaRecorder</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="启动录音">启动录音</h2>
+
+<p>通过监听页面中录音按钮的点击来启动录音。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">recordBtn</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">"</span><span class="s2">.record-btn</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">mediaRecorder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MediaRecorder</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span>
+<span class="nx">recordBtn</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">录音中...</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">MediaRecorder</code> 实例上有个 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/state"><code class="language-plaintext highlighter-rouge">state</code></a> 状态，可用来判断录音器当前的活动状态，总共有三种值：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">inactive</code>：处于休息状态，要么是没开始，要么是开始后已经停止。</li>
+  <li><code class="language-plaintext highlighter-rouge">recording</code>：录音中</li>
+  <li><code class="language-plaintext highlighter-rouge">paused</code>：已经开始，但被暂停了，不是停止也没有被恢复。</li>
+</ul>
+
+<p>所以通过这个状态，我们可以实现再次点击按钮时，结束录音。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">recordBtn</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">state</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">recording</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">stop</span><span class="p">();</span>
+    <span class="nx">recordBtn</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">record</span><span class="dl">"</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">录音结束</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">录音中...</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">recordBtn</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">stop</span><span class="dl">"</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">录音器状态：</span><span class="dl">"</span><span class="p">,</span> <span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">state</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="音频数据的获取">音频数据的获取</h2>
+
+<p>上面按钮处理来自用户的交互，只负责启动或停止录音。音频的数据还是从 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder">Media​Recorder</a> 实例上通过监听其相应的事件来完成的。</p>
+
+<p>当录音开始时，会触发其 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/ondataavailable"><code class="language-plaintext highlighter-rouge">MediaRecorder.ondataavailable</code></a> 事件，从该事件回调的入参为 <a href="https://developer.mozilla.org/en-US/docs/Web/API/BlobEvent"><code class="language-plaintext highlighter-rouge">BlobEvent</code></a>，从它身上取到 <a href="https://developer.mozilla.org/en-US/docs/Web/API/BlobEvent/data"><code class="language-plaintext highlighter-rouge">event.data</code></a> 便是我们需要的音频数据。因为数据是一段一段产生的，所以需要暂存到一个数组中。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">chunks</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">ondataavailable</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">chunks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>目前为止完成的代码应该是这样的：</p>
+
+<details>
+<summary>
+recorder.js
+</summary>
+
+```js
+const recordBtn = document.querySelector(".record-btn");
+const playBtn = document.querySelector(".play-btn");
+
+if (navigator.mediaDevices.getUserMedia) {
+  var chunks = [];
+  const constraints = { audio: true };
+  navigator.mediaDevices.getUserMedia(constraints).then(
+    stream =&gt; {
+      console.log("授权成功！");
+
+      const mediaRecorder = new MediaRecorder(stream);
+
+      recordBtn.onclick = () =&gt; {
+        if (mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+          recordBtn.textContent = "record";
+          console.log("录音结束");
+        } else {
+          mediaRecorder.start();
+          console.log("录音中...");
+          recordBtn.textContent = "stop";
+        }
+        console.log("录音器状态：", mediaRecorder.state);
+      };
+
+      mediaRecorder.ondataavailable = function(e) {
+        chunks.push(e.data);
+      };
+    },
+    () =&gt; {
+      console.error("授权失败！");
+    }
+  );
+} else {
+  console.error("浏览器不支持 getUserMedia");
+}
+```
+
+</details>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/58750759-c0886280-84c8-11e9-9c8f-154a1fafc959.gif" alt="录音状态的查看" /></p>
+<p align="center">录音状态的查看</p>
+
+<h2 id="录音结束及音频的播放">录音结束及音频的播放</h2>
+
+<p>通过监听 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/onstop"><code class="language-plaintext highlighter-rouge">MediaRecorder.onstop</code></a> 事件，将收集好的音频数据创建成 <a href="https://developer.mozilla.org/en/docs/Web/API/Blob">Blob 对象</a>，然后 通过 <a href="https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL"><code class="language-plaintext highlighter-rouge">URL.createObjectURL</code></a> 创建成 HTML 中 <code class="language-plaintext highlighter-rouge">&lt;audio&gt;</code> 标签可使用的资源链接。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">onstop</span> <span class="o">=</span> <span class="nx">e</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">(</span><span class="nx">chunks</span><span class="p">,</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">audio/ogg; codecs=opus</span><span class="dl">"</span> <span class="p">});</span>
+  <span class="nx">chunks</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="kd">var</span> <span class="nx">audioURL</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">blob</span><span class="p">);</span>
+  <span class="nx">audio</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">audioURL</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>其中，在使用完收到到的音频数据后，将 <code class="language-plaintext highlighter-rouge">chunks</code> 置空方便下次录音时使用。</p>
+
+<p>目前为止完成的代码应该是这样的：</p>
+
+<details>
+<summary>
+recorder.js
+</summary>
+
+```js
+const recordBtn = document.querySelector(".record-btn");
+const player = document.querySelector(".audio-player");
+
+if (navigator.mediaDevices.getUserMedia) {
+  var chunks = [];
+  const constraints = { audio: true };
+  navigator.mediaDevices.getUserMedia(constraints).then(
+    stream =&gt; {
+      console.log("授权成功！");
+
+      const mediaRecorder = new MediaRecorder(stream);
+
+      recordBtn.onclick = () =&gt; {
+        if (mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+          recordBtn.textContent = "record";
+          console.log("录音结束");
+        } else {
+          mediaRecorder.start();
+          console.log("录音中...");
+          recordBtn.textContent = "stop";
+        }
+        console.log("录音器状态：", mediaRecorder.state);
+      };
+
+      mediaRecorder.ondataavailable = e =&gt; {
+        chunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = e =&gt; {
+        var blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+        chunks = [];
+        var audioURL = window.URL.createObjectURL(blob);
+        player.src = audioURL;
+      };
+    },
+    () =&gt; {
+      console.error("授权失败！");
+    }
+  );
+} else {
+  console.error("浏览器不支持 getUserMedia");
+}
+```
+
+</details>
+
+<h2 id="运行">运行</h2>
+
+<p>完成上面步骤后，实现了一个简单的录音功能，可通过<a href="https://wayou.github.io/audio-recorder/index.html">此地址</a>在线体验。完整的代码可在仓库<a href="https://github.com/wayou/audio-recorder"> wayou/audio-recorder</a> 中获取到。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder">Media​Recorder</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/onstop"><code class="language-plaintext highlighter-rouge">MediaRecorder.onstop</code></a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL"><code class="language-plaintext highlighter-rouge">URL.createObjectURL</code></a></li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/06/01/Koa-%E4%B8%AD%E5%AE%9E%E7%8E%B0-chunked-%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93/" data-toggle="tooltip" data-placement="top" title="Koa 中实现 chunked 数据传输">
+                        Previous<br>
+                        <span>Koa 中实现 chunked 数据传输</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/06/03/Koa-%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%89%A7%E8%A1%8C/" data-toggle="tooltip" data-placement="top" title="Koa 中间件的执行">
+                        Next<br>
+                        <span>Koa 中间件的执行</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; 牛さんの部落格 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+  </body>
+</html>
