@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="notes about the coding life">
-    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
-    <meta name="theme-color" content="#000000">
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="Chrome DevTools 中内存溢出的调试，让相宜也不再皱眉 - 牛さんの部落格|刘哇勇的部落格">
-    
-    <meta property="og:type" content="article">
-    <meta property="og:description" content="Chrome DevTools 中内存溢出的调试，让相宜也不再皱眉
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Chrome DevTools 中内存溢出的调试，让相宜也不再皱眉 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="Chrome DevTools 中内存溢出的调试，让相宜也不再皱眉
 
 
 
@@ -23,53 +34,48 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
 
 看完推文视频里的这一波操作后，成功引起了我的注意。赶紧装了最新的 Canary 版本试了下，此时版本号已经来到了 67。
 
-打开其提供的...">
-    
-    <meta property="article:published_time" content="2018-03-13T15:03:00Z">
-    
-    
-    
-    <meta property="article:tag" content="V8">
-    
-    <meta property="article:tag" content="chrome">
-    
-    
-    <meta property="og:image" content="http://0.0.0.0:4000">
-    <meta property="og:url" content="http://0.0.0.0:4000/2018/03/13/Chrome-DevTools-%E4%B8%AD%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%E8%B0%83%E8%AF%95-%E8%AE%A9%E7%9B%B8%E5%AE%9C%E4%B9%9F%E4%B8%8D%E5%86%8D%E7%9A%B1%E7%9C%89/">
-    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
-    
-    <title>Chrome DevTools 中内存溢出的调试，让相宜也不再皱眉 - 牛さんの部落格|刘哇勇的部落格</title>
+打开其提供的..."
+  />
+   <meta property="article:published_time" content="2018-03-13T15:03:00Z">   
+  <meta property="article:tag" content="V8" />
+  
+  <meta property="article:tag" content="chrome" />
+   
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2018/03/13/Chrome-DevTools-%E4%B8%AD%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%E8%B0%83%E8%AF%95-%E8%AE%A9%E7%9B%B8%E5%AE%9C%E4%B9%9F%E4%B8%8D%E5%86%8D%E7%9A%B1%E7%9C%89/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
 
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="/pwa/manifest.json">
+  <title>
+    Chrome DevTools 中内存溢出的调试，让相宜也不再皱眉 - 牛さんの部落格|刘哇勇的部落格
+  </title>
 
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="/img/favicon.ico">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="http://0.0.0.0:4000/2018/03/13/Chrome-DevTools-%E4%B8%AD%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%E8%B0%83%E8%AF%95-%E8%AE%A9%E7%9B%B8%E5%AE%9C%E4%B9%9F%E4%B8%8D%E5%86%8D%E7%9A%B1%E7%9C%89/">
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/hux-blog.min.css">
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2018/03/13/Chrome-DevTools-%E4%B8%AD%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%E8%B0%83%E8%AF%95-%E8%AE%A9%E7%9B%B8%E5%AE%9C%E4%B9%9F%E4%B8%8D%E5%86%8D%E7%9A%B1%E7%9C%89/"
+  />
 
-    <!-- Custom Fonts -->
-    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
-    <!-- Hux change font-awesome CDN to qiniu -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
 
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.min.css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
 
-    <!-- ga & ba script hoook -->
-    <script></script>
+  <!-- ga & ba script hoook -->
+  <script></script>
 </head>
 
 
@@ -77,178 +83,102 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
   <body ontouchstart="">
     <!-- Navigation -->
 
-    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
-        
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">牛さんの部落格</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div id="huxblog_navbar">
-                <div class="navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="/">Home</a>
-                        </li>
-                        
-                        
-                        
-                        
-                        <li>
-                            <a href="/about/">关于</a>
-                        </li>
-                        
-                        
-                        
-                        <li>
-                            <a href="/archive/">Archive</a>
-                        </li>
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        <li class="search-icon">
-                            <a href="javascript:void(0)">
-                                <i class="fa fa-search"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
-
-    <script>
-        // Drop Bootstarp low-performance Navbar
-        // Use customize navbar with high-quality material design animation
-        // in high-perf jank-free CSS3 implementation
-        var $body = document.body;
-        var $toggle = document.querySelector('.navbar-toggle');
-        var $navbar = document.querySelector('#huxblog_navbar');
-        var $collapse = document.querySelector('.navbar-collapse');
-
-        var __HuxNav__ = {
-            close: function () {
-                $navbar.className = " ";
-                // wait until animation end.
-                setTimeout(function () {
-                    // prevent frequently toggle
-                    if ($navbar.className.indexOf('in') < 0) {
-                        $collapse.style.height = "0px"
-                    }
-                }, 400)
-            },
-            open: function () {
-                $collapse.style.height = "auto"
-                $navbar.className += " in";
-            }
-        }
-
-        // Bind Event
-        $toggle.addEventListener('click', function (e) {
-            if ($navbar.className.indexOf('in') > 0) {
-                __HuxNav__.close()
-            } else {
-                __HuxNav__.open()
-            }
-        })
-
-        /**
-         * Since Fastclick is used to delegate 'touchstart' globally
-         * to hack 300ms delay in iOS by performing a fake 'click',
-         * Using 'e.stopPropagation' to stop 'touchstart' event from 
-         * $toggle/$collapse will break global delegation.
-         * 
-         * Instead, we use a 'e.target' filter to prevent handler
-         * added to document close HuxNav.  
-         *
-         * Also, we use 'click' instead of 'touchstart' as compromise
-         */
-        document.addEventListener('click', function (e) {
-            if (e.target == $toggle) return;
-            if (e.target.className == 'icon-bar') return;
-            __HuxNav__.close();
-        })
-    </script> <!-- Search -->
-<div class="search-page">
-  <div class="search-icon-close-container">
-    <span class="search-icon-close">
-      <i class="fa fa-chevron-down"></i>
-    </span>
-  </div>
-  <div class="search-main container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <form></form>
-        <input type="text" id="search-input" placeholder="$ grep...">
-        </form>
-        <div id="search-results" class="mini-post-list"></div>
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
       </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive/"
+                >存档</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
     </div>
-  </div>
-</div> <!-- Image to hack wechat -->
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
 <!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
 
@@ -325,16 +255,17 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
 <p>其页面代码如下：</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Main window:</span>
-<span class="kd">const</span> <span class="nx">iframe</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">iframe</span><span class="dl">'</span><span class="p">);</span>
-<span class="nx">iframe</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">iframe.html</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">iframe</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">iframe</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">iframe</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">iframe.html</span><span class="dl">"</span><span class="p">;</span>
 <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">iframe</span><span class="p">);</span>
-<span class="nx">iframe</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">load</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class="nx">iframe</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">load</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">local_variable</span> <span class="o">=</span> <span class="nx">iframe</span><span class="p">.</span><span class="nx">contentWindow</span><span class="p">;</span>
   <span class="kd">function</span> <span class="nx">leakingListener</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">// Do something with `local_variable`.</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">local_variable</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">local_variable</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span>
   <span class="p">}</span>
-  <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">my-debug-event</span><span class="dl">'</span><span class="p">,</span> <span class="nx">leakingListener</span><span class="p">);</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">my-debug-event</span><span class="dl">"</span><span class="p">,</span> <span class="nx">leakingListener</span><span class="p">);</span>
   <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">iframe</span><span class="p">);</span>
   <span class="c1">// BUG: forgot to unregister `leakingListener`.</span>
 <span class="p">});</span>
@@ -391,32 +322,32 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
 
 <p>下图展示了上面示例中，iframe 中导致溢出的对象的引用路径。</p>
 
-<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/memory-leak-tracing/assets/retaining-path.png" alt="图1：iframe 中导出溢出的对象的引用路径" />￼
-<em>图1：iframe 中导出溢出的对象的引用路径</em></p>
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/memory-leak-tracing/assets/retaining-path.png" alt="图1：iframe 中导出溢出的对象的引用路径" />
+<em>图 1：iframe 中导出溢出的对象的引用路径</em></p>
 
 <p>上图中，红色为 DOM 对象，在 C++ 代码中，绿色为 JS 对象，存在于 V8 的堆（Heap）中。整个路径中，JS 与 DOM 间的引用交叉进行了两次。</p>
 
 <h3 id="devtools-的堆快照功能">DevTools 的堆快照功能</h3>
 
-<p>通过在 DevTools 中抓取堆的快照，可以方便地查看任意对象的引用路径。生成的快照能够展示 V8 堆中的所有对象，但对于引用路径中的 C++ DOM 对象则定位得很粗糙，只能展示个大概。譬如，Chrome 65 中对于上面示例引用路径的展示则不太完整。
-￼
-<img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/memory-leak-tracing/assets/chrome-65.png" alt="图 3: Chrome 65 中的引用路径" />￼
+<p>通过在 DevTools 中抓取堆的快照，可以方便地查看任意对象的引用路径。生成的快照能够展示 V8 堆中的所有对象，但对于引用路径中的 C++ DOM 对象则定位得很粗糙，只能展示个大概。譬如，Chrome 65 中对于上面示例引用路径的展示则不太完整。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/memory-leak-tracing/assets/chrome-65.png" alt="图 3: Chrome 65 中的引用路径" />
 <em>图 2: Chrome 65 的引用路径.</em></p>
 
 <p>只有第一行对于溢出对象的展示是精确的，标明该对象为 iframe 全局 window 中的 global_variable 变量。而后续相关的 DOM 节点则不那么精确，对于定位问题帮助不大。</p>
 
 <p>Chrome 66 中这一情况有所改善。 DevTools 跟踪 C++ DOM 对象并且记录其引用关系。这一功能的实现基于一个强大的 C++ 对象追踪机制，该机制是之前为了做跨组件垃圾回收（cross-component garbage collection）而引入的。</p>
 
-<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/memory-leak-tracing/assets/retaining-path-and-heap.jpg" alt="图 3: Chrome 66 中的引用路径" />￼
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/memory-leak-tracing/assets/retaining-path-and-heap.jpg" alt="图 3: Chrome 66 中的引用路径" />
 <em>图 3: Chrome 66 中的引用路径.</em></p>
 
 <h3 id="幕后原理跨组件追踪">幕后原理：跨组件追踪</h3>
 
-<p>DOM 对象由 Chrome 的渲染引擎 Blink 管理，其负责将 DOM 转换成屏幕上我们能看到的文本及图片等。而 Blink 及其管理的 DOM 对象由 C++ 写就，意味着 DOM 其实无法直接暴露给 JavaScript。实际操作中，DOM 中的对象以两种形式存在：V8 中 JavaScript 可操作的包装对象和代表每个 DOM 节点的 C++ 对象。这两种对象可互相引用。跨组件分析某个对象的存活性（liveness）及引用关系是很难的，比如 Blink 和 V8中，对同一对象是否还在使用及是否可回收，需要在两处都保持一致。</p>
+<p>DOM 对象由 Chrome 的渲染引擎 Blink 管理，其负责将 DOM 转换成屏幕上我们能看到的文本及图片等。而 Blink 及其管理的 DOM 对象由 C++ 写就，意味着 DOM 其实无法直接暴露给 JavaScript。实际操作中，DOM 中的对象以两种形式存在：V8 中 JavaScript 可操作的包装对象和代表每个 DOM 节点的 C++ 对象。这两种对象可互相引用。跨组件分析某个对象的存活性（liveness）及引用关系是很难的，比如 Blink 和 V8 中，对同一对象是否还在使用及是否可回收，需要在两处都保持一致。</p>
 
-<p>Chrome 65 及之前的版本，使用对象分组（object grouping）这一机制来决定对象的活性。根据对象在文档中所在的容器，被划分到不同的组。分组中只要有一个对象在引用路径中被发现为使用中，那么这个分组中的所有对象都标记为在使用中。这一机制在 DOM 树中是成立的，因为元素始终依赖其容器而存在。然而，这种笼统的划分将单个对象真实的引用路径给抛弃掉了，于是出现上面图2中无法精确展示完整引用路径的问题。对于不满足 DOM 树结构而产生的引用的情况，譬如 Javascript 中事件回调中的闭包，这一机制则显得捉襟见肘，甚至导致一些 bug。此种情况下 JavaScript 包装的对象会被提前回收，取而代之的是空对象，原包装对象中的属性则丢失了。</p>
+<p>Chrome 65 及之前的版本，使用对象分组（object grouping）这一机制来决定对象的活性。根据对象在文档中所在的容器，被划分到不同的组。分组中只要有一个对象在引用路径中被发现为使用中，那么这个分组中的所有对象都标记为在使用中。这一机制在 DOM 树中是成立的，因为元素始终依赖其容器而存在。然而，这种笼统的划分将单个对象真实的引用路径给抛弃掉了，于是出现上面图 2 中无法精确展示完整引用路径的问题。对于不满足 DOM 树结构而产生的引用的情况，譬如 Javascript 中事件回调中的闭包，这一机制则显得捉襟见肘，甚至导致一些 bug。此种情况下 JavaScript 包装的对象会被提前回收，取而代之的是空对象，原包装对象中的属性则丢失了。</p>
 
-<p>Chrome 57 开始，使用跨平台追踪机制（cross-component tracing）替代对象分组，新的机制下会来回追踪对象在 C++ DOM 及 V8 JavaScript 中的存活情况。在C++端实现了增量跟踪，并且加了写的限制以防止追踪过程开销过大而卡死。跨组件追踪不仅提供更好的细节，也使得对象在跨组件追踪时更精确，同时还解决了某些场景下导致内存溢出的问题。基于这个机制，使得 DevTools 可以在抓取的堆快照中真实地展现 DOM引用，如上面图3所示。</p>
+<p>Chrome 57 开始，使用跨平台追踪机制（cross-component tracing）替代对象分组，新的机制下会来回追踪对象在 C++ DOM 及 V8 JavaScript 中的存活情况。在 C++端实现了增量跟踪，并且加了写的限制以防止追踪过程开销过大而卡死。跨组件追踪不仅提供更好的细节，也使得对象在跨组件追踪时更精确，同时还解决了某些场景下导致内存溢出的问题。基于这个机制，使得 DevTools 可以在抓取的堆快照中真实地展现 DOM 引用，如上面图 3 所示。</p>
 
 <h3 id="相关资源">相关资源</h3>
 
@@ -425,7 +356,6 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
   <li><a href="https://ulan.github.io/misc/leak.html">DevTools Leak Detect Example</a></li>
   <li><a href="https://twitter.com/v8js/status/969184997545562112">Debugging memory leaks using @ChromeDevTools just became much easier!</a></li>
 </ul>
-
 
 
                 <hr style="visibility: hidden;">
@@ -582,13 +512,7 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
 </ul>
 
                 <p class="copyright text-muted">
-                    Copyright &copy; 牛さんの部落格 2020
-                    <br>
-                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
-                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
-                        height="20px"
-                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
-                    </iframe>
+                   已经到底了😝
                 </p>
             </div>
         </div>
@@ -604,9 +528,6 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
-
-<!-- Simple Jekyll Search -->
-<script src="/js/simple-jekyll-search.min.js"></script>
 
 <!-- Service Worker -->
 
@@ -647,10 +568,6 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
 
 
 
-
-
-
-
 <!--fastClick.js -->
 <script>
     async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
@@ -661,10 +578,6 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
 
 
 <!-- Google Analytics -->
-
-
-
-<!-- Baidu Tongji -->
 
 
 
@@ -733,62 +646,5 @@ V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出
 <!-- Multi-Lingual -->
 
 
-<!-- Simple Jekyll Search -->
-<script>
-    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
-    function htmlDecode(input) {
-        var e = document.createElement('textarea');
-        e.innerHTML = input;
-        // handle case of empty input
-        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
-    }
-
-    SimpleJekyllSearch({
-        searchInput: document.getElementById('search-input'),
-        resultsContainer: document.getElementById('search-results'),
-        json: '/search.json',
-        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
-        noResultsText: 'No results',
-        limit: 50,
-        fuzzy: false,
-        // a hack to get escaped subtitle unescaped. for some reason, 
-        // post.subtitle w/o escape filter nuke entire search.
-        templateMiddleware: function (prop, value, template) {
-            if (prop === 'subtitle' || prop === 'title') {
-                if (value.indexOf("code")) {
-                    return htmlDecode(value);
-                } else {
-                    return value;
-                }
-            }
-        }
-    });
-
-    $(document).ready(function () {
-        var $searchPage = $('.search-page');
-        var $searchOpen = $('.search-icon');
-        var $searchClose = $('.search-icon-close');
-        var $searchInput = $('#search-input');
-        var $body = $('body');
-
-        $searchOpen.on('click', function (e) {
-            e.preventDefault();
-            $searchPage.toggleClass('search-active');
-            var prevClasses = $body.attr('class') || '';
-            setTimeout(function () {
-                $body.addClass('no-scroll');
-            }, 400)
-
-            if ($searchPage.hasClass('search-active')) {
-                $searchClose.on('click', function (e) {
-                    e.preventDefault();
-                    $searchPage.removeClass('search-active');
-                    $body.attr('class', prevClasses);  // from closure 
-                });
-                $searchInput.focus();
-            }
-        });
-    });
-</script>
   </body>
 </html>

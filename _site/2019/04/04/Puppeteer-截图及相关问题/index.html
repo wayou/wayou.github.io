@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="notes about the coding life">
-    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
-    <meta name="theme-color" content="#000000">
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="Puppeteer 截图及相关问题 - 牛さんの部落格|刘哇勇的部落格">
-    
-    <meta property="og:type" content="article">
-    <meta property="og:description" content="Puppeteer 截图及相关问题
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Puppeteer 截图及相关问题 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="Puppeteer 截图及相关问题
 
 Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页面进行截图，或者保存成 PDF。
 
@@ -21,49 +32,44 @@ Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页�
 
 因为其使用了 Chromium，其源在 Google 域上，最好设置一下 npm 从国内镜像安装，可解决无法安装的问题。
 
-推荐在项目中放置 .npmrc 或 .yarnrc 文件来进行镜像的设置，这样设置...">
-    
-    <meta property="article:published_time" content="2019-04-04T13:04:00Z">
-    
-    
-    
-    
-    <meta property="og:image" content="http://0.0.0.0:4000">
-    <meta property="og:url" content="http://0.0.0.0:4000/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/">
-    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
-    
-    <title>Puppeteer 截图及相关问题 - 牛さんの部落格|刘哇勇的部落格</title>
+推荐在项目中放置 .npmrc 或 .yarnrc 文件来进行镜像的设置，这样设置..."
+  />
+   <meta property="article:published_time" content="2019-04-04T13:04:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
 
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="/pwa/manifest.json">
+  <title>
+    Puppeteer 截图及相关问题 - 牛さんの部落格|刘哇勇的部落格
+  </title>
 
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="/img/favicon.ico">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="http://0.0.0.0:4000/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/">
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/hux-blog.min.css">
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/"
+  />
 
-    <!-- Custom Fonts -->
-    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
-    <!-- Hux change font-awesome CDN to qiniu -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
 
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.min.css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
 
-    <!-- ga & ba script hoook -->
-    <script></script>
+  <!-- ga & ba script hoook -->
+  <script></script>
 </head>
 
 
@@ -71,178 +77,102 @@ Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页�
   <body ontouchstart="">
     <!-- Navigation -->
 
-    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
-        
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">牛さんの部落格</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div id="huxblog_navbar">
-                <div class="navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="/">Home</a>
-                        </li>
-                        
-                        
-                        
-                        
-                        <li>
-                            <a href="/about/">关于</a>
-                        </li>
-                        
-                        
-                        
-                        <li>
-                            <a href="/archive/">Archive</a>
-                        </li>
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        <li class="search-icon">
-                            <a href="javascript:void(0)">
-                                <i class="fa fa-search"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
-
-    <script>
-        // Drop Bootstarp low-performance Navbar
-        // Use customize navbar with high-quality material design animation
-        // in high-perf jank-free CSS3 implementation
-        var $body = document.body;
-        var $toggle = document.querySelector('.navbar-toggle');
-        var $navbar = document.querySelector('#huxblog_navbar');
-        var $collapse = document.querySelector('.navbar-collapse');
-
-        var __HuxNav__ = {
-            close: function () {
-                $navbar.className = " ";
-                // wait until animation end.
-                setTimeout(function () {
-                    // prevent frequently toggle
-                    if ($navbar.className.indexOf('in') < 0) {
-                        $collapse.style.height = "0px"
-                    }
-                }, 400)
-            },
-            open: function () {
-                $collapse.style.height = "auto"
-                $navbar.className += " in";
-            }
-        }
-
-        // Bind Event
-        $toggle.addEventListener('click', function (e) {
-            if ($navbar.className.indexOf('in') > 0) {
-                __HuxNav__.close()
-            } else {
-                __HuxNav__.open()
-            }
-        })
-
-        /**
-         * Since Fastclick is used to delegate 'touchstart' globally
-         * to hack 300ms delay in iOS by performing a fake 'click',
-         * Using 'e.stopPropagation' to stop 'touchstart' event from 
-         * $toggle/$collapse will break global delegation.
-         * 
-         * Instead, we use a 'e.target' filter to prevent handler
-         * added to document close HuxNav.  
-         *
-         * Also, we use 'click' instead of 'touchstart' as compromise
-         */
-        document.addEventListener('click', function (e) {
-            if (e.target == $toggle) return;
-            if (e.target.className == 'icon-bar') return;
-            __HuxNav__.close();
-        })
-    </script> <!-- Search -->
-<div class="search-page">
-  <div class="search-icon-close-container">
-    <span class="search-icon-close">
-      <i class="fa fa-chevron-down"></i>
-    </span>
-  </div>
-  <div class="search-main container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <form></form>
-        <input type="text" id="search-input" placeholder="$ grep...">
-        </form>
-        <div id="search-results" class="mini-post-list"></div>
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
       </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive/"
+                >存档</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
     </div>
-  </div>
-</div> <!-- Image to hack wechat -->
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
 <!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
 
@@ -325,7 +255,7 @@ Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页�
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">puppeteer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">puppeteer</span><span class="dl">"</span><span class="p">);</span>
 
-<span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="k">async</span> <span class="nx">browser</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">browser</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
   <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="dl">"</span><span class="s2">https://example.com</span><span class="dl">"</span><span class="p">);</span>
   <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">({</span> <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">screenshot.png</span><span class="dl">"</span> <span class="p">});</span>
@@ -389,8 +319,8 @@ puppeteer.launch().then(async browser =&gt; {
     <span class="na">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="na">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="na">width</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
-    <span class="na">height</span><span class="p">:</span> <span class="mi">400</span>
-  <span class="p">}</span>
+    <span class="na">height</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
+  <span class="p">},</span>
 <span class="p">});</span>
 </code></pre></div></div>
 
@@ -399,6 +329,7 @@ puppeteer.launch().then(async browser =&gt; {
 <p>如果你使用过 Chrome DevTool 中的截图命令，或许知道，其中有一个针对元素进行截取的命令。</p>
 
 <p><img src="https://user-images.githubusercontent.com/3783096/55492896-93573980-566a-11e9-834f-9419a3758981.png" alt="Chrome DevTool 中对元素进行截图的命令" /></p>
+
 <p align="center">Chrome DevTool 中对元素进行截图的命令</p>
 
 <p>所以，除了对整个页面进行截取，Chrome 还支持对页面某个元素进行截取。通过 <a href="https://pptr.dev/#?product=Puppeteer&amp;version=v1.14.0&amp;show=api-elementhandlescreenshotoptions"><code class="language-plaintext highlighter-rouge">elementHandle .screenshot()</code></a> 可针对具体元素进行截取。</p>
@@ -407,14 +338,14 @@ puppeteer.launch().then(async browser =&gt; {
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">puppeteer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">puppeteer</span><span class="dl">"</span><span class="p">);</span>
 
-<span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="k">async</span> <span class="nx">browser</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">browser</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
   <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="dl">"</span><span class="s2">https://example.com</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
-    <span class="na">waitUtil</span><span class="p">:</span> <span class="dl">"</span><span class="s2">networkidle2</span><span class="dl">"</span>
+    <span class="na">waitUtil</span><span class="p">:</span> <span class="dl">"</span><span class="s2">networkidle2</span><span class="dl">"</span><span class="p">,</span>
   <span class="p">});</span>
   <span class="kd">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">body</span><span class="dl">"</span><span class="p">);</span>
   <span class="k">await</span> <span class="nx">element</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">({</span>
-    <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">screenshot.png</span><span class="dl">"</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">screenshot.png</span><span class="dl">"</span><span class="p">,</span>
   <span class="p">});</span>
 <span class="p">});</span>
 </code></pre></div></div>
@@ -425,11 +356,11 @@ puppeteer.launch().then(async browser =&gt; {
 
 <p>生成的图片可直接返回，也可保存成文件后返回文件地址。</p>
 
-<p>其中，截图方法 <code class="language-plaintext highlighter-rouge">page.screenshot([options])</code> 的返回是 <code class="language-plaintext highlighter-rouge">&lt;Promise&lt;string|Buffer&gt;&gt;</code>，即生成的可能是 buffer 数据，也可以是base64 形式的字符串数据，默认为 Buffer 内容，通过设置 <code class="language-plaintext highlighter-rouge">encoding</code> 参数为 <code class="language-plaintext highlighter-rouge">base64</code> 便可得到字符串形式的截图数据。</p>
+<p>其中，截图方法 <code class="language-plaintext highlighter-rouge">page.screenshot([options])</code> 的返回是 <code class="language-plaintext highlighter-rouge">&lt;Promise&lt;string|Buffer&gt;&gt;</code>，即生成的可能是 buffer 数据，也可以是 base64 形式的字符串数据，默认为 Buffer 内容，通过设置 <code class="language-plaintext highlighter-rouge">encoding</code> 参数为 <code class="language-plaintext highlighter-rouge">base64</code> 便可得到字符串形式的截图数据。</p>
 
 <p>以 Koa 为例，binary 形式的 buffer 数据直接赋值给 <code class="language-plaintext highlighter-rouge">ctx.body</code> 进行返回，通过 <code class="language-plaintext highlighter-rouge">response.attachment</code> 可设置返回的文件名。</p>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">();</span>
   <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
   <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
@@ -442,7 +373,7 @@ puppeteer.launch().then(async browser =&gt; {
 
 <p>字符串形式时，需要注意拿到的并不是标准的图片 base64 格式，它只包含了数据部分，并没有文件类型部分，即 <code class="language-plaintext highlighter-rouge">data:image/png;base64</code>，所以需要手动拼接后才是正确可展示的图片。</p>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">();</span>
   <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
   <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
@@ -456,7 +387,7 @@ puppeteer.launch().then(async browser =&gt; {
 
 <p>当然，字符串形式下，仍然是可以返回成文件下载的形式的，</p>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">();</span>
   <span class="kd">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
   <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
@@ -482,7 +413,7 @@ puppeteer.launch().then(async browser =&gt; {
   <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">goto</span><span class="p">(</span><span class="dl">"</span><span class="s2">https://www.google.com/chromebook/</span><span class="dl">"</span><span class="p">);</span>
   <span class="k">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">pdf</span><span class="p">({</span>
     <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">puppeteer.pdf</span><span class="dl">"</span><span class="p">,</span>
-    <span class="na">format</span><span class="p">:</span> <span class="dl">"</span><span class="s2">A4</span><span class="dl">"</span>
+    <span class="na">format</span><span class="p">:</span> <span class="dl">"</span><span class="s2">A4</span><span class="dl">"</span><span class="p">,</span>
   <span class="p">});</span>
 
   <span class="k">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
@@ -496,6 +427,7 @@ puppeteer.launch().then(async browser =&gt; {
 <p>需要注意的是，如果页面中使用了背景图片，上面代码截取出来是看不到的。</p>
 
 <p><img src="https://user-images.githubusercontent.com/3783096/55738983-c3338200-5a5a-11e9-9874-22002bb8da20.png" alt="截图 PDF 时背景图片未显示" /></p>
+
 <p align="center">截图 PDF 时背景图片未显示</p>
 
 <p>需要设置截取时的 ` printBackground<code class="language-plaintext highlighter-rouge"> 参数为 </code>true`：</p>
@@ -508,6 +440,7 @@ puppeteer.launch().then(async browser =&gt; {
 </code></pre></div></div>
 
 <p><img src="https://user-images.githubusercontent.com/3783096/55739102-fa099800-5a5a-11e9-93e6-f9840eba698d.png" alt="修正后截图的 PDF 背景图片正常显示" /></p>
+
 <p align="center">修正后截图的 PDF 背景图片正常显示</p>
 
 <h2 id="一些问题">一些问题</h2>
@@ -517,10 +450,10 @@ puppeteer.launch().then(async browser =&gt; {
 <p>部署到全新的 Linux 环境时，大概率你会看到截来的图片中中文无法显示。</p>
 
 <p><img src="https://user-images.githubusercontent.com/3783096/55492861-833f5a00-566a-11e9-9ae2-f4b09a16becc.png" alt="中文字体缺失的情况" /></p>
+
 <p align="center">中文字体缺失的情况</p>
 
-<p>￼
-那是因为系统缺少中文字体，Chromium 无法正常渲染。你需要<a href="https://help.accusoft.com/PCC/v11.2/HTML/Installing%20Asian%20Fonts%20on%20Ubuntu%20and%20Debian.html">安装</a>中文字体，通过包管理工具或者手动下载安装。</p>
+<p>那是因为系统缺少中文字体，Chromium 无法正常渲染。你需要<a href="https://help.accusoft.com/PCC/v11.2/HTML/Installing%20Asian%20Fonts%20on%20Ubuntu%20and%20Debian.html">安装</a>中文字体，通过包管理工具或者手动下载安装。</p>
 
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>language-pack-zh<span class="k">*</span>
 <span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>chinese<span class="k">*</span>
@@ -576,6 +509,7 @@ $ ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | 
         libgdk-3.so.0 =&gt; not found
         libgdk_pixbuf-2.0.so.0 =&gt; not found
 ```
+
 </p>
 </details>
 
@@ -663,6 +597,7 @@ The following additional packages will be installed:
   libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base shared-mime-info
   x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core
 ```
+
 </p>
 </details>
 
@@ -719,6 +654,7 @@ Removing google-chrome-unstable (75.0.3745.4-1) ...
 Processing triggers for mime-support (3.60) ...
 Processing triggers for man-db (2.7.6.1-2) ...
 ```
+
 </p>
 </details>
 
@@ -733,6 +669,7 @@ Processing triggers for man-db (2.7.6.1-2) ...
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">({</span> <span class="na">args</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">--no-sandbox</span><span class="dl">"</span><span class="p">]</span> <span class="p">});</span>
 </code></pre></div></div>
+
 <p>但考虑到安全问题，Puppeteer 是<a href="https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#setting-up-chrome-linux-sandbox">强烈不建议</a>在无沙盒环境下运行，除非加载的页面其内容是绝对可信的。</p>
 
 <p>如果需要设置在沙盒中运行，可参考<a href="https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#recommended-enable-user-namespace-cloning">文档中的两种方法</a>。</p>
@@ -745,7 +682,6 @@ Processing triggers for man-db (2.7.6.1-2) ...
   <li><a href="https://medium.com/source-words/how-to-manually-install-update-and-uninstall-fonts-on-linux-a8d09a3853b0">How to Manually Install, Update, and Uninstall Fonts on Linux</a></li>
   <li><a href="https://help.accusoft.com/PCC/v11.2/HTML/Installing%20Asian%20Fonts%20on%20Ubuntu%20and%20Debian.html">Installing Asian Fonts on Ubuntu &amp; Debian</a></li>
 </ul>
-
 
 
                 <hr style="visibility: hidden;">
@@ -902,13 +838,7 @@ Processing triggers for man-db (2.7.6.1-2) ...
 </ul>
 
                 <p class="copyright text-muted">
-                    Copyright &copy; 牛さんの部落格 2020
-                    <br>
-                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
-                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
-                        height="20px"
-                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
-                    </iframe>
+                   已经到底了😝
                 </p>
             </div>
         </div>
@@ -924,9 +854,6 @@ Processing triggers for man-db (2.7.6.1-2) ...
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
-
-<!-- Simple Jekyll Search -->
-<script src="/js/simple-jekyll-search.min.js"></script>
 
 <!-- Service Worker -->
 
@@ -967,10 +894,6 @@ Processing triggers for man-db (2.7.6.1-2) ...
 
 
 
-
-
-
-
 <!--fastClick.js -->
 <script>
     async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
@@ -981,10 +904,6 @@ Processing triggers for man-db (2.7.6.1-2) ...
 
 
 <!-- Google Analytics -->
-
-
-
-<!-- Baidu Tongji -->
 
 
 
@@ -1053,62 +972,5 @@ Processing triggers for man-db (2.7.6.1-2) ...
 <!-- Multi-Lingual -->
 
 
-<!-- Simple Jekyll Search -->
-<script>
-    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
-    function htmlDecode(input) {
-        var e = document.createElement('textarea');
-        e.innerHTML = input;
-        // handle case of empty input
-        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
-    }
-
-    SimpleJekyllSearch({
-        searchInput: document.getElementById('search-input'),
-        resultsContainer: document.getElementById('search-results'),
-        json: '/search.json',
-        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
-        noResultsText: 'No results',
-        limit: 50,
-        fuzzy: false,
-        // a hack to get escaped subtitle unescaped. for some reason, 
-        // post.subtitle w/o escape filter nuke entire search.
-        templateMiddleware: function (prop, value, template) {
-            if (prop === 'subtitle' || prop === 'title') {
-                if (value.indexOf("code")) {
-                    return htmlDecode(value);
-                } else {
-                    return value;
-                }
-            }
-        }
-    });
-
-    $(document).ready(function () {
-        var $searchPage = $('.search-page');
-        var $searchOpen = $('.search-icon');
-        var $searchClose = $('.search-icon-close');
-        var $searchInput = $('#search-input');
-        var $body = $('body');
-
-        $searchOpen.on('click', function (e) {
-            e.preventDefault();
-            $searchPage.toggleClass('search-active');
-            var prevClasses = $body.attr('class') || '';
-            setTimeout(function () {
-                $body.addClass('no-scroll');
-            }, 400)
-
-            if ($searchPage.hasClass('search-active')) {
-                $searchClose.on('click', function (e) {
-                    e.preventDefault();
-                    $searchPage.removeClass('search-active');
-                    $body.attr('class', prevClasses);  // from closure 
-                });
-                $searchInput.focus();
-            }
-        });
-    });
-</script>
   </body>
 </html>

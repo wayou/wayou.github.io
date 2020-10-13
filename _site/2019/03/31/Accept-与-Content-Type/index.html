@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="notes about the coding life">
-    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
-    <meta name="theme-color" content="#000000">
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="Accept 与 Content-Type - 牛さんの部落格|刘哇勇的部落格">
-    
-    <meta property="og:type" content="article">
-    <meta property="og:description" content="Accept 与 Content-Type
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Accept 与 Content-Type - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="Accept 与 Content-Type
 
 
   Accept 表示请求方希望的资源类型，或者能解析识别的类型
@@ -24,49 +35,44 @@
 
 Accept
 
-Accept 是浏览器发送的请求头，用于表示想要的资源类型。根据请求的上下文不同，所设置的 Accept 请求头会相应变化。服务器根据 content ne...">
-    
-    <meta property="article:published_time" content="2019-03-31T04:03:00Z">
-    
-    
-    
-    
-    <meta property="og:image" content="http://0.0.0.0:4000">
-    <meta property="og:url" content="http://0.0.0.0:4000/2019/03/31/Accept-%E4%B8%8E-Content-Type/">
-    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
-    
-    <title>Accept 与 Content-Type - 牛さんの部落格|刘哇勇的部落格</title>
+Accept 是浏览器发送的请求头，用于表示想要的资源类型。根据请求的上下文不同，所设置的 Accept 请求头会相应变化。服务器根据 content ne..."
+  />
+   <meta property="article:published_time" content="2019-03-31T04:03:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/03/31/Accept-%E4%B8%8E-Content-Type/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
 
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="/pwa/manifest.json">
+  <title>
+    Accept 与 Content-Type - 牛さんの部落格|刘哇勇的部落格
+  </title>
 
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="/img/favicon.ico">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="http://0.0.0.0:4000/2019/03/31/Accept-%E4%B8%8E-Content-Type/">
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/hux-blog.min.css">
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/03/31/Accept-%E4%B8%8E-Content-Type/"
+  />
 
-    <!-- Custom Fonts -->
-    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
-    <!-- Hux change font-awesome CDN to qiniu -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
 
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.min.css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
 
-    <!-- ga & ba script hoook -->
-    <script></script>
+  <!-- ga & ba script hoook -->
+  <script></script>
 </head>
 
 
@@ -74,178 +80,102 @@ Accept 是浏览器发送的请求头，用于表示想要的资源类型。根�
   <body ontouchstart="">
     <!-- Navigation -->
 
-    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
-        
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">牛さんの部落格</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div id="huxblog_navbar">
-                <div class="navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="/">Home</a>
-                        </li>
-                        
-                        
-                        
-                        
-                        <li>
-                            <a href="/about/">关于</a>
-                        </li>
-                        
-                        
-                        
-                        <li>
-                            <a href="/archive/">Archive</a>
-                        </li>
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        <li class="search-icon">
-                            <a href="javascript:void(0)">
-                                <i class="fa fa-search"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
-
-    <script>
-        // Drop Bootstarp low-performance Navbar
-        // Use customize navbar with high-quality material design animation
-        // in high-perf jank-free CSS3 implementation
-        var $body = document.body;
-        var $toggle = document.querySelector('.navbar-toggle');
-        var $navbar = document.querySelector('#huxblog_navbar');
-        var $collapse = document.querySelector('.navbar-collapse');
-
-        var __HuxNav__ = {
-            close: function () {
-                $navbar.className = " ";
-                // wait until animation end.
-                setTimeout(function () {
-                    // prevent frequently toggle
-                    if ($navbar.className.indexOf('in') < 0) {
-                        $collapse.style.height = "0px"
-                    }
-                }, 400)
-            },
-            open: function () {
-                $collapse.style.height = "auto"
-                $navbar.className += " in";
-            }
-        }
-
-        // Bind Event
-        $toggle.addEventListener('click', function (e) {
-            if ($navbar.className.indexOf('in') > 0) {
-                __HuxNav__.close()
-            } else {
-                __HuxNav__.open()
-            }
-        })
-
-        /**
-         * Since Fastclick is used to delegate 'touchstart' globally
-         * to hack 300ms delay in iOS by performing a fake 'click',
-         * Using 'e.stopPropagation' to stop 'touchstart' event from 
-         * $toggle/$collapse will break global delegation.
-         * 
-         * Instead, we use a 'e.target' filter to prevent handler
-         * added to document close HuxNav.  
-         *
-         * Also, we use 'click' instead of 'touchstart' as compromise
-         */
-        document.addEventListener('click', function (e) {
-            if (e.target == $toggle) return;
-            if (e.target.className == 'icon-bar') return;
-            __HuxNav__.close();
-        })
-    </script> <!-- Search -->
-<div class="search-page">
-  <div class="search-icon-close-container">
-    <span class="search-icon-close">
-      <i class="fa fa-chevron-down"></i>
-    </span>
-  </div>
-  <div class="search-main container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <form></form>
-        <input type="text" id="search-input" placeholder="$ grep...">
-        </form>
-        <div id="search-results" class="mini-post-list"></div>
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
       </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive/"
+                >存档</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
     </div>
-  </div>
-</div> <!-- Image to hack wechat -->
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
 <!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
 
@@ -339,6 +269,7 @@ Accept 是浏览器发送的请求头，用于表示想要的资源类型。根�
 
 <p>Header 中逗号分隔的值，每项的权重，或优先级。
 比如：</p>
+
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
 </code></pre></div></div>
 
@@ -372,6 +303,7 @@ Accept 是浏览器发送的请求头，用于表示想要的资源类型。根�
 <p>用来表示资源的类型。某些情况下，浏览器会对资源的类型进行嗅探而忽略掉服务器返回的 <code class="language-plaintext highlighter-rouge">Content-Type</code>。如果想强制客户端使用服务器返回的类型，可加上 <code class="language-plaintext highlighter-rouge">X-Content-Type-Options:nosniff</code> 响应头。</p>
 
 <p>支持的值有：</p>
+
 <ul>
   <li><code class="language-plaintext highlighter-rouge">media-type</code>，常见的 Content-Type 可 <a href="https://stackoverflow.com/a/48704300/1553656">参考这里</a>。</li>
   <li><code class="language-plaintext highlighter-rouge">charset</code>，指定资源编码类型。</li>
@@ -394,6 +326,7 @@ Accept 是浏览器发送的请求头，用于表示想要的资源类型。根�
 <p>通过 koa.js 搭建一个简单的表单提交示例，以查看 Content-Type。</p>
 
 <p><em>server.js</em></p>
+
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="p">{</span> <span class="nx">createReadStream</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">fs</span><span class="dl">"</span><span class="p">);</span>
 <span class="kd">const</span> <span class="nx">Koa</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">koa</span><span class="dl">"</span><span class="p">);</span>
 <span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Koa</span><span class="p">();</span>
@@ -401,16 +334,16 @@ Accept 是浏览器发送的请求头，用于表示想要的资源类型。根�
 <span class="kd">const</span> <span class="nx">koaBody</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">koa-body</span><span class="dl">"</span><span class="p">);</span>
 
 <span class="nx">router</span>
-  <span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">/</span><span class="dl">"</span><span class="p">,</span> <span class="k">async</span> <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">/</span><span class="dl">"</span><span class="p">,</span> <span class="k">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">ctx</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">html</span><span class="dl">"</span><span class="p">;</span>
     <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="nx">createReadStream</span><span class="p">(</span><span class="dl">"</span><span class="s2">form.html</span><span class="dl">"</span><span class="p">);</span>
   <span class="p">})</span>
   <span class="p">.</span><span class="nx">post</span><span class="p">(</span>
     <span class="dl">"</span><span class="s2">/submit</span><span class="dl">"</span><span class="p">,</span>
     <span class="nx">koaBody</span><span class="p">({</span>
-      <span class="na">multipart</span><span class="p">:</span> <span class="kc">true</span>
+      <span class="na">multipart</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
     <span class="p">}),</span>
-    <span class="nx">ctx</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
       <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">form data is:</span><span class="dl">"</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
       <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
     <span class="p">}</span>
@@ -424,9 +357,9 @@ Accept 是浏览器发送的请求头，用于表示想要的资源类型。根�
 </code></pre></div></div>
 
 <p><em>form.html</em></p>
+
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">"/submit"</span> <span class="na">method=</span><span class="s">"POST"</span> <span class="na">enctype=</span><span class="s">"multipart/form-data"</span><span class="nt">&gt;</span>
-  foo:<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"foo"</span> <span class="nt">/&gt;</span> 
-  bar:<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"bar"</span> <span class="nt">/&gt;</span>
+  foo:<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"foo"</span> <span class="nt">/&gt;</span> bar:<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"bar"</span> <span class="nt">/&gt;</span>
   <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"submit"</span><span class="nt">&gt;</span>submit<span class="nt">&lt;/button&gt;</span>
 <span class="nt">&lt;/form&gt;</span>
 </code></pre></div></div>
@@ -434,12 +367,14 @@ Accept 是浏览器发送的请求头，用于表示想要的资源类型。根�
 <p>访问页面并提交后，可在 Chrome DevTools 网络面板看到，<code class="language-plaintext highlighter-rouge">/submit</code> 这个 POST 请求相关的信息：</p>
 
 <p>Request Headers</p>
+
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>…
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryNgS8sggyuawQSr8W
 …
 </code></pre></div></div>
 
 <p>Form Data</p>
+
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>------WebKitFormBoundaryNgS8sggyuawQSr8W
 Content-Disposition: form-data; name="foo"
 
@@ -457,18 +392,20 @@ Content-Disposition: form-data; name="bar"
 
 <p>前面提到客户端通过设置 Accept 请求头设置请求资源的类型，服务器根据 content negotiation 规则返回。</p>
 
-<p>Content negotiation 是这么一种机制，同一 URI可响应多种资源，客户端可自行决定请求何种资源（譬如文档的语言，图片格式，文件编码类型）。
-￼
-<img src="https://user-images.githubusercontent.com/3783096/50970937-c2ec1f00-151d-11e9-8c8e-9e98e742a626.png" alt="image" />
+<p>Content negotiation 是这么一种机制，同一 URI 可响应多种资源，客户端可自行决定请求何种资源（譬如文档的语言，图片格式，文件编码类型）。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/50970937-c2ec1f00-151d-11e9-8c8e-9e98e742a626.png" alt="image" />
 <em>来自 MDN 展示内容协商流程的图片</em></p>
 
 <p>内容协商包含两种方式：</p>
+
 <ul>
   <li>客户端通过设置请求头由服务器决定合适的类型进行返回（服务器驱动 ）。</li>
   <li>服务器通过设置响应头中响应代码为 300 （<code class="language-plaintext highlighter-rouge">Multiple Choices</code>）或 406 （<code class="language-plaintext highlighter-rouge">Not Acceptable</code>）作为备用方案（客户端驱动）。</li>
 </ul>
 
 <p>除了 Accept ，用于主动发起内容协商的请求头还有：</p>
+
 <ul>
   <li><code class="language-plaintext highlighter-rouge">Accept-Charset</code>：期望的字符集。</li>
   <li><code class="language-plaintext highlighter-rouge">Accept-Encoding</code>：期望的编码方式。</li>
@@ -478,6 +415,7 @@ Content-Disposition: form-data; name="bar"
 <h4 id="服务器驱动的内容协商">服务器驱动的内容协商</h4>
 
 <p>由客户端发送一组期望的类型，服务器根据自己的算法决定出最合适的类型进行返回，具体实现因服务器类型而异。服务器驱动是最常见的方式，但其也有一些明显的缺点：</p>
+
 <ul>
   <li>由于不是完全了解客户端的兼容性，服务器的返回有时候存在局限性。相反，客户端驱动的是服务器返回多个选择，客户端根据自己的情况选用最合适的，因为客户端自己最了解自己支持哪些。</li>
   <li>关于客户端的信息在多次请求中会冗余（当然，请求头冗余的情况在 HTTP/2 中有所缓解），也存在安全隐患（HTTP fingerprinting）。</li>
@@ -499,7 +437,6 @@ Content-Disposition: form-data; name="bar"
   <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation">Content negotiation</a></li>
   <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type">Content-Type</a></li>
 </ul>
-
 
 
                 <hr style="visibility: hidden;">
@@ -656,13 +593,7 @@ Content-Disposition: form-data; name="bar"
 </ul>
 
                 <p class="copyright text-muted">
-                    Copyright &copy; 牛さんの部落格 2020
-                    <br>
-                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
-                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
-                        height="20px"
-                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
-                    </iframe>
+                   已经到底了😝
                 </p>
             </div>
         </div>
@@ -678,9 +609,6 @@ Content-Disposition: form-data; name="bar"
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
-
-<!-- Simple Jekyll Search -->
-<script src="/js/simple-jekyll-search.min.js"></script>
 
 <!-- Service Worker -->
 
@@ -721,10 +649,6 @@ Content-Disposition: form-data; name="bar"
 
 
 
-
-
-
-
 <!--fastClick.js -->
 <script>
     async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
@@ -735,10 +659,6 @@ Content-Disposition: form-data; name="bar"
 
 
 <!-- Google Analytics -->
-
-
-
-<!-- Baidu Tongji -->
 
 
 
@@ -807,62 +727,5 @@ Content-Disposition: form-data; name="bar"
 <!-- Multi-Lingual -->
 
 
-<!-- Simple Jekyll Search -->
-<script>
-    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
-    function htmlDecode(input) {
-        var e = document.createElement('textarea');
-        e.innerHTML = input;
-        // handle case of empty input
-        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
-    }
-
-    SimpleJekyllSearch({
-        searchInput: document.getElementById('search-input'),
-        resultsContainer: document.getElementById('search-results'),
-        json: '/search.json',
-        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
-        noResultsText: 'No results',
-        limit: 50,
-        fuzzy: false,
-        // a hack to get escaped subtitle unescaped. for some reason, 
-        // post.subtitle w/o escape filter nuke entire search.
-        templateMiddleware: function (prop, value, template) {
-            if (prop === 'subtitle' || prop === 'title') {
-                if (value.indexOf("code")) {
-                    return htmlDecode(value);
-                } else {
-                    return value;
-                }
-            }
-        }
-    });
-
-    $(document).ready(function () {
-        var $searchPage = $('.search-page');
-        var $searchOpen = $('.search-icon');
-        var $searchClose = $('.search-icon-close');
-        var $searchInput = $('#search-input');
-        var $body = $('body');
-
-        $searchOpen.on('click', function (e) {
-            e.preventDefault();
-            $searchPage.toggleClass('search-active');
-            var prevClasses = $body.attr('class') || '';
-            setTimeout(function () {
-                $body.addClass('no-scroll');
-            }, 400)
-
-            if ($searchPage.hasClass('search-active')) {
-                $searchClose.on('click', function (e) {
-                    e.preventDefault();
-                    $searchPage.removeClass('search-active');
-                    $body.attr('class', prevClasses);  // from closure 
-                });
-                $searchInput.focus();
-            }
-        });
-    });
-</script>
   </body>
 </html>

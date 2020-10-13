@@ -4,52 +4,49 @@ title: "Content Security Policy (CSP) 介绍"
 date: 2018-08-13 01:08:00 +0800
 tags: security
 ---
-    
-Content Security Policy (CSP) 介绍
-===
 
+# Content Security Policy (CSP) 介绍
 
 当我不经意间在 Twitter 页面 `view source` 后，发现了惊喜。
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Twitter</title>
-  <style>
-  body {
-    background-color: #ffffff;
-    font-family: sans-serif;
-  }
-  a {
-    color: #1da1f2;
-  }
-  svg {
-    color: #1da1f2;
-    display: block;
-    fill: currentcolor;
-    height: 21px;
-    margin: 13px auto;
-    width: 24px;
-  }
-  </style>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Twitter</title>
+    <style>
+      body {
+        background-color: #ffffff;
+        font-family: sans-serif;
+      }
+      a {
+        color: #1da1f2;
+      }
+      svg {
+        color: #1da1f2;
+        display: block;
+        fill: currentcolor;
+        height: 21px;
+        margin: 13px auto;
+        width: 24px;
+      }
+    </style>
+  </head>
+  <body>
     <noscript>
-      
-      <center>If you’re not redirected soon, please <a href="/">use this link</a>.</center>
+      <center>
+        If you’re not redirected soon, please <a href="/">use this link</a>.
+      </center>
     </noscript>
     <script nonce="SG0bV9rOanQfzG0ccU8WQw==">
-      
       document.cookie = "app_shell_visited=1;path=/;max-age=5";
-      
+
       location.replace(location.href.split("#")[0]);
     </script>
-</body>
+  </body>
 </html>
 ```
-
 
 相比平时看到的其他站点的源码，可以说是很清爽了。没有乱七八糟的标签，功能却一样不少。特别有迷惑性，以为这便是页面所有的源码，但查看 DevTools 的 Source 面板后很容易知道这并不是真实的 HTML 代码。但为何页面源码给出的是如此清爽的版本，这里先不研究。
 
@@ -57,18 +54,16 @@ Content Security Policy (CSP) 介绍
 
 ```diff
 ! <script nonce="SG0bV9rOanQfzG0ccU8WQw==">
-      
+
       document.cookie = "app_shell_visited=1;path=/;max-age=5";
-      
+
       location.replace(location.href.split("#")[0]);
     </script>
 ```
 
-
-
 ### Content Security Policy (CSP)
 
-要了解  `nonce`， 先了解 [Content-Security-Policy(CSP)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)。
+要了解 `nonce`， 先了解 [Content-Security-Policy(CSP)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)。
 
 我们都知道浏览器有同源策略（[same-origin policy](https://en.wikipedia.org/wiki/Same-origin_policy)）的安全限制，即每个站点只允许加载来自和自身同域（origin）的数据，`https://a.com` 是无法从 `https://b.com` 加载到资源的。每个站点被严格限制在了自已的孤岛上，自己就是一个沙盒，这样很安全，整个网络不会杂乱无章。主要地，它能解决大部分安全问题。假若没有同源策略，恶意代码能够轻松在浏览器端执行然后获取各种隐私信息：银行帐号，社交数据等。
 
@@ -78,36 +73,39 @@ Content Security Policy (CSP) 介绍
 
 Content-Security-Policy 从另一方面给浏览器加了层防护，能极大地减少这种攻击的发生。
 
-
 ### 原理
 
 CSP 通过告诉浏览器一系列规则，严格规定页面中哪些资源允许有哪些来源， 不在指定范围内的统统拒绝。相比同源策略，CSP 可以说是很严格了。
 
 其实施有两种途径：
-- 服务器添加  `Content-Security-Policy` 响应头来指定规则 
-- HTML 中添加 `<meta>` 标签来指定  `Content-Security-Policy` 规则
 
-![mobile.twitter.com header 中的 CSP 规则](https://user-images.githubusercontent.com/3783096/44004494-f3c9bdf2-9e95-11e8-8793-e2966d79ecae.png)￼
-*mobile.twitter.com header 中的 CSP 规则*
+- 服务器添加 `Content-Security-Policy` 响应头来指定规则
+- HTML 中添加 `<meta>` 标签来指定 `Content-Security-Policy` 规则
+
+![mobile.twitter.com header 中的 CSP 规则](https://user-images.githubusercontent.com/3783096/44004494-f3c9bdf2-9e95-11e8-8793-e2966d79ecae.png)
+_mobile.twitter.com header 中的 CSP 规则_
 
 为了测试方便，以下示例均使用 `<meta>` 标签来开启 CSP 规则。但 `<meta>` 中有些指令是不能使用的，后面会了解到。只有响应头中才能使用全部的限制指令。
-
 
 #### 一个简单示例
 
 创建一个 HTML 文件放入以下内容：
 
-*csp_test.html*
+_csp_test.html_
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://unpkg.com">
+  <head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' https://unpkg.com"
+    />
     <title>CSP Test</title>
-</head>
-<body>
+  </head>
+  <body>
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-</body>
+  </body>
 </html>
 ```
 
@@ -119,12 +117,13 @@ $ python -m SimpleHTTPServer 8000
 
 然后访问 [localhost:8000](localhost:8000) 以观察结果：
 
-![符合 CSP 规则情况下的正常访问](https://user-images.githubusercontent.com/3783096/44004498-fdd37004-9e95-11e8-895d-53797ae105c1.png)￼
-*符合 CSP 规则情况下的正常访问*
+![符合 CSP 规则情况下的正常访问](https://user-images.githubusercontent.com/3783096/44004498-fdd37004-9e95-11e8-895d-53797ae105c1.png)
+_符合 CSP 规则情况下的正常访问_
 
-然后我们将  `Content-Security-Policy` 改成不允许任何资源再试一下：
+然后我们将 `Content-Security-Policy` 改成不允许任何资源再试一下：
 
-*csp_test.html*
+_csp_test.html_
+
 ```diff
 <!DOCTYPE html>
 <html lang="en">
@@ -140,12 +139,11 @@ $ python -m SimpleHTTPServer 8000
 ```
 
 ![触发 CSP 规则资源被 block 的情况](https://user-images.githubusercontent.com/3783096/44004501-0fac3a18-9e96-11e8-98bf-01e77f4a5e6a.png)
-*触发 CSP 规则资源被 block 的情况*
+_触发 CSP 规则资源被 block 的情况_
 
 下面我们来解释这里设置的 CSP 规则及理解为何资源加载失败。
 
-
-#### CSP 规则 
+#### CSP 规则
 
 无论是 header 中还是 `<meta>` 标签中指定，其值的格式都是统一的，由一系列 CSP 指令（directive）组合而成。
 
@@ -157,26 +155,26 @@ Content-Security-Policy: <policy-directive>; <policy-directive>…
 
 这里 directive，即指令，是 CSP 规范中规定用以详细详述某种资源的来源，比如前面示例中使用的 `script-src`，指定脚本可以有哪些合法来源，`img-src` 则指定图片，以下是常用指令：
 
-* `base-uri` 限制可出现在页面 `<base>` 标签中的链接。
-* `child-src` 列出可用于 worker 及以 frame 形式嵌入的链接。 譬如: `child-src https://youtube.com` 表示只能从 Youtube 嵌入视频资源。
-* `connect-src` 可发起连接的地址 (通过 XHR, WebSockets 或 EventSource)。
-* `font-src` 字体来源。譬如，要使用 Google web fonts 则需要添加 `font-src https://themes.googleusercontent.com` 规则。
-* `form-action` `<form>` 标签可提交的地址。
-* `frame-ancestors` 当前页面可被哪些来源所嵌入（与 `child-src` 正好相反）。作用于 `<frame>`, `<iframe>`, `<embed>` 及 `<applet>`。 该指令不能通过 `<meta>` 指定且只对非 HTML文档类型的资源生效。
-* `frame-src` 该指令已在 level 2 中废弃但会在 level 3 中恢复使用。未指定的情况下回退到 `tochild-src` 指令。
-* `img-src` 指定图片来源。
-* `media-src` 限制音视频资源的来源。
-* `object-src` Flash 及其他插件的来源。
-* `plugin-types` 限制页面中可加载的插件类型。
-* `report-uri` 指定一个可接收 CSP 报告的地址，浏览器会在相应指令不通过时发送报告。不能通过 `<meta>` 标签来指定。
-* `style-src` 限制样式文件的来源。
-* `upgrade-insecure-requests` 指导客户端将页面地址重写，HTTP 转 HTTPS。用于站点中有大量旧地址需要重定向的情形。
-* `worker-src` CSP Level 3 中的指令，规定可用于 worker, shared worker, 或 service worker 中的地址。
+- `base-uri`  限制可出现在页面 `<base>` 标签中的链接。
+- `child-src`  列出可用于 worker 及以 frame 形式嵌入的链接。 譬如: `child-src https://youtube.com`  表示只能从 Youtube 嵌入视频资源。
+- `connect-src`  可发起连接的地址 (通过 XHR, WebSockets 或 EventSource)。
+- `font-src`  字体来源。譬如，要使用 Google web fonts 则需要添加  `font-src https://themes.googleusercontent.com` 规则。
+- `form-action` `<form>` 标签可提交的地址。
+- `frame-ancestors`  当前页面可被哪些来源所嵌入（与 `child-src` 正好相反）。作用于  `<frame>`, `<iframe>`, `<embed>` 及  `<applet>`。 该指令不能通过 `<meta>` 指定且只对非 HTML 文档类型的资源生效。
+- `frame-src`  该指令已在 level 2 中废弃但会在 level 3 中恢复使用。未指定的情况下回退到 `tochild-src` 指令。
+- `img-src`  指定图片来源。
+- `media-src`  限制音视频资源的来源。
+- `object-src` Flash 及其他插件的来源。
+- `plugin-types`  限制页面中可加载的插件类型。
+- `report-uri` 指定一个可接收 CSP 报告的地址，浏览器会在相应指令不通过时发送报告。不能通过 `<meta>` 标签来指定。
+- `style-src`  限制样式文件的来源。
+- `upgrade-insecure-requests`  指导客户端将页面地址重写，HTTP 转 HTTPS。用于站点中有大量旧地址需要重定向的情形。
+- `worker-src` CSP Level 3 中的指令，规定可用于 worker, shared worker, 或 service worker 中的地址。
 
 > `child-src`  与 `frame-ancestors`  看起来比较像。前者规定的是页面中可加载哪些 iframe，后者规定谁可以以 iframe 加载本页。 比如来自不同站点的两个网页 A 与 B，B 中有 iframe 加载了 A。那么
+>
 > - A 的 `frame-ancestors` 需要包含 B
-> - B 的 `child-src` 需要包含 A 
-
+> - B 的 `child-src` 需要包含 A
 
 默认情况下，这些指令都是最大条件开放的，可以理解为其默认值为 `*`。比如 `img-src`，如果不明确指定，则可以从所有地方加载图片资源。
 
@@ -198,14 +196,16 @@ script-src 'self' https://unpkg.com
 
 改成 `none` 之后表示页面不加载任何脚本，即使自己站点上的脚本都无法被加载执行。这里不妨试一下在 `csp_test.html` 旁边创建一个脚本文件 `test.js`:
 
-*test.js*
+_test.js_
+
 ```js
 alert(‘来自 test.js 的问候！’)
 ```
 
 同时在页面中引用它：
 
-*csp_test.html*
+_csp_test.html_
+
 ```diff
 <!DOCTYPE html>
 <html lang="en">
@@ -223,66 +223,66 @@ alert(‘来自 test.js 的问候！’)
 页面执行结果：
 
 ![script-src none 时页面将不加载任何脚本](https://user-images.githubusercontent.com/3783096/44004512-262c4df0-9e96-11e8-88e9-df4e08cb98f1.png)
-*script-src none 时页面将不加载任何脚本*
+_script-src none 时页面将不加载任何脚本_
 
 是的，哪怕是自己的脚本也无法被加载执行。CSP 就是这样严格和明确，不存在模棱两可的情况。所以在指定来源时，我们需要确认 URI 是否正确。
-
 
 ### 指令可接受的值
 
 指令后面跟的来源，有两种写法
-- 预设值 
-- URI 通配符
 
+- 预设值
+- URI 通配符
 
 #### 预设值
 
 其中预设值有以下这些：
 
-* `none` 不匹配任何东西。
-* `self` 匹配当前域，但不包括子域。比如 `example.com` 可以，`api.example.com` 则会匹配失败。
-* `unsafe-inline` 允许内嵌的脚本及样式。是的，没看错，对于页面中内嵌的内容也是有相应限制规则的。
-* `unsafe-eval` 允许通过字符串动态创建的脚本执行，比如 `eval`，`setTimeout` 等。
+- `none` 不匹配任何东西。
+- `self` 匹配当前域，但不包括子域。比如 `example.com` 可以，`api.example.com` 则会匹配失败。
+- `unsafe-inline`  允许内嵌的脚本及样式。是的，没看错，对于页面中内嵌的内容也是有相应限制规则的。
+- `unsafe-eval`  允许通过字符串动态创建的脚本执行，比如 `eval`，`setTimeout` 等。
 
 特别地，在 CSP 的严格控制下，页面中内联脚本及样式也会受影响，在没有明确指定的情况下，其不能被浏览器执行。
 
 考虑下面的代码：
 
-*csp_test.html*
+_csp_test.html_
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <title>CSP Test</title>
     <style>
-        body{
-            color:red;
-        }
+      body {
+        color: red;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Hello, World!</h1>
     <script>
-        window.onload=function(){
-            alert('hi jack!')
-        }
+      window.onload = function () {
+        alert("hi jack!");
+      };
     </script>
-</body>
+  </body>
 </html>
 ```
-￼
+
 ![未指定 CSP 的情况](https://user-images.githubusercontent.com/3783096/44004521-427e59bc-9e96-11e8-9608-743f4e3bfefe.png)
-*未指定 CSP 的情况*
+_未指定 CSP 的情况_
 
 根据 MDN 上的描述，如果站点未指定 CSP 无则，浏览器默认不会开启相应检查，所以上面一切运行正常，只受正常的同域限制 。
 
 > If the site doesn't offer the CSP header, browsers likewise use the standard same-origin policy.
-*— 来自 [ MDN 关于 Content Security Policy (CSP) 的描述](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)*
+> _— 来自 [ MDN 关于 Content Security Policy (CSP) 的描述](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)_
 
 我们加上 CSP 限制：
 
+_csp_test.html_
 
-*csp_test.html*
 ```diff
 <!DOCTYPE html>
 <html lang="en">
@@ -309,11 +309,12 @@ alert(‘来自 test.js 的问候！’)
 配置站点默认只信息同域的资源，但注意，这个设置并不包含内联的情况，所以结果会如下图。
 
 ![内联代码被禁止](https://user-images.githubusercontent.com/3783096/44004526-54cf1a5c-9e96-11e8-8bca-c980e51a82ae.png)
-*内联代码被禁止*
+_内联代码被禁止_
 
 如何修复它呢。如果我们想要允许页面内的内联脚本或样式，则需要明确地通过 `script-src` 和 `style-src` 指出来。
 
-*csp_test.html*
+_csp_test.html_
+
 ```diff
 <!DOCTYPE html>
 <html lang="en">
@@ -346,8 +347,8 @@ alert(‘来自 test.js 的问候！’)
 如果页面中非得用内联的写法，还有种方式。即页面中这些内联的脚本或样式标签，赋值一个加密串，这个加密串由服务器生成，同时这个加密串被添加到页面的响应头里面。
 
 ```html
-<script nonce=EDNnf03nceIOfn39fn3e9h3sdfa>
-  // 这里放置内联在 HTML 中的代码
+<script nonce="EDNnf03nceIOfn39fn3e9h3sdfa">
+  // 这里放置内联在 HTML 中的代码
 </script>
 ```
 
@@ -359,7 +360,7 @@ Content-Security-Policy: script-src 'nonce-EDNnf03nceIOfn39fn3e9h3sdfa'
 
 注意这里的 `nonce-` 前缀。
 
-这也就是文章开头看到的方式，到这里明白了。 
+这也就是文章开头看到的方式，到这里明白了。
 
 `<style>` 标签也是类似的处理。
 
@@ -370,13 +371,14 @@ Content-Security-Policy: script-src 'nonce-EDNnf03nceIOfn39fn3e9h3sdfa'
 hash 方式的示例：
 
 ```html
-<script>alert('Hello, world.');</script>
+<script>
+  alert("Hello, world.");
+</script>
 ```
 
 ```
 Content-Security-Policy: script-src 'sha256-qznLcsROx4GACP2dm0UCKCzCG-HiZ1guq6ZZDob_Tng='
 ```
-
 
 ### eval
 
@@ -389,12 +391,12 @@ js 中好些地方是可以以字符串方式动态创建代码并执行，这�
 和内联一样，有专门的指令 `unsafe-eval ` 以允许类似代码的执行。但建议的做法是对于 `eval` 和 `Function` 构造器，杜绝使用，而 `setTimeout/setInterval` 可改造为非字符串形式。
 
 ```js
-setTimout(function(){
+setTimout(function () {
   alert(1);
-}, 1000)
+}, 1000);
 ```
 
-### URI 
+### URI
 
 除了上面的预设值，还可通过提供完整的 URI 或带通配符 `*` 的地址来匹配，以指定资源的合法来源。这里 URI 的规则和配置服务器的跨域响应头是一样的，参考 [Same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy)。
 
@@ -412,7 +414,6 @@ setTimout(function(){
 
 因为 URI 是进行动态匹配的，所以解释了上面提到的预设值缘何要加引号。因为如果不加引号的话， `self` 会表示 host 是 `self` 的资源地址，而不会表示原有的意思。
 
-
 #### 优先级
 
 CSP 的配置是很灵活的。每条指令可指定多个来源，空格分开。而一条 CSP 规则可由多条指令组成，指令间用分号隔开。各指令间没有顺序的要求，因为每条指令都是各司其职。甚至一次响应中， `Content-Security-Policy` 响应头都可以重复设置。
@@ -428,40 +429,42 @@ Content-Security-Policy: connect-src http://example.com/;
                          script-src http://example.com/
 ```
 
-
 - 同一指令多次指定，以第一个为准，后续的会被忽略。
 
-*csp_test.html*
+_csp_test.html_
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self';default-src 'unsafe-inline';">
+  <head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self';default-src 'unsafe-inline';"
+    />
     <title>CSP Test</title>
     <style>
-        body{
-            color:red;
-        }
+      body {
+        color: red;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Hello, World!</h1>
     <script>
-        window.onload=function(){
-            alert('hi jack!')
-        }
+      window.onload = function () {
+        alert("hi jack!");
+      };
     </script>
-</body>
+  </body>
 </html>
 ```
 
 ![重复配置同一指令时效果展示](https://user-images.githubusercontent.com/3783096/44004528-6a4a9f5a-9e96-11e8-88b6-6aee3342ed08.png)
-*重复配置同一指令时效果展示*
+_重复配置同一指令时效果展示_
 
 很智能地， 浏览器不仅会将检测不过的资源及指令打印出来，重复配置时被忽略的指令也会提示出来。
 
-- 指定 `default-src` 的情况下，它会充当 [Fetch 类指令](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#Fetch_directives) 的默认值。即  `default-src` 并不对所有指令生效，其他指令默认值仍是 `*`。
-
+- 指定 `default-src` 的情况下，它会充当 [Fetch 类指令](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#Fetch_directives) 的默认值。即 `default-src` 并不对所有指令生效，其他指令默认值仍是 `*`。
 
 ### 发送报告
 
@@ -485,7 +488,6 @@ Content-Security-Policy: default-src 'self'; ...; report-uri /my_amazing_csp_rep
 }
 ```
 
-
 ### 报告模式
 
 CSP 提供了一种报告模式，该模式下资源不会真的被限制加载，只会对检测到的问题进行上报 ，以 JSON 数据的形式发送到 `report-uri` 指定的地方。
@@ -507,21 +509,19 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
 
 报告模式对于测试非常有用。在开启 CSP 之前肯定需要对整站做全面的测试，将发现的问题及时修复后再真正开启，比如上面提到的对内联代码的改造。
 
-
 ### 推荐的做法
 
 这样的安全措施当然是能尽快启用就尽快。以下是推荐的做法：
+
 - 先只开启报告模式，看影响范围，修改问题。
 - 添加指令时从 default-src ‘none’ 开始，查看报错，逐步添加规则直至满足要求。
 - 上线后观察一段时间，稳定后再由报告模式转到强制执行。
 
-
 ### 浏览器兼容性
 
-目前发布的[ Level 3 规范](https://www.w3.org/TR/CSP3/) 中大部分还未被浏览器实现，通过  [Can I Use 的数据](https://caniuse.com/#search=CSP) 来看，除 IE 外，Level 2 的功能已经得到了很好的支持。这里还有一分来自 W3C 跟踪的各浏览器实现情况的统计：[Implementation Report for Content Security Policy Level 2](https://w3c.github.io/webappsec/implementation_reports/CSP2_implementation_report.html)。
+目前发布的[ Level 3 规范](https://www.w3.org/TR/CSP3/) 中大部分还未被浏览器实现，通过 [Can I Use 的数据](https://caniuse.com/#search=CSP) 来看，除 IE 外，Level 2 的功能已经得到了很好的支持。这里还有一分来自 W3C 跟踪的各浏览器实现情况的统计：[Implementation Report for Content Security Policy Level 2](https://w3c.github.io/webappsec/implementation_reports/CSP2_implementation_report.html)。
 
 对于浏览器不支持的情况，也不必担心，会回退到同源策略的限制上。
-
 
 ### 相关资源
 
@@ -529,7 +529,3 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
 - [Content Security Policy (CSP)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - [Content Security Policy from Web Fundamentals](https://developers.google.com/web/fundamentals/security/csp/)
 - [Improving Browser Security with CSP](https://blog.twitter.com/engineering/en_us/a/2011/improving-browser-security-with-csp.html)
-
-
-
-    

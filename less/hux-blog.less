@@ -153,8 +153,7 @@ samp {
   a {
     // display: inline-block;
     // safari has bugs on word-break on inline elements.
-    color: #337ab7;
-    // different to @brand-primary
+    color: @brand-primary;
     &:hover,
     &:focus {
       color: @brand-primary;
@@ -544,7 +543,7 @@ samp {
     padding: 85px 0 55px;
     color: white;
     text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1),
-        1px 1px 1px rgba(0, 0, 0, 0.5);
+      1px 1px 1px rgba(0, 0, 0, 0.5);
     @media only screen and (min-width: 768px) {
       padding: 150px 0;
     }
@@ -663,9 +662,7 @@ samp {
   }
   > .post-meta {
     .serif;
-    color: @brand-gray;
     font-size: 16px;
-    font-style: italic;
     margin-top: 0;
     > a {
       text-decoration: none;
@@ -818,30 +815,6 @@ footer {
       cursor: not-allowed;
     }
   }
-}
-
-// -- Highlight Color Customization
-
-::-moz-selection {
-  color: white;
-  text-shadow: none;
-  background: @brand-primary;
-}
-
-::selection {
-  color: white;
-  text-shadow: none;
-  background: @brand-primary;
-}
-
-img::selection {
-  color: white;
-  background: transparent;
-}
-
-img::-moz-selection {
-  color: white;
-  background: transparent;
 }
 
 /* Hux add tags support */

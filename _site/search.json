@@ -225,7 +225,7 @@
     } ,
   
     {
-      "title"    : "[clang] `` 的使用",
+      "title"    : "[clang] `\b` 的使用",
       "subtitle" : "",
       "tags"     : "clang",
       "url"      : "/2020/07/17/clang-b-%E7%9A%84%E4%BD%BF%E7%94%A8/",
@@ -246,22 +246,6 @@
       "tags"     : "",
       "url"      : "/2020/06/24/iTerm2-%E4%B8%AD%E5%AE%9E%E7%8E%B0%E5%91%BD%E4%BB%A4%E5%AE%8C%E6%88%90%E6%97%B6%E8%BF%9B%E8%A1%8C%E9%80%9A%E7%9F%A5/",
       "date"     : "2020-06-24 15:06:00 +0000"
-    } ,
-  
-    {
-      "title"    : "Data Representation - TODO",
-      "subtitle" : "「数据表示」待写",
-      "tags"     : "笔记, 基础, C, C++",
-      "url"      : "/2020/06/21/data-rep-todo/",
-      "date"     : "2020-06-21 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "Data Representation - Floating Point Numbers",
-      "subtitle" : "「数据表示」浮点数",
-      "tags"     : "笔记, 基础, C, C++",
-      "url"      : "/2020/06/21/data-rep-float/",
-      "date"     : "2020-06-21 00:00:00 +0000"
     } ,
   
     {
@@ -286,14 +270,6 @@
       "tags"     : "",
       "url"      : "/2020/06/19/Cookie-%E7%9A%84%E4%B8%8B%E5%8F%91%E4%B8%8E%E5%9B%9E%E4%BC%A0/",
       "date"     : "2020-06-19 14:06:00 +0000"
-    } ,
-  
-    {
-      "title"    : "Data Representation - Integer",
-      "subtitle" : "「数据表示」整数",
-      "tags"     : "笔记, 基础, C, C++",
-      "url"      : "/2020/06/19/data-rep-int/",
-      "date"     : "2020-06-19 00:00:00 +0000"
     } ,
   
     {
@@ -542,14 +518,6 @@
       "tags"     : "",
       "url"      : "/2020/05/09/iTerm2-%E4%BC%9A%E8%AF%9D%E7%AA%97%E5%8F%A3%E7%9A%84%E6%81%A2%E5%A4%8D/",
       "date"     : "2020-05-09 12:05:00 +0000"
-    } ,
-  
-    {
-      "title"    : "My Programming Languages Spectrum",
-      "subtitle" : "我的编程语言光谱",
-      "tags"     : "",
-      "url"      : "/2020/05/05/pl-chart/",
-      "date"     : "2020-05-05 00:00:00 +0000"
     } ,
   
     {
@@ -862,22 +830,6 @@
       "tags"     : "",
       "url"      : "/2019/09/23/TypeScript-%E5%8F%82%E6%95%B0%E5%B1%9E%E6%80%A7/",
       "date"     : "2019-09-23 16:09:00 +0000"
-    } ,
-  
-    {
-      "title"    : "Peter John Landin",
-      "subtitle" : "「计算机科学偶像」- 彼得·约翰·兰丁",
-      "tags"     : "CS Idols",
-      "url"      : "/2019/09/13/peter-john-landin/",
-      "date"     : "2019-09-13 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-QC」2 TypeClasses",
-      "subtitle" : "Quickcheck - A Tutorial on Typeclasses in Coq",
-      "tags"     : "SF (软件基础), QC (Quickcheck), Coq, 笔记",
-      "url"      : "/2019/09/02/sf-qc-02-typeclasses/",
-      "date"     : "2019-09-02 00:00:00 +0000"
     } ,
   
     {
@@ -1626,91 +1578,11 @@
     } ,
   
     {
-      "title"    : "「SF-PLF」19 PE",
-      "subtitle" : "Programming Language Foundations - Partial Evaluation",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/19/sf-plf-19-partial-eval/",
-      "date"     : "2019-03-19 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」18 UseAuto",
-      "subtitle" : "Programming Language Foundations - Theory And Practice Of Automation In Coq Proofs",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/18/sf-plf-18-use-auto/",
-      "date"     : "2019-03-18 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」17 UseTactics",
-      "subtitle" : "Programming Language Foundations - Tactic Library For Coq",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/17/sf-plf-17-use-tactics/",
-      "date"     : "2019-03-17 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」16 LibTactics",
-      "subtitle" : "Programming Language Foundations - A Collection of Handy General-Purpose Tactics",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/16/sf-plf-16-lib-tactics/",
-      "date"     : "2019-03-16 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」15 Norm",
-      "subtitle" : "Programming Language Foundations - Normalization of STLC",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/15/sf-plf-15-norm-STLC/",
-      "date"     : "2019-03-15 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」14 RecordSub",
-      "subtitle" : "Programming Language Foundations - Subtyping with Records",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/14/sf-plf-14-record-sub/",
-      "date"     : "2019-03-14 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」13 References",
-      "subtitle" : "Programming Language Foundations - Typing Mutable References",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/13/sf-plf-13-references/",
-      "date"     : "2019-03-13 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」12 Records",
-      "subtitle" : "Programming Language Foundations - Adding Records To STLC",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/12/sf-plf-12-records/",
-      "date"     : "2019-03-12 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」11. TypeChecking",
-      "subtitle" : "Programming Language Foundations - A Typechecker for STLC",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/11/sf-plf-11-typechecking/",
-      "date"     : "2019-03-11 00:00:00 +0000"
-    } ,
-  
-    {
       "title"    : "Webpack SplitChunksPlugin 的三种模式",
       "subtitle" : "",
       "tags"     : "",
       "url"      : "/2019/03/10/Webpack-SplitChunksPlugin-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F/",
       "date"     : "2019-03-10 17:03:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」10 Sub",
-      "subtitle" : "Programming Language Foundations - Subtyping (子类型化)",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/10/sf-plf-10-subtyping/",
-      "date"     : "2019-03-10 00:00:00 +0000"
     } ,
   
     {
@@ -1722,83 +1594,11 @@
     } ,
   
     {
-      "title"    : "「SF-PLF」9 MoreStlc",
-      "subtitle" : "Programming Language Foundations - More on The Simply Typed Lambda-Calculus",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/09/sf-plf-09-more-STLC/",
-      "date"     : "2019-03-09 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」8 StlcProp",
-      "subtitle" : "Programming Language Foundations - Properties of STLC",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/08/sf-plf-08-STLC-prop/",
-      "date"     : "2019-03-08 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」7 Stlc",
-      "subtitle" : "Programming Language Foundations - The Simply Typed Lambda-Calculus",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/07/sf-plf-07-STLC/",
-      "date"     : "2019-03-07 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」6 Types",
-      "subtitle" : "Programming Language Foundations - Type Systems",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/06/sf-plf-06-types/",
-      "date"     : "2019-03-06 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」5 Smallstep",
-      "subtitle" : "Programming Language Foundations - Small-Step Operational Semantics",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/05/sf-plf-05-smallstep/",
-      "date"     : "2019-03-05 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」4 HoareAsLogic",
-      "subtitle" : "Programming Language Foundations - Hoare Logic as a Logic",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/04/sf-plf-04-hoare-logic/",
-      "date"     : "2019-03-04 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」3 Hoare2",
-      "subtitle" : "Programming Language Foundations - Hoare Logic, Part II",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/03/sf-plf-03-hoare-2/",
-      "date"     : "2019-03-03 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」2 Hoare",
-      "subtitle" : "Programming Language Foundations - Hoare Logic, Part I ",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/02/sf-plf-02-hoare-1/",
-      "date"     : "2019-03-02 00:00:00 +0000"
-    } ,
-  
-    {
       "title"    : "Chrome 自动为新开标签页自动打开 DevTool",
       "subtitle" : "",
       "tags"     : "",
       "url"      : "/2019/03/01/Chrome-%E8%87%AA%E5%8A%A8%E4%B8%BA%E6%96%B0%E5%BC%80%E6%A0%87%E7%AD%BE%E9%A1%B5%E8%87%AA%E5%8A%A8%E6%89%93%E5%BC%80-DevTool/",
       "date"     : "2019-03-01 13:03:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-PLF」1 Equiv",
-      "subtitle" : "Programming Language Foundations - Program Equivalence (程序的等价关系)",
-      "tags"     : "SF (软件基础), PLF (编程语言基础), Coq, 笔记",
-      "url"      : "/2019/03/01/sf-plf-01-equiv/",
-      "date"     : "2019-03-01 00:00:00 +0000"
     } ,
   
     {
@@ -1831,134 +1631,6 @@
       "tags"     : "",
       "url"      : "/2019/01/28/iOS-%E5%BE%AE%E4%BF%A1%E4%B8%AD%E9%9F%B3%E9%A2%91-preload-%E7%9A%84%E9%97%AE%E9%A2%98/",
       "date"     : "2019-01-28 13:01:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」16 Auto",
-      "subtitle" : "Logical Foundations - More Automation",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/16/sf-lf-16-auto/",
-      "date"     : "2019-01-16 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」15 Extraction",
-      "subtitle" : "Logical Foundations - Extracting ML From Coq",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/15/sf-lf-15-extraction/",
-      "date"     : "2019-01-15 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」14 ImpCEvalFun",
-      "subtitle" : "Logical Foundations - An Evaluation Function For Imp",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/14/sf-lf-14-imp-ceval/",
-      "date"     : "2019-01-14 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」13 ImpParser",
-      "subtitle" : "Logical Foundations - Lexing And Parsing In Coq",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/13/sf-lf-13-imp-parser/",
-      "date"     : "2019-01-13 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」12 Imp",
-      "subtitle" : "Logical Foundations - Simple Imperative Programs",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/12/sf-lf-12-imp/",
-      "date"     : "2019-01-12 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」11 Rel",
-      "subtitle" : "Logical Foundations - Properties of Relations",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/11/sf-lf-11-rel/",
-      "date"     : "2019-01-11 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」10 IndPrinciples",
-      "subtitle" : "Logical Foundations - Induction Principles",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/10/sf-lf-10-ind-principle/",
-      "date"     : "2019-01-10 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」9 ProofObjects",
-      "subtitle" : "Logical Foundations - The Curry-Howard Correspondence ",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/09/sf-lf-09-proof-object/",
-      "date"     : "2019-01-09 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」8 Maps",
-      "subtitle" : "Logical Foundations - Total and Partial Maps",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/08/sf-lf-08-map/",
-      "date"     : "2019-01-08 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」7 Ind Prop",
-      "subtitle" : "Logical Foundations - Inductively Defined Propositions (归纳定义命题)",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/07/sf-lf-07-indprop/",
-      "date"     : "2019-01-07 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」6 Logic",
-      "subtitle" : "Logical Foundations - Logic in Coq",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/06/sf-lf-06-logic/",
-      "date"     : "2019-01-06 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」5 Tactics",
-      "subtitle" : "Logical Foundations - More Basic Tactics",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/05/sf-lf-05-tactics/",
-      "date"     : "2019-01-05 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」4 Poly",
-      "subtitle" : "Logical Foundations - Polymorphism and Higher-Order Functions",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/04/sf-lf-04-poly/",
-      "date"     : "2019-01-04 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」3 List",
-      "subtitle" : "Logical Foundations - Working with Structured Data",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/03/sf-lf-03-list/",
-      "date"     : "2019-01-03 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」2 Induction",
-      "subtitle" : "Logical Foundations - Proof by Induction",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/02/sf-lf-02-induction/",
-      "date"     : "2019-01-02 00:00:00 +0000"
-    } ,
-  
-    {
-      "title"    : "「SF-LC」1 Basics",
-      "subtitle" : "Logical Foundations - Functional Programming in Coq",
-      "tags"     : "LF (逻辑基础), SF (软件基础), Coq, 笔记",
-      "url"      : "/2019/01/01/sf-lf-01-basics/",
-      "date"     : "2019-01-01 00:00:00 +0000"
     } ,
   
     {

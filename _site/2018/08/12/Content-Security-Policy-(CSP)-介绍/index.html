@@ -1,71 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="notes about the coding life">
-    <meta name="keywords"  content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计">
-    <meta name="theme-color" content="#000000">
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="Content Security Policy (CSP) 介绍 - 牛さんの部落格|刘哇勇的部落格">
-    
-    <meta property="og:type" content="article">
-    <meta property="og:description" content="Content Security Policy (CSP) 介绍
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Content Security Policy (CSP) 介绍 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="Content Security Policy (CSP) 介绍
 
 当我不经意间在 Twitter 页面 view source 后，发现了惊喜。
 
 &lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="utf-8" /&gt;
-  &lt;title&gt;Twitter&lt;/titl...">
-    
-    <meta property="article:published_time" content="2018-08-12T17:08:00Z">
-    
-    
-    
-    <meta property="article:tag" content="security">
-    
-    
-    <meta property="og:image" content="http://0.0.0.0:4000">
-    <meta property="og:url" content="http://0.0.0.0:4000/2018/08/12/Content-Security-Policy-(CSP)-%E4%BB%8B%E7%BB%8D/">
-    <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格">
-    
-    <title>Content Security Policy (CSP) 介绍 - 牛さんの部落格|刘哇勇的部落格</title>
+  &lt;head&gt;
+    &lt;meta charset="utf-8" /&gt;
+    &lt;title&gt;Twitter&lt..."
+  />
+   <meta property="article:published_time" content="2018-08-12T17:08:00Z">   
+  <meta property="article:tag" content="security" />
+   
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2018/08/12/Content-Security-Policy-(CSP)-%E4%BB%8B%E7%BB%8D/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
 
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="/pwa/manifest.json">
+  <title>
+    Content Security Policy (CSP) 介绍 - 牛さんの部落格|刘哇勇的部落格
+  </title>
 
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="/img/favicon.ico">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="http://0.0.0.0:4000/2018/08/12/Content-Security-Policy-(CSP)-%E4%BB%8B%E7%BB%8D/">
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/hux-blog.min.css">
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2018/08/12/Content-Security-Policy-(CSP)-%E4%BB%8B%E7%BB%8D/"
+  />
 
-    <!-- Custom Fonts -->
-    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
-    <!-- Hux change font-awesome CDN to qiniu -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
 
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.min.css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
 
-    <!-- ga & ba script hoook -->
-    <script></script>
+  <!-- ga & ba script hoook -->
+  <script></script>
 </head>
 
 
@@ -73,178 +79,102 @@
   <body ontouchstart="">
     <!-- Navigation -->
 
-    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
-        
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">牛さんの部落格</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div id="huxblog_navbar">
-                <div class="navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="/">Home</a>
-                        </li>
-                        
-                        
-                        
-                        
-                        <li>
-                            <a href="/about/">关于</a>
-                        </li>
-                        
-                        
-                        
-                        <li>
-                            <a href="/archive/">Archive</a>
-                        </li>
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        <li class="search-icon">
-                            <a href="javascript:void(0)">
-                                <i class="fa fa-search"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
-
-    <script>
-        // Drop Bootstarp low-performance Navbar
-        // Use customize navbar with high-quality material design animation
-        // in high-perf jank-free CSS3 implementation
-        var $body = document.body;
-        var $toggle = document.querySelector('.navbar-toggle');
-        var $navbar = document.querySelector('#huxblog_navbar');
-        var $collapse = document.querySelector('.navbar-collapse');
-
-        var __HuxNav__ = {
-            close: function () {
-                $navbar.className = " ";
-                // wait until animation end.
-                setTimeout(function () {
-                    // prevent frequently toggle
-                    if ($navbar.className.indexOf('in') < 0) {
-                        $collapse.style.height = "0px"
-                    }
-                }, 400)
-            },
-            open: function () {
-                $collapse.style.height = "auto"
-                $navbar.className += " in";
-            }
-        }
-
-        // Bind Event
-        $toggle.addEventListener('click', function (e) {
-            if ($navbar.className.indexOf('in') > 0) {
-                __HuxNav__.close()
-            } else {
-                __HuxNav__.open()
-            }
-        })
-
-        /**
-         * Since Fastclick is used to delegate 'touchstart' globally
-         * to hack 300ms delay in iOS by performing a fake 'click',
-         * Using 'e.stopPropagation' to stop 'touchstart' event from 
-         * $toggle/$collapse will break global delegation.
-         * 
-         * Instead, we use a 'e.target' filter to prevent handler
-         * added to document close HuxNav.  
-         *
-         * Also, we use 'click' instead of 'touchstart' as compromise
-         */
-        document.addEventListener('click', function (e) {
-            if (e.target == $toggle) return;
-            if (e.target.className == 'icon-bar') return;
-            __HuxNav__.close();
-        })
-    </script> <!-- Search -->
-<div class="search-page">
-  <div class="search-icon-close-container">
-    <span class="search-icon-close">
-      <i class="fa fa-chevron-down"></i>
-    </span>
-  </div>
-  <div class="search-main container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <form></form>
-        <input type="text" id="search-input" placeholder="$ grep...">
-        </form>
-        <div id="search-results" class="mini-post-list"></div>
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
       </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive/"
+                >存档</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
     </div>
-  </div>
-</div> <!-- Image to hack wechat -->
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
 <!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
 
@@ -310,39 +240,39 @@
 
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;head&gt;</span>
-  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span> <span class="nt">/&gt;</span>
-  <span class="nt">&lt;title&gt;</span>Twitter<span class="nt">&lt;/title&gt;</span>
-  <span class="nt">&lt;style&gt;</span>
-  <span class="nt">body</span> <span class="p">{</span>
-    <span class="nl">background-color</span><span class="p">:</span> <span class="m">#ffffff</span><span class="p">;</span>
-    <span class="nl">font-family</span><span class="p">:</span> <span class="nb">sans-serif</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="nt">a</span> <span class="p">{</span>
-    <span class="nl">color</span><span class="p">:</span> <span class="m">#1da1f2</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="nt">svg</span> <span class="p">{</span>
-    <span class="nl">color</span><span class="p">:</span> <span class="m">#1da1f2</span><span class="p">;</span>
-    <span class="nl">display</span><span class="p">:</span> <span class="nb">block</span><span class="p">;</span>
-    <span class="py">fill</span><span class="p">:</span> <span class="n">currentcolor</span><span class="p">;</span>
-    <span class="nl">height</span><span class="p">:</span> <span class="m">21px</span><span class="p">;</span>
-    <span class="nl">margin</span><span class="p">:</span> <span class="m">13px</span> <span class="nb">auto</span><span class="p">;</span>
-    <span class="nl">width</span><span class="p">:</span> <span class="m">24px</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="nt">&lt;/style&gt;</span>
-<span class="nt">&lt;/head&gt;</span>
-<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;title&gt;</span>Twitter<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+      <span class="nt">body</span> <span class="p">{</span>
+        <span class="nl">background-color</span><span class="p">:</span> <span class="m">#ffffff</span><span class="p">;</span>
+        <span class="nl">font-family</span><span class="p">:</span> <span class="nb">sans-serif</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="nt">a</span> <span class="p">{</span>
+        <span class="nl">color</span><span class="p">:</span> <span class="m">#1da1f2</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="nt">svg</span> <span class="p">{</span>
+        <span class="nl">color</span><span class="p">:</span> <span class="m">#1da1f2</span><span class="p">;</span>
+        <span class="nl">display</span><span class="p">:</span> <span class="nb">block</span><span class="p">;</span>
+        <span class="py">fill</span><span class="p">:</span> <span class="n">currentcolor</span><span class="p">;</span>
+        <span class="nl">height</span><span class="p">:</span> <span class="m">21px</span><span class="p">;</span>
+        <span class="nl">margin</span><span class="p">:</span> <span class="m">13px</span> <span class="nb">auto</span><span class="p">;</span>
+        <span class="nl">width</span><span class="p">:</span> <span class="m">24px</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
     <span class="nt">&lt;noscript&gt;</span>
-      
-      <span class="nt">&lt;center&gt;</span>If you’re not redirected soon, please <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"/"</span><span class="nt">&gt;</span>use this link<span class="nt">&lt;/a&gt;</span>.<span class="nt">&lt;/center&gt;</span>
+      <span class="nt">&lt;center&gt;</span>
+        If you’re not redirected soon, please <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"/"</span><span class="nt">&gt;</span>use this link<span class="nt">&lt;/a&gt;</span>.
+      <span class="nt">&lt;/center&gt;</span>
     <span class="nt">&lt;/noscript&gt;</span>
     <span class="nt">&lt;script </span><span class="na">nonce=</span><span class="s">"SG0bV9rOanQfzG0ccU8WQw=="</span><span class="nt">&gt;</span>
-      
       <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">app_shell_visited=1;path=/;max-age=5</span><span class="dl">"</span><span class="p">;</span>
-      
+
       <span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">"</span><span class="s2">#</span><span class="dl">"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]);</span>
     <span class="nt">&lt;/script&gt;</span>
-<span class="nt">&lt;/body&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
 <span class="nt">&lt;/html&gt;</span>
 </code></pre></div></div>
 
@@ -351,16 +281,16 @@
 <p>把目光移向 script 标签时，发现一个不认识的 <code class="language-plaintext highlighter-rouge">nonce</code> 属性。它以及它后面的神秘字符串成功引起了我的好奇。再去看 Google 首页的源码，也有好些 <code class="language-plaintext highlighter-rouge">nonce</code> 的运用。是时候去了解一下这里的 <code class="language-plaintext highlighter-rouge">nonce</code> 是什么了。</p>
 
 <div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gs">! &lt;script nonce="SG0bV9rOanQfzG0ccU8WQw=="&gt;
-</span>      
+</span>
       document.cookie = "app_shell_visited=1;path=/;max-age=5";
-      
+
       location.replace(location.href.split("#")[0]);
     &lt;/script&gt;
 </code></pre></div></div>
 
 <h3 id="content-security-policy-csp">Content Security Policy (CSP)</h3>
 
-<p>要了解  <code class="language-plaintext highlighter-rouge">nonce</code>， 先了解 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">Content-Security-Policy(CSP)</a>。</p>
+<p>要了解 <code class="language-plaintext highlighter-rouge">nonce</code>， 先了解 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">Content-Security-Policy(CSP)</a>。</p>
 
 <p>我们都知道浏览器有同源策略（<a href="https://en.wikipedia.org/wiki/Same-origin_policy">same-origin policy</a>）的安全限制，即每个站点只允许加载来自和自身同域（origin）的数据，<code class="language-plaintext highlighter-rouge">https://a.com</code> 是无法从 <code class="language-plaintext highlighter-rouge">https://b.com</code> 加载到资源的。每个站点被严格限制在了自已的孤岛上，自己就是一个沙盒，这样很安全，整个网络不会杂乱无章。主要地，它能解决大部分安全问题。假若没有同源策略，恶意代码能够轻松在浏览器端执行然后获取各种隐私信息：银行帐号，社交数据等。</p>
 
@@ -377,12 +307,13 @@
 <p>CSP 通过告诉浏览器一系列规则，严格规定页面中哪些资源允许有哪些来源， 不在指定范围内的统统拒绝。相比同源策略，CSP 可以说是很严格了。</p>
 
 <p>其实施有两种途径：</p>
+
 <ul>
-  <li>服务器添加  <code class="language-plaintext highlighter-rouge">Content-Security-Policy</code> 响应头来指定规则</li>
-  <li>HTML 中添加 <code class="language-plaintext highlighter-rouge">&lt;meta&gt;</code> 标签来指定  <code class="language-plaintext highlighter-rouge">Content-Security-Policy</code> 规则</li>
+  <li>服务器添加 <code class="language-plaintext highlighter-rouge">Content-Security-Policy</code> 响应头来指定规则</li>
+  <li>HTML 中添加 <code class="language-plaintext highlighter-rouge">&lt;meta&gt;</code> 标签来指定 <code class="language-plaintext highlighter-rouge">Content-Security-Policy</code> 规则</li>
 </ul>
 
-<p><img src="https://user-images.githubusercontent.com/3783096/44004494-f3c9bdf2-9e95-11e8-8793-e2966d79ecae.png" alt="mobile.twitter.com header 中的 CSP 规则" />￼
+<p><img src="https://user-images.githubusercontent.com/3783096/44004494-f3c9bdf2-9e95-11e8-8793-e2966d79ecae.png" alt="mobile.twitter.com header 中的 CSP 规则" />
 <em>mobile.twitter.com header 中的 CSP 规则</em></p>
 
 <p>为了测试方便，以下示例均使用 <code class="language-plaintext highlighter-rouge">&lt;meta&gt;</code> 标签来开启 CSP 规则。但 <code class="language-plaintext highlighter-rouge">&lt;meta&gt;</code> 中有些指令是不能使用的，后面会了解到。只有响应头中才能使用全部的限制指令。</p>
@@ -392,15 +323,19 @@
 <p>创建一个 HTML 文件放入以下内容：</p>
 
 <p><em>csp_test.html</em></p>
+
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;head&gt;</span>
-    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"Content-Security-Policy"</span> <span class="na">content=</span><span class="s">"script-src 'self' https://unpkg.com"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span>
+      <span class="na">http-equiv=</span><span class="s">"Content-Security-Policy"</span>
+      <span class="na">content=</span><span class="s">"script-src 'self' https://unpkg.com"</span>
+    <span class="nt">/&gt;</span>
     <span class="nt">&lt;title&gt;</span>CSP Test<span class="nt">&lt;/title&gt;</span>
-<span class="nt">&lt;/head&gt;</span>
-<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
     <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://unpkg.com/react@16/umd/react.development.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;/body&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
 <span class="nt">&lt;/html&gt;</span>
 </code></pre></div></div>
 
@@ -411,12 +346,13 @@
 
 <p>然后访问 <a href="localhost:8000">localhost:8000</a> 以观察结果：</p>
 
-<p><img src="https://user-images.githubusercontent.com/3783096/44004498-fdd37004-9e95-11e8-895d-53797ae105c1.png" alt="符合 CSP 规则情况下的正常访问" />￼
+<p><img src="https://user-images.githubusercontent.com/3783096/44004498-fdd37004-9e95-11e8-895d-53797ae105c1.png" alt="符合 CSP 规则情况下的正常访问" />
 <em>符合 CSP 规则情况下的正常访问</em></p>
 
-<p>然后我们将  <code class="language-plaintext highlighter-rouge">Content-Security-Policy</code> 改成不允许任何资源再试一下：</p>
+<p>然后我们将 <code class="language-plaintext highlighter-rouge">Content-Security-Policy</code> 改成不允许任何资源再试一下：</p>
 
 <p><em>csp_test.html</em></p>
+
 <div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
 &lt;head&gt;
@@ -447,25 +383,26 @@
 <p>这里 directive，即指令，是 CSP 规范中规定用以详细详述某种资源的来源，比如前面示例中使用的 <code class="language-plaintext highlighter-rouge">script-src</code>，指定脚本可以有哪些合法来源，<code class="language-plaintext highlighter-rouge">img-src</code> 则指定图片，以下是常用指令：</p>
 
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">base-uri</code> 限制可出现在页面 <code class="language-plaintext highlighter-rouge">&lt;base&gt;</code> 标签中的链接。</li>
-  <li><code class="language-plaintext highlighter-rouge">child-src</code> 列出可用于 worker 及以 frame 形式嵌入的链接。 譬如: <code class="language-plaintext highlighter-rouge">child-src https://youtube.com</code> 表示只能从 Youtube 嵌入视频资源。</li>
-  <li><code class="language-plaintext highlighter-rouge">connect-src</code> 可发起连接的地址 (通过 XHR, WebSockets 或 EventSource)。</li>
-  <li><code class="language-plaintext highlighter-rouge">font-src</code> 字体来源。譬如，要使用 Google web fonts 则需要添加 <code class="language-plaintext highlighter-rouge">font-src https://themes.googleusercontent.com</code> 规则。</li>
+  <li><code class="language-plaintext highlighter-rouge">base-uri</code>  限制可出现在页面 <code class="language-plaintext highlighter-rouge">&lt;base&gt;</code> 标签中的链接。</li>
+  <li><code class="language-plaintext highlighter-rouge">child-src</code>  列出可用于 worker 及以 frame 形式嵌入的链接。 譬如: <code class="language-plaintext highlighter-rouge">child-src https://youtube.com</code>  表示只能从 Youtube 嵌入视频资源。</li>
+  <li><code class="language-plaintext highlighter-rouge">connect-src</code>  可发起连接的地址 (通过 XHR, WebSockets 或 EventSource)。</li>
+  <li><code class="language-plaintext highlighter-rouge">font-src</code>  字体来源。譬如，要使用 Google web fonts 则需要添加  <code class="language-plaintext highlighter-rouge">font-src https://themes.googleusercontent.com</code> 规则。</li>
   <li><code class="language-plaintext highlighter-rouge">form-action</code> <code class="language-plaintext highlighter-rouge">&lt;form&gt;</code> 标签可提交的地址。</li>
-  <li><code class="language-plaintext highlighter-rouge">frame-ancestors</code> 当前页面可被哪些来源所嵌入（与 <code class="language-plaintext highlighter-rouge">child-src</code> 正好相反）。作用于 <code class="language-plaintext highlighter-rouge">&lt;frame&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;iframe&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;embed&gt;</code> 及 <code class="language-plaintext highlighter-rouge">&lt;applet&gt;</code>。 该指令不能通过 <code class="language-plaintext highlighter-rouge">&lt;meta&gt;</code> 指定且只对非 HTML文档类型的资源生效。</li>
-  <li><code class="language-plaintext highlighter-rouge">frame-src</code> 该指令已在 level 2 中废弃但会在 level 3 中恢复使用。未指定的情况下回退到 <code class="language-plaintext highlighter-rouge">tochild-src</code> 指令。</li>
-  <li><code class="language-plaintext highlighter-rouge">img-src</code> 指定图片来源。</li>
-  <li><code class="language-plaintext highlighter-rouge">media-src</code> 限制音视频资源的来源。</li>
+  <li><code class="language-plaintext highlighter-rouge">frame-ancestors</code>  当前页面可被哪些来源所嵌入（与 <code class="language-plaintext highlighter-rouge">child-src</code> 正好相反）。作用于  <code class="language-plaintext highlighter-rouge">&lt;frame&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;iframe&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;embed&gt;</code> 及  <code class="language-plaintext highlighter-rouge">&lt;applet&gt;</code>。 该指令不能通过 <code class="language-plaintext highlighter-rouge">&lt;meta&gt;</code> 指定且只对非 HTML 文档类型的资源生效。</li>
+  <li><code class="language-plaintext highlighter-rouge">frame-src</code>  该指令已在 level 2 中废弃但会在 level 3 中恢复使用。未指定的情况下回退到 <code class="language-plaintext highlighter-rouge">tochild-src</code> 指令。</li>
+  <li><code class="language-plaintext highlighter-rouge">img-src</code>  指定图片来源。</li>
+  <li><code class="language-plaintext highlighter-rouge">media-src</code>  限制音视频资源的来源。</li>
   <li><code class="language-plaintext highlighter-rouge">object-src</code> Flash 及其他插件的来源。</li>
-  <li><code class="language-plaintext highlighter-rouge">plugin-types</code> 限制页面中可加载的插件类型。</li>
+  <li><code class="language-plaintext highlighter-rouge">plugin-types</code>  限制页面中可加载的插件类型。</li>
   <li><code class="language-plaintext highlighter-rouge">report-uri</code> 指定一个可接收 CSP 报告的地址，浏览器会在相应指令不通过时发送报告。不能通过 <code class="language-plaintext highlighter-rouge">&lt;meta&gt;</code> 标签来指定。</li>
-  <li><code class="language-plaintext highlighter-rouge">style-src</code> 限制样式文件的来源。</li>
-  <li><code class="language-plaintext highlighter-rouge">upgrade-insecure-requests</code> 指导客户端将页面地址重写，HTTP 转 HTTPS。用于站点中有大量旧地址需要重定向的情形。</li>
+  <li><code class="language-plaintext highlighter-rouge">style-src</code>  限制样式文件的来源。</li>
+  <li><code class="language-plaintext highlighter-rouge">upgrade-insecure-requests</code>  指导客户端将页面地址重写，HTTP 转 HTTPS。用于站点中有大量旧地址需要重定向的情形。</li>
   <li><code class="language-plaintext highlighter-rouge">worker-src</code> CSP Level 3 中的指令，规定可用于 worker, shared worker, 或 service worker 中的地址。</li>
 </ul>
 
 <blockquote>
   <p><code class="language-plaintext highlighter-rouge">child-src</code>  与 <code class="language-plaintext highlighter-rouge">frame-ancestors</code>  看起来比较像。前者规定的是页面中可加载哪些 iframe，后者规定谁可以以 iframe 加载本页。 比如来自不同站点的两个网页 A 与 B，B 中有 iframe 加载了 A。那么</p>
+
   <ul>
     <li>A 的 <code class="language-plaintext highlighter-rouge">frame-ancestors</code> 需要包含 B</li>
     <li>B 的 <code class="language-plaintext highlighter-rouge">child-src</code> 需要包含 A</li>
@@ -491,12 +428,14 @@
 <p>改成 <code class="language-plaintext highlighter-rouge">none</code> 之后表示页面不加载任何脚本，即使自己站点上的脚本都无法被加载执行。这里不妨试一下在 <code class="language-plaintext highlighter-rouge">csp_test.html</code> 旁边创建一个脚本文件 <code class="language-plaintext highlighter-rouge">test.js</code>:</p>
 
 <p><em>test.js</em></p>
+
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">alert</span><span class="p">(</span><span class="err">‘</span><span class="nx">来自</span> <span class="nx">test</span><span class="p">.</span><span class="nx">js</span> <span class="nx">的问候</span><span class="err">！’</span><span class="p">)</span>
 </code></pre></div></div>
 
 <p>同时在页面中引用它：</p>
 
 <p><em>csp_test.html</em></p>
+
 <div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
 &lt;head&gt;
@@ -520,6 +459,7 @@
 <h3 id="指令可接受的值">指令可接受的值</h3>
 
 <p>指令后面跟的来源，有两种写法</p>
+
 <ul>
   <li>预设值</li>
   <li>URI 通配符</li>
@@ -532,8 +472,8 @@
 <ul>
   <li><code class="language-plaintext highlighter-rouge">none</code> 不匹配任何东西。</li>
   <li><code class="language-plaintext highlighter-rouge">self</code> 匹配当前域，但不包括子域。比如 <code class="language-plaintext highlighter-rouge">example.com</code> 可以，<code class="language-plaintext highlighter-rouge">api.example.com</code> 则会匹配失败。</li>
-  <li><code class="language-plaintext highlighter-rouge">unsafe-inline</code> 允许内嵌的脚本及样式。是的，没看错，对于页面中内嵌的内容也是有相应限制规则的。</li>
-  <li><code class="language-plaintext highlighter-rouge">unsafe-eval</code> 允许通过字符串动态创建的脚本执行，比如 <code class="language-plaintext highlighter-rouge">eval</code>，<code class="language-plaintext highlighter-rouge">setTimeout</code> 等。</li>
+  <li><code class="language-plaintext highlighter-rouge">unsafe-inline</code>  允许内嵌的脚本及样式。是的，没看错，对于页面中内嵌的内容也是有相应限制规则的。</li>
+  <li><code class="language-plaintext highlighter-rouge">unsafe-eval</code>  允许通过字符串动态创建的脚本执行，比如 <code class="language-plaintext highlighter-rouge">eval</code>，<code class="language-plaintext highlighter-rouge">setTimeout</code> 等。</li>
 </ul>
 
 <p>特别地，在 CSP 的严格控制下，页面中内联脚本及样式也会受影响，在没有明确指定的情况下，其不能被浏览器执行。</p>
@@ -541,28 +481,29 @@
 <p>考虑下面的代码：</p>
 
 <p><em>csp_test.html</em></p>
+
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
     <span class="nt">&lt;title&gt;</span>CSP Test<span class="nt">&lt;/title&gt;</span>
     <span class="nt">&lt;style&gt;</span>
-        <span class="nt">body</span><span class="p">{</span>
-            <span class="nl">color</span><span class="p">:</span><span class="no">red</span><span class="p">;</span>
-        <span class="p">}</span>
+      <span class="nt">body</span> <span class="p">{</span>
+        <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+      <span class="p">}</span>
     <span class="nt">&lt;/style&gt;</span>
-<span class="nt">&lt;/head&gt;</span>
-<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
     <span class="nt">&lt;h1&gt;</span>Hello, World!<span class="nt">&lt;/h1&gt;</span>
     <span class="nt">&lt;script&gt;</span>
-        <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span><span class="o">=</span><span class="kd">function</span><span class="p">(){</span>
-            <span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">hi jack!</span><span class="dl">'</span><span class="p">)</span>
-        <span class="p">}</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="dl">"</span><span class="s2">hi jack!</span><span class="dl">"</span><span class="p">);</span>
+      <span class="p">};</span>
     <span class="nt">&lt;/script&gt;</span>
-<span class="nt">&lt;/body&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
 <span class="nt">&lt;/html&gt;</span>
 </code></pre></div></div>
-<p>￼
-<img src="https://user-images.githubusercontent.com/3783096/44004521-427e59bc-9e96-11e8-9608-743f4e3bfefe.png" alt="未指定 CSP 的情况" />
+
+<p><img src="https://user-images.githubusercontent.com/3783096/44004521-427e59bc-9e96-11e8-9608-743f4e3bfefe.png" alt="未指定 CSP 的情况" />
 <em>未指定 CSP 的情况</em></p>
 
 <p>根据 MDN 上的描述，如果站点未指定 CSP 无则，浏览器默认不会开启相应检查，所以上面一切运行正常，只受正常的同域限制 。</p>
@@ -575,6 +516,7 @@
 <p>我们加上 CSP 限制：</p>
 
 <p><em>csp_test.html</em></p>
+
 <div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
 &lt;head&gt;
@@ -605,6 +547,7 @@
 <p>如何修复它呢。如果我们想要允许页面内的内联脚本或样式，则需要明确地通过 <code class="language-plaintext highlighter-rouge">script-src</code> 和 <code class="language-plaintext highlighter-rouge">style-src</code> 指出来。</p>
 
 <p><em>csp_test.html</em></p>
+
 <div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
 &lt;head&gt;
@@ -635,8 +578,8 @@
 
 <p>如果页面中非得用内联的写法，还有种方式。即页面中这些内联的脚本或样式标签，赋值一个加密串，这个加密串由服务器生成，同时这个加密串被添加到页面的响应头里面。</p>
 
-<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">nonce=</span><span class="s">EDNnf03nceIOfn39fn3e9h3sdfa</span><span class="nt">&gt;</span>
-<span class="err"> </span> <span class="c1">// 这里放置内联在 HTML 中的代码</span>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">nonce=</span><span class="s">"EDNnf03nceIOfn39fn3e9h3sdfa"</span><span class="nt">&gt;</span>
+  <span class="c1">// 这里放置内联在 HTML 中的代码</span>
 <span class="nt">&lt;/script&gt;</span>
 </code></pre></div></div>
 
@@ -657,7 +600,9 @@
 
 <p>hash 方式的示例：</p>
 
-<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, world.</span><span class="dl">'</span><span class="p">);</span><span class="nt">&lt;/script&gt;</span>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span>
+  <span class="nx">alert</span><span class="p">(</span><span class="dl">"</span><span class="s2">Hello, world.</span><span class="dl">"</span><span class="p">);</span>
+<span class="nt">&lt;/script&gt;</span>
 </code></pre></div></div>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Content-Security-Policy: script-src 'sha256-qznLcsROx4GACP2dm0UCKCzCG-HiZ1guq6ZZDob_Tng='
@@ -675,9 +620,9 @@
 
 <p>和内联一样，有专门的指令 <code class="language-plaintext highlighter-rouge">unsafe-eval </code> 以允许类似代码的执行。但建议的做法是对于 <code class="language-plaintext highlighter-rouge">eval</code> 和 <code class="language-plaintext highlighter-rouge">Function</code> 构造器，杜绝使用，而 <code class="language-plaintext highlighter-rouge">setTimeout/setInterval</code> 可改造为非字符串形式。</p>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">setTimout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">setTimout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
   <span class="nx">alert</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="p">},</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
 </code></pre></div></div>
 
 <h3 id="uri">URI</h3>
@@ -723,25 +668,29 @@ Content-Security-Policy: connect-src http://example.com/;
 </ul>
 
 <p><em>csp_test.html</em></p>
+
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;head&gt;</span>
-    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"Content-Security-Policy"</span> <span class="na">content=</span><span class="s">"default-src 'self';default-src 'unsafe-inline';"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span>
+      <span class="na">http-equiv=</span><span class="s">"Content-Security-Policy"</span>
+      <span class="na">content=</span><span class="s">"default-src 'self';default-src 'unsafe-inline';"</span>
+    <span class="nt">/&gt;</span>
     <span class="nt">&lt;title&gt;</span>CSP Test<span class="nt">&lt;/title&gt;</span>
     <span class="nt">&lt;style&gt;</span>
-        <span class="nt">body</span><span class="p">{</span>
-            <span class="nl">color</span><span class="p">:</span><span class="no">red</span><span class="p">;</span>
-        <span class="p">}</span>
+      <span class="nt">body</span> <span class="p">{</span>
+        <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+      <span class="p">}</span>
     <span class="nt">&lt;/style&gt;</span>
-<span class="nt">&lt;/head&gt;</span>
-<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
     <span class="nt">&lt;h1&gt;</span>Hello, World!<span class="nt">&lt;/h1&gt;</span>
     <span class="nt">&lt;script&gt;</span>
-        <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span><span class="o">=</span><span class="kd">function</span><span class="p">(){</span>
-            <span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">hi jack!</span><span class="dl">'</span><span class="p">)</span>
-        <span class="p">}</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="dl">"</span><span class="s2">hi jack!</span><span class="dl">"</span><span class="p">);</span>
+      <span class="p">};</span>
     <span class="nt">&lt;/script&gt;</span>
-<span class="nt">&lt;/body&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
 <span class="nt">&lt;/html&gt;</span>
 </code></pre></div></div>
 
@@ -751,7 +700,7 @@ Content-Security-Policy: connect-src http://example.com/;
 <p>很智能地， 浏览器不仅会将检测不过的资源及指令打印出来，重复配置时被忽略的指令也会提示出来。</p>
 
 <ul>
-  <li>指定 <code class="language-plaintext highlighter-rouge">default-src</code> 的情况下，它会充当 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#Fetch_directives">Fetch 类指令</a> 的默认值。即  <code class="language-plaintext highlighter-rouge">default-src</code> 并不对所有指令生效，其他指令默认值仍是 <code class="language-plaintext highlighter-rouge">*</code>。</li>
+  <li>指定 <code class="language-plaintext highlighter-rouge">default-src</code> 的情况下，它会充当 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#Fetch_directives">Fetch 类指令</a> 的默认值。即 <code class="language-plaintext highlighter-rouge">default-src</code> 并不对所有指令生效，其他指令默认值仍是 <code class="language-plaintext highlighter-rouge">*</code>。</li>
 </ul>
 
 <h3 id="发送报告">发送报告</h3>
@@ -796,6 +745,7 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
 <h3 id="推荐的做法">推荐的做法</h3>
 
 <p>这样的安全措施当然是能尽快启用就尽快。以下是推荐的做法：</p>
+
 <ul>
   <li>先只开启报告模式，看影响范围，修改问题。</li>
   <li>添加指令时从 default-src ‘none’ 开始，查看报错，逐步添加规则直至满足要求。</li>
@@ -804,7 +754,7 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
 
 <h3 id="浏览器兼容性">浏览器兼容性</h3>
 
-<p>目前发布的<a href="https://www.w3.org/TR/CSP3/"> Level 3 规范</a> 中大部分还未被浏览器实现，通过  <a href="https://caniuse.com/#search=CSP">Can I Use 的数据</a> 来看，除 IE 外，Level 2 的功能已经得到了很好的支持。这里还有一分来自 W3C 跟踪的各浏览器实现情况的统计：<a href="https://w3c.github.io/webappsec/implementation_reports/CSP2_implementation_report.html">Implementation Report for Content Security Policy Level 2</a>。</p>
+<p>目前发布的<a href="https://www.w3.org/TR/CSP3/"> Level 3 规范</a> 中大部分还未被浏览器实现，通过 <a href="https://caniuse.com/#search=CSP">Can I Use 的数据</a> 来看，除 IE 外，Level 2 的功能已经得到了很好的支持。这里还有一分来自 W3C 跟踪的各浏览器实现情况的统计：<a href="https://w3c.github.io/webappsec/implementation_reports/CSP2_implementation_report.html">Implementation Report for Content Security Policy Level 2</a>。</p>
 
 <p>对于浏览器不支持的情况，也不必担心，会回退到同源策略的限制上。</p>
 
@@ -816,7 +766,6 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
   <li><a href="https://developers.google.com/web/fundamentals/security/csp/">Content Security Policy from Web Fundamentals</a></li>
   <li><a href="https://blog.twitter.com/engineering/en_us/a/2011/improving-browser-security-with-csp.html">Improving Browser Security with CSP</a></li>
 </ul>
-
 
 
                 <hr style="visibility: hidden;">
@@ -973,13 +922,7 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
 </ul>
 
                 <p class="copyright text-muted">
-                    Copyright &copy; 牛さんの部落格 2020
-                    <br>
-                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
-                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
-                        height="20px"
-                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
-                    </iframe>
+                   已经到底了😝
                 </p>
             </div>
         </div>
@@ -995,9 +938,6 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
-
-<!-- Simple Jekyll Search -->
-<script src="/js/simple-jekyll-search.min.js"></script>
 
 <!-- Service Worker -->
 
@@ -1038,10 +978,6 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
 
 
 
-
-
-
-
 <!--fastClick.js -->
 <script>
     async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
@@ -1052,10 +988,6 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
 
 
 <!-- Google Analytics -->
-
-
-
-<!-- Baidu Tongji -->
 
 
 
@@ -1124,62 +1056,5 @@ Content-Security-Policy-Report-Only: img-src ‘none’; report-uri http://repor
 <!-- Multi-Lingual -->
 
 
-<!-- Simple Jekyll Search -->
-<script>
-    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
-    function htmlDecode(input) {
-        var e = document.createElement('textarea');
-        e.innerHTML = input;
-        // handle case of empty input
-        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
-    }
-
-    SimpleJekyllSearch({
-        searchInput: document.getElementById('search-input'),
-        resultsContainer: document.getElementById('search-results'),
-        json: '/search.json',
-        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
-        noResultsText: 'No results',
-        limit: 50,
-        fuzzy: false,
-        // a hack to get escaped subtitle unescaped. for some reason, 
-        // post.subtitle w/o escape filter nuke entire search.
-        templateMiddleware: function (prop, value, template) {
-            if (prop === 'subtitle' || prop === 'title') {
-                if (value.indexOf("code")) {
-                    return htmlDecode(value);
-                } else {
-                    return value;
-                }
-            }
-        }
-    });
-
-    $(document).ready(function () {
-        var $searchPage = $('.search-page');
-        var $searchOpen = $('.search-icon');
-        var $searchClose = $('.search-icon-close');
-        var $searchInput = $('#search-input');
-        var $body = $('body');
-
-        $searchOpen.on('click', function (e) {
-            e.preventDefault();
-            $searchPage.toggleClass('search-active');
-            var prevClasses = $body.attr('class') || '';
-            setTimeout(function () {
-                $body.addClass('no-scroll');
-            }, 400)
-
-            if ($searchPage.hasClass('search-active')) {
-                $searchClose.on('click', function (e) {
-                    e.preventDefault();
-                    $searchPage.removeClass('search-active');
-                    $body.attr('class', prevClasses);  // from closure 
-                });
-                $searchInput.focus();
-            }
-        });
-    });
-</script>
   </body>
 </html>
