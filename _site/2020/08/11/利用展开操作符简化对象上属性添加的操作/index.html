@@ -182,7 +182,7 @@ const prop1 = 1,
 </nav>
  <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
 
 <!-- Post Header -->
 
@@ -191,7 +191,6 @@ const prop1 = 1,
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/home-bg.jpg');
         background: ;
     }
 
@@ -212,7 +211,7 @@ const prop1 = 1,
                     <h1>利用展开操作符简化对象上属性添加的操作</h1>
                     
                     <h2 class="subheading"></h2>
-                    <span class="meta">Posted by 牛さんの部落格 on August 11, 2020</span>
+                    <span class="meta">August 11, 2020</span>
                 </div>
             </div>
         </div>
@@ -226,19 +225,14 @@ const prop1 = 1,
 
 <!-- Post Content -->
 <article>
-    <div class="container">
-        <div class="row">
-
-    <!-- Post Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                post-container">
-
-                <!-- Multi-Lingual -->
-                
-
-				<h1 id="利用展开操作符简化对象上属性添加的操作">利用展开操作符简化对象上属性添加的操作</h1>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="利用展开操作符简化对象上属性添加的操作">利用展开操作符简化对象上属性添加的操作</h1>
 
 <p>经常情况下，需要根据条件动态向对象上添加属性，比如请求的参数。</p>
 
@@ -282,109 +276,117 @@ const prop1 = 1,
 
 
 
-                <hr style="visibility: hidden;">
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2020/07/17/yarn-%E5%AE%89%E8%A3%85%E6%97%B6-No-Xcode-or-CLT-version-detected-%E9%94%99%E8%AF%AF%E7%9A%84%E8%A7%A3%E5%86%B3/" data-toggle="tooltip" data-placement="top" title="yarn 安装时 `No Xcode or CLT version detected` 错误的解决">
-                        Previous<br>
-                        <span>yarn 安装时 `No Xcode or CLT version detected` 错误的解决</span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2020/08/11/dev-null/" data-toggle="tooltip" data-placement="top" title="`/dev/null`">
-                        Next<br>
-                        <span>`/dev/null`</span>
-                        </a>
-                    </li>
-                    
-                </ul>
-                <hr style="visibility: hidden;">
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/07/17/yarn-%E5%AE%89%E8%A3%85%E6%97%B6-No-Xcode-or-CLT-version-detected-%E9%94%99%E8%AF%AF%E7%9A%84%E8%A7%A3%E5%86%B3/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="yarn 安装时 `No Xcode or CLT version detected` 错误的解决"
+            >
+              Previous<br />
+              <span>yarn 安装时 `No Xcode or CLT version detected` 错误的解决</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2020/08/11/dev-null/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="`/dev/null`"
+            >
+              Next<br />
+              <span>`/dev/null`</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
 
-                
+         
+      </div>
 
-                
-            </div>  
-
-    <!-- Side Catalog Container -->
-        
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
-        
-
-    <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
-
-
-
-                <!-- Friends Blog -->
-                
-            </div>
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
         </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
     </div>
+  </div>
 </article>
 
 <!-- add support for mathjax by voleking-->
-
-
-
-
-
-
-
-
-
+   
 <!-- async load function -->
 <script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
     }
+    s.parentNode.insertBefore(o, s);
+  }
 </script>
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'hover',
-          placement: 'right',
-          // icon: '#'
-        };
-        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-    })
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
 </script>
 <style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -0.75em;
-            font-size: 1.1em;
-            margin-top : -0.1em;
-        }
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
     }
+  }
 </style>
 
  <!-- Footer -->
@@ -537,13 +539,7 @@ const prop1 = 1,
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

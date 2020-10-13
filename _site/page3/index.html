@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,45 +190,36 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2020/08/20/%E4%BD%BF%E7%94%A8-shell-%E5%91%BD%E4%BB%A4%E8%BF%9B%E8%A1%8C%E6%9F%A5%E6%89%BE%E6%9B%BF%E6%8D%A2/">
     <h2 class="post-title">使用 shell 命令进行查找替换</h2>
     
   </a>
+  <p class="post-meta">August 20, 2020</p>
   <div class="post-content-preview">
      使用 shell 命令进行查找替换
 
 需要使用到 sed 命令，以下是来自 man page 的介绍：
 
 
-     sed - stream editor for filtering and transforming text
-  
-
-
-示例：
-
-$ sed -i -e 's/toreplace/newcontent/g’ somefile.txt 
-
-
-以上脚本将查找 somefile.... 
+     sed - stream editor for filtering and ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 20, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/08/20/npm-script-%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0/">
     <h2 class="post-title">npm script 中使用命令行参数</h2>
     
   </a>
+  <p class="post-meta">August 20, 2020</p>
   <div class="post-content-preview">
      npm script 中使用命令行参数
 
@@ -237,28 +228,16 @@ $ sed -i -e 's/toreplace/newcontent/g’ somefile.txt
 {
   "scripts": {
 	"serve": "node server.js"
-  }
-}
-
-
-如果想启动的时候，指定服务启动的端口，可以这样传递：
-
-$ npm run server -- --port=3001
-
-
-其中 -- 可以达到将其后跟随的文本附加到实际命令之后的效果。所... 
+  ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 20, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/08/17/Xcode-%E8%B0%83%E8%AF%95%E6%97%B6%E6%89%93%E5%8D%B0%E5%8F%98%E9%87%8F%E5%80%BC/">
     <h2 class="post-title">Xcode 调试时打印变量值</h2>
     
   </a>
+  <p class="post-meta">August 17, 2020</p>
   <div class="post-content-preview">
      Xcode 调试时打印变量值
 
@@ -268,78 +247,47 @@ p &amp; po
 
 以下示例展示了两者的区别：
 
-(lldb) p 0
-  (int) $26 = 0
-(lldb) po 0
-  &lt;nil&gt;
-
-
-使用 po 打印表达式查看其值的示例：
-
-
-使用 `po` 打印调试对象
-
-e or expr or ... 
+(lldb)... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 17, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/08/12/Xcode-%E4%B8%AD%E9%80%9A%E8%BF%87-target-%E8%BF%90%E8%A1%8C%E5%A4%9A%E4%B8%AA-c-%E7%A8%8B%E5%BA%8F/">
     <h2 class="post-title">Xcode 中通过 target 运行多个 c 程序</h2>
     
   </a>
+  <p class="post-meta">August 12, 2020</p>
   <div class="post-content-preview">
      Xcode 中通过 target 运行多个 c 程序
 
 讲道理，一个 Xcode 项目只有一个程序入口，即 main.c 文件。但做 c 练习的时候会创建多个 main 入口以运行不同程序。
 
-问题展示
-
-当已经有一个正常运行的程序时，再新增一个 c 文件并编写 main 入口，会报错如下：
-
-
-Xcode 中多个 main 入口时的报错
-
-为了实现多个入口并存，需要让 Xcode 知道你想... 
+... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 12, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/08/11/%E5%8D%87%E7%BA%A7-mac-Big-Sur-%E5%90%8E%E8%99%9A%E6%8B%9F%E6%9C%BA-Parallels-Desktop-%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E7%9A%84%E8%A7%A3%E5%86%B3/">
     <h2 class="post-title">升级 mac Big Sur 后虚拟机 Parallels Desktop 无法启动的解决</h2>
     
   </a>
+  <p class="post-meta">August 11, 2020</p>
   <div class="post-content-preview">
      升级 mac Big Sur 后虚拟机 Parallels Desktop 无法启动的解决
 
 升级 mac Big Sur 后虚拟机 Parallels Desktop 无法启动。
 
 
-mac Big Sur Parallels Desktop 无法启动的报错
-
-参考 Error Parallels 15 macOS Big Sur Beta 3 里给出的方法，
-
-$ export SYST... 
+mac ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 11, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/08/11/dev-null/">
     <h2 class="post-title">`/dev/null`</h2>
     
   </a>
+  <p class="post-meta">August 11, 2020</p>
   <div class="post-content-preview">
      /dev/null
 
@@ -350,31 +298,16 @@ $ export SYST...
 command &gt; /dev/null
 
 
-表示将命令的输出结果输入到 /dev/null，即忽略掉命令的输出。
-
-常见的形式还有
-
-command &gt; /dev/null 2&gt;&amp;1
-
-
-其中，
-
-
-  2 表示 stdrr
-  1 表示 stdout
- ... 
+表示将命令的输出结果输入到 /d... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 11, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/08/11/%E5%88%A9%E7%94%A8%E5%B1%95%E5%BC%80%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%AE%80%E5%8C%96%E5%AF%B9%E8%B1%A1%E4%B8%8A%E5%B1%9E%E6%80%A7%E6%B7%BB%E5%8A%A0%E7%9A%84%E6%93%8D%E4%BD%9C/">
     <h2 class="post-title">利用展开操作符简化对象上属性添加的操作</h2>
     
   </a>
+  <p class="post-meta">August 11, 2020</p>
   <div class="post-content-preview">
      利用展开操作符简化对象上属性添加的操作
 
@@ -383,50 +316,30 @@ command &gt; /dev/null 2&gt;&amp;1
 const params = {prop1:'1'}
 
 if(query){
-    params['prop2']= 2
-}
-
-
-通过展开操作符 spread（...）可避免使用 if 从而简化操作。
-
-考察如下的代码：
-
-const prop1 = 1,
-  prop2 = "2"... 
+    ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 11, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/07/17/yarn-%E5%AE%89%E8%A3%85%E6%97%B6-No-Xcode-or-CLT-version-detected-%E9%94%99%E8%AF%AF%E7%9A%84%E8%A7%A3%E5%86%B3/">
     <h2 class="post-title">yarn 安装时 `No Xcode or CLT version detected` 错误的解决</h2>
     
   </a>
+  <p class="post-meta">July 17, 2020</p>
   <div class="post-content-preview">
      yarn 安装时 No Xcode or CLT version detected 错误的解决
 
 查看 Xcode command line tools 的安装位置
-$ xcode-select --print-path
-
-
-将已安装的 Xcode command line tools 删除
-
-$ sudo rm -r -f /Library/Developer/CommandLineToo... 
+$ xcode-select... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on July 17, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/07/17/clang-b-%E7%9A%84%E4%BD%BF%E7%94%A8/">
     <h2 class="post-title">[clang] `\b` 的使用</h2>
     
   </a>
+  <p class="post-meta">July 17, 2020</p>
   <div class="post-content-preview">
      \b escape sequence 的使用
 
@@ -438,27 +351,16 @@ printf("foo\b \tbar\n");
 // fo 	bar⏎
 
 
-注意点
-
-注意上面代码中，\b 后需要跟空格，否则没有删除效果。
-
-  printf("foo\b\tbar");
-//foo     bar⏎
-
-
-另，并不是所有输出设备都会支持 \b 转义符，比如 Xc... 
+注意点... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on July 17, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/07/17/NestJS-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%A4%BA%E4%BE%8B/">
     <h2 class="post-title">NestJS 微服务示例</h2>
     
   </a>
+  <p class="post-meta">July 17, 2020</p>
   <div class="post-content-preview">
      NestJS 微服务示例
 
@@ -473,18 +375,9 @@ $ nest new nest-app -p yarn
 
 .
 ├── README.md
-├── nest-cli.json
-├── package.json
-├── src
-│   ├── app.controller.spec.ts
-│   ├── app.controller.ts
-│   ├─... 
+├── ne... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on July 17, 2020
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -508,25 +401,22 @@ $ nest new nest-app -p yarn
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -677,13 +567,7 @@ $ nest new nest-app -p yarn
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

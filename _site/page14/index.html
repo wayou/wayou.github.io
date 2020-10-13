@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,36 +190,36 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2019/06/05/TypeScript-unknown-%E7%B1%BB%E5%9E%8B/">
     <h2 class="post-title">TypeScript unknown 类型</h2>
     
   </a>
+  <p class="post-meta">June 5, 2019</p>
   <div class="post-content-preview">
      TypeScript  unknown 类型
 
 unknown 字面理解和 any 其实没差，任何类型都可赋值给它，但有一点，
 
 
-  Anything is assignable to unknown, but unknown isn’t assignable to anything but itself and any without a type assertion or a cont... 
+  Anything is assignable to unk... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 5, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/03/Koa-%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%89%A7%E8%A1%8C/">
     <h2 class="post-title">Koa 中间件的执行</h2>
     
   </a>
+  <p class="post-meta">June 3, 2019</p>
   <div class="post-content-preview">
      Koa 中间件的执行
 
@@ -229,70 +229,44 @@ Node.js 中请求的处理
 
 node_server.js
 
-const http = require("http");
-const PORT = 3000;
-
-const server = http.createServer((req, res) =&gt; {
-  r... 
+const... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 3, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/03/JavaScript-%E5%AE%9E%E7%8E%B0%E9%A1%B5%E9%9D%A2%E4%B8%AD%E5%BD%95%E9%9F%B3%E5%8A%9F%E8%83%BD/">
     <h2 class="post-title">JavaScript 实现页面中录音功能</h2>
     
   </a>
+  <p class="post-meta">June 3, 2019</p>
   <div class="post-content-preview">
      JavaScript 实现页面中录音功能
 
-页面中实现录音需要使用浏览器提供的 Media​Recorder API，所以前提是需要浏览器支持 MediaStream Recording 相关的功能。
-
-以下代码默认工作在 Chrome 环境中。
-
-准备页面
-
-首先准备一个页面，其中内容很简单，一个录音按钮，一个用于播放的 &lt;audio&gt; 标签。
-
-&lt;!DOCTYPE ht... 
+页面中实现录音需要使用浏览器提供的 Media​Recorder API，所以前提是需要浏览器支持 MediaStream Recording 相关的... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 3, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/01/Koa-%E4%B8%AD%E5%AE%9E%E7%8E%B0-chunked-%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93/">
     <h2 class="post-title">Koa 中实现 chunked 数据传输</h2>
     
   </a>
+  <p class="post-meta">June 1, 2019</p>
   <div class="post-content-preview">
      Koa 中实现 chunked 数据传输
 
 有关于 Transfer-Encoding:chunked 类型的响应，参见之前的文章HTTP 响应的分块传输。这里看 Koa 中如何实现。
 
-Koa 中请求返回的处理
-
-虽然官方文档有描述说明不建议直接调用 response.write：
-
-
-  Bypassing Koa’s response handling is not supported... 
+Koa... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 1, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/31/WebAssembly-%E4%B8%8A%E6%89%8B/">
     <h2 class="post-title">WebAssembly 上手</h2>
     
   </a>
+  <p class="post-meta">May 31, 2019</p>
   <div class="post-content-preview">
      WebAssembly 上手
 
@@ -303,78 +277,47 @@ Mac 上最便捷的安装方式当然是通过 Homebrew:
 $ brew install emscripten
 
 
-安装好之后讲道理就已经自动配置好一切，然后 emcc 命令便可用了。
-
-下面看非 Homebrew 安装的方式。
-
-通过官方 WebAssembly - Developer’s Guide 提供的安装配置步骤进行环境相关设置。这里以 ma... 
+安装好之后讲道理就已经自动配置好一切，... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 31, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/30/TypeScript-%E8%A3%85%E9%A5%B0%E5%99%A8/">
     <h2 class="post-title">TypeScript 装饰器 </h2>
     
   </a>
+  <p class="post-meta">May 30, 2019</p>
   <div class="post-content-preview">
      TypeScript 装饰器
 
 装饰器（Decorators）可用来装饰类，属性，及方法，甚至是函数的参数，以改变和控制这些对象的表现，获得一些功能。
 
-装饰器以 @expression 形式呈现在被装饰对象的前面或者上方，其中 expression 为一个函数，根据其所装饰的对象的不同，得到的入参也不同。
-
-以下两种风格均是合法的：
-
-@f @g x
-
-
-@f
-@g
-x
-
-
-ES 中装饰器... 
+装饰器以 @expression 形式呈... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 30, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/29/TypeScript-infer-%E5%85%B3%E9%94%AE%E5%AD%97/">
     <h2 class="post-title">TypeScript `infer` 关键字</h2>
     
   </a>
+  <p class="post-meta">May 29, 2019</p>
   <div class="post-content-preview">
      TypeScript infer 关键字
 
 考察如下类型：
 
 type PromiseType&lt;T&gt; = (args: any[]) =&gt; Promise&lt;T&gt;;
-
-
-那么对于符合上面类型的一个方法，如何得知其 Promise 返回的类型？
-
-譬如对于这么一个返回 string 类型的 Promise:
-
-async function stringPromise... 
+... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 29, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/28/Vim-%E6%8F%92%E4%BB%B6%E7%9A%84%E5%AE%89%E8%A3%85/">
     <h2 class="post-title">Vim 插件的安装</h2>
     
   </a>
+  <p class="post-meta">May 28, 2019</p>
   <div class="post-content-preview">
      Vim 插件的安装
 
@@ -382,63 +325,35 @@ Vim 自带了文本格式化，通过 gg=G 触发。但大数情况下不满足�
 
 插件的存在形式
 
-Vim 插件以三种形式存在，
-
-  单个的 .vim 文件，可在 官网 scripts 页面 搜索下载。
-  Vimball 文件。
-  以约定格式放置的文件夹（plugin/*, syntax/*）。
-
-
-安... 
+Vim 插... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 28, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/26/MySQL-EXPLAIN-%E8%AF%AD%E5%8F%A5/">
     <h2 class="post-title">MySQL EXPLAIN 语句</h2>
     
   </a>
+  <p class="post-meta">May 26, 2019</p>
   <div class="post-content-preview">
      MySQL EXPLAIN 语句
 
-对于 MySQL 在执行时来说，EXPLAIN 功能上与 DESCRIBE 一样。实际运用中，后者多用来获取表的信息，而前者多用于展示 MySQL 会如何执行 SQL 语句（Obtaining Execution Plan Information）。
-
-DESCRIBE 实质上是 SHOW COLUMNS 语句的缩略形式。
-
-
-  EXPLAIN 可作用于... 
+对于 MySQL 在执行时来说，EXPLAIN 功能上与 DESCRIBE 一样。实际运用中，后者多用来获取表的信息，而前者多用于展示 MySQL 会如何执行... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 26, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/26/%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B(AOP)/">
     <h2 class="post-title">面向切面编程(AOP)</h2>
     
   </a>
+  <p class="post-meta">May 26, 2019</p>
   <div class="post-content-preview">
      面向切面编程(AOP)
 
-面向切面编程(Aspect-Oriented Programming/AOP) 解决的是 cross-cutting concerns 问题。比如同一段代码在不同模块中重复，又不能简单地通过抽取公共方法的方式来达到重构，比如日志与参数校验。
-
-以下是展示这一编程思想的一段伪代码：
-
-function mainProgram()
-{ 
-   var x =  foo(... 
+面向切面编程(Aspect-Oriented Programming/AOP) 解决的是 cross-cutting concerns 问题。比如同一段代码在不同模块中... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 26, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -462,25 +377,22 @@ function mainProgram()
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -631,13 +543,7 @@ function mainProgram()
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

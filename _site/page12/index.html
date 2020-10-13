@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,17 +190,20 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2019/06/27/Make-%E7%BC%96%E8%AF%91%E8%84%9A%E6%9C%AC%E4%B8%8A%E6%89%8B/">
     <h2 class="post-title">Make 编译脚本上手</h2>
     
   </a>
+  <p class="post-meta">June 27, 2019</p>
   <div class="post-content-preview">
      Make 编译脚本上手
 
@@ -210,70 +213,45 @@ main.c
 #include &lt;stdio.h&gt;
 
 int main(){
-    printf("hello world!");
-    return 0;
-}
-
-
-正常情况下，通过 gcc 在命令行将其编译后产出相应文件，可执行文件或 object 文件等。
-
-$ gcc -o main.out main.c
-
-
-上面命令编... 
+    printf("hello world!");... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 27, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/26/%E5%88%A9%E7%94%A8-chunked-%E7%B1%BB%E5%9E%8B%E5%93%8D%E5%BA%94%E5%AE%9E%E7%8E%B0%E5%90%8E%E5%8F%B0%E8%AF%B7%E6%B1%82%E7%9A%84%E7%9B%91%E5%90%AC/">
     <h2 class="post-title">利用 chunked 类型响应实现后台请求的监听</h2>
     
   </a>
+  <p class="post-meta">June 26, 2019</p>
   <div class="post-content-preview">
      利用 chunked 类型响应实现后台请求的监听
 
-Koa 中实现 chunked 数据传输 中介绍了如何在 Koa 中实现 Transfer-Encoding:chunked 类型的响应分片传输。这里来看一个应用场景。
-
-假如我们想监听后台的请求，并将监听到的数据打印到页面。那么复用 chunked 类型的响应，我们只需要解决如何在页面 controller 中获取到别的 controll... 
+Koa 中实现 chunked 数据传输 中介绍了如何在 Koa 中实现 Transfer-Encoding:chunked 类型的响应分片传... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 26, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/25/C-C++-%E4%B8%AD%E7%9A%84%E5%AE%8F-Macro/">
     <h2 class="post-title">C/C++ 中的宏/Macro</h2>
     
   </a>
+  <p class="post-meta">June 25, 2019</p>
   <div class="post-content-preview">
      C/C++ 中的宏/Macro
 
 宏（Macro）本质上就是代码片段，通过别名来使用。在编译前的预处理中，宏会被替换为真实所指代的代码片段，即下图中 Preprocessor 处理的部分。
 
 
-C/C++ 代码编译过程 - 图片来自 ntu.edu.sg
-
-根据用法的不同，分两种，Object-like 和 Function-like。前者用于 Object 对象，后者用于函数方法。
-
-C/... 
+... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 25, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/24/SSL-TLS-%E9%93%BE%E6%8E%A5%E7%9A%84%E5%BB%BA%E7%AB%8B-%E6%8F%A1%E6%89%8B/">
     <h2 class="post-title">SSL/TLS 链接的建立/握手</h2>
     
   </a>
+  <p class="post-meta">June 24, 2019</p>
   <div class="post-content-preview">
      SSL/TLS 链接的建立/握手
 
@@ -281,32 +259,16 @@ HTTPS 即 HTTP-within-SSL/TLS，其中 SSL/TLS 又分别表示：
 
 
   SSL：Secure Sockets Layer
-  TLS：Transport Layer Security
-
-
-SSL/TLS 建立链接及握手的过程为：
-
-
-SSL/TLS 建立链接及握手的示意图
-
-阶段一
-
-
-  Client Hello
-    
- ... 
+  TL... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 24, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/23/C-C++-%E4%B8%AD-printf-%E6%A0%BC%E5%BC%8F%E5%8C%96/">
     <h2 class="post-title">C/C++ 中 `printf` 格式化</h2>
     
   </a>
+  <p class="post-meta">June 23, 2019</p>
   <div class="post-content-preview">
      C/C++ 中 printf 格式化
 
@@ -314,46 +276,31 @@ SSL/TLS 建立链接及握手的示意图
 
 printf 的签名是：
 
-int printf ( const char * format, ... );
-
-
-其中 format 为可以参参数格式化的输出内容。具体格式化形式为：
-
-%[flags][width][.precision][lengt... 
+int printf (... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 23, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/22/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB/">
     <h2 class="post-title">多媒体文件的容器与编解码器的关系</h2>
     
   </a>
+  <p class="post-meta">June 22, 2019</p>
   <div class="post-content-preview">
      多媒体文件的容器与编解码器的关系
 
 音视频文件的格式各类繁多，但我们在说格式的时候，一般是指文件后缀，比如 .mp3 .mp4。
 
-从编程的角度来说，一个多媒体文件包含两部分，容器（container） 与编解码算法（codec），容器便是多媒体文件中众多数据的封装后对外的呈现，表现出来就是文件的扩展名，而编解码算法，则是播放该多媒体文件所需要和使用的算法。具体来说，
-
-
-  
-    容器... 
+从编程的角度来说，一个多媒体文件包含两部分，容器（contai... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 22, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/21/Unix-%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84-Make-%E4%B8%89%E8%BF%9E/">
     <h2 class="post-title">Unix 开发中的 Make 三连</h2>
     
   </a>
+  <p class="post-meta">June 21, 2019</p>
   <div class="post-content-preview">
      Unix 开发中的 Make 三连
 
@@ -362,44 +309,31 @@ Unix 开发过程中，经常性的操作是从源码编译安装相应库文件
 
   ./configure
   make
-  make install
-
-
-下面来看看这三步分别做了什么。
-
-configure
-
-执行 ./configure 文件一般是进行正式编译前的一些环境准备，准备编译需要的依赖项等。比如检测当前的系统平台... 
+  m... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 21, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/20/shell-%E4%B8%AD%E9%95%BF%E5%91%BD%E4%BB%A4%E7%9A%84%E6%8D%A2%E8%A1%8C%E5%A4%84%E7%90%86/">
     <h2 class="post-title">shell 中长命令的换行处理</h2>
     
   </a>
+  <p class="post-meta">June 20, 2019</p>
   <div class="post-content-preview">
      shell 中长命令的换行处理
 
 考察下面的脚本：
 
-emcc -o ./dist/test.html --shell-file ./tmp.html --source-map-base dist -O3 -g4 --source-map-base dist -s MODULARIZE=1 -s "EXPORT_NAME=\"Test\"" -s USE_SDL=2 -s LEGACY_GL... 
+emcc -o ./dist/test.html --shell-file ./tmp.html --source-map-base dis... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 20, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/19/TypeScript-this-%E5%85%A5%E5%8F%82/">
     <h2 class="post-title">TypeScript `this` 入参</h2>
     
   </a>
+  <p class="post-meta">June 19, 2019</p>
   <div class="post-content-preview">
      TypeScript this 入参
 
@@ -408,27 +342,16 @@ emcc -o ./dist/test.html --shell-file ./tmp.html --source-map-base dist -O3 -g4 
 class MyClass {
   constructor(protected foo: string) {}
 
-  @MyDecorator
-  bar() {
-    console.log("bar");
-  }
-}
-
-function MyDecorator(
-  _target: any,
-  _key: string... 
+  @MyDec... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 19, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/18/C++-float-vs-double/">
     <h2 class="post-title">C++ `float` vs `double`</h2>
     
   </a>
+  <p class="post-meta">June 18, 2019</p>
   <div class="post-content-preview">
      C++ float vs double
 
@@ -438,20 +361,9 @@ function MyDecorator(
 
 
   float: 7 位数字
-  double: 15 位数字
-
-
-可通过如下的示例看出，在重复进行计算时，精度差异开始显现：
-
-float a = 1.f / 81;
-float b = 0;
-for (int i = 0; i &lt; ... 
+  doub... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 18, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -475,25 +387,22 @@ for (int i = 0; i &lt; ...
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -644,13 +553,7 @@ for (int i = 0; i &lt; ...
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

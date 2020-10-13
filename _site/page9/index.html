@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,243 +190,153 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2019/12/08/Objective-C-%E4%B8%AD%E5%AE%9E%E7%8E%B0-Monkey-Patching/">
     <h2 class="post-title">Objective-C 中实现 Monkey-Patching</h2>
     
   </a>
+  <p class="post-meta">December 8, 2019</p>
   <div class="post-content-preview">
      Objective-C 中实现 Monkey-Patching
 
-Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可以理解成劫持。这样系统在执行的时候，实际上执行的是被替换的版本。
-
-大部分时候，这里的操作隐含了对原方法的保留，只是向其中添加自己的新逻辑。毕竟，你不想修改掉系统某个方法后整个程序就崩掉。所以最安全的做法就是在劫持的时候保留对原方法的调用。
-
-像在 Ja... 
+Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可以理解成劫持。这样系统在执行的时候，实际上执行的是被替... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 8, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/08/CocoaTouch-View-Controller-%E7%9B%B8%E5%85%B3/">
     <h2 class="post-title">CocoaTouch View Controller 相关</h2>
     
   </a>
+  <p class="post-meta">December 8, 2019</p>
   <div class="post-content-preview">
      CocoaTouch View Controller 相关
 
-应用的内容呈现在一个 window 中，一个 window 需要包含一个 rootViewController 来管理应用中数据，视图的展现及跳转。所以 View Controller  会扮演很重要的角色。
-
-视图控制器/View Controller
-
-View Controller 用来管理视图，比如视图创建，跳转到其他视图... 
+应用的内容呈现在一个 window 中，一个 window 需要包含一个 rootViewController 来管理应用中数据，视... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 8, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/07/CocoaPods-%E7%9A%84%E4%BD%BF%E7%94%A8/">
     <h2 class="post-title">CocoaPods 的使用</h2>
     
   </a>
+  <p class="post-meta">December 7, 2019</p>
   <div class="post-content-preview">
      大部分现代语言都会标配包管理器，比如 Node.js 的 npm，如果没有，那一定会出现第三方社区提供的工具，比如 Cocoa 则是 CocoaPods，而且还会不止一种，Carthage…
 
-安装
-
-$ sudo gem install cocoapods
-
-
-检查安装：
-
-$ pod --version
-
-
-更新
-
-要更新到最新版本，重新安装即可：
-
-$ sudo gem install... 
+... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 7, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/06/Objective-C-%E4%B8%AD%E4%BD%BF%E7%94%A8-Swift-%E4%BB%A3%E7%A0%81/">
     <h2 class="post-title">Objective-C 中使用 Swift 代码</h2>
     
   </a>
+  <p class="post-meta">December 6, 2019</p>
   <div class="post-content-preview">
      Objective-C 中使用 Swift 代码
 
 因为 Apple 强推 Swift，后者势头不减，社区各种优秀的配套也都跟上来，比如做动画的 Spring，是用 Swfit 写的。
 
-所以，就会有需求是 Objective-C 中使用这些优秀的库。
-
-创建桥接声明文件
-
-默认情况下，当你在一个 Objective-C 项目中创建 Swfit 文件时，Xcode 会自动创建两种语言间的桥接... 
+所以，... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 6, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/06/iOS-%E5%BA%94%E7%94%A8%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96/">
     <h2 class="post-title">iOS 应用的本地化</h2>
     
   </a>
+  <p class="post-meta">December 6, 2019</p>
   <div class="post-content-preview">
      iOS 应用的本地化
 
 文案的本地化
 
 
-  项目设置中开启需要支持的本地化语言。项目导航中点击项目名，PROJECT 中定位到到 Localizations。点击 “+” 添加想要支持的语言。
-
-
-
-选择需要本地化的语言
-
-首次创建，会将项目中已经存在的 Storyboard，xib 等文件列出来，为其创建相应的本地化文件，如果你项目中不使用 IB 进行界面开发，可忽略。
-
-
-选择现有的文... 
+  项目设置中开启需要支持的本地化语言。项目导航中点击项目名，PROJECT 中定位到到 Localizations。点击 “+” 添加想要支持的语言。... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 6, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/03/clang-format-%E7%9A%84-Xcode-%E9%9B%86%E6%88%90/">
     <h2 class="post-title">clang-format 的 Xcode 集成</h2>
     
   </a>
+  <p class="post-meta">December 3, 2019</p>
   <div class="post-content-preview">
      clang-format 的 Xcode 集成
 
 之前文章 Xcode 中配置 clang-format 格式化 C++ 代码 中介绍的格式化方法有两个问题，
 
 
-  不能格式化整个文件，必需先选中文本
-  不支持项目中的 .clang-format 配置文件，只能读取全局的
-
-
-利用 Xcode 自带的 Behaviors 可绑定快捷键执行一些任务，比如执行 shell 脚本。
-
-而这里执... 
+  不能格式化整个文件，必需先... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 3, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/01/Objective-C-%E5%B1%9E%E6%80%A7%E7%9A%84%E5%A3%B0%E6%98%8E%E5%8F%8A-@dynamic/">
     <h2 class="post-title">Objective-C 属性的声明及 @dynamic</h2>
     
   </a>
+  <p class="post-meta">December 1, 2019</p>
   <div class="post-content-preview">
      Objective-C 属性的声明及 @dynamic
 
 类接口中属性其实是 getter 和 setter 的集合，当你声明一个属性时，
 
-@property (strong, nonatomic) NSString *name;
-
-
-你得到的其实是一对存取器方法：
-
-- (NSString *)name;
-- (void)setName:(NSString *)name;
-
-
-即，代码中... 
+@property (strong, nonatom... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 1, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/11/30/Intersection-Observer-API/">
     <h2 class="post-title">Intersection Observer API</h2>
     
   </a>
+  <p class="post-meta">November 30, 2019</p>
   <div class="post-content-preview">
      Intersection Observer API
 
-随着 Web 应用的丰富和成熟，检测元素是否可见的需求增多。之前一般是通过三方库来实现，各自有各自的实现方式，性能也有差异。Intersection Observer API 便是这种功能的一个原生支持。
-
-适用场景
-
-
-  页面滚动过程中的懒加载。
-  长页面无限内容加载。
-  页面中广告查看量的计算。
-  以及其他需要用户可见才进行的... 
+随着 Web 应用的丰富和成熟，检测元素是否可见的需求增多。之前一般是通过三方库来实现，各自有各自的实现方式，性能也有差异。Intersec... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on November 30, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/11/27/Objective-C-%E5%8F%98%E5%8F%82%E5%87%BD%E6%95%B0/">
     <h2 class="post-title">Objective-C 变参函数</h2>
     
   </a>
+  <p class="post-meta">November 27, 2019</p>
   <div class="post-content-preview">
      Objective-C 变参函数
 
-接收可变参数的函数，Objective-C 中称作 Variadic Functions，很明显的例子就是 NSString stringWithFormat:  和 NSLog(NSString *format, ...)。前者接收一个带格式化占位的字符串，后面跟任意多个需要插入占位的变量，后者同理。
-
-NSString *name = @"niuway... 
+接收可变参数的函数，Objective-C 中称作 Variadic Functions，很明显的例子就是 NSString stringWithFormat... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on November 27, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/11/25/Xcode-%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E9%BB%91%E5%B1%8F%E7%9A%84%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">Xcode 真机调试黑屏的问题</h2>
     
   </a>
+  <p class="post-meta">November 25, 2019</p>
   <div class="post-content-preview">
      Xcode 真机调试黑屏的问题
 
-使用 Xcode 11.2.1 新建项目默认为将编译运行目标设置到最新的 iOS 13。除了 AppDelegate 中新引入的 Scene 场景会有些兼容性的警告提示外，还有个奇怪的问题是应用编译到真机上调试时，Launch Screen 之后便是黑屏，没有按预期展示 main.storyboard 的内容。
-
-而 Simulator 上是没有黑屏问题的。... 
+使用 Xcode 11.2.1 新建项目默认为将编译运行目标设置到最新的 iOS 13。除了 AppDelegate 中新引入的 Scene 场景会有些兼容性的... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on November 25, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -450,25 +360,22 @@ NSString *name = @"niuway...
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -619,13 +526,7 @@ NSString *name = @"niuway...
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

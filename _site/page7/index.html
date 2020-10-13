@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,112 +190,78 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2020/05/09/MySQL-%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5%E7%9A%84%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">MySQL 不同版本数据导入的问题</h2>
     
   </a>
+  <p class="post-meta">May 9, 2020</p>
   <div class="post-content-preview">
      MySQL 不同版本数据导入的问题
 
 一般地，本地会安装到最新的 MySQL，比如 8 点几开发调试。而云服务上的 MySQL 很可能是老版本的，比如 MySQL 5 点几。
 
-那么问题来了，将本地高版本的 MySQL 导出的建表语句及数据导入到低版本时，毫不意外会有问题，这里记录两点。
-
-准备工作
-
-整个 dabase 的导出
-
-数据导出使用如下语句：
-
-$ mysqldump -u&lt... 
+那么问题来了，将... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 9, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/05/09/MySQL-INNODB-%E4%B8%8E-MYISAM-%E7%9A%84%E5%8C%BA%E5%88%AB/">
     <h2 class="post-title">MySQL INNODB 与 MYISAM 的区别</h2>
     
   </a>
+  <p class="post-meta">May 9, 2020</p>
   <div class="post-content-preview">
      MySQL INNODB 与 MYISAM 的区别
 
 
   InnoDB 支持表级别的事务（transactions）而 MyISAM 不然
-  InnoDB 支持行级别的锁和外键关联，而 MyISAM 只支持表级别的锁
-  MySQL 5.6 之前InnoDB 不支持全文索引(FLUUTEXT) 而 MyISAM 可以
-  MyISAM 表在性能和速度优于 InnoDB 表
-  InnoD... 
+  InnoDB 支持行级别的锁和外键关联，而 My... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 9, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/05/09/Emscripten-%E5%AE%89%E8%A3%85/">
     <h2 class="post-title">Emscripten 安装</h2>
     
   </a>
+  <p class="post-meta">May 9, 2020</p>
   <div class="post-content-preview">
      Emscripten 安装
 
 通过 Homebrew 安装
 
-可以通过官方的 Download and install 页面描述的步骤来进行，但也有更加便捷的方式，比如通过 Homebrew，只需执行如下命令即可：
-
-$ brew install emscripten
-
-
-.emscripten 文件的配置
-
-完成成功后， 会有个配置的提示：
-
-==&gt; Caveats
-Manually... 
+可以通过官方的 Download and install 页面描述的步骤来进行，但也有更加便捷的方式，比如通过 Homebrew，只... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 9, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/05/09/%E5%86%85%E5%AE%B9%E5%8D%8F%E5%95%86-Content-Nagotiation/">
     <h2 class="post-title">内容协商/ Content Nagotiation</h2>
     
   </a>
+  <p class="post-meta">May 9, 2020</p>
   <div class="post-content-preview">
      内容协商/ Content Nagotiation
 
-访问同一个 URI 时，服务器可以返回不同类型的资源。比如在浏览器中访问 http://www.example.com/user 可以是个网页，也可以是个 JSON 接口，甚至可以是张图片等。
-
-具体返回哪种类型，就需要引入内容协商的机制，以达到返回正确资源类型的目的。
-
-内容协商分为服务器主导（server driven）和客户端主导（... 
+访问同一个 URI 时，服务器可以返回不同类型的资源。比如在浏览器中访问 http://www.example.com/user 可以是个网... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 9, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/05/09/iTerm2-%E4%BC%9A%E8%AF%9D%E7%AA%97%E5%8F%A3%E7%9A%84%E6%81%A2%E5%A4%8D/">
     <h2 class="post-title">iTerm2 会话窗口的恢复</h2>
     
   </a>
+  <p class="post-meta">May 9, 2020</p>
   <div class="post-content-preview">
      通过如下配置可让 iTerm2 在每次开机时恢复到之前的那些会话窗口。
 
@@ -304,45 +270,32 @@ Manually...
 
 
 
-iTerm2 高级设置 `Enable session restoration`
-
-
-  设置中，常规里 Window restoration policy 选择 Use System Window Resto... 
+iTerm... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 9, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/04/25/iOS-webview-%E6%A0%87%E9%A2%98%E5%8F%98%E6%9B%B4%E7%9A%84%E6%A3%80%E6%B5%8B/">
     <h2 class="post-title">iOS webview 标题变更的检测</h2>
     
   </a>
+  <p class="post-meta">April 25, 2020</p>
   <div class="post-content-preview">
      iOS webview 标题变更的检测
 
 问题
 
 实测，iOS webview 中通过 js 设置 document.title 后不会触发 native 导航上标题的更新。安卓上是没问题的。
-
-iframe 方式
-
-iOS 的 WKWebview 其标题是在页面 pageload 事件时设置的。于是有 hack 方式是说在想要变更页面标题时，通过在页面创建一个 iframe 来间接实现。
 ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 25, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/04/25/Mac-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8F%8A%E9%87%8D%E8%A3%85%E7%B3%BB%E7%BB%9F/">
     <h2 class="post-title">Mac 格式化及重装系统</h2>
     
   </a>
+  <p class="post-meta">April 25, 2020</p>
   <div class="post-content-preview">
      Mac 格式化及重装系统
 
@@ -352,32 +305,16 @@ iOS 的 WKWebview 其标题是在页面 pageload 事件时设置的。于是有 
 
 
   开机时按住 Command + R
-  成功进入 Recovery 模式后，选择磁盘工具 Disk Utility
-
-
-
-
-
-  在磁盘工具左侧选中需要格式化的磁盘，一般就是容量最大那个，然后右边主界面中选择 Erase。格式等选项默认即可。
-
-
-
-
-格式化完成后，需要重装系统。
-
-重装... 
+  成功进入 Recovery 模式后，选择磁盘工具... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 25, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/04/24/%E5%AE%89%E8%A3%85%E5%B9%B6%E5%88%87%E6%8D%A2%E5%88%B0-fish-shell/">
     <h2 class="post-title">安装并切换到 fish shell</h2>
     
   </a>
+  <p class="post-meta">April 24, 2020</p>
   <div class="post-content-preview">
      安装并切换到 fish shell
 
@@ -392,65 +329,37 @@ $ fish -v
 fish, version 3.1.0
 
 
-设置 fish shell 为默认 shell
-
-首先添加 fish 到 /etc/shells：
-
-$ sudo echo /usr/local/bin/fish &gt;&gt; /etc/shells
-
-
-如果报如下错误：... 
+设置 fish shell ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 24, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/04/17/%E9%85%8D%E7%BD%AE-VSCode-%E4%BB%A5%E6%B6%88%E9%99%A4-Angular-%E9%A1%B9%E7%9B%AE%E4%B8%AD%E8%A3%85%E9%A5%B0%E5%99%A8%E7%9A%84%E6%8A%A5%E9%94%99%E4%BF%A1%E6%81%AF/">
     <h2 class="post-title">配置 VSCode 以消除 Angular 项目中装饰器的报错信息</h2>
     
   </a>
+  <p class="post-meta">April 17, 2020</p>
   <div class="post-content-preview">
      配置 VSCode 以消除 Angular 项目中装饰器的报错信息
 
 Angular 项目中大量使用装饰器，但装饰器是个实验阶段的特性，所以 VSCode 会报错：
 
-Experimental support for decorators is a feature that is subject to change in a future release. Set the 'experime... 
+Experimental ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 17, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/04/12/node-sass-%E5%AE%89%E8%A3%85%E6%97%B6%E7%89%88%E6%9C%AC%E7%9A%84%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">node-sass 安装时版本的问题</h2>
     
   </a>
+  <p class="post-meta">April 12, 2020</p>
   <div class="post-content-preview">
      node-sass 安装时版本的问题
 
-项目中有依赖 node-sass 时，需要注意本意 Node.js 版本是否与项目所使用的 node-sass 版本匹配，因为 node-sass 对 Node.js 版本有严格要求：
-
-
-  
-    
-      NodeJS
-      Minimum node-sass version
-      Node Module
-    
-  
-  
-... 
+项目中有依赖 node-sass 时，需要注意本意 Node.js 版本是否与项目所使用的 node-sass 版本匹配，因为 node-sass 对 N... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 12, 2020
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -474,25 +383,22 @@ Experimental support for decorators is a feature that is subject to change in a 
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -643,13 +549,7 @@ Experimental support for decorators is a feature that is subject to change in a 
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

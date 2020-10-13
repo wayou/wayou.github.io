@@ -170,7 +170,7 @@ React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上�
 </nav>
  <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
 
 <!-- Post Header -->
 
@@ -179,7 +179,6 @@ React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上�
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/home-bg.jpg');
         background: ;
     }
 
@@ -200,7 +199,7 @@ React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上�
                     <h1>React 虚拟 DOM 的差异检测机制</h1>
                     
                     <h2 class="subheading"></h2>
-                    <span class="meta">Posted by 牛さんの部落格 on April 21, 2019</span>
+                    <span class="meta">April 21, 2019</span>
                 </div>
             </div>
         </div>
@@ -214,19 +213,14 @@ React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上�
 
 <!-- Post Content -->
 <article>
-    <div class="container">
-        <div class="row">
-
-    <!-- Post Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                post-container">
-
-                <!-- Multi-Lingual -->
-                
-
-				<h1 id="react-虚拟-dom-的差异检测机制">React 虚拟 DOM 的差异检测机制</h1>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="react-虚拟-dom-的差异检测机制">React 虚拟 DOM 的差异检测机制</h1>
 
 <p>React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上，减少了频繁操作真实 DOM 的时间消耗，但将成本转移到了 JavaScript 中，因为要计算新旧 DOM 树的差异嘛。所以这个计算差异的算法是否高效，就很关键了。React 中其计算差异的过程叫 <a href="https://reactjs.org/docs/reconciliation.html">Reconciliation</a>，可理解成调和前后两次渲染的差异。</p>
 
@@ -579,109 +573,117 @@ React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上�
 
 
 
-                <hr style="visibility: hidden;">
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D/" data-toggle="tooltip" data-placement="top" title="下拉框中选项的快速定位">
-                        Previous<br>
-                        <span>下拉框中选项的快速定位</span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2019/04/22/%E5%85%B3%E4%BA%8E-JavaScript-%E4%B8%AD%E7%9A%84%E7%BB%A7%E6%89%BF/" data-toggle="tooltip" data-placement="top" title="关于 JavaScript 中的继承">
-                        Next<br>
-                        <span>关于 JavaScript 中的继承</span>
-                        </a>
-                    </li>
-                    
-                </ul>
-                <hr style="visibility: hidden;">
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="下拉框中选项的快速定位"
+            >
+              Previous<br />
+              <span>下拉框中选项的快速定位</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/04/22/%E5%85%B3%E4%BA%8E-JavaScript-%E4%B8%AD%E7%9A%84%E7%BB%A7%E6%89%BF/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="关于 JavaScript 中的继承"
+            >
+              Next<br />
+              <span>关于 JavaScript 中的继承</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
 
-                
+         
+      </div>
 
-                
-            </div>  
-
-    <!-- Side Catalog Container -->
-        
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
-        
-
-    <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
-
-
-
-                <!-- Friends Blog -->
-                
-            </div>
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
         </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
     </div>
+  </div>
 </article>
 
 <!-- add support for mathjax by voleking-->
-
-
-
-
-
-
-
-
-
+   
 <!-- async load function -->
 <script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
     }
+    s.parentNode.insertBefore(o, s);
+  }
 </script>
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'hover',
-          placement: 'right',
-          // icon: '#'
-        };
-        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-    })
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
 </script>
 <style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -0.75em;
-            font-size: 1.1em;
-            margin-top : -0.1em;
-        }
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
     }
+  }
 </style>
 
  <!-- Footer -->
@@ -834,13 +836,7 @@ React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上�
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

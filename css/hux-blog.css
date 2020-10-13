@@ -318,9 +318,6 @@ pre.highlight {
 .highlight .hll {
   background-color: #ffffcc;
 }
-.highlight {
-  background: #f8f8f8;
-}
 .highlight .c {
   color: #6a737d;
 }
@@ -803,13 +800,6 @@ samp {
 .post-container h6 + p {
   margin-top: 20px;
 }
-.post-container h2::before {
-  content: " ";
-  display: block;
-  border-bottom: 1px solid #ececec;
-  margin-top: 44px;
-  margin-bottom: 30px;
-}
 .post-container h4 {
   font-size: 22px;
   font-weight: 600;
@@ -991,12 +981,8 @@ samp {
 }
 .navbar-custom .navbar-brand {
   font-weight: 800;
-  color: white;
   height: 56px;
   line-height: 25px;
-}
-.navbar-custom .navbar-brand:hover {
-  color: rgba(255, 255, 255, 0.8);
 }
 .navbar-custom .nav li a {
   text-transform: uppercase;
@@ -1017,21 +1003,11 @@ samp {
     font-size: 20px;
   }
   .navbar-custom .navbar-brand {
-    color: white;
     padding: 20px;
     line-height: 20px;
   }
-  .navbar-custom .navbar-brand:hover,
-  .navbar-custom .navbar-brand:focus {
-    color: rgba(255, 255, 255, 0.8);
-  }
   .navbar-custom .nav li a {
-    color: white;
     padding: 20px;
-  }
-  .navbar-custom .nav li a:hover,
-  .navbar-custom .nav li a:focus {
-    color: rgba(255, 255, 255, 0.8);
   }
   .navbar-custom .nav li a:active {
     background: none;
@@ -1106,7 +1082,6 @@ samp {
 }
 .intro-header {
   background: no-repeat center center;
-  background-color: #a3a3a3;
   background-attachment: scroll;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -1122,7 +1097,6 @@ samp {
 .intro-header.style-text .post-heading,
 .intro-header.style-text .page-heading {
   padding: 85px 0 20px;
-  color: #404040;
   text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 .intro-header.style-text .site-heading .subheading,
@@ -1150,24 +1124,10 @@ samp {
 .intro-header .site-heading,
 .intro-header .post-heading,
 .intro-header .page-heading {
-  padding: 85px 0 55px;
-  color: white;
-  text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
-}
-@media only screen and (min-width: 768px) {
-  .intro-header .site-heading,
-  .intro-header .post-heading,
-  .intro-header .page-heading {
-    padding: 150px 0;
-  }
+  padding: 85px 0 20px;
 }
 .intro-header .site-heading {
-  padding: 95px 0 70px;
-}
-@media only screen and (min-width: 768px) {
-  .intro-header .site-heading {
-    padding: 150px 0;
-  }
+  padding: 95px 0 20px;
 }
 .intro-header .site-heading,
 .intro-header .page-heading {
@@ -1259,6 +1219,9 @@ samp {
     right: 15px;
   }
 }
+.post-preview {
+  margin-bottom: 30px;
+}
 .post-preview > a {
   color: #404040;
 }
@@ -1283,7 +1246,7 @@ samp {
 .post-preview > .post-meta {
   font-family: "Lora", "Times New Roman", serif;
   font-size: 16px;
-  margin-top: 0;
+  margin: 0;
 }
 .post-preview > .post-meta > a {
   text-decoration: none;
@@ -1619,7 +1582,6 @@ footer .copyright a:focus {
 .navbar-default .navbar-toggle .icon-bar {
   width: 18px;
   border-radius: 0px;
-  background-color: white;
 }
 .navbar-default .navbar-toggle .icon-bar + .icon-bar {
   margin-top: 3px;

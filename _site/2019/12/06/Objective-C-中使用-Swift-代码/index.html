@@ -174,7 +174,7 @@
 </nav>
  <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
 
 <!-- Post Header -->
 
@@ -183,7 +183,6 @@
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/home-bg.jpg');
         background: ;
     }
 
@@ -204,7 +203,7 @@
                     <h1>Objective-C 中使用 Swift 代码</h1>
                     
                     <h2 class="subheading"></h2>
-                    <span class="meta">Posted by 牛さんの部落格 on December 6, 2019</span>
+                    <span class="meta">December 6, 2019</span>
                 </div>
             </div>
         </div>
@@ -218,19 +217,14 @@
 
 <!-- Post Content -->
 <article>
-    <div class="container">
-        <div class="row">
-
-    <!-- Post Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                post-container">
-
-                <!-- Multi-Lingual -->
-                
-
-				<h1 id="objective-c-中使用-swift-代码">Objective-C 中使用 Swift 代码</h1>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="objective-c-中使用-swift-代码">Objective-C 中使用 Swift 代码</h1>
 
 <p>因为 Apple 强推 Swift，后者势头不减，社区各种优秀的配套也都跟上来，比如做动画的 <a href="https://github.com/MengTo/Spring">Spring</a>，是用 Swfit 写的。</p>
 
@@ -369,109 +363,117 @@ Multiple commands produce '/some/path/Library/Developer/Xcode/DerivedData/Animat
 
 
 
-                <hr style="visibility: hidden;">
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2019/12/06/iOS-%E5%BA%94%E7%94%A8%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96/" data-toggle="tooltip" data-placement="top" title="iOS 应用的本地化">
-                        Previous<br>
-                        <span>iOS 应用的本地化</span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2019/12/07/CocoaPods-%E7%9A%84%E4%BD%BF%E7%94%A8/" data-toggle="tooltip" data-placement="top" title="CocoaPods 的使用">
-                        Next<br>
-                        <span>CocoaPods 的使用</span>
-                        </a>
-                    </li>
-                    
-                </ul>
-                <hr style="visibility: hidden;">
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/12/06/iOS-%E5%BA%94%E7%94%A8%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="iOS 应用的本地化"
+            >
+              Previous<br />
+              <span>iOS 应用的本地化</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/12/07/CocoaPods-%E7%9A%84%E4%BD%BF%E7%94%A8/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="CocoaPods 的使用"
+            >
+              Next<br />
+              <span>CocoaPods 的使用</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
 
-                
+         
+      </div>
 
-                
-            </div>  
-
-    <!-- Side Catalog Container -->
-        
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
-        
-
-    <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
-
-
-
-                <!-- Friends Blog -->
-                
-            </div>
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
         </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
     </div>
+  </div>
 </article>
 
 <!-- add support for mathjax by voleking-->
-
-
-
-
-
-
-
-
-
+   
 <!-- async load function -->
 <script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
     }
+    s.parentNode.insertBefore(o, s);
+  }
 </script>
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'hover',
-          placement: 'right',
-          // icon: '#'
-        };
-        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-    })
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
 </script>
 <style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -0.75em;
-            font-size: 1.1em;
-            margin-top : -0.1em;
-        }
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
     }
+  }
 </style>
 
  <!-- Footer -->
@@ -624,13 +626,7 @@ Multiple commands produce '/some/path/Library/Developer/Xcode/DerivedData/Animat
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

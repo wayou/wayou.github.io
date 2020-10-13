@@ -172,7 +172,7 @@ Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可�
 </nav>
  <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
 
 <!-- Post Header -->
 
@@ -181,7 +181,6 @@ Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可�
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/home-bg.jpg');
         background: ;
     }
 
@@ -202,7 +201,7 @@ Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可�
                     <h1>Objective-C 中实现 Monkey-Patching</h1>
                     
                     <h2 class="subheading"></h2>
-                    <span class="meta">Posted by 牛さんの部落格 on December 8, 2019</span>
+                    <span class="meta">December 8, 2019</span>
                 </div>
             </div>
         </div>
@@ -216,19 +215,14 @@ Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可�
 
 <!-- Post Content -->
 <article>
-    <div class="container">
-        <div class="row">
-
-    <!-- Post Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                post-container">
-
-                <!-- Multi-Lingual -->
-                
-
-				<h1 id="objective-c-中实现-monkey-patching">Objective-C 中实现 Monkey-Patching</h1>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="objective-c-中实现-monkey-patching">Objective-C 中实现 Monkey-Patching</h1>
 
 <p>Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可以理解成劫持。这样系统在执行的时候，实际上执行的是被替换的版本。</p>
 
@@ -471,109 +465,117 @@ Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可�
 
 
 
-                <hr style="visibility: hidden;">
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2019/12/08/CocoaTouch-View-Controller-%E7%9B%B8%E5%85%B3/" data-toggle="tooltip" data-placement="top" title="CocoaTouch View Controller 相关">
-                        Previous<br>
-                        <span>CocoaTouch View Controller 相关</span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2019/12/14/CSS-background-%E7%9A%84%E7%AE%80%E5%86%99/" data-toggle="tooltip" data-placement="top" title="CSS background 的简写">
-                        Next<br>
-                        <span>CSS background 的简写</span>
-                        </a>
-                    </li>
-                    
-                </ul>
-                <hr style="visibility: hidden;">
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/12/08/CocoaTouch-View-Controller-%E7%9B%B8%E5%85%B3/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="CocoaTouch View Controller 相关"
+            >
+              Previous<br />
+              <span>CocoaTouch View Controller 相关</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/12/14/CSS-background-%E7%9A%84%E7%AE%80%E5%86%99/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="CSS background 的简写"
+            >
+              Next<br />
+              <span>CSS background 的简写</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
 
-                
+         
+      </div>
 
-                
-            </div>  
-
-    <!-- Side Catalog Container -->
-        
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
-        
-
-    <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
-
-
-
-                <!-- Friends Blog -->
-                
-            </div>
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
         </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
     </div>
+  </div>
 </article>
 
 <!-- add support for mathjax by voleking-->
-
-
-
-
-
-
-
-
-
+   
 <!-- async load function -->
 <script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
     }
+    s.parentNode.insertBefore(o, s);
+  }
 </script>
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'hover',
-          placement: 'right',
-          // icon: '#'
-        };
-        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-    })
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
 </script>
 <style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -0.75em;
-            font-size: 1.1em;
-            margin-top : -0.1em;
-        }
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
     }
+  }
 </style>
 
  <!-- Footer -->
@@ -726,13 +728,7 @@ Monkey-Patching 的目的是修改原方法同时为其注入新的逻辑。可�
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

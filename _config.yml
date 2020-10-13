@@ -3,7 +3,6 @@ title: 牛さんの部落格
 email: liuwayong@gmail.com
 description: notes about the coding life
 SEOTitle: 牛さんの部落格|刘哇勇的部落格
-header-img: img/home-bg.jpg
 keyword: "牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计"
 url: "https://huangxuan.me" # your host, for absolute URL
 baseurl: "" # for example, '/blog' if your blog hosted on 'host/blog'
@@ -73,6 +72,3 @@ featured-condition-size: 1 # A tag will be featured if the size of it is more th
 # Progressive Web Apps
 chrome-tab-theme-color: "#000000"
 service-worker: true
-
-# MathJax rendering for layout:page (e.g. post preview)
-page-mathjax: false

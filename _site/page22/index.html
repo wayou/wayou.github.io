@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,17 +190,20 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2018/08/05/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%97%AE%E9%A2%98%E9%9B%86%E9%94%A6/">
     <h2 class="post-title">微信小程序问题集锦</h2>
     
   </a>
+  <p class="post-meta">August 5, 2018</p>
   <div class="post-content-preview">
      微信小程序问题集锦
 
@@ -208,215 +211,128 @@
 
 原因有可能是 canvas context 的创建方式不对。
 
-通过 wx.createCanvasContext(canvasId, this) 创建 canvas 绘图上下文时，第后个参数是指自定义组件的实例。如果 canvas 位于自定义组件中，这个参数是必传的，否则绘制不生效，界面没显示任何东西。
-
-来看官方文档关于 wx.cr... 
+通过 wx.createCanvasContext(canvasId, t... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 5, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/06/12/React-%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98-Higher-Order-Components/">
     <h2 class="post-title">React 代码复用的问题 - Higher-Order Components</h2>
     
   </a>
+  <p class="post-meta">June 12, 2018</p>
   <div class="post-content-preview">
      React 代码复用的问题 - Higher-Order Components
 
-代码复用，我们很容易想到组件。组件确实也是 React 中最主要的复用单元。大部分情况下是满足需求的，但有一些例外的情况。
-
-问题/The problem
-假如我们有个展示图表数据的 Dashboard 组件。它会做权限检查，只有登录后才能看到；它还会在组件初始化之后发请求获取数据。
-
-Dashboard.js... 
+代码复用，我们很容易想到组件。组件确实也是 React 中最主要的复用单元。大部分情况下是满足需求的，但有一些例... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 12, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/06/04/%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%81%AE%E7%BD%A9%E7%9A%84%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">字符串遮罩的问题</h2>
     
   </a>
+  <p class="post-meta">June 4, 2018</p>
   <div class="post-content-preview">
      字符串遮罩的问题
 
-对于 substr 与 substring，slice 与 splice 这种名字相近，功能也相近的函数，着实容易搞混，不太方便记住其区别。这还不算，参数如果是负数的情况，表现又不一样。这里也不是要提供一种牢靠可记的方法，只是通过一个面试题目来顺便讨论和区分一下这些函数。
-
-问题
-
-将给定的字符串除最后四位外，转成以 # 代替的掩码。
-
-示例：
-
-mask("123456... 
+对于 substr 与 substring，slice 与 splice 这种名字相近，功能也相近的函数，着实容易搞混，不太方便记住其区别。这还不算，参数如果是负数的情况，表... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 4, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/05/02/gitignore-%E6%B7%BB%E5%8A%A0%E6%96%87%E4%BB%B6%E4%B8%8D%E7%94%9F%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">gitignore 添加文件不生效的问题</h2>
     
   </a>
+  <p class="post-meta">May 2, 2018</p>
   <div class="post-content-preview">
      gitignore 添加文件不生效的问题
 
-.gitignore 文件用来指定需要排除在版本管理之外的文件或目录。最近发现一个问题，如果某个文件或文件夹之前是在版本管理内的，并且进行过提交，事后想加入 gitignore 中，并不生效。
-
-问题复现
-
-以下操作步骤展示了这一问题。
-
-创建一个示例仓库：
-
-$ mkdir git-ignore-issue &amp;&amp; cd $_
-$ ... 
+.gitignore 文件用来指定需要排除在版本管理之外的文件或目录。最近发现一个问题，如果某个文件或文件夹之前是在版本管理内的，并且进行过提交，事后... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 2, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/04/01/%E4%B8%80%E4%BB%BD%E6%9C%89%E7%82%B9%E8%BF%87%E6%97%B6%E7%9A%84-JS-%E9%A3%8E%E6%A0%BC%E6%8C%87%E5%8D%97-Google-JavaScript-Style-Guide/">
     <h2 class="post-title">一份有点过时的 JS 风格指南 - Google JavaScript Style Guide</h2>
     
   </a>
+  <p class="post-meta">April 1, 2018</p>
   <div class="post-content-preview">
      一份有点过时的 JS 风格指南 - Google JavaScript Style Guide
 
-GitHub 上有很多大厂的开源项目，是非常好的学习资源。无论是写码风格，还是设计思想，对于码农中的芸芸众生来说，都有很大借鉴意义。
-
-特别地，如果你想要向这些优秀的开源项目贡献代码，学习并遵循其代码风格是必要的。譬如 Google 背景的项目 angular/material2，它要求遵循 G... 
+GitHub 上有很多大厂的开源项目，是非常好的学习资源。无论是写码风格，还是设计思想，对于码农... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 1, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/03/14/%E8%A1%A8%E6%A0%BC%E5%8D%95%E5%85%83%E6%A0%BC%E5%90%88%E5%B9%B6%E7%9A%84%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">表格单元格合并的问题</h2>
     
   </a>
+  <p class="post-meta">March 14, 2018</p>
   <div class="post-content-preview">
      表格单元格合并的问题
 
 背景
 
-之前项目中使用 Angular ng-repeat 动态生成的表格有合并单元格的需求，所以在生成 td 标签时统一加了 rowspan 属性，具体的 span 值动态计算。如果不需要合并则返回 0。
-
-调试完上线一切工作正常，至少用当时的 Chrome 来看，没发现问题。
-
-但，最近有收到反馈表格展示不正常了。
-
-本来应该是这个样子美如画的表格：
-
-
-
-出现问... 
+之前项目中使用 Angular ng-repeat 动态生成的表格有合并单元格的需求，所以在生成 td 标签时统一加了 rowspan 属性，具体的 span 值... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on March 14, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/03/13/Chrome-DevTools-%E4%B8%AD%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%E8%B0%83%E8%AF%95-%E8%AE%A9%E7%9B%B8%E5%AE%9C%E4%B9%9F%E4%B8%8D%E5%86%8D%E7%9A%B1%E7%9C%89/">
     <h2 class="post-title">Chrome DevTools 中内存溢出的调试，让相宜也不再皱眉</h2>
     
   </a>
+  <p class="post-meta">March 13, 2018</p>
   <div class="post-content-preview">
      Chrome DevTools 中内存溢出的调试，让相宜也不再皱眉
 
 
 
-V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出的问题，Chrome 66 memory leak detect became much easier。
-
-
-
-看完推文视频里的这一波操作后，成功引起了我的注意。赶紧装了最新的 Canary 版本试了下，此时版本号已经来到了 67。
-
-打开其提供的... 
+V8 发了条推文展示在最新 Chrome 66 中如何方便地定位内存溢出的问题，Chrome 66 memory lea... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on March 13, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/03/12/%E7%BC%96%E8%AF%91%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B/">
     <h2 class="post-title">编译了解一下</h2>
     
   </a>
+  <p class="post-meta">March 12, 2018</p>
   <div class="post-content-preview">
      编译了解一下
 
-踏步编程领域，你或多或少会听到「编译器」，「解释器」这类词汇。特别地，如果你是前端，一定是知道解释器的，因为像 JavaScript 脚本类语言一般都是解释执行的嘛，同是解释执行的还有前端同学经常会写的 php。
-
-一般认为编译器输出优化后的代码运行较快，解释器边解释边运行代码速度较慢。但，世界总不那么简单，生活也不那么容易。
-
-
-
-JIT/Just-in-time comp... 
+踏步编程领域，你或多或少会听到「编译器」，「解释器」这类词汇。特别地，如果你是前端，一定是知道解释器的，因为像 JavaScript 脚本类语言一般都是解释执行的嘛，同是解释执行... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on March 12, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/02/27/webpack-v4-%E5%8D%87%E7%BA%A7%E5%B0%9D%E9%B2%9C/">
     <h2 class="post-title">webpack v4 升级尝鲜</h2>
     
   </a>
+  <p class="post-meta">February 27, 2018</p>
   <div class="post-content-preview">
-     按照 webpack 其在 Github 上的日程表，不出意外地，本月迎来了 v4 正式版的发布，离发版狂魔的目标又近了一步。毕竟其发明者 Tobias 把正经工作辞掉全身心搞本工具，不多多发版也对不起观众不是。
-
-然而，正如你在使用 v3 时可以看到官方文档的匮乏，遑论这新鲜出炉还热乎的 v4 呢，所以文档什么的就别想了。
-
-但按奈不住猎奇，迅速装上进行了尝鲜升级。
-
-Changelog ... 
+     按照 webpack 其在 Github 上的日程表，不出意外地，本月迎来了 v4 正式版的发布，离发版狂魔的目标又近了一步。毕竟其发明者 Tobias 把正经工作辞掉全身心搞本工具，不多多发版... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on February 27, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/02/05/%E5%BF%83%E4%B8%AD%E6%97%A0%E8%B7%AF%E7%94%B1-%E5%A4%84%E5%A4%84%E7%9A%86%E8%87%AA%E7%94%B1-react-router-v4-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1/">
     <h2 class="post-title">心中无路由，处处皆自由/react-router v4 动态路由</h2>
     
   </a>
+  <p class="post-meta">February 5, 2018</p>
   <div class="post-content-preview">
      心中无路由，处处皆自由/react-router v4 动态路由
 
-react-router v4 的到来已经过了一些时日了，注意到官方文档中有篇介绍其新式设计哲学的文章。其中区分了传统静态路由（Static Routing）和新版中引入的动态路由（Dynamic Routing）。
-
-动态路由么，Interesting（呵呵）。 听起来并不是很新鲜，但其实想当然了。这里面存在一个理解误区。... 
+react-router v4 的到来已经过了一些时日了，注意到官方文档中有篇介绍其新式设计哲学的文章。其中区分了传统静态路由... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on February 5, 2018
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -440,25 +356,22 @@ react-router v4 的到来已经过了一些时日了，注意到官方文档中�
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -609,13 +522,7 @@ react-router v4 的到来已经过了一些时日了，注意到官方文档中�
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,17 +190,20 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2019/09/26/JavaScript-Map-%E5%92%8C-Set/">
     <h2 class="post-title">JavaScript Map 和 Set</h2>
     
   </a>
+  <p class="post-meta">September 26, 2019</p>
   <div class="post-content-preview">
      JavaScript Map 和 Set
 
@@ -213,25 +216,16 @@
 
 Map
 
-存储键值对，读取时与插入顺序一致。
-
-
-var map = new Map([[1, "1"], [3, "3"], [2, "2"]]);
-map.set("foo", "bar");
-
-for (const [key, val] ... 
+存储键值对，读取时与插入顺序一致。... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on September 26, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/09/25/C++-%E5%8F%98%E9%87%8F%E5%88%A4%E5%AE%9A%E7%9A%84%E8%9E%BA%E6%97%8B%E6%B3%95%E5%88%99/">
     <h2 class="post-title">C++ 变量判定的螺旋法则</h2>
     
   </a>
+  <p class="post-meta">September 25, 2019</p>
   <div class="post-content-preview">
      C++ 变量判定的螺旋法则
 
@@ -239,26 +233,16 @@ C++ 中一个标识符配合着各种修饰界定符，使得标识符的本意�
 
 比如：
 
-void (*signal(int, void (*fp)(int)))(int);
-
-
-其中 signal 是什么？
-
-螺旋法则
-
-对于如何进行变量的辩识，有个非官方的 “顺时针/螺旋法则（Clockwise/Spir... 
+void (*sig... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on September 25, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/09/24/React-+-TypeScript-%E9%BB%98%E8%AE%A4-Props-%E7%9A%84%E5%A4%84%E7%90%86/">
     <h2 class="post-title">React + TypeScript 默认 Props 的处理</h2>
     
   </a>
+  <p class="post-meta">September 24, 2019</p>
   <div class="post-content-preview">
      React + TypeScript 默认 Props 的处理
 
@@ -266,45 +250,32 @@ React 中的默认 Props
 
 通过组件的 defaultProps 属性可为其 Props 指定默认值。
 
-以下示例来自 React 官方文档 - Default Prop Values：
-
-class Greeting extends React.Component {
-  render() {
-    return ... 
+以下示例来自 ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on September 24, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/09/23/TypeScript-%E5%8F%82%E6%95%B0%E5%B1%9E%E6%80%A7/">
     <h2 class="post-title">TypeScript 参数属性</h2>
     
   </a>
+  <p class="post-meta">September 23, 2019</p>
   <div class="post-content-preview">
      TypeScript 参数属性
 
 假设类中创建的 readonly 类型的属性，该类型的属性只能在声明处或构造器中进行初始化。
 
 class Octopus {
-    readonly name: string;
-    readonly numberOfLegs: number = 8;
-    constructor (theName: string) {
-        this.n... 
+    readonly nam... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on September 23, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/08/03/CSS-transition-%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC/">
     <h2 class="post-title">CSS transition 的默认值</h2>
     
   </a>
+  <p class="post-meta">August 3, 2019</p>
   <div class="post-content-preview">
      CSS transition 的默认值
 
@@ -313,54 +284,29 @@ class Octopus {
 transition: property duration timing-function delay|initial|inherit;
 
 
-示例：
-
-div {
-  width: 100px;
-  height: 100px;
-  transition: width 2s;
-}
-
-div:hover {
-  width: 300px;
-}
-... 
+示... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 3, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/08/02/MediaDevices.getUserMedia-undefined-%E7%9A%84%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">`MediaDevices.getUserMedia` `undefined` 的问题</h2>
     
   </a>
+  <p class="post-meta">August 2, 2019</p>
   <div class="post-content-preview">
      MediaDevices.getUserMedia undefined 的问题
 
-通过 MediaDevices.getUserMedia() 获取用户多媒体权限时，需要注意其只工作于以下三种环境：
-
-
-  localhost 域
-  开启了 HTTPS 的域
-  使用 file:/// 协议打开的本地文件
-
-
-其他情况下，比如在一个 HTTP 站点上，navigator.mediaDevi... 
+通过 MediaDevices.getUserMedia() 获取用户多媒体权限时，需要注意其只工作于以下三种环... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 2, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/08/01/Koa-%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-HTTPS-%E7%8E%AF%E5%A2%83/">
     <h2 class="post-title">Koa 本地搭建 HTTPS 环境</h2>
     
   </a>
+  <p class="post-meta">August 1, 2019</p>
   <div class="post-content-preview">
      Koa 本地搭建 HTTPS 环境
 
@@ -373,46 +319,31 @@ $ brew install openssl
 
 检查安装：
 
-$ openssl version
-LibreSSL 2.6.5
-
-
-生成证书
-
-执行以下命令生成证书：
-
-openssl req -nodes -new -x509 -keyout server.key -out ... 
+$ openss... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on August 1, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/07/08/CSS-%E5%88%A9%E7%94%A8-padding-bottom-%E5%AE%9E%E7%8E%B0%E5%9B%BA%E5%AE%9A%E6%AF%94%E4%BE%8B%E7%9A%84%E5%AE%B9%E5%99%A8/">
     <h2 class="post-title">CSS 利用 `padding-bottom` 实现固定比例的容器</h2>
     
   </a>
+  <p class="post-meta">July 8, 2019</p>
   <div class="post-content-preview">
      CSS 利用 padding-bottom 实现固定比例的容器
 
 复用 padding-bottom 可实现一块区域在窗口尺寸变化使始终保持自适应。对于响应式布局中的图片或视频来说比较有用。
 
-&lt;div style="width: 100%; position: relative; padding-bottom: 56.25%;"&gt;
-    &lt;div style="posi... 
+... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on July 8, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/30/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">
     <h2 class="post-title">进程与线程</h2>
     
   </a>
+  <p class="post-meta">June 30, 2019</p>
   <div class="post-content-preview">
      进程与线程
 
@@ -423,39 +354,22 @@ openssl req -nodes -new -x509 -keyout server.key -out ...
 
   一个程序的运行实例叫作进程。
   一些操作系统中该程序的运行实例也叫作任务（task）。
-  运行在主内存（RAM）中。
-  进程可看作内存中活动的主体，关机后消失。
-  多核系统下，多个进程可同时进行。
-  单核情况下，真实的多进程是不存在的。但可通过调度算法，让每个进程间隔着运行达到虚拟的多进程效果。... 
+  运行在主内存... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 30, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/29/CSS-%E9%80%89%E6%8B%A9%E5%99%A8%E6%9D%83%E9%87%8D%E8%AE%A1%E7%AE%97%E8%A7%84%E5%88%99/">
     <h2 class="post-title">CSS 选择器权重计算规则</h2>
     
   </a>
+  <p class="post-meta">June 29, 2019</p>
   <div class="post-content-preview">
      CSS 选择器权重计算规则
 
-CSS 选择器（Selector）的权重（Specificity）决定了对于同一元素，到底哪一条 CSS 规则会生效。且仅有当多条 CSS 规则都对同一元素声明了相应样式时，才会涉及到权重计算的问题。
-
-选择器的分类
-
-正式计算选择器权重之前，先来看选择器是如何被分类的。
-
-因为 CSS 选择器众多，在计算时，这些选择器被归为了三大类，按其权重由大到小依次为：
-... 
+CSS 选择器（Selector）的权重（Specificity）决定了对于同一元素，到底哪一条 CSS 规则会生效。且仅有当多条 CSS 规则都对同一元素声明了相... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 29, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -479,25 +393,22 @@ CSS 选择器（Selector）的权重（Specificity）决定了对于同一元素
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -648,13 +559,7 @@ CSS 选择器（Selector）的权重（Specificity）决定了对于同一元素
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

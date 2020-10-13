@@ -177,7 +177,7 @@
 </nav>
  <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
 
 <!-- Post Header -->
 
@@ -186,7 +186,6 @@
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/home-bg.jpg');
         background: ;
     }
 
@@ -207,7 +206,7 @@
                     <h1>TypeScript: type alias 与 interface</h1>
                     
                     <h2 class="subheading"></h2>
-                    <span class="meta">Posted by 牛さんの部落格 on March 28, 2019</span>
+                    <span class="meta">March 28, 2019</span>
                 </div>
             </div>
         </div>
@@ -221,19 +220,14 @@
 
 <!-- Post Content -->
 <article>
-    <div class="container">
-        <div class="row">
-
-    <!-- Post Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                post-container">
-
-                <!-- Multi-Lingual -->
-                
-
-				<h1 id="typescript--type-alias-与-interface">TypeScript:  type alias 与 interface</h1>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="typescript--type-alias-与-interface">TypeScript:  type alias 与 interface</h1>
 
 <p>官方文档中有关于两者对比的信息，隐藏在 TypeScript Handbook 中，见 <a href="https://www.typescriptlang.org/docs/handbook/advanced-types.html"><code class="language-plaintext highlighter-rouge">Interfaces vs. Type Aliases</code></a> 部分。</p>
 
@@ -381,109 +375,117 @@
 
 
 
-                <hr style="visibility: hidden;">
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2019/03/26/Node.js-%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3/" data-toggle="tooltip" data-placement="top" title="Node.js 调试相关">
-                        Previous<br>
-                        <span>Node.js 调试相关</span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2019/03/31/Accept-%E4%B8%8E-Content-Type/" data-toggle="tooltip" data-placement="top" title="Accept 与 Content-Type">
-                        Next<br>
-                        <span>Accept 与 Content-Type</span>
-                        </a>
-                    </li>
-                    
-                </ul>
-                <hr style="visibility: hidden;">
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/03/26/Node.js-%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Node.js 调试相关"
+            >
+              Previous<br />
+              <span>Node.js 调试相关</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/03/31/Accept-%E4%B8%8E-Content-Type/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Accept 与 Content-Type"
+            >
+              Next<br />
+              <span>Accept 与 Content-Type</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
 
-                
+         
+      </div>
 
-                
-            </div>  
-
-    <!-- Side Catalog Container -->
-        
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
-        
-
-    <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
-
-
-
-                <!-- Friends Blog -->
-                
-            </div>
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
         </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
     </div>
+  </div>
 </article>
 
 <!-- add support for mathjax by voleking-->
-
-
-
-
-
-
-
-
-
+   
 <!-- async load function -->
 <script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
     }
+    s.parentNode.insertBefore(o, s);
+  }
 </script>
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'hover',
-          placement: 'right',
-          // icon: '#'
-        };
-        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-    })
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
 </script>
 <style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -0.75em;
-            font-size: 1.1em;
-            margin-top : -0.1em;
-        }
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
     }
+  }
 </style>
 
  <!-- Footer -->
@@ -636,13 +638,7 @@
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

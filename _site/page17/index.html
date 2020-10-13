@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,35 +190,33 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2019/05/04/RabbitMQ-Node.js-%E7%A4%BA%E4%BE%8B/">
     <h2 class="post-title">RabbitMQ Node.js 示例</h2>
     
   </a>
+  <p class="post-meta">May 4, 2019</p>
   <div class="post-content-preview">
      RabbitMQ Node.js 示例
 
-RabbitQM 处理和管理消息队列的中间人（broker）。可简单理解为邮局，你在程序中写好消息，指定好收件人，剩下的事件就是 RabbitMQ 的工作了，它会保证收件人正确收到邮件。
-
-任何发送邮件的程序都是 Producer，消息队列可理解为邮筒，新件将堆积在此处。所有待处理的消息都以队列形式存储，总体上看来就是一个巨大的消息 buffer，至... 
+RabbitQM 处理和管理消息队列的中间人（broker）。可简单理解为邮局，你在程序中写好消息，指定好收件人，剩下的事件就是 RabbitMQ 的工... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 4, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/03/MySQL-%E4%B8%AD%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B/">
     <h2 class="post-title">MySQL 中的字符串类型</h2>
     
   </a>
+  <p class="post-meta">May 3, 2019</p>
   <div class="post-content-preview">
      MySQL 中的字符串类型
 
@@ -235,23 +233,16 @@ RabbitQM 处理和管理消息队列的中间人（broker）。可简单理解�
   SET
 
 
-CHAR 与 VARCHAR
-
-CHAR(m) m 取值范围 0～255。列宽固定，存储时字符串右边会补空格，取出时自动去掉空格，除非开启了 PAD_CHAR_TO_FULL_LENGTH。
-
-对于值未超出的情... 
+CHAR ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 3, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/02/k-sum-%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">k-sum 问题</h2>
     
   </a>
+  <p class="post-meta">May 2, 2019</p>
   <div class="post-content-preview">
      k-sum 问题
 
@@ -265,26 +256,16 @@ CHAR(m) m 取值范围 0～255。列宽固定，存储时字符串右边会补�
 
  [[1,1]]
 
-给定数组 [10, 1, 2, 7, 6, 1, 5] 令 k=8，输出：
-
- [ [ 1, 2, 5 ], [ 1, 7 ], [ 1, 1, 6 ], [ 2, 6 ] ]
-
-
-分析
-
-这里的思路是把 k 逐步... 
+给定数组 [1... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 2, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/01/MySQL-%E4%B8%AD%E7%9A%84%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B/">
     <h2 class="post-title">MySQL 中的日期时间类型</h2>
     
   </a>
+  <p class="post-meta">May 1, 2019</p>
   <div class="post-content-preview">
      MySQL 中的日期时间类型
 
@@ -298,21 +279,16 @@ CHAR(m) m 取值范围 0～255。列宽固定，存储时字符串右边会补�
   YEAR
 
 
-各类型都有具体的取值范围，超出或非法的其他值时，MySQL 会回退到 0。TIMESTAMP 类型是个例外，给它设置一个超出范围的值时，将保存上该类型允许的最大值。
-
-MySQL 按标准格式 YYYY-MM-DD hh:mm:s... 
+各类型都有具体的取值范围，超... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 1, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/30/MySQL-%E4%B8%AD%E7%9A%84%E6%95%B0%E5%AD%97%E7%B1%BB%E5%9E%8B/">
     <h2 class="post-title">MySQL 中的数字类型</h2>
     
   </a>
+  <p class="post-meta">April 30, 2019</p>
   <div class="post-content-preview">
      MySQL 中的数字类型
 
@@ -321,71 +297,42 @@ MySQL 中数据类型常用的就三大类：
 
   数字类型/numeric types
   日期和时间/date and time types
-  字符类型/string (character and byte) types
-
-
-另外还包含两个没那么常用的大类：
-
-
-  特殊类型/spatial types
-  JSON
-
-
-继续之前，先来看一些单位上的约定和概念，... 
+  字符类型/strin... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 30, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/29/TypeScript-%E5%AE%9E%E7%8E%B0%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97/">
     <h2 class="post-title">TypeScript 实现任务队列</h2>
     
   </a>
+  <p class="post-meta">April 29, 2019</p>
   <div class="post-content-preview">
      TypeScript 实现任务队列
 
-业务中经常会有一些批量操作的任务，比如使用 JavaScript 预加载一组图片，批量上传一些资源。如果这些任务一次性启动，势必会消耗很多资源和带宽。理想的做法应该对这些任务进行限制，比如一次只跑几个，当其中一些任务完成后，再添加新的任务到队列。
-
-总的来说，我们需要这样一个服务，它提供一个添加任务的方法，内部将添加的方法维护在一个数组。然后根据设置的阈... 
+业务中经常会有一些批量操作的任务，比如使用 JavaScript 预加载一组图片，批量上传一些资源。如果这些任务一次性启动，势必会消耗很多资源和带宽。理想的... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 29, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/27/Node.js-+-MySQL-%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/">
     <h2 class="post-title">Node.js + MySQL 实现数据的增删改查</h2>
     
   </a>
+  <p class="post-meta">April 27, 2019</p>
   <div class="post-content-preview">
      Node.js + MySQL 实现数据的增删改查
 
-通过完成一个 todo 应用展示 Node.js + MySQL 增删改查的功能。这里后台使用 Koa 及其相应的一些中间件作为 server 提供服务。
-
-初始化项目
-
-$ mkdir node-crud &amp;&amp; cd $_
-$ yarn init -y &amp;&amp; npx gitignore node
-
-
-上面... 
+通过完成一个 todo 应用展示 Node.js + MySQL 增删改查的功能。这里后台使用 Koa 及其相应的一些中间件作为 serve... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 27, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/27/SASS-%E4%B8%AD%E5%8F%98%E9%87%8F%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC/">
     <h2 class="post-title">SASS 中变量的默认值</h2>
     
   </a>
+  <p class="post-meta">April 27, 2019</p>
   <div class="post-content-preview">
      SASS 中变量的默认值
 
@@ -398,26 +345,16 @@ $color: blue;
     color: $color;
 }
 
-
-编译后为：
-
-.btn {
-  color: blue; }
-
-
-如果你编写了一个 UI 库提供 SASS 文件，可能会提供一些参数供用户使用时自定义。而在 SASS 组件内部，我们需要应用上用户设... 
+... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 27, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/26/MySQL-%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/">
     <h2 class="post-title">MySQL 上手教程</h2>
     
   </a>
+  <p class="post-meta">April 26, 2019</p>
   <div class="post-content-preview">
      MySQL 上手教程
 
@@ -430,42 +367,24 @@ $ brew install mysql
 
 检查安装是否成功：
 
-$ mysql --version
-mysql  Ver 8.0.15 for osx10.14 on x86_64 (Homebrew)
-
-
-注意到安装成功后的提示里有一些有用的信息：
-
-==&gt; Cavea... 
+$ mysql... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 26, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/25/%E4%BC%98%E9%9B%85%E5%9C%B0-async-await/">
     <h2 class="post-title">优雅地 async/await</h2>
     
   </a>
+  <p class="post-meta">April 25, 2019</p>
   <div class="post-content-preview">
      优雅地 async/await
 
 async/await 虽然取代了回调，使用类似同步的代码组织方式让代码更加简洁美观，但错误处理时需要加 try/catch。
 
-比如下面这样，一个简单的 Node.js 中使用 async/await 的场景：
-
-const fetch = require("node-fetch");
-
-async function getData() {
-  const... 
+比如下面这样，一个简单的 No... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 25, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -489,25 +408,22 @@ async function getData() {
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -658,13 +574,7 @@ async function getData() {
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

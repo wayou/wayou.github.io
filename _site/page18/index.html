@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,41 +190,33 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2019/04/24/%E7%90%86%E8%A7%A3-KMP-%E7%AE%97%E6%B3%95/">
     <h2 class="post-title">理解 KMP 算法</h2>
     
   </a>
+  <p class="post-meta">April 24, 2019</p>
   <div class="post-content-preview">
      理解 KMP 算法
 
-KMP（The Knuth-Morris-Pratt Algorithm）算法用于字符串匹配，从字符串中找出给定的子字符串。但它并不是很好理解和掌握。而理解它概念中的部分匹配表，是理解 KMP 算法的关键。
-
-这里的讨论绕开其背后晦涩难懂的逻辑，着重从其运用上来理解它。
-
-字符串查找
-
-比如从字符串 abcdef 中找出 abcdg 子字符串。
-
-朴素的解法，我们可以这... 
+KMP（The Knuth-Morris-Pratt Algorithm）算法用于字符串匹配，从字符串中找出给定的子字符串。但它并不是很好理解和掌握。而理解它概念中的部分匹... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 24, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/23/CSS-fixed-%E5%AE%9A%E4%BD%8D%E5%85%83%E7%B4%A0%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">CSS fixed 定位元素失效的问题</h2>
     
   </a>
+  <p class="post-meta">April 23, 2019</p>
   <div class="post-content-preview">
      CSS fixed 定位元素失效的问题
 
@@ -233,25 +225,16 @@ KMP（The Knuth-Morris-Pratt Algorithm）算法用于字符串匹配，从字符
 考察下面的代码：
 
   &lt;head&gt;
-    &lt;title&gt;css filter issue&lt;/title&gt;
-    &lt;style&gt;
-      body {
-        height: 200vh;
-        background: #ddd;
-      }
-      .co... 
+    &lt;title&gt;css filter issue&lt;/title&g... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 23, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/22/%E5%85%B3%E4%BA%8E-JavaScript-%E4%B8%AD%E7%9A%84%E7%BB%A7%E6%89%BF/">
     <h2 class="post-title">关于 JavaScript 中的继承</h2>
     
   </a>
+  <p class="post-meta">April 22, 2019</p>
   <div class="post-content-preview">
      关于 JavaScript 中的继承
 
@@ -259,68 +242,45 @@ ES5 之前，继承是这样实现的
 
 function Parent() {
   this.foo = function() {
-    console.log('foo');
-  };
-}
-Parent.prototype.bar = function() {
-  console.log('bar');
-}
-function Child() {
-}
-Ch... 
+    console.lo... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 22, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/21/React-%E8%99%9A%E6%8B%9F-DOM-%E7%9A%84%E5%B7%AE%E5%BC%82%E6%A3%80%E6%B5%8B%E6%9C%BA%E5%88%B6/">
     <h2 class="post-title">React 虚拟 DOM 的差异检测机制</h2>
     
   </a>
+  <p class="post-meta">April 21, 2019</p>
   <div class="post-content-preview">
      React 虚拟 DOM 的差异检测机制
 
-React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上，减少了频繁操作真实 DOM 的时间消耗，但将成本转移到了 JavaScript 中，因为要计算新旧 DOM 树的差异嘛。所以这个计算差异的算法是否高效，就很关键了。React 中其计算差异的过程叫 Reconciliation，可理解成调和前后两次渲染的差异。
-
-正式讨论前... 
+React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上，减少了频繁操作真实 DOM 的时间消耗，但将成本转移到了 JavaScri... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 21, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D/">
     <h2 class="post-title">下拉框中选项的快速定位</h2>
     
   </a>
+  <p class="post-meta">April 20, 2019</p>
   <div class="post-content-preview">
      下拉框中选项的快速定位
 
 对于选项很多的下拉框 &lt;select&gt;，人工定位到想要的项目是很费劲的。浏览器其实原生支持下拉选择框根据键盘输入自动定位到相应条目的。
 
 
-通过输入条目字母定位到下拉框中条目的位置
-
-方便是方便，有个问题是连续输入不能间隔太久，这个间隔实测中感受是非常短的，如果想找的条目比较难输入，就无法在短时间内完成这个操作。
-
-那有没有相应 API 修改这个间隔时间... 
+通过输入条目字母... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 20, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/19/%E7%90%86%E8%A7%A3-Node.js-%E7%9A%84-Event-loop/">
     <h2 class="post-title">理解 Node.js 的 Event loop</h2>
     
   </a>
+  <p class="post-meta">April 19, 2019</p>
   <div class="post-content-preview">
      理解 Node.js 的 Event loop
 
@@ -331,106 +291,66 @@ React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上�
 
 console.log("1");
 
-setTimeout(function setTimeout1() {
-  console.log("2");
-  process.nextTick(function nextTick1() {
-    console.log("3");
-  });
- ... 
+setTimeout(function setTime... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 19, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/18/%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%B8%AD%E7%9A%84-vi-%E6%A8%A1%E5%BC%8F/">
     <h2 class="post-title">命令行中的 vi 模式</h2>
     
   </a>
+  <p class="post-meta">April 18, 2019</p>
   <div class="post-content-preview">
      命令行中的 vi 模式
 
 命令行中修改已经输入的命令比较麻烦，如果你不知道一些快捷键的话，只能使用方向键一个一个字符地移动到目标位置进行修改，对于比较复杂且过长的命令来说，效率不高。
 
-以下信息来自 bash 的 man 页面：
-
-$ man bash
-# ...
-
-   Commands for Moving
-       beginning-of-line (C-a)
-         ... 
+以下信息... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 18, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/17/Shim-%E4%B8%8E-Polyfill/">
     <h2 class="post-title">Shim 与 Polyfill</h2>
     
   </a>
+  <p class="post-meta">April 17, 2019</p>
   <div class="post-content-preview">
      Shim 与 Polyfill
 
 
   Shim: 用来向后兼容。比如 requestIdleCallback，为了在旧的环境中不报错，可以加 shim。
     
-      使用环境中现有的 api 来实现，不会引入额外的依赖或其他技术。
-    
-  
-  Polyfill: 用来增强，添加新功能。比如 IE7 不支持 localStorage，能添加 polyfill 来支持。
-  ... 
+      使用环境中现有的... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 17, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/16/React-+-TypeScript-%E5%85%83%E7%B4%A0%E5%BC%95%E7%94%A8%E7%9A%84%E4%BC%A0%E9%80%92/">
     <h2 class="post-title">React + TypeScript：元素引用的传递</h2>
     
   </a>
+  <p class="post-meta">April 16, 2019</p>
   <div class="post-content-preview">
      React + TypeScript：元素引用的传递
 
-React 中需要操作元素时，可通过 findDOMNode() 或通过 createRef() 创建对元素的引用来实现。前者官方不推荐，所以这里讨论后者及其与 TypeScript 结合时如何工作。
-
-React 中的元素引用
-
-正常的组件中，可通过创建对元素的引用来获取到某元素然后进行相应操作。比如元素加载后将焦点定位到输入框。
-
-... 
+React 中需要操作元素时，可通过 findDOMNode() 或通过 createRef() 创建对元素的引用来实现。前者官方不推荐，... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 16, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/15/HTTP-2-%E7%AE%80%E4%BB%8B/">
     <h2 class="post-title">HTTP/2 简介</h2>
     
   </a>
+  <p class="post-meta">April 15, 2019</p>
   <div class="post-content-preview">
      HTTP/2 简介
 
-支撑现有 Web 服务的 HTTP 协议距离其发布时的 1997 年已经有些年月了，随后的 HTTP/1.1 版本发布自 1999 年。随着技术的进步和需求的进化，对于数据快速高效地传输，HTTP/1.1 显得捉襟见肘，大部分优化是在应用层来做的，因为协议是改不了的嘛，比如雪碧图减少请求数，域名共享（Domain sharing）增加同时建立的请求数。
-
-SPDY 与 ... 
+支撑现有 Web 服务的 HTTP 协议距离其发布时的 1997 年已经有些年月了，随后的 HTTP/1.1 版本发布自 1999 年。随着技术的进步和需求的进化，对于数据... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 15, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -454,25 +374,22 @@ SPDY 与 ...
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -623,13 +540,7 @@ SPDY 与 ...
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

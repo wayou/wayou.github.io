@@ -175,7 +175,7 @@ package.json
 </nav>
  <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
 
 <!-- Post Header -->
 
@@ -184,7 +184,6 @@ package.json
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/home-bg.jpg');
         background: ;
     }
 
@@ -205,7 +204,7 @@ package.json
                     <h1>Webpack 调教之参数的投喂</h1>
                     
                     <h2 class="subheading"></h2>
-                    <span class="meta">Posted by 牛さんの部落格 on January 18, 2018</span>
+                    <span class="meta">January 18, 2018</span>
                 </div>
             </div>
         </div>
@@ -219,19 +218,14 @@ package.json
 
 <!-- Post Content -->
 <article>
-    <div class="container">
-        <div class="row">
-
-    <!-- Post Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                post-container">
-
-                <!-- Multi-Lingual -->
-                
-
-				<h2 id="webpack-调教之参数的投喂">Webpack 调教之参数的投喂</h2>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h2 id="webpack-调教之参数的投喂">Webpack 调教之参数的投喂</h2>
 
 <p>考虑这样的场景：站点支持多国语言（i18n），编译时想支持指定语言来编译。这便涉及到传参了。</p>
 
@@ -642,109 +636,117 @@ package.json
 
 
 
-                <hr style="visibility: hidden;">
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2018/01/12/CSS-%E5%B1%9E%E6%80%A7%E6%8E%92%E5%BA%8F%E5%8D%83%E5%8D%83%E4%B8%87-%E6%88%91%E5%8F%AA%E7%88%B1%E9%82%A3%E4%B8%80%E7%A7%8D/" data-toggle="tooltip" data-placement="top" title="CSS 属性排序千千万，我只爱那一种">
-                        Previous<br>
-                        <span>CSS 属性排序千千万，我只爱那一种</span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2018/01/24/%E8%AF%B4%E5%87%BA%E6%9D%A5%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E4%BF%A1-Git-%E5%8F%AF%E4%BB%A5%E8%87%AA%E5%8A%A8%E6%89%BE-Bug/" data-toggle="tooltip" data-placement="top" title="说出来你可能不信，Git 可以自动找 Bug">
-                        Next<br>
-                        <span>说出来你可能不信，Git 可以自动找 Bug</span>
-                        </a>
-                    </li>
-                    
-                </ul>
-                <hr style="visibility: hidden;">
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2018/01/12/CSS-%E5%B1%9E%E6%80%A7%E6%8E%92%E5%BA%8F%E5%8D%83%E5%8D%83%E4%B8%87-%E6%88%91%E5%8F%AA%E7%88%B1%E9%82%A3%E4%B8%80%E7%A7%8D/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="CSS 属性排序千千万，我只爱那一种"
+            >
+              Previous<br />
+              <span>CSS 属性排序千千万，我只爱那一种</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2018/01/24/%E8%AF%B4%E5%87%BA%E6%9D%A5%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E4%BF%A1-Git-%E5%8F%AF%E4%BB%A5%E8%87%AA%E5%8A%A8%E6%89%BE-Bug/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="说出来你可能不信，Git 可以自动找 Bug"
+            >
+              Next<br />
+              <span>说出来你可能不信，Git 可以自动找 Bug</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
 
-                
+         
+      </div>
 
-                
-            </div>  
-
-    <!-- Side Catalog Container -->
-        
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
-        
-
-    <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
-
-
-
-                <!-- Friends Blog -->
-                
-            </div>
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
         </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
     </div>
+  </div>
 </article>
 
 <!-- add support for mathjax by voleking-->
-
-
-
-
-
-
-
-
-
+   
 <!-- async load function -->
 <script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
     }
+    s.parentNode.insertBefore(o, s);
+  }
 </script>
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'hover',
-          placement: 'right',
-          // icon: '#'
-        };
-        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-    })
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
 </script>
 <style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -0.75em;
-            font-size: 1.1em;
-            margin-top : -0.1em;
-        }
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
     }
+  }
 </style>
 
  <!-- Footer -->
@@ -897,13 +899,7 @@ package.json
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

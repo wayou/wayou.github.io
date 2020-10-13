@@ -11,16 +11,12 @@ description:
     <h3 class="post-subtitle">{{ post.subtitle }}</h3>
     {% endif %}
   </a>
+  <p class="post-meta">{{ post.date | date: "%B %-d, %Y" }}</p>
   <div class="post-content-preview">
-    {% if post.lang == 'en' %} {{ post.content | strip_html | truncate:300 }} {%
-    else %} {{ post.content | strip_html | truncate:200 }} {% endif %}
+    {% if post.lang == 'en' %} {{ post.content | strip_html | truncate:100 }} {%
+    else %} {{ post.content | strip_html | truncate:100 }} {% endif %}
   </div>
-  <p class="post-meta">
-    Posted by {% if post.author %}{{ post.author }}{% else %}{{ site.title }}{%
-    endif %} on {{ post.date | date: "%B %-d, %Y" }}
-  </p>
 </div>
-<hr />
 {% endfor %}
 
 <!-- Pager -->

@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,195 +190,134 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2019/06/17/C++-endl-%E4%B8%8E-n-%E7%9A%84%E5%8C%BA%E5%88%AB/">
     <h2 class="post-title">C++ `endl` 与 `
 ` 的区别</h2>
     
   </a>
+  <p class="post-meta">June 17, 2019</p>
   <div class="post-content-preview">
      C++ endl 与 \n 的区别
 
 
   std::cout &lt;&lt; std::endl  : 插入换行并刷新缓存区 （flush the buffer）
-  std::cout &lt;&lt; "\n"  : 插入换行
-
-
-其中关于 std::endl，C++ Primer 中是这样介绍的：
-
-
-  “endl, which is a special value called... 
+  std::cout &... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 17, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/16/HTML-capture-%E5%B1%9E%E6%80%A7/">
     <h2 class="post-title">HTML `capture` 属性</h2>
     
   </a>
+  <p class="post-meta">June 16, 2019</p>
   <div class="post-content-preview">
      HTML capture 属性
 
-file 类型的 &lt;input&gt; 除了调起系统的文件选择框外，还可通过指定 capture 属性来现场拍照或录制。配合 accept 属性，可实现更加便捷的文件获取。
-
-比如想要录制一段视频，可以这么写：
-
-&lt;input type="file" accept="video/*" capture /&gt;
-
-
-点击之后直接打开摄像头进行拍摄... 
+file 类型的 &lt;input&gt; 除了调起系统的文件选择框外，还可通过指定 capture 属性来现场拍照或录制。配合 accept 属性，可实现更... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 16, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/15/Xcode-%E4%B8%AD%E9%85%8D%E7%BD%AE-clang-format-%E6%A0%BC%E5%BC%8F%E5%8C%96-C++-%E4%BB%A3%E7%A0%81/">
     <h2 class="post-title">Xcode 中配置 clang-format 格式化 C++ 代码</h2>
     
   </a>
+  <p class="post-meta">June 15, 2019</p>
   <div class="post-content-preview">
      Xcode 中配置 clang-format 格式化 C++ 代码
 
-Xcode 自带的代码格式化功能（control + I）很有限，其 “格式化” 仅限于设置缩进，代码里面的格式是不会处理的。所以需要借助额外的工具来完成代码的美化。
-
-clang-format 便是可选的工具之一，它可用来格式化 C/C++/Java/JavaScript/Objective-C/Protobuf/C# ... 
+Xcode 自带的代码格式化功能（control + I）很有限，其 “格式化” 仅限于设置缩进，代码里面的格式是不会处理的... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 15, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/14/ES-%E6%8F%90%E6%A1%88%E7%9A%84%E5%90%84%E7%8A%B6%E6%80%81/">
     <h2 class="post-title">ES 提案的各状态</h2>
     
   </a>
+  <p class="post-meta">June 14, 2019</p>
   <div class="post-content-preview">
      ES 提案的各状态
 
 JavaScrpit，亦即 ECMAScript，新功能的演进是由一个叫 TC39 这么个组织在统筹协调和推进的。
 
-一般新特性会由社区先提案，被采纳后开始进入下一流程。一个提案到最终落地到成为标准，需要经过几个阶段（stage）。
-
-目前采纳进入正式流程中的提案可在 tc39/proposals 查看到。可以看到，装饰器 Decorator 处于 Stage 2 阶段... 
+一般新特性会由社区先提案，被采纳后开始进入下一流程。一... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 14, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/13/TypeScript-%E8%A3%85%E9%A5%B0%E5%99%A8%E7%9A%84%E6%89%A7%E8%A1%8C%E5%8E%9F%E7%90%86/">
     <h2 class="post-title">TypeScript 装饰器的执行原理</h2>
     
   </a>
+  <p class="post-meta">June 13, 2019</p>
   <div class="post-content-preview">
      TypeScript 装饰器的执行原理
 
 装饰器本质上提供了对被装饰对象 Property​ Descriptor 的操作，在运行时被调用。
 
-因为对于同一对象来说，可同时运用多个装饰器，然后装饰器中又可对被装饰对象进行任意的修改甚至是替换掉实现，直观感觉会有一些主观认知上的错觉，需要通过代码来验证一下。
-
-比如，假若每个装饰器都对被装饰对象的有替换，其结果会怎样？
-
-多个装饰器的应用
-
-通... 
+因为对于同一对象来说，可同时运用多个装饰器，然后装... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 13, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/12/TCP-%E4%B8%8E-UDP/">
     <h2 class="post-title">TCP 与 UDP</h2>
     
   </a>
+  <p class="post-meta">June 12, 2019</p>
   <div class="post-content-preview">
      TCP 与 UDP
 
-两者皆是用于在网络上发送报文数据（packet）的传输协议，都基于 Internet protocol （IP）。所以 TCP/IP 其实表示的是 TCP over IP （基于 IP 的 TCP 协议）。
-
-基于 IP 有很多协议，但 TCP 和 UDP 是应用最为广泛的两种。
-
-TCP
-
-TCP（Transmission Control Protocol）传输控制协... 
+两者皆是用于在网络上发送报文数据（packet）的传输协议，都基于 Internet protocol （IP）。所以 TCP/IP 其实表示的是 TCP over IP ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 12, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/11/React-controlled-%E5%8F%8A-uncontrolled-%E7%BB%84%E4%BB%B6/">
     <h2 class="post-title">React `controlled` 及 `uncontrolled` 组件</h2>
     
   </a>
+  <p class="post-meta">June 11, 2019</p>
   <div class="post-content-preview">
      React controlled 及 uncontrolled 组件
 
 通过 props 来设置其 value 值的组件便是一种 controlled 组件。典型的 form 表单中，像
 
 
-  输入框 &lt;input&gt;
-  下拉框 &lt;select&gt;
-  多选框 &lt;input type="checkbox"&gt;
-  单选框 &lt;input type="ra... 
+ ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 11, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/10/%E5%B0%BE%E8%B0%83%E7%94%A8%E5%8F%8A%E9%80%92%E5%BD%92%E4%BC%98%E5%8C%96/">
     <h2 class="post-title">尾调用及递归优化</h2>
     
   </a>
+  <p class="post-meta">June 10, 2019</p>
   <div class="post-content-preview">
      尾调用及递归优化
 
-ES6 规范中添加了对尾调用优化的支持，虽然目前来看支持情况还不是很好，但了解其原理还是很有必要的，有助于我们编写高效的代码，一旦哪天引擎支持该优化了，将会收获性能上的提升。
-
-讨论尾调用前，先看函数正常调用时其形成的堆栈（stack frame）情况。
-
-函数的调用及调用堆栈
-
-先看一个概念：调用堆栈（call stack），或叫调用帧（stack frame）。
-
-我... 
+ES6 规范中添加了对尾调用优化的支持，虽然目前来看支持情况还不是很好，但了解其原理还是很有必要的，有助于我们编写高效的代码，一旦哪天引擎支持该优化了，将会收获性能上的提升。... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 10, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/09/MySQL-SQL_MODE-%E7%9A%84%E8%AE%BE%E7%BD%AE/">
     <h2 class="post-title">MySQL SQL_MODE 的设置</h2>
     
   </a>
+  <p class="post-meta">June 9, 2019</p>
   <div class="post-content-preview">
      SQL_MODE 的设置
 
@@ -393,36 +332,25 @@ SELECT @@sql_mode 的执行结果
 
 
 ```sh
-mysql&gt; SELECT @@sql_mode;
-+-----------------------------------------------------------------------------------... 
+mysql&gt; SEL... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 9, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/06/07/MySQL-explicit_defaults_for_timestamp-%E4%B8%8E-TIMESTAMP/">
     <h2 class="post-title">MySQL `explicit_defaults_for_timestamp` 与 TIMESTAMP</h2>
     
   </a>
+  <p class="post-meta">June 7, 2019</p>
   <div class="post-content-preview">
      MySQL explicit_defaults_for_timestamp 与 TIMESTAMP
 
 考察下面的 SQL 脚本：
 
 CREATE TABLE test1(
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  data VARCHAR(20),
-  ts1 TIMESTAMP NOT NULL,
-  createdAt TIMESTA... 
+  id INT NO... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 7, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -446,25 +374,22 @@ CREATE TABLE test1(
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -615,13 +540,7 @@ CREATE TABLE test1(
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

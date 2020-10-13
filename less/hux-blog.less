@@ -171,13 +171,7 @@ samp {
       margin-top: 20px;
     }
   }
-  h2::before {
-    content: " ";
-    display: block;
-    border-bottom: 1px solid #ececec;
-    margin-top: 44px;
-    margin-bottom: 30px;
-  }
+
   h4 {
     font-size: 22px;
     font-weight: 600;
@@ -368,12 +362,8 @@ samp {
   .navbar-brand {
     font-weight: 800;
     // materialize
-    color: white;
     height: 56px;
     line-height: 25px;
-    &:hover {
-      color: rgba(255, 255, 255, 0.8);
-    }
   }
   .nav {
     li {
@@ -397,23 +387,13 @@ samp {
     background: transparent;
     border-bottom: 1px solid transparent;
     .navbar-brand {
-      color: white;
       padding: 20px;
       line-height: 20px;
-      &:hover,
-      &:focus {
-        color: @white-faded;
-      }
     }
     .nav {
       li {
         a {
-          color: white;
           padding: 20px;
-          &:hover,
-          &:focus {
-            color: @white-faded;
-          }
           &:active {
             background: none;
           }
@@ -509,7 +489,6 @@ samp {
     .post-heading,
     .page-heading {
       padding: 85px 0 20px;
-      color: @gray-dark;
       text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1),
         1px 1px 1px rgba(0, 0, 0, 0.5);
       .subheading {
@@ -529,7 +508,6 @@ samp {
     }
   }
   background: no-repeat center center;
-  background-color: @brand-gray;
   background-attachment: scroll;
   .background-cover;
   // NOTE: Background images are set within the HTML using inline CSS!
@@ -540,20 +518,11 @@ samp {
   .site-heading,
   .post-heading,
   .page-heading {
-    padding: 85px 0 55px;
-    color: white;
-    text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1),
-      1px 1px 1px rgba(0, 0, 0, 0.5);
-    @media only screen and (min-width: 768px) {
-      padding: 150px 0;
-    }
+    padding: 85px 0 20px;
   }
   // masterialize
   .site-heading {
-    padding: 95px 0 70px;
-    @media only screen and (min-width: 768px) {
-      padding: 150px 0;
-    }
+    padding: 95px 0 20px;
   }
   .site-heading,
   .page-heading {
@@ -639,6 +608,7 @@ samp {
 // Post Preview Pages (Home Page)
 
 .post-preview {
+  margin-bottom: 30px;
   > a {
     color: @gray-dark;
     &:hover,
@@ -663,7 +633,7 @@ samp {
   > .post-meta {
     .serif;
     font-size: 16px;
-    margin-top: 0;
+    margin: 0;
     > a {
       text-decoration: none;
       color: @gray-dark;
@@ -1009,8 +979,6 @@ footer {
   .icon-bar {
     width: 18px;
     border-radius: 0px;
-    // materialize
-    background-color: white;
   }
   .icon-bar + .icon-bar {
     margin-top: 3px;

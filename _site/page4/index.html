@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,17 +190,20 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2020/06/24/iTerm2-%E4%B8%AD%E5%AE%9E%E7%8E%B0%E5%91%BD%E4%BB%A4%E5%AE%8C%E6%88%90%E6%97%B6%E8%BF%9B%E8%A1%8C%E9%80%9A%E7%9F%A5/">
     <h2 class="post-title">iTerm2 中实现命令完成时进行通知</h2>
     
   </a>
+  <p class="post-meta">June 24, 2020</p>
   <div class="post-content-preview">
      iTerm2 中实现命令完成时进行通知
 
@@ -208,64 +211,45 @@
 
 say
 
-可在命令后跟 say done 来使用声音提示。这里 say 是 mac 上文本转语音的工具，后面跟需要朗读的文本，可以是任意文本。
-
-示例：
-
-$ curl google.com &amp;&amp; say ... 
+可在命令后跟... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 24, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/06/20/Node.js-%E4%B8%AD%E8%8E%B7%E5%8F%96%E6%9C%AC%E6%9C%BA%E5%85%AC%E7%BD%91-IP/">
     <h2 class="post-title">Node.js 中获取本机公网 IP</h2>
     
   </a>
+  <p class="post-meta">June 20, 2020</p>
   <div class="post-content-preview">
      Node.js 中获取本机公网 IP
 
-本地开发 Node.js 服务端功能时，大部分情况以 localhost 作为 host 启动服务器。使用公网 IP 启动，则可以在手机或其他任意设备上访问。
-
-以下是 Node.js 中获取本机公网 IP 的工具方法：
-
-function getPublicIP() {
-  const os = require("os");
-  const ifac... 
+本地开发 Node.js 服务端功能时，大部分情况以 localhost 作为 host 启动服务器。使用公网 IP 启动，则可以在手机或其他任意设备上访... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 20, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/06/19/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84-SOLID-%E5%8E%9F%E5%88%99/">
     <h2 class="post-title">面向对象编程中的 SOLID 原则</h2>
     
   </a>
+  <p class="post-meta">June 19, 2020</p>
   <div class="post-content-preview">
      面向对象编程中的 SOLID 原则
 
 
   单一功能原则/Single-responsibility principle
     
-      对象应该尽量功能单/A class should only have a single responsibility, that is, only changes to one part of the software’s specification... 
+      对象应该尽量功能单/A class should ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 19, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/06/19/Cookie-%E7%9A%84%E4%B8%8B%E5%8F%91%E4%B8%8E%E5%9B%9E%E4%BC%A0/">
     <h2 class="post-title">Cookie 的下发与回传</h2>
     
   </a>
+  <p class="post-meta">June 19, 2020</p>
   <div class="post-content-preview">
      Cookie 的下发与回传
 
@@ -273,107 +257,77 @@ function getPublicIP() {
 
 下发通过 Set-Cookie 响应头设置，后跟需要设置的 cookie 名 = 连接其值。再后面通过 ; 分隔的其他修改属性。
 
-Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt; 
-Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value... 
+Se... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 19, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/06/14/pip-install-%E5%AE%89%E8%A3%85-Python-%E4%BE%9D%E8%B5%96%E6%97%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/">
     <h2 class="post-title">pip install 安装 Python 依赖时权限问题的解决</h2>
     
   </a>
+  <p class="post-meta">June 14, 2020</p>
   <div class="post-content-preview">
      pip install 安装 Python 依赖时权限问题的解决
 
 从 Github clone Python 项目，安装依赖时报如下错误：
 
-$ pip install -r requirements.txt
-...
-ERROR: Could not install packages due to an EnvironmentError: [Errno 13] Permission den... 
+$ pip install -r requirem... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 14, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/06/12/MySQL-%E7%89%88%E6%9C%AC%E5%9B%9E%E9%80%80/">
     <h2 class="post-title">MySQL 版本回退</h2>
     
   </a>
+  <p class="post-meta">June 12, 2020</p>
   <div class="post-content-preview">
      MySQL 版本回退
 
 一般来说，本机通过 brew install mysql 安装到的是默认的最新的 MySQL，这里是 MySQL 8。
 
-因为云端使用的老版本，比如 MySQL 5.7。考虑到环境一致性减少部署的麻烦，应当把本地环境也切到 5.7。
-
-直接安装 brew install mysql@5.7 会发现无法登入的情况，报如下的错：
-
-$ mysql -uroot
-ERROR... 
+因为云端使用的老版本，比如 MySQL 5.7。... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 12, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/06/05/Docker-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8D%E8%B6%B3%E8%AD%A6%E5%91%8A%E7%9A%84%E6%B6%88%E9%99%A4/">
     <h2 class="post-title">Docker 配置文件权限不足警告的消除</h2>
     
   </a>
+  <p class="post-meta">June 5, 2020</p>
   <div class="post-content-preview">
      Docker 配置文件权限不足警告的消除
 
 Docker CLI 命令出现权限不足的 warning 时，
 
 $ docker help
-WARNING: Error loading config file: ~/.docker/config.json: open ~/.docker/config.json: permission denied
-
-
-一般来说，原因是 .docker 目录不属... 
+WARNING: Error loading confi... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 5, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/06/04/Git-%E8%A7%A3%E5%86%B3%E5%86%B2%E7%AA%81%E6%97%B6%E6%8C%87%E5%AE%9A%E4%BD%BF%E7%94%A8%E6%9D%A5%E8%87%AA%E8%B0%81%E7%9A%84%E5%8F%98%E6%9B%B4/">
     <h2 class="post-title">Git 解决冲突时指定使用来自谁的变更</h2>
     
   </a>
+  <p class="post-meta">June 4, 2020</p>
   <div class="post-content-preview">
      Git 解决冲突时指定使用来自谁的变更
 
 git rebase 出现文件冲突时，正常来讲，该一个一个文件打开对比，检查冲突项然后决定使用哪部分的变更。
 
-但是在明确知道应该使用谁的变更时，可通过 git checkout --[ours|theirs] /path/to/file.js 直接在命令行里解决。
-
-指定文件谁的变更
-
-比如指定 /path/to/file.js 使用别人的变更，丢... 
+但是在明确知道应该使用谁的变更时，可通过... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 4, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/06/03/Redis-%E7%9A%84%E4%BD%BF%E7%94%A8/">
     <h2 class="post-title">Redis 的使用</h2>
     
   </a>
+  <p class="post-meta">June 3, 2020</p>
   <div class="post-content-preview">
      Redis 的使用
 
@@ -385,51 +339,25 @@ $ brew install redis
 检查安装：
 
 $ redis-server -v
-Redis server v=6.0.3 sha=00000000:0 malloc=libc bits=64 build=5bce11175f58e836
-
-
-启动
-
-$ brew services start redis
-
-
-检查是否在运行：
-
-$ redis-c... 
+Redis server v=6.0.3 sha=00000000:... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on June 3, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/05/28/%E6%96%B0%E8%A3%85-MySQL-%E6%97%A0%E6%B3%95%E7%99%BB%E5%85%A5%E7%9A%84%E8%A7%A3%E5%86%B3/">
     <h2 class="post-title">新装 MySQL 无法登入的解决</h2>
     
   </a>
+  <p class="post-meta">May 28, 2020</p>
   <div class="post-content-preview">
      新装 MySQL 无法登入的解决
 
 通过 brew 新安装的 MySQL 无法通过 root 用户登录，报如下的错误：
 
 $ mysql -uroot
-Error: Access denied for user 'root'@'localhost' (using password: YES)
-
-
-原因可能是之前安装过并且本地已经存在数据库。
-
-解决
-
-执行如下语句再重试，
-
-注：以下语句会删... 
+Error: Access denied ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 28, 2020
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -453,25 +381,22 @@ Error: Access denied for user 'root'@'localhost' (using password: YES)
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -622,13 +547,7 @@ Error: Access denied for user 'root'@'localhost' (using password: YES)
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

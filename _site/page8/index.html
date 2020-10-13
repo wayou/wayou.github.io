@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,37 +190,35 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2020/03/01/Objective-C-%E4%B8%AD%E8%AE%A1%E6%97%B6%E5%99%A8%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%8F%96%E6%B6%88/">
     <h2 class="post-title">Objective-C 中计时器设置与取消</h2>
     
   </a>
+  <p class="post-meta">March 1, 2020</p>
   <div class="post-content-preview">
      Objective-C 中计时器设置与取消
 
 考察这样的场景：进入页面后设置接口轮询更新数据，离开页面时清除掉计时器。
 
-轮询可通过创建延时任务，并且在任务中递归调用自己来生成。Objective-C 中延时任务有多种方式，配合 viewDidLoad 和 viewWillDisappear 实现计时器的设置与清除。
-
-performSelector:withObject:afterDela... 
+轮询可通过创建延时任务，并且在任务中递归调用自己来生成。Objectiv... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on March 1, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/02/28/%E4%B8%8A%E4%BC%A0%E5%BA%94%E7%94%A8%E8%87%B3-App-Store-%E4%B8%AD%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3/">
     <h2 class="post-title">上传应用至 App Store 中的问题及解决</h2>
     
   </a>
+  <p class="post-meta">February 28, 2020</p>
   <div class="post-content-preview">
      上传应用至 App Store 中的问题及解决
 
@@ -229,21 +227,16 @@ performSelector:withObject:afterDela...
 
 上传 App Store 卡在身份验证的步骤的画面
 
-如果应用上传过程中一直卡在如图的 “Authenticating with App Store…” 阶段，大概率这是个网络问题，本地 WiFi 到验证服务器有连通性问题导致的，解决办法可以是切换其他网络，或者切换到手机热点。
-
-validateMetadata 加载失败 ... 
+如果应用上传过程中一直卡在如图的 “Authenticating wit... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on February 28, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/02/27/Pod-install-%E6%97%B6-Ruby-%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">Pod install 时 Ruby 环境问题</h2>
     
   </a>
+  <p class="post-meta">February 27, 2020</p>
   <div class="post-content-preview">
      Pod install 时 Ruby 环境问题
 
@@ -252,19 +245,16 @@ validateMetadata 加载失败 ...
 ...
 这里还有一大段堆栈信息省略...
 ...
-Error loading RubyGems plugin "/Users/chiang/.rvm/gems/ruby-2.0.0-p247@global/gems/rubygems-bundler-1.2.2/lib/rubygems_... 
+Error loading RubyG... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on February 27, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/02/16/Flutter-%E7%BC%96%E8%AF%91%E6%97%B6%E7%9A%84%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">Flutter 编译时的权限问题</h2>
     
   </a>
+  <p class="post-meta">February 16, 2020</p>
   <div class="post-content-preview">
      Flutter 编译时的权限问题
 
@@ -276,20 +266,16 @@ Error loading RubyGems plugin "/Users/chiang/.rvm/gems/ruby-2.0.0-p247@global/ge
 
 
 ```
-Launching lib/main.dart on iPhone Xʀ in debug mode...
-Running pod install...                               ... 
+Launchi... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on February 16, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/01/28/Homebrew-%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">Homebrew 安装问题</h2>
     
   </a>
+  <p class="post-meta">January 28, 2020</p>
   <div class="post-content-preview">
      Homebrew 安装问题
 
@@ -297,22 +283,16 @@ curl 443 报错
 
 如果安装过程出现如下网络错误，一般为本地网络问题，或者是 GtiHub 地址无法正确解析。
 
-Failed to connect to raw.githubusercontent.com port 443: Connection refused error: Error: 7
-
-
-因为出现过 GitHub 图片资源等加载不了的情况，所以... 
+Failed to connect to r... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on January 28, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2020/01/23/GitHub-%E5%9B%BE%E7%89%87%E8%B5%84%E6%BA%90%E6%97%A0%E6%B3%95%E5%8A%A0%E8%BD%BD%E7%9A%84%E8%A7%A3%E5%86%B3/">
     <h2 class="post-title">GitHub 图片资源无法加载的解决</h2>
     
   </a>
+  <p class="post-meta">January 23, 2020</p>
   <div class="post-content-preview">
      GitHub 图片资源无法加载的解决
 
@@ -321,66 +301,46 @@ Failed to connect to raw.githubusercontent.com port 443: Connection refused erro
 
 浏览器开发者工具网络面板中查看失败的资源
 
-这里请求失败的图片统统是 https://user-images.githubusercontent.com 这个域下的。
-
-随便打开一个查询  IP 的网站比如 https://www.ipaddress.com/ 将上面的地址输入后查询... 
+这里请求失败的图片统统是 https:/... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on January 23, 2020
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/23/%E7%A7%BB%E9%99%A4-Android-Studio-%E5%AF%BC%E8%88%AA%E6%A0%8F%E4%B8%8A%E7%9A%84-Git-%E8%8F%9C%E5%8D%95/">
     <h2 class="post-title">移除 Android Studio 导航栏上的 Git 菜单</h2>
     
   </a>
+  <p class="post-meta">December 23, 2019</p>
   <div class="post-content-preview">
      移除 Android Studio 导航栏上的 Git 菜单
 
 平时 Git 操作都在命令行里进行的话，导航栏上的 Git 菜单便没必要，还占位置。可通过配置将其移除。
 
-先看 Android Studio 主界面各部分的名称，方便定位具体的设置项。
-
-
-Android Studio 主窗口 -- 图片来自 Android Studio 文档页
-
-
-  工具栏供您执行各种操作，其中包括运行应... 
+先看 Android ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 23, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/15/UIStackView-%E7%9A%84%E8%83%8C%E6%99%AF/">
     <h2 class="post-title">UIStackView 的背景</h2>
     
   </a>
+  <p class="post-meta">December 15, 2019</p>
   <div class="post-content-preview">
      UIStackView 的背景
 
 UIStackView 作为布局组件，本身的 drawRect 是不会被调用的，其 backgroundColor 属性会被忽略。
 
-所以，虽然以下设置 backgroundColor 的代码是合法能够编译的，但其实并不起作用。
-
-UIStackView *view = [UIStackView new];
-view.backgroundColor = [U... 
+所以，虽然以下设置 bac... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 15, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/14/Objective-C-%E8%83%8C%E6%99%AF%E6%8B%89%E4%BC%B8/">
     <h2 class="post-title">Objective-C 背景拉伸</h2>
     
   </a>
+  <p class="post-meta">December 14, 2019</p>
   <div class="post-content-preview">
      Objective-C 背景拉伸
 
@@ -390,20 +350,16 @@ view.backgroundColor = [U...
 
 - (void)loadView {
   [super loadView];
-  UIButton *myBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-  [myBtn setContentEdgeInsets:UIEdgeInsetsMake(10, ... 
+  UIButton *myBtn... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 14, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/12/14/CSS-background-%E7%9A%84%E7%AE%80%E5%86%99/">
     <h2 class="post-title">CSS background 的简写</h2>
     
   </a>
+  <p class="post-meta">December 14, 2019</p>
   <div class="post-content-preview">
      CSS background 的简写
 
@@ -411,16 +367,9 @@ CSS background 包含如下属性：
 
 
   background-attachment：控制背景是否跟随页面的滚动
-  background-clip：背景生效的区域
-  background-color：背景色，当背景图片为 png 或图片未铺满时可见
-  background-image：	背景图片
-  background-origin... 
+  background-c... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 14, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -444,25 +393,22 @@ CSS background 包含如下属性：
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -613,13 +559,7 @@ CSS background 包含如下属性：
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

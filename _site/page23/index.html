@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,148 +190,106 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2018/01/24/%E8%AF%B4%E5%87%BA%E6%9D%A5%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E4%BF%A1-Git-%E5%8F%AF%E4%BB%A5%E8%87%AA%E5%8A%A8%E6%89%BE-Bug/">
     <h2 class="post-title">说出来你可能不信，Git 可以自动找 Bug</h2>
     
   </a>
+  <p class="post-meta">January 24, 2018</p>
   <div class="post-content-preview">
      说出来你可能不信，Git 可以自动找 Bug
 
-之前提 bug 给 Chrome，注意到处理进程中有时会为 bug 贴上 Type-Bug-Regression 的标签，意即回归性 bug（Regression）。指该功能以前是好的，后续新功能开发或其他改动使该功能不好了。
-
-不一会儿便看到测试人员（可能是测试吧）指出了可能存在问题的某次提交：
-
-
-  看，这个提交之前的编译版本是 work... 
+之前提 bug 给 Chrome，注意到处理进程中有时会为 bug 贴上 Type-Bug-Regression 的标签，意即回归性 bug（Re... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on January 24, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/01/18/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82/">
     <h2 class="post-title">Webpack 调教之参数的投喂</h2>
     
   </a>
+  <p class="post-meta">January 18, 2018</p>
   <div class="post-content-preview">
      Webpack 调教之参数的投喂
 
 考虑这样的场景：站点支持多国语言（i18n），编译时想支持指定语言来编译。这便涉及到传参了。
 
-一般，项目中会配置 npm scripts 来跑一些任务，常规的线下开发编译任务，线上发版打包任务。所以 package.json 中的脚本配置大概会像这样子：
-
-package.json
-{
-    "scripts": {
-        "build": ... 
+一般，项目中会配置 npm scripts 来跑一些任务，常规... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on January 18, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/01/12/CSS-%E5%B1%9E%E6%80%A7%E6%8E%92%E5%BA%8F%E5%8D%83%E5%8D%83%E4%B8%87-%E6%88%91%E5%8F%AA%E7%88%B1%E9%82%A3%E4%B8%80%E7%A7%8D/">
     <h2 class="post-title">CSS 属性排序千千万，我只爱那一种</h2>
     
   </a>
+  <p class="post-meta">January 12, 2018</p>
   <div class="post-content-preview">
      CSS 属性排序千千万，我只爱那一种
 
 不知道有多少人思考过将 CSS 属性排序的问题。反正在我书写网页的无数个日子里，是有想过这个问题的。
 
-因为大多数时候，调样式写属性完全就是按需要来，调一个加一条，样式调好后，整个元素的代码也就确定了。
-
-偶尔会因为美观刻意把自己认为需要提前的属性放到前面一下，仅此而已。
-
-这种下意识的行为让我觉得，冥冥之中，应该有一些可用的约定，来指导我们，将这些纷... 
+因为大多数时候，调样式写属性完全就是按需要来，调一... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on January 12, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2018/01/03/%E4%BA%8B%E4%BB%B6%E7%9A%84%E5%86%92%E6%B3%A1%E4%B8%8E%E6%8D%95%E8%8E%B7/">
     <h2 class="post-title">事件的冒泡与捕获</h2>
     
   </a>
+  <p class="post-meta">January 3, 2018</p>
   <div class="post-content-preview">
      事件的冒泡与捕获
 
 事件绑定
 
-给元素绑定事件可以通过属性 onclick，也可以使用 addEventListner。addEventListner 被大多数主流浏览器及 IE9 之后的 IE 所支持，IE8及以下使用 attachEvent。
-
-element.onclick = function handler(e){...}
-element.addEventListner('clic... 
+给元素绑定事件可以通过属性 onclick，也可以使用 addEventListner。addEventListner 被大多数主流浏览器及 IE9 之后的 IE... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on January 3, 2018
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2017/12/28/%E6%8E%92%E5%88%97%E7%BB%84%E5%90%88%E9%97%AE%E9%A2%98/">
     <h2 class="post-title"> 排列组合问题</h2>
     
   </a>
+  <p class="post-meta">December 28, 2017</p>
   <div class="post-content-preview">
      排列组合问题
 
 排列和组合是两个问题，因为有相似性，所以通常放一起。
 
-所谓排列，是跟顺序有关的，比如从 1,2,3 中取三个数出来，序列 1,2,3 与 1,3,2 是两个不同的序列。这便是排列。
-
-而组合则与顺序无关，比如从 1,2,3 这一序列中取两个数出来， 1,2 与 2,1 只能算一种取法，只关心元素不关心顺序。
-
-先来看排列。
-
-排列/Permutation
-
-考察 LeetC... 
+所谓排列，是跟顺序有关的，比如从 1,2,3 中取三个数出来，序列 1,2,3 与 1,3,2 是两个不同的序列。这便是排... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 28, 2017
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2017/12/06/%E7%90%86%E8%A7%A3%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-O(log-n)/">
     <h2 class="post-title">理解时间复杂度 O(log n)</h2>
     
   </a>
+  <p class="post-meta">December 6, 2017</p>
   <div class="post-content-preview">
      理解时间复杂度 O(log n)
 
-解决实际问题时，代码是否高效会成为问题解决的关键。高效的算法可以将资源开销控制在有限范围内将问题解决。而衡量一个算法优劣的标准则是时间复杂度，我们经常会看到 O(n) 这样的记号。
-
-对于 O(1) ，它表示时间复杂度为1，即解决这一问题的实现很直接，只需一步或者固定几个步骤。比如从哈希表中取值，通过索引只需在哈希表中查找一次便得到结果。而 O(n) 表示... 
+解决实际问题时，代码是否高效会成为问题解决的关键。高效的算法可以将资源开销控制在有限范围内将问题解决。而衡量一个算法优劣的标准则是时间复杂度，我们经常会看到 ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 6, 2017
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2017/12/05/source-map-%E7%9A%84%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/">
     <h2 class="post-title">source map 的原理探究</h2>
     
   </a>
+  <p class="post-meta">December 5, 2017</p>
   <div class="post-content-preview">
      source map 的原理探究
 
@@ -339,69 +297,46 @@ element.addEventListner('clic...
 
 
   转译器/Transpilers (Babel, Traceur)
-  编译器/Compilers (Closure Compiler, TypeScript, CoffeeScript, Dart)
-  压缩/Minifiers (UglifyJS)
-
-
-这里提及的都是可生成source m... 
+  编译器/Compile... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 5, 2017
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2017/12/02/%E5%89%8D%E7%AB%AF%E5%BC%82%E5%B8%B8%E7%9B%91%E6%8E%A7/">
     <h2 class="post-title">前端异常监控</h2>
     
   </a>
+  <p class="post-meta">December 2, 2017</p>
   <div class="post-content-preview">
      前端异常监控
 
 如果说前端的异常监控有个救星的话，我想那就是 window.onerror 这个全局错误监听事件了。它给了我们统一处理前端全局错误的机会，使得错误上报有了一线生机。
 
-window.onerror = function(messageOrEvent, source, lineno, colno, error) { ... }
-
-
-
-  message: 错误信息，在 HTML... 
+windo... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on December 2, 2017
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2017/11/30/apply-vs-call-vs-bind/">
     <h2 class="post-title">apply vs call vs bind </h2>
     
   </a>
+  <p class="post-meta">November 30, 2017</p>
   <div class="post-content-preview">
      apply vs call vs bind
 
 apply 与 call
 
-js 有三个方法可以改变函数的执行上下文，apply，call和bind，三者都系 Function 对象上的原型方法。
-
-var name = 'foo',
-    obj = {
-        name: 'bar',
-        sayHello: function() {
-            cons... 
+js 有三个方法可以改变函数的执行上下文，apply，call和bind，三者都系 Function 对象上的原型方法。... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on November 30, 2017
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2017/11/30/CSS-%E7%9B%92%E6%A8%A1%E5%9E%8B/">
     <h2 class="post-title">CSS 盒模型</h2>
     
   </a>
+  <p class="post-meta">November 30, 2017</p>
   <div class="post-content-preview">
      CSS 盒模型
 
@@ -411,17 +346,9 @@ var name = 'foo',
 
 CSS 盒模型镇楼图 - 图片来自 W3C
 
-页面中的元素，包含内容块（content），内边距（padding），边框（border）以及外边距（margin）四个区域。每个部分都有其自己的范围及边界。
-
-四个边界线
-
-上图中每条线代表了一种边界。由这些边界线定义出来的区域便是... 
+页面中的元素，包含内容块（cont... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on November 30, 2017
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -445,25 +372,22 @@ CSS 盒模型镇楼图 - 图片来自 W3C
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -614,13 +538,7 @@ CSS 盒模型镇楼图 - 图片来自 W3C
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

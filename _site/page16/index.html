@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,89 +190,64 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2019/05/13/MySQL-%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/">
     <h2 class="post-title">MySQL 联表查询</h2>
     
   </a>
+  <p class="post-meta">May 13, 2019</p>
   <div class="post-content-preview">
      MySQL 联表查询
 
-关系型数据库，免不了表之间存在各种引用与关联。这些关联是通过主键与外键搭配来形成的。所以，取数据时，很大情况下单张表无法满足需求，额外的数据则需要将其他表加入到查询中来，这便是 JOIN 关键字完成的操作。
-
-
-  MySQL 中 JOIN, CROSS JOIN 和 INNER JOIN 三者语法功能上相同，可互换，而 SQL 标准中，INNER JOIN 需要搭配... 
+关系型数据库，免不了表之间存在各种引用与关联。这些关联是通过主键与外键搭配来形成的。所以，取数据时，很大情况下单张表无法满足需求，额外的数据则需要将其他表加入到查询中来，... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 13, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/12/MySQL-%E8%A1%A8%E5%92%8C%E5%88%97%E7%9A%84%E6%B3%A8%E9%87%8A/">
     <h2 class="post-title">MySQL 表和列的注释</h2>
     
   </a>
+  <p class="post-meta">May 12, 2019</p>
   <div class="post-content-preview">
      MySQL 表和列的注释
 
 像代码一样，可以为表以及表中的列添加注释，方便其他人知晓其功能。对于一些字段，在经过一定时间后，创建者未必也能想起其具体的含意，所以注释显得尤为重要。
 
 注释的添加
-
-注释的添加是通过在定义表或列的时候在末尾加上 COMMENT 关键字来实现的，最长支持 1024 个字符。
-
-可以在创建表的时候为表和列添加相应的注释。
-
-CREATE TABLE test_com... 
+... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 12, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/11/MySQL-%E5%A4%96%E9%94%AE/">
     <h2 class="post-title">MySQL 外键</h2>
     
   </a>
+  <p class="post-meta">May 11, 2019</p>
   <div class="post-content-preview">
      MySQL 外键
 
 表和表之间可存在引用关系，这在抽象数据到表时，是很常见的。这种联系是通过在表中创建外键（foreign key）来实现的。
 
-比如一个订单，可能关联用户表和产品表，以此来记录谁买了什么产品。
-
-约定两个概念：
-
-父表：被引用的表。
-从表：表中有相应的外键引用父表中的字段。
-
-示例：
-
-CREATE TABLE parent (
-    id INT NOT NULL,
- ... 
+比如一个订单，可能关联用户表和产品表，以此来记录... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 11, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/10/HTTP-%E5%93%8D%E5%BA%94%E7%9A%84%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/">
     <h2 class="post-title">HTTP 响应的分块传输</h2>
     
   </a>
+  <p class="post-meta">May 10, 2019</p>
   <div class="post-content-preview">
      HTTP 响应的分块传输
 
@@ -281,46 +256,31 @@ Transfer-Encoding 响应头用于告诉客户端服务器发送内容的编码�
 其可选值有：
 
 
-  chunked：数据分块发送。此时应缺省 Content-Length 响应头。
-  compress：使用 Lempel-Ziv-Welch 算法进行传输的格式，目前没有浏览器在支持。
-  deflate：使用 deflate 压缩算法 zlib 结构。
-... 
+  chunked：数据分块发送。此时应缺省 Content-... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 10, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/09/MySQL-%E4%B8%AD%E7%9A%84%E7%B4%A2%E5%BC%95/">
     <h2 class="post-title">MySQL 中的索引</h2>
     
   </a>
+  <p class="post-meta">May 9, 2019</p>
   <div class="post-content-preview">
      MySQL 中的索引
 
 索引用来加速查询。正常来说，当查询数据时，MySQL 需要从表的第一条记录开始，读取整个表的内容，进行查询。
 
-但如果有索引，MySQL 可根据索引快速定位需要查询条目的具体位置，加快了查询速度。
-
-原理
-
-索引的原理是将被索引列的值，单独取出来存到另一种结构中以获取快速查询的效果。
-
-当列有这些属性中任意一个时，会被索引， PRIMARY KEY, UNIQUE, ... 
+但如果有索引，MySQL 可根据索引快速定位需要查询条目的... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 9, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/09/protected-vs-private/">
     <h2 class="post-title">`protected` vs `private`</h2>
     
   </a>
+  <p class="post-meta">May 9, 2019</p>
   <div class="post-content-preview">
      protected vs private
 
@@ -330,43 +290,29 @@ private
 
 protected
 
-标识为 protected 的属性为受保护的属性，与私有属性类似，但还可以在继承类中进行访问。
-
-示例
-
-以 TypeScript 为例，比如一个 Base 类，其中包含一个受保护的年龄属性 age，以及一个私有的工资 _salary... 
+标识为 protected 的属性... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 9, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/07/MySQL-%E7%A4%BA%E4%BE%8B%E6%95%B0%E6%8D%AE%E5%BA%93/">
     <h2 class="post-title">MySQL 示例数据库</h2>
     
   </a>
+  <p class="post-meta">May 7, 2019</p>
   <div class="post-content-preview">
      MySQL 示例数据库
 
-微软 SQL Server 自带了一些示例数据库，可用于练习和测试。也可作为自己数据库设计时的参考。这些示例数据库开源在了 GitHub，可在 Microsoft/sql-server-samples 查看和下载。
-
-但因为 SQL 语法略有出入，这些数据库并不能直接通过其中的 SQL 文件来安装导入。
-
-社区能找到一些转换好的版本，比如这个 AdventureWo... 
+微软 SQL Server 自带了一些示例数据库，可用于练习和测试。也可作为自己数据库设计时的参考。这些示例数据库开源在了 GitHub，可在 Microsoft/sq... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 7, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/07/Linux-%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4-Cheat-Sheet/">
     <h2 class="post-title">Linux 网络相关命令 Cheat Sheet</h2>
     
   </a>
+  <p class="post-meta">May 7, 2019</p>
   <div class="post-content-preview">
      Linux 网络相关命令 Cheat Sheet
 
@@ -377,65 +323,41 @@ protected
 相关资源
 
 
-  twitter - 🔎Julia Evans🔍@b0rk
-
-
- 
+ ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 7, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/06/Koa-+-GraphQL-%E7%A4%BA%E4%BE%8B/">
     <h2 class="post-title">Koa + GraphQL 示例</h2>
     
   </a>
+  <p class="post-meta">May 6, 2019</p>
   <div class="post-content-preview">
      Koa + GraphQL 示例
 
 初始化项目
 
 创建 graphql-example 文件夹进入后初始化一个 package.json 文件。
-$ mkdir graphql-example &amp;&amp; cd $_
-$ yarn init -y
-
-
-安装依赖
-
-使用 koa-graphql 配合 koa-mount 两个 npm 模块来使用 GraphQL。同时需要安装 grap... 
+$ mkdir graphql-example ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 6, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/05/05/HTTP-%E7%8A%B6%E6%80%81%E7%A0%81%E5%8F%8A%E5%90%AB%E4%B9%89/">
     <h2 class="post-title">HTTP 状态码及含义</h2>
     
   </a>
+  <p class="post-meta">May 5, 2019</p>
   <div class="post-content-preview">
      HTTP 状态码及含义
 
 来自 Koa.js 官方文档中关于设置请求响应的部分 response.status=，列出了从 1xx ~ 5xx HTTP 状态码及含义，现摘录如下：
 
 
-  100 “continue”
-  101 “switching protocols”
-  102 “processing”
-  200 “ok”
-  201 “created”
-  202 “accept... 
+  10... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on May 5, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -459,25 +381,22 @@ $ yarn init -y
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -628,13 +547,7 @@ $ yarn init -y
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

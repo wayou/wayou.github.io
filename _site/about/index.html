@@ -24,7 +24,7 @@
   <meta property="og:type" content="website" />
   <meta
     property="og:description"
-    content="这里还没有什么"
+    content="关于你的歌，写着後来我们"
   />
   
   <meta property="og:image" content="http://0.0.0.0:4000" />
@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/about-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -180,7 +180,7 @@
         <div class="site-heading">
         
           <h1>关于</h1>
-          <span class="subheading">这里还没有什么</span>
+          <span class="subheading">关于你的歌，写着後来我们</span>
         </div>
       </div>
     </div>
@@ -190,33 +190,37 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                腾讯云前端募集中...
-💌[wayongliu@gmail.com](mailto:wayongliu@gmail.com?subject=[简历][姓名])
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      腾讯云前端募集中...
 
-            </div>
+<p>
+  <a href="mailto:wayongliu@gmail.com?subject=[简历][姓名]"
+    >💌wayongliu@gmail.com</a
+  >
+</p>
+
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -367,13 +371,7 @@
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding

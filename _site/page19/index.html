@@ -172,7 +172,7 @@
 
 
 
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+<header class="intro-header">
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -190,95 +190,74 @@
 
 <!-- Main Content -->
 <div class="container">
-	<div class="row">
-        
-<!-- NO SIDEBAR -->
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
     <!-- PostList Container -->
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container">
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
 <div class="post-preview">
   <a href="/2019/04/14/TypeScript-%E4%B8%AD%E9%9D%9E%E4%BB%A3%E7%A0%81%E6%A8%A1%E5%9D%97%E7%9A%84%E5%AF%BC%E5%85%A5/">
     <h2 class="post-title">TypeScript 中非代码模块的导入</h2>
     
   </a>
+  <p class="post-meta">April 14, 2019</p>
   <div class="post-content-preview">
      TypeScript 中非代码模块的导入
 
-需要理解的是，TypeScript 作为语言，他只处理代码模块。其他类型的文件这种非代码模块的导入，讲道理是通过另外的打包工具来完成的，比如 Web 应用中的图片，样式，JSON 还有 HTML 模板文件。只是我们需要在 TypeScript 层面解决模块解析报错的问题。
-
-通配符模块声明
-
-直接导入非代码模块，TypeScript 会报错。
-
-/... 
+需要理解的是，TypeScript 作为语言，他只处理代码模块。其他类型的文件这种非代码模块的导入，讲道理是通过另外的打包工具来完成的，比如 Web ... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 14, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/13/Node.js-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%E7%9A%84%E7%BC%96%E5%86%99/">
     <h2 class="post-title">Node.js 命令行工具的编写</h2>
     
   </a>
+  <p class="post-meta">April 13, 2019</p>
   <div class="post-content-preview">
      Node.js 命令行工具的编写
 
 日常开发中，编写 Node.js 命令行工具来完成一些小任务是很常见的操作。其编写也不难，和日常编写 Node.js 代码并无二致。
 
-package.json 中的 bin 字段
-
-一个 npm 模块，如果在 package.json 中指定了 bin 字段，那说明该模块提供了可在命令行执行的命令，这些命令就是在 bin 字段中指定的。
-
-package... 
+package.jso... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 13, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD/">
     <h2 class="post-title">TypeScript 中的方法重载</h2>
     
   </a>
+  <p class="post-meta">April 12, 2019</p>
   <div class="post-content-preview">
      TypeScript 中的方法重载
 
-方法重载（overload）在传统的静态类型语言中是很常见的。JavaScript 作为动态语言， 是没有重载这一说的。一是它的参数没有类型的区分，二是对参数个数也没有检查。虽然语言层面无法自动进行重载，但借助其动态的特性，我们可以在代码中手动检查入参的类型，或者通过 arguments 获取到参数个数，从而实现根据不同的入参做不同的操作。
-
-比如有一个... 
+方法重载（overload）在传统的静态类型语言中是很常见的。JavaScript 作为动态语言， 是没有重载这一说的。一是它的参数没有类型的区分，二是对参... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 12, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/11/TypeScript-%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/">
     <h2 class="post-title">TypeScript 上手教程</h2>
     
   </a>
+  <p class="post-meta">April 11, 2019</p>
   <div class="post-content-preview">
      TypeScript 上手教程
 
-无疑，对于大型项目来说，Vanilla Js 无法满足工程需求。早在 2016 年 Anuglar 在项目中引入 TypeScript 时，大概也是考虑到强类型约束对于大型工程的必要性，具体选型考虑可参考这篇文章。然后可以看到 TypeScript 在社区中逐渐升温。但凡社区中举足轻重的库，如果不是原生使用 TypeScript 编写，那么也是通过声明文件的... 
+无疑，对于大型项目来说，Vanilla Js 无法满足工程需求。早在 2016 年 Anuglar 在项目中引入 TypeScript 时，大概也是考虑到强类型... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 11, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/10/Egg.js-%E4%B8%AD%E5%85%A5%E5%8F%82%E7%9A%84%E6%A0%A1%E9%AA%8C/">
     <h2 class="post-title">Egg.js 中入参的校验</h2>
     
   </a>
+  <p class="post-meta">April 10, 2019</p>
   <div class="post-content-preview">
      Egg.js 中入参的校验
 
@@ -286,72 +265,44 @@ package...
 
 
   从 query 或 body 取出入参，
-  对可选的入参进行判空，
-  处理入参的类型转换，
-  对入参进行逻辑校验，数字是否超限，类型是否非法等…
-
-
-但这些通用的逻辑可通过抽取到插件或服务中，避免代码冗余和重复劳动。
-
-egg-validat... 
+  对... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 10, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/09/koa-%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
     <h2 class="post-title">koa 中的错误处理</h2>
     
   </a>
+  <p class="post-meta">April 9, 2019</p>
   <div class="post-content-preview">
      koa 中的错误处理
 
 不像 express 中在末尾处注册一个声明为 (err, req, res, next) 中间件的方式，koa 刚好相反，在开头进行注册。
 
-app.use(async (ctx, next) =&gt; {
-  try {
-    await next();
-  } catch (err) {
-    ctx.status = err.status || 500;... 
+app.use(async... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 9, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/08/HTTP-%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3/">
     <h2 class="post-title">HTTP 缓存相关</h2>
     
   </a>
+  <p class="post-meta">April 8, 2019</p>
   <div class="post-content-preview">
      HTTP 缓存相关
 
-网络中数据传输是很耗时的，数据要在漫长的路径中奔波，客户端在数据完整到达前只能等待。如果能够复用已经请求过的资源，势必会让整个页面加载高效许多。这可以通过合理地设置服务器的缓存，与浏览器的缓存机制配合以达到最优。
-
-缓存设置得当不但可减少用户等待时间，提升体验，还节省服务器开销省流量带宽。
-
-缓存的配置有两种策略：
-
-
-  稳定的内容 + 长期缓存
-  经常变动的内容 ... 
+网络中数据传输是很耗时的，数据要在漫长的路径中奔波，客户端在数据完整到达前只能等待。如果能够复用已经请求过的资源，势必会让整个页面加载高效许多。这可以通过合理地设置服务器的... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 8, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/06/React-%E4%B8%AD%E9%98%BB%E6%AD%A2%E4%BA%8B%E4%BB%B6%E5%86%92%E6%B3%A1%E7%9A%84%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">React 中阻止事件冒泡的问题</h2>
     
   </a>
+  <p class="post-meta">April 6, 2019</p>
   <div class="post-content-preview">
      React 中阻止事件冒泡的问题
 
@@ -361,26 +312,16 @@ JS 中事件的监听与处理
 
 事件捕获与冒泡
 
-DOM 事件会先后经历 捕获 与 冒泡 两个阶段。捕获即事件沿着 DOM 树由上往下传递，到达触发事件的元素后，开始由下往上冒泡。
-
-
-  IE9 及之前的版本只支持冒泡
-
-
-                  |  A
- -----------... 
+DOM 事件会先后经历 捕获 与 冒泡 两个阶... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 6, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/05/%E5%85%B3%E9%97%AD-Mac-%E6%8B%BC%E5%86%99%E8%87%AA%E5%8A%A8%E7%BA%A0%E6%AD%A3%E4%B8%8E%E6%A8%AA%E7%BA%BF%E8%BD%AC%E6%8D%A2/">
     <h2 class="post-title">关闭 Mac 拼写自动纠正与横线转换</h2>
     
   </a>
+  <p class="post-meta">April 5, 2019</p>
   <div class="post-content-preview">
      关闭 Mac 拼写自动纠正与横线转换
 
@@ -389,27 +330,16 @@ DOM 事件会先后经历 捕获 与 冒泡 两个阶段。捕获即事件沿着
 很大可能性，
 你会在里面贴代码，
 但是，
-Mac 的拼写检查和自动纠正功能，会把代码变成你不想要的样子，
-比如，
-它会为你首字母大写，
-它会自动纠正拼写，
-最不能忍的是，两个横线 -- 会自动转成一个长的横线 —，
-
-对于正常用户来说，可能体验会很好，但绝对不是对程序员。
-
-下面... 
+Mac 的拼写检查和自动纠正功能，会把... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 5, 2019
-  </p>
 </div>
-<hr />
 
 <div class="post-preview">
   <a href="/2019/04/04/Puppeteer-%E6%88%AA%E5%9B%BE%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/">
     <h2 class="post-title">Puppeteer 截图及相关问题</h2>
     
   </a>
+  <p class="post-meta">April 4, 2019</p>
   <div class="post-content-preview">
      Puppeteer 截图及相关问题
 
@@ -417,15 +347,9 @@ Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页�
 
 镜像的设置
 
-因为其使用了 Chromium，其源在 Google 域上，最好设置一下 npm 从国内镜像安装，可解决无法安装的问题。
-
-推荐在项目中放置 .npmrc 或 .yarnrc 文件来进行镜像的设置，这样设置... 
+因为其... 
   </div>
-  <p class="post-meta">
-    Posted by 牛さんの部落格 on April 4, 2019
-  </p>
 </div>
-<hr />
 
 
 <!-- Pager -->
@@ -449,25 +373,22 @@ Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页�
 </ul>
 
 
-            </div>
+    </div>
     <!-- Sidebar Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
 
 
 
-                <!-- Friends Blog -->
-                
-            </div>
-        
-	</div>
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
 </div>
-
  <!-- Footer -->
 <footer>
     <div class="container">
@@ -618,13 +539,7 @@ Puppeteer 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页�
     }
 
     generateCatalog(".catalog-body");
-
-    // toggle side catalog
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
+  
     /*
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding
