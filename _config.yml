@@ -4,7 +4,7 @@ email: liuwayong@gmail.com
 description: notes about the coding life
 SEOTitle: 牛さんの部落格|刘哇勇的部落格
 keyword: "牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计"
-url: "https://huangxuan.me" # your host, for absolute URL
+url: "" # your host, for absolute URL
 baseurl: "" # for example, '/blog' if your blog hosted on 'host/blog'
 
 # Publish posts or collection documents with a future date.
@@ -53,7 +53,3 @@ sidebar: false # whether or not using Sidebar.
 # Featured Tags
 featured-tags: false # whether or not using Feature-Tags
 featured-condition-size: 1 # A tag will be featured if the size of it is more than this condition value
-
-# Progressive Web Apps
-chrome-tab-theme-color: "#000000"
-service-worker: true
