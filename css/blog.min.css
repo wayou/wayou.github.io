@@ -691,13 +691,6 @@ h6 {
 h4 {
   font-size: 21px;
 }
-a {
-  color: #404040;
-}
-a:hover,
-a:focus {
-  color: #0366d6;
-}
 a img:hover,
 a img:focus {
   cursor: zoom-in;
@@ -1220,10 +1213,7 @@ samp {
   }
 }
 .post-preview {
-  margin-bottom: 30px;
-}
-.post-preview > a {
-  color: #404040;
+  margin-bottom: 10px;
 }
 .post-preview > a:hover,
 .post-preview > a:focus {
@@ -1629,10 +1619,6 @@ footer .copyright a:focus {
 }
 .page-fullscreen footer .copyright a:hover {
   color: #ddd;
-}
-.MathJax_SVG_Display {
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
 }
 .no-scroll {
   overflow-y: hidden;
