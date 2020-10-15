@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="MySQL 不同版本数据导入的问题 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="MySQL 不同版本数据导入的问题
+
+一般地，本地会安装到最新的 MySQL，比如 8 点几开发调试。而云服务上的 MySQL 很可能是老版本的，比如 MySQL 5 点几。
+
+那么问题来了，将本地高版本的 MySQL 导出的建表语句及数据导入到低版本时，毫不意外会有问题，这里记录两点。
+
+准备工作
+
+整个 dabase 的导出
+
+数据导出使用如下语句：
+
+$ mysqldump -u&lt..."
+  />
+   <meta property="article:published_time" content="2020-05-09T13:05:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2020/05/09/MySQL-%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5%E7%9A%84%E9%97%AE%E9%A2%98/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    MySQL 不同版本数据导入的问题 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2020/05/09/MySQL-%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%AC%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5%E7%9A%84%E9%97%AE%E9%A2%98/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>MySQL 不同版本数据导入的问题</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">May 9, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="mysql-不同版本数据导入的问题">MySQL 不同版本数据导入的问题</h1>
+
+<p>一般地，本地会安装到最新的 MySQL，比如 8 点几开发调试。而云服务上的 MySQL 很可能是老版本的，比如 MySQL 5 点几。</p>
+
+<p>那么问题来了，将本地高版本的 MySQL 导出的建表语句及数据导入到低版本时，毫不意外会有问题，这里记录两点。</p>
+
+<h2 id="准备工作">准备工作</h2>
+
+<h3 id="整个-dabase-的导出">整个 dabase 的导出</h3>
+
+<p>数据导出使用如下语句：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysqldump <span class="nt">-u</span>&lt;username&gt; <span class="nt">-p</span>&lt;pswd&gt; <span class="nt">--databases</span> employees <span class="o">&gt;</span> dump.sql
+</code></pre></div></div>
+
+<h3 id="导出部分数据">导出部分数据</h3>
+
+<p>如果数据量太大，做测试用时，不想全部数据导出，可以这样只导出部分数据：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysqldump <span class="nt">-u</span>&lt;username&gt; <span class="nt">-p</span>&lt;pswd&gt; <span class="nt">--opt</span> <span class="nt">--where</span><span class="o">=</span><span class="s2">"1 limit 100"</span> <span class="nt">--databases</span> employees <span class="o">&gt;</span> dump.sql
+</code></pre></div></div>
+
+<h3 id="只导出表结构">只导出表结构</h3>
+
+<p>如果只导出表结构而无需数据，则可以：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mysqldump <span class="nt">-u</span>&lt;username&gt; <span class="nt">-p</span>&lt;pswd&gt; <span class="nt">--no-data</span> <span class="nt">--databases</span> employees <span class="o">&gt;</span> dump.sql
+</code></pre></div></div>
+
+<p>以下是导出示例数据库 <code class="language-plaintext highlighter-rouge">employees</code> 形成的 SQL 文件：</p>
+
+<details>
+<summary>
+`employees` 示例数据库导出 SQL 文件
+</summary>
+
+```sql
+-- MySQL dump 10.13  Distrib 8.0.19, for osx10.15 (x86_64)
+--
+-- Host: localhost    Database: employees
+-- ------------------------------------------------------
+-- Server version	8.0.19
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Current Database: `employees`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `employees` /*!40100 DEFAULT CHARACTER SET utf8 */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `employees`;
+
+--
+-- Temporary view structure for view `current_dept_emp`
+--
+
+DROP TABLE IF EXISTS `current_dept_emp`;
+/*!50001 DROP VIEW IF EXISTS `current_dept_emp`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `current_dept_emp` AS SELECT 
+ 1 AS `emp_no`,
+ 1 AS `dept_no`,
+ 1 AS `from_date`,
+ 1 AS `to_date`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `departments`
+--
+
+DROP TABLE IF EXISTS `departments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `departments` (
+  `dept_no` char(4) NOT NULL,
+  `dept_name` varchar(40) NOT NULL,
+  PRIMARY KEY (`dept_no`),
+  UNIQUE KEY `dept_name` (`dept_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `dept_emp`
+--
+
+DROP TABLE IF EXISTS `dept_emp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `dept_emp` (
+  `emp_no` int NOT NULL,
+  `dept_no` char(4) NOT NULL,
+  `from_date` date NOT NULL,
+  `to_date` date NOT NULL,
+  PRIMARY KEY (`emp_no`,`dept_no`),
+  KEY `dept_no` (`dept_no`),
+  CONSTRAINT `dept_emp_ibfk_1` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`) ON DELETE CASCADE,
+  CONSTRAINT `dept_emp_ibfk_2` FOREIGN KEY (`dept_no`) REFERENCES `departments` (`dept_no`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary view structure for view `dept_emp_latest_date`
+--
+
+DROP TABLE IF EXISTS `dept_emp_latest_date`;
+/*!50001 DROP VIEW IF EXISTS `dept_emp_latest_date`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `dept_emp_latest_date` AS SELECT 
+ 1 AS `emp_no`,
+ 1 AS `from_date`,
+ 1 AS `to_date`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `dept_manager`
+--
+
+DROP TABLE IF EXISTS `dept_manager`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `dept_manager` (
+  `emp_no` int NOT NULL,
+  `dept_no` char(4) NOT NULL,
+  `from_date` date NOT NULL,
+  `to_date` date NOT NULL,
+  PRIMARY KEY (`emp_no`,`dept_no`),
+  KEY `dept_no` (`dept_no`),
+  CONSTRAINT `dept_manager_ibfk_1` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`) ON DELETE CASCADE,
+  CONSTRAINT `dept_manager_ibfk_2` FOREIGN KEY (`dept_no`) REFERENCES `departments` (`dept_no`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `employees`
+--
+
+DROP TABLE IF EXISTS `employees`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `employees` (
+  `emp_no` int NOT NULL,
+  `birth_date` date NOT NULL,
+  `first_name` varchar(14) NOT NULL,
+  `last_name` varchar(16) NOT NULL,
+  `gender` enum('M','F') NOT NULL,
+  `hire_date` date NOT NULL,
+  PRIMARY KEY (`emp_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `salaries`
+--
+
+DROP TABLE IF EXISTS `salaries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `salaries` (
+  `emp_no` int NOT NULL,
+  `salary` int NOT NULL,
+  `from_date` date NOT NULL,
+  `to_date` date NOT NULL,
+  PRIMARY KEY (`emp_no`,`from_date`),
+  CONSTRAINT `salaries_ibfk_1` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `titles`
+--
+
+DROP TABLE IF EXISTS `titles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `titles` (
+  `emp_no` int NOT NULL,
+  `title` varchar(50) NOT NULL,
+  `from_date` date NOT NULL,
+  `to_date` date DEFAULT NULL,
+  PRIMARY KEY (`emp_no`,`title`,`from_date`),
+  CONSTRAINT `titles_ibfk_1` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Current Database: `employees`
+--
+
+USE `employees`;
+
+--
+-- Final view structure for view `current_dept_emp`
+--
+
+/*!50001 DROP VIEW IF EXISTS `current_dept_emp`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `current_dept_emp` AS select `l`.`emp_no` AS `emp_no`,`d`.`dept_no` AS `dept_no`,`l`.`from_date` AS `from_date`,`l`.`to_date` AS `to_date` from (`dept_emp` `d` join `dept_emp_latest_date` `l` on(((`d`.`emp_no` = `l`.`emp_no`) and (`d`.`from_date` = `l`.`from_date`) and (`l`.`to_date` = `d`.`to_date`)))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `dept_emp_latest_date`
+--
+
+/*!50001 DROP VIEW IF EXISTS `dept_emp_latest_date`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `dept_emp_latest_date` AS select `dept_emp`.`emp_no` AS `emp_no`,max(`dept_emp`.`from_date`) AS `from_date`,max(`dept_emp`.`to_date`) AS `to_date` from `dept_emp` group by `dept_emp`.`emp_no` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2020-04-26 18:03:23
+
+```
+
+</details>
+
+<h2 id="编码问题">编码问题</h2>
+
+<p>通过观察发现 MySQL 8 中导出的表使用的 charset 及 collate 是这样的：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+DROP TABLE IF EXISTS `departments`;
+<span class="err">/*!40101</span> SET @saved_cs_client     = @@character_set_client */;
+<span class="err">/*!50503</span> SET character_set_client = utf8mb4 */;
+<span class="p">CREATE TABLE `departments` (
+</span>  `dept_no` char(4) NOT NULL,
+  `dept_name` varchar(40) NOT NULL,
+  PRIMARY KEY (`dept_no`),
+  UNIQUE KEY `dept_name` (`dept_name`)
+<span class="gi">+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+</span><span class="err">/*!40101</span> SET character_set_client = @saved_cs_client */;
+</code></pre></div></div>
+
+<p>此处的 <code class="language-plaintext highlighter-rouge">utf8mb4</code> 及 <code class="language-plaintext highlighter-rouge">utf8mb4_0900_ai_ci</code> 在 MySQL 5 中并不能被正确识别，如果直接导入会报如下错误：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ERROR 1115 <span class="o">(</span>42000<span class="o">)</span> at line 3231: Unknown character <span class="nb">set</span>: <span class="s1">'utf8mb4'</span>
+</code></pre></div></div>
+
+<p>解决办法是将 SQL 文件中所有 <code class="language-plaintext highlighter-rouge">utf8mb4</code> 替换成 <code class="language-plaintext highlighter-rouge">utf8</code>，<code class="language-plaintext highlighter-rouge">utf8mb4_0900_ai_ci</code> 替换成 <code class="language-plaintext highlighter-rouge">utf8_general_ci</code>。</p>
+
+<h2 id="mysql-的扩展注释">MySQL 的扩展注释</h2>
+
+<p>通过观察上面导出的 SQL 文件，发现文件末尾包含许多注释语句。但这些注释语句又不同于普通的注释，其包含明显的特征，每行注释以叹号加数字打头：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">...</span>
+<span class="cm">/*!40101 SET SQL_MODE=@OLD_SQL_MODE */</span><span class="p">;</span>
+<span class="cm">/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */</span><span class="p">;</span>
+<span class="cm">/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */</span><span class="p">;</span>
+<span class="cm">/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */</span><span class="p">;</span>
+<span class="cm">/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */</span><span class="p">;</span>
+<span class="cm">/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */</span><span class="p">;</span>
+<span class="cm">/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */</span><span class="p">;</span>
+<span class="p">...</span>
+</code></pre></div></div>
+
+<p>你以为这是注释，不会被执行。实际等你导入的时候发现某些报错会和这些注释有干系。</p>
+
+<p>查询后发现这是 MySQL 对 SQL 注释的扩展。</p>
+
+<p>叹号开头的注释会被某些版本的 MySQL 解释执行，其中叹号后面的数字表示 MySQL 版本，大于等于该版本的 MySQL 能够解释并执行对应的语句。</p>
+
+<p>比如 <code class="language-plaintext highlighter-rouge">/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;</code> 中的 <code class="language-plaintext highlighter-rouge">40111</code> 表示版本大于等于 4.1.11 的版本都能够识别并执行该行语句。</p>
+
+<p>那么问题就来了，本来有这个版本号的限制，讲道理就不会存在不支持的版本乱执行了相应语句导致报错的问题。</p>
+
+<p>但是如果你导入时发现报了权限问题，很有可能就是这些注释语句里包含了需要 super 权限的语句。</p>
+
+<h2 id="mysqldump-时指定兼容参数">mysqldump 时指定兼容参数</h2>
+
+<p>当然， <code class="language-plaintext highlighter-rouge">mysqldump</code> 命令是带了兼容参数的，可一定程度上生成向后兼容的导出文件。参数具体为，</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>       o   --compact
+
+           Produce more compact output. This option enables the --skip-add-drop-table, --skip-add-locks,
+           --skip-comments, --skip-disable-keys, and --skip-set-charset options.
+
+       o   --compatible=name
+
+           Produce output that is more compatible with other database systems or with older MySQL servers. The
+           only permitted value for this option is ansi, which has the same meaning as the corresponding option
+           for setting the server SQL mode. See Section 5.1.11, "Server SQL Modes".
+</code></pre></div></div>
+
+<p>以为来自 <code class="language-plaintext highlighter-rouge">man mysqldump</code> 的信息，翻译一下：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">--compact</code>：生成更具兼容性的文件，其实是这些参数 <code class="language-plaintext highlighter-rouge">--skip-add-drop-table</code>, <code class="language-plaintext highlighter-rouge">--skip-add-locks</code>,
+         <code class="language-plaintext highlighter-rouge">--skip-comments</code>, <code class="language-plaintext highlighter-rouge">--skip-disable-keys</code> 以及 <code class="language-plaintext highlighter-rouge">--skip-set-charset</code> 的组合。</li>
+  <li><code class="language-plaintext highlighter-rouge">--compatible=name</code>：生成的文件将兼容其他数据库或旧版 MySQL，只有一个唯一可用的值 <code class="language-plaintext highlighter-rouge">ansi</code>，和配置 MySQL 服务器时指定的 SQL 模式是同一个值。</li>
+</ul>
+
+<p>实测了一下这里的兼容参数，<code class="language-plaintext highlighter-rouge">--compact</code> 是可以解决上面注释问题的。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/comments.html">9.6 Comment Syntax</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/05/09/MySQL-INNODB-%E4%B8%8E-MYISAM-%E7%9A%84%E5%8C%BA%E5%88%AB/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="MySQL INNODB 与 MYISAM 的区别"
+            >
+              Previous<br />
+              <span>MySQL INNODB 与 MYISAM 的区别</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2020/05/09/.o-.a-%E5%92%8C-.so-%E6%96%87%E4%BB%B6/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="`.o`，`.a` 和 `.so` 文件"
+            >
+              Next<br />
+              <span>`.o`，`.a` 和 `.so` 文件</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

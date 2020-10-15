@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="TypeScript 上手教程 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="TypeScript 上手教程
+
+无疑，对于大型项目来说，Vanilla Js 无法满足工程需求。早在 2016 年 Anuglar 在项目中引入 TypeScript 时，大概也是考虑到强类型约束对于大型工程的必要性，具体选型考虑可参考这篇文章。然后可以看到 TypeScript 在社区中逐渐升温。但凡社区中举足轻重的库，如果不是原生使用 TypeScript 编写，那么也是通过声明文件的..."
+  />
+   <meta property="article:published_time" content="2019-04-11T15:04:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/04/11/TypeScript-%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    TypeScript 上手教程 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/04/11/TypeScript-%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>TypeScript 上手教程</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">April 11, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="typescript-上手教程">TypeScript 上手教程</h1>
+
+<p>无疑，对于大型项目来说，Vanilla Js 无法满足工程需求。早在 2016 年 Anuglar 在项目中引入 TypeScript 时，大概也是考虑到强类型约束对于大型工程的必要性，具体选型考虑可参考<a href="https://vsavkin.com/writing-angular-2-in-typescript-1fa77c78d8e8">这篇文章</a>。然后可以看到 TypeScript 在社区中逐渐升温。但凡社区中举足轻重的库，如果不是原生使用 TypeScript 编写，那么也是通过声明文件的方式对 TypeScript 提供支持，比如 React（虽然不是包含在官方仓库中，而是通过 <code class="language-plaintext highlighter-rouge">@types/react</code>），同时官方脚手架工具（<a href="https://github.com/facebook/create-react-app/releases/tag/v2.1.0">v2.1.0</a> 之后）也开始提供开箱即用的 TypeScript 支持，通过 <code class="language-plaintext highlighter-rouge">--typescript</code> 参数开启。</p>
+
+<p>所以 TypeScript 绝对是趋势。它所带来的工程效率上的提升，是在使用 Vanilla Js 时无法体会到的。可能前期反而会因为类型约束而变得束手束脚影响效率，但这是个学习成本的问题，对于任何一门技术而言都会存在。</p>
+
+<p>如果你有 Java 或 C# 的基础，那 TypeScript 学起来几乎没什么成本。</p>
+
+<h2 id="安装与配置">安装与配置</h2>
+
+<h3 id="安装">安装</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm <span class="nb">install</span> <span class="nt">-g</span> typescript
+<span class="c"># or</span>
+<span class="nv">$ </span>yarn global add typescript
+</code></pre></div></div>
+
+<p>安装成功后，其 CLI 命令为 <code class="language-plaintext highlighter-rouge">tsc</code>，比如查看版本，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>tsc <span class="nt">--version</span>
+Version 3.3.3333
+</code></pre></div></div>
+
+<p>常用的命令：</p>
+
+<h4 id="编译文件">编译文件</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>tsc main.ts
+</code></pre></div></div>
+
+<p>编译时传递编译参数：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>tsc <span class="nt">--target</span> es3 main.ts
+</code></pre></div></div>
+
+<p>完整的编译参数可在官网 <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">Compiler Options 文档</a>中查阅。</p>
+
+<h4 id="初始化配置文件">初始化配置文件</h4>
+
+<p>除了通过 CLI 传递编译参数控制编译的行为，也可通过创建 <code class="language-plaintext highlighter-rouge">tsconfig.json</code> 文件指定编译参数。对于项目中使用来说，肯定是使用配置文件比较方便，而且，有些参数只支持通过配置文件来设置，比如 <code class="language-plaintext highlighter-rouge">path</code>，<code class="language-plaintext highlighter-rouge">rootDirs</code>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>tsc <span class="nt">--init</span>
+message TS6071: Successfully created a tsconfig.json file.
+</code></pre></div></div>
+
+<p>该命令在当前目录创建一个 <code class="language-plaintext highlighter-rouge">tsconfig.json</code> 文件，每个配置都包含注释。完整的配置项也可在官网<a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">Compiler Options 文档</a>中查阅，根据自己需要和项目需求进行合理配置。大部分情况下你只会因为有某个需求才会去刻意研究如何配置，比如要改变输出类型设置 <code class="language-plaintext highlighter-rouge">target</code>，写码过程中发现 <code class="language-plaintext highlighter-rouge">Object.assign</code> 不可用发现需要添加 <code class="language-plaintext highlighter-rouge">lib</code> 插件。所以不必被庞大的配置参数惊吓到，只用的时候再搜索即可。</p>
+
+<details>
+<summary>
+tsconfig.json
+</summary>
+
+```js
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "es5" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */,
+    "module": "commonjs" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
+    // "lib": [],                             /* Specify library files to be included in the compilation. */
+    // "allowJs": true,                       /* Allow javascript files to be compiled. */
+    // "checkJs": true,                       /* Report errors in .js files. */
+    // "jsx": "preserve",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
+    // "declaration": true,                   /* Generates corresponding '.d.ts' file. */
+    // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
+    // "sourceMap": true,                     /* Generates corresponding '.map' file. */
+    // "outFile": "./",                       /* Concatenate and emit output to single file. */
+    // "outDir": "./",                        /* Redirect output structure to the directory. */
+    // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    // "composite": true,                     /* Enable project compilation */
+    // "removeComments": true,                /* Do not emit comments to output. */
+    // "noEmit": true,                        /* Do not emit outputs. */
+    // "importHelpers": true,                 /* Import emit helpers from 'tslib'. */
+    // "downlevelIteration": true,            /* Provide full support for iterables in 'for-of', spread, and destructuring when targeting 'ES5' or 'ES3'. */
+    // "isolatedModules": true,               /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */
+
+    /* Strict Type-Checking Options */
+    "strict": true /* Enable all strict type-checking options. */,
+    // "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
+    // "strictNullChecks": true,              /* Enable strict null checks. */
+    // "strictFunctionTypes": true,           /* Enable strict checking of function types. */
+    // "strictBindCallApply": true,           /* Enable strict 'bind', 'call', and 'apply' methods on functions. */
+    // "strictPropertyInitialization": true,  /* Enable strict checking of property initialization in classes. */
+    // "noImplicitThis": true,                /* Raise error on 'this' expressions with an implied 'any' type. */
+    // "alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
+
+    /* Additional Checks */
+    // "noUnusedLocals": true,                /* Report errors on unused locals. */
+    // "noUnusedParameters": true,            /* Report errors on unused parameters. */
+    // "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
+    // "noFallthroughCasesInSwitch": true,    /* Report errors for fallthrough cases in switch statement. */
+
+    /* Module Resolution Options */
+    // "moduleResolution": "node",            /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
+    // "baseUrl": "./",                       /* Base directory to resolve non-absolute module names. */
+    // "paths": {},                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
+    // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
+    // "typeRoots": [],                       /* List of folders to include type definitions from. */
+    // "types": [],                           /* Type declaration files to be included in compilation. */
+    // "allowSyntheticDefaultImports": true,  /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
+    "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+    // "preserveSymlinks": true,              /* Do not resolve the real path of symlinks. */
+
+    /* Source Map Options */
+    // "sourceRoot": "",                      /* Specify the location where debugger should locate TypeScript files instead of source locations. */
+    // "mapRoot": "",                         /* Specify the location where debugger should locate map files instead of generated locations. */
+    // "inlineSourceMap": true,               /* Emit a single file with source maps instead of having a separate file. */
+    // "inlineSources": true,                 /* Emit the source alongside the sourcemaps within a single file; requires '--inlineSourceMap' or '--sourceMap' to be set. */
+
+    /* Experimental Options */
+    // "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
+    // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
+  }
+}
+```
+
+</details>
+
+<h3 id="vs-code-上手">VS Code 上手</h3>
+
+<p>TS 带来的一大好处是其静态类型检查能跟编辑器很好地结合，智能健全的自动提示自不必说。推荐 <a href="https://code.visualstudio.com">VS Code</a> 作为编辑，其对 TypeScript 有原生的支持。</p>
+
+<p>用好这几个快捷键，更是提升效率的关键。</p>
+
+<h4 id="重命名">重命名</h4>
+
+<p>通过 <kbd>F2</kbd> 对标识符重重命名。这里标识符可以是变量名，方法函数名，类名或者其他字面量。如果写代码过程中发现命名不合理想重命名，一定使用这个快捷键来操作，它的好处是，只需改一处，其他与该标识符有关的地方，将自动被批量替换成新的，甚至该标识符使用的地方不在同一个文件中，也能被正确地自动应用上变更后的名称。省去了人工替换和检查代码的麻烦。关键人工容易出错，搜索加替换的方式只是根据字符串来进行的，而该命令是通过分析代码的语法树进行的。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55686721-560ae880-5997-11e9-8d74-7dfe51482e3a.gif" alt="使用 &lt;kbd&gt;F2&lt;/kbd&gt; 进行变量重命名的展示" /></p>
+
+<p align="center">使用 <kbd>F2</kbd> 进行变量重命名的展示</p>
+
+<h4 id="快速跳转">快速跳转</h4>
+
+<ul>
+  <li><kbd>F12</kbd> 跳转到定义。这应该是使用最为频繁的了。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55686738-894d7780-5997-11e9-86b5-188661edce21.gif" alt="跳转到定义" /></p>
+
+<p align="center">跳转到定义</p>
+
+<ul>
+  <li><kbd>F7</kbd> 当前文件中相同的标识符间循环切换。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55686747-a5511900-5997-11e9-8d88-0e5e31b4cf3a.gif" alt="标识符间的跳转切换" /></p>
+
+<p align="center">标识符间的跳转切换</p>
+
+<ul>
+  <li><kbd>F8</kbd> 在错误处循环切换。这个跳转可让你在修正代码中的错误时变得非常快捷。它直接将光标定位到错误处，修改好本处的错误后，继续 <kbd>F8</kbd> 跳转到下一处。一个很好的应用场景是对 js 代码的迁移，将文件扩展名由 <code class="language-plaintext highlighter-rouge">.js</code> 改为 <code class="language-plaintext highlighter-rouge">.ts</code>，大概率你会看到满屏飘红的错误提示，通过不断地 <kbd>F8</kbd> 来由上往下定位修改简直再顺畅不过了。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55686754-bef26080-5997-11e9-9a83-ba658e949e26.gif" alt="在报错处循环切换" /></p>
+
+<p align="center">在报错处循环切换</p>
+
+<ul>
+  <li><kbd>control</kbd> + <kbd>-</kbd>/<kbd>=</kbd> 在鼠标历史位置间来回切换。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55686764-d7627b00-5997-11e9-8cc0-98619c3f8a4c.gif" alt="光标位置的来回切换" /></p>
+
+<p align="center">光标位置的来回切换</p>
+
+<h4 id="命令面板">命令面板</h4>
+
+<p>通过 <kbd>command</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> 打开命令面板。几乎所有功能可以通过这里的命令来完成。</p>
+
+<p>比如，</p>
+
+<ul>
+  <li>代码折叠与展开</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55686777-f4974980-5997-11e9-9fe0-6e65db5e6910.gif" alt="代码折叠与展开" /></p>
+
+<p align="center">代码折叠与展开</p>
+
+<ul>
+  <li>主题的切换</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55686786-1395db80-5998-11e9-902f-d793a71720b0.gif" alt="主题的切换" /></p>
+
+<p align="center">主题的切换</p>
+
+<p>最后，你始终可通过搜索 <code class="language-plaintext highlighter-rouge">keyboard shortcurt</code> 来查看所有的快捷键。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/55686796-3aeca880-5998-11e9-802c-5bf62345f291.gif" alt="快捷键列表" /></p>
+
+<p align="center">快捷键列表</p>
+
+<h3 id="在线工具">在线工具</h3>
+
+<p>如果本地没有环境，可通过 <a href="http://www.typescriptlang.org/play/">Playground ・ TypeScript</a> 这个在线的编辑器，编辑 TypeScript 和时实查看输出。</p>
+
+<h2 id="类型声明">类型声明</h2>
+
+<p>TypeScript 中，通过在变量后面添加冒号指定其类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">fruit</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="c1">// 🚨Variable 'fruit' is used before being assigned.</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">fruit</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>当声明 <code class="language-plaintext highlighter-rouge">fruit</code> 为字符串之后，TypeScript 会保证该变量的类型始终是字符串。但在未赋值之前，其实它真实的类型是 undefined。这种情况下，TypeScript 会报错以阻止你在未初始化之前就使用。</p>
+
+<p>函数的类型包含了入参的类型和返回值的类型。入参自不必说，像上面那样冒号后指定，而返回值的类型，则是通过在入参列表结束的括号后添加冒号来指定的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">addOne</span><span class="p">(</span><span class="nx">num</span><span class="p">:</span> <span class="nx">number</span><span class="p">):</span> <span class="nx">number</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>如果每次写个变量或函数都需要手动指定其类型，岂不是很麻烦。所以，在一切能够推断类型的情况下，是不必手动指定的。比如声明变量并初始化，会根据初始化的值来推断变量类型。函数会根据其 return 的值来推断其返回类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 推断出的函数类型为：(num: number) =&gt; number */</span>
+<span class="kd">function</span> <span class="nx">addOne</span><span class="p">(</span><span class="nx">num</span><span class="p">:</span> <span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/** age:number */</span>
+<span class="kd">const</span> <span class="nx">age</span> <span class="o">=</span> <span class="mi">18</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">virtualAge</span> <span class="o">=</span> <span class="nx">addOne</span><span class="p">(</span><span class="nx">age</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`在下虚岁 </span><span class="p">${</span><span class="nx">virtualAge</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="typescript-中的类型">TypeScript 中的类型</h2>
+
+<p>JavaScript 中原生有 7 中数据类型，其中 Ojbect 为可看成数据集合，而其他 6 种（布尔，字符串，数字，<code class="language-plaintext highlighter-rouge">undefined</code>， <code class="language-plaintext highlighter-rouge">null</code>, <code class="language-plaintext highlighter-rouge">Symbol</code>），则是原始（primitive）数据类型。</p>
+
+<p>虽然 JavaScript 中有数据类型的概念，但它是动态的，变量的类型根据所存储的值而变化。TypeScript 作为其超集，将上面的数据类型进行了扩充，在 TypeScript 里，可以通过各种组合创建出更加复杂的数据类型。同时，TypeScript 让数据类型固定，成为静态可分析的。</p>
+
+<p>比如，如果一个函数的入参指定为数字，那么调用的时候传递了字符串，这个错误在写码过程中就直接可检查到并抛出。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">addOne</span><span class="p">(</span><span class="nx">num</span><span class="p">:</span> <span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/** 🚨Argument of type '"blah"' is not assignable to parameter of type 'number'. */</span>
+<span class="nx">addOne</span><span class="p">(</span><span class="dl">"</span><span class="s2">blah</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>JavaScript 原始类型加上扩展的几个类型（Any, Never, Void, Enum）组成了 TypeScript 中基本的类型。更加详细的信息可参考 <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html">Basic Types</a>。</p>
+
+<h3 id="boolean">Boolean</h3>
+
+<p>布尔值，其值只能是 <code class="language-plaintext highlighter-rouge">true</code> 或 <code class="language-plaintext highlighter-rouge">false</code>。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">isEmployee</span><span class="p">:</span> <span class="nx">boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">hasPermission</span><span class="p">(</span><span class="nx">role</span><span class="p">:</span> <span class="nx">string</span><span class="p">):</span> <span class="nx">boolean</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">role</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">admin</span><span class="dl">"</span> <span class="p">?</span> <span class="kc">true</span> <span class="p">:</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="number">Number</h3>
+
+<p>数字类型，不区分整形与浮点，所有数字均当作浮点数字对待。同时也支持二进制，八进制，十六进制数字。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">decimal</span><span class="p">:</span> <span class="nx">number</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">hex</span><span class="p">:</span> <span class="nx">number</span> <span class="o">=</span> <span class="mh">0xf00d</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">binary</span><span class="p">:</span> <span class="nx">number</span> <span class="o">=</span> <span class="mb">0b1010</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">octal</span><span class="p">:</span> <span class="nx">number</span> <span class="o">=</span> <span class="mo">0o744</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="string">String</h3>
+
+<p>字符串类型。TypeScript 中可使用 ES6 以之后这些还未实现的功能，所以模板字符串是可以放心使用的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">fruit</span><span class="p">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Apple</span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`My favourite fruit is </span><span class="p">${</span><span class="nx">fruit</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="symbol">Symbol</h3>
+
+<p>ES6 中新增，由 <code class="language-plaintext highlighter-rouge">Symbol()</code> 返回的类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">sym</span> <span class="o">=</span> <span class="nb">Symbol</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo</span><span class="dl">"</span><span class="p">);</span>
+<span class="k">typeof</span> <span class="nx">sym</span><span class="p">;</span> <span class="c1">// "symbol"</span>
+<span class="nx">sym</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span> <span class="c1">// Symbol(foo)</span>
+</code></pre></div></div>
+
+<p>注意，因为是新特性，需要在 <code class="language-plaintext highlighter-rouge">tsconfig.json</code> 中添加相应的库支持，否则编译会报错。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+      <span class="dl">"</span><span class="s2">lib</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">dom</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">es2015</span><span class="dl">"</span><span class="p">]</span> <span class="cm">/* Specify library files to be included in the compilation. */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="object">Object</h3>
+
+<p>除了 JavaScript 中 6 个原始类型之外的类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">create</span><span class="p">(</span><span class="nx">source</span><span class="p">:</span> <span class="nb">Object</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">source</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="nx">create</span><span class="p">({});</span>
+<span class="c1">// ✅</span>
+<span class="nx">create</span><span class="p">(</span><span class="nb">window</span><span class="p">);</span>
+
+<span class="c1">// 🚨Argument of type 'undefined' is not assignable to parameter of type 'Object'</span>
+<span class="nx">create</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="c1">// 🚨Argument of type 'undefined' is not assignable to parameter of type 'Object'.ts(2345)</span>
+<span class="nx">create</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="null-与-undefined">Null 与 Undefined</h3>
+
+<p>两者其实是其他任意类型的子类型。比如，一个变量定义后没有初始化，此时其值自动为 <code class="language-plaintext highlighter-rouge">undefined</code>。这说明，<code class="language-plaintext highlighter-rouge">undefined</code> 是可以赋值给这个类型的。当我们想把变量的值取消，将其置空时，可将其设置为 <code class="language-plaintext highlighter-rouge">null</code>，<code class="language-plaintext highlighter-rouge">null</code> 也是可以赋值给其他类型变量的，前提是 <code class="language-plaintext highlighter-rouge">tsconfig.json</code> 中没有开启 <code class="language-plaintext highlighter-rouge">strict:true</code>。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">age</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">age</span><span class="p">);</span> <span class="c1">// undefined</span>
+
+<span class="nx">age</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">age</span><span class="p">);</span> <span class="c1">// 9</span>
+
+<span class="nx">age</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">age</span><span class="p">);</span> <span class="c1">// null</span>
+</code></pre></div></div>
+
+<p>当开启 <code class="language-plaintext highlighter-rouge">strict:true</code> 强制检查后，TypeScript 会对类型进行严格的检查。上面就不能在未初始化的情况下使用变量，同时也不能将 <code class="language-plaintext highlighter-rouge">null</code> 赋值给 <code class="language-plaintext highlighter-rouge">number</code> 类型。</p>
+
+<p>对于这两种类型，在强制检查下，除非显式对变量进行声明其可空可未初始化。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gi">+ let age: number | null | undefined;
+</span><span class="p">console.log(age); // undefined
+</span>
+age = 9;
+<span class="p">console.log(age); // 9
+</span>
+age = null;
+<span class="p">console.log(age); // null
+</span></code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">number | null | undefined</code> 是一个组合类型（union type），后面会有提到。</p>
+
+<p>一般来说，建议开启强制检查，这样 TypeScript 能够最大化帮我们发现代码中的错误，在写码时就发现问题。</p>
+
+<h3 id="any">Any</h3>
+
+<p>表示任意类型。此时等同于普通的 JavaScript 代码，因为标记为 <code class="language-plaintext highlighter-rouge">any</code> 后将会跳过 TypeScript 的类型检查。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">someVar</span><span class="p">:</span> <span class="nx">any</span><span class="p">;</span>
+<span class="nx">someVar</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">饭后百步走，活到 99</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// ✅</span>
+<span class="nx">someVar</span> <span class="o">=</span> <span class="mi">99</span><span class="p">;</span> <span class="c1">// ✅</span>
+<span class="nx">someVar</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span> <span class="c1">// ✅</span>
+<span class="nx">someVar</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// ✅</span>
+</code></pre></div></div>
+
+<p>即便在开启强制检查的情况下，上面的操作是没有任何问题的。一般情况下，只在一些特殊情况下使用 any，比如老代码的兼容，三方库代码的引入。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">declare</span> <span class="kd">var</span> <span class="nx">$</span><span class="p">:</span> <span class="nx">any</span><span class="p">;</span>
+
+<span class="nx">$</span><span class="p">.</span><span class="nx">extenfd</span><span class="p">({},</span> <span class="p">{</span> <span class="na">foo</span><span class="p">:</span> <span class="dl">"</span><span class="s2">foo</span><span class="dl">"</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<p>这里，因为 jQuery 是没有类型的三方库代码，但我们知道页面中引入后是可以调用它上面的方法的，只是 TypeScript 不识别，所以我们通过声明一个 <code class="language-plaintext highlighter-rouge">any</code> 类型的变量来<strong>快速</strong>解决这个问题。不快速的办法就是自己动手为其编写类型<a href="https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html">声明文件</a>。</p>
+
+<h3 id="void">Void</h3>
+
+<p>常见于函数没有返回值的情况。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** () =&gt; void */</span>
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo works</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>如果将变量显式设置为 <code class="language-plaintext highlighter-rouge">void</code>，没有多大实际意义。因为变量始终是要用来承载有用的值的，如果你发现有这种需要，可使用 <code class="language-plaintext highlighter-rouge">null|undefiend</code> 代替。</p>
+
+<h3 id="never">Never</h3>
+
+<p>这个类型就比较有意思了，正如其名，表示永远也不会发生的类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">error</span><span class="p">(</span><span class="nx">message</span><span class="p">:</span> <span class="nx">string</span><span class="p">):</span> <span class="nx">never</span> <span class="p">{</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>关于 <code class="language-plaintext highlighter-rouge">never</code> 类型，印象中最巧妙的一个示例来自 TypeScript <a href="https://www.typescriptlang.org/docs/handbook/advanced-types.html">Advanced Types</a> 文档中关于 Discriminated Unions 的描述。既然是<strong>高级类型</strong>，下面的示例对于初学者来说如果看不懂就先跳过吧。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Square</span> <span class="p">{</span>
+  <span class="nl">kind</span><span class="p">:</span> <span class="dl">"</span><span class="s2">square</span><span class="dl">"</span><span class="p">;</span>
+  <span class="nl">size</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kr">interface</span> <span class="nx">Rectangle</span> <span class="p">{</span>
+  <span class="nl">kind</span><span class="p">:</span> <span class="dl">"</span><span class="s2">rectangle</span><span class="dl">"</span><span class="p">;</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kr">interface</span> <span class="nx">Circle</span> <span class="p">{</span>
+  <span class="nl">kind</span><span class="p">:</span> <span class="dl">"</span><span class="s2">circle</span><span class="dl">"</span><span class="p">;</span>
+  <span class="nl">radius</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">type</span> <span class="nx">Shape</span> <span class="o">=</span> <span class="nx">Square</span> <span class="o">|</span> <span class="nx">Rectangle</span> <span class="o">|</span> <span class="nx">Circle</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">assertNever</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">never</span><span class="p">):</span> <span class="nx">never</span> <span class="p">{</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Unexpected object: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">x</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">area</span><span class="p">(</span><span class="nx">s</span><span class="p">:</span> <span class="nx">Shape</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">switch</span> <span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">kind</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="dl">"</span><span class="s2">square</span><span class="dl">"</span><span class="p">:</span>
+      <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">size</span> <span class="o">*</span> <span class="nx">s</span><span class="p">.</span><span class="nx">size</span><span class="p">;</span>
+    <span class="k">case</span> <span class="dl">"</span><span class="s2">rectangle</span><span class="dl">"</span><span class="p">:</span>
+      <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">height</span> <span class="o">*</span> <span class="nx">s</span><span class="p">.</span><span class="nx">width</span><span class="p">;</span>
+    <span class="k">case</span> <span class="dl">"</span><span class="s2">circle</span><span class="dl">"</span><span class="p">:</span>
+      <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nx">s</span><span class="p">.</span><span class="nx">radius</span> <span class="o">**</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="nl">default</span><span class="p">:</span>
+      <span class="k">return</span> <span class="nx">assertNever</span><span class="p">(</span><span class="nx">s</span><span class="p">);</span> <span class="c1">// error here if there are missing cases</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这里定义了三种基础的形状类型 <code class="language-plaintext highlighter-rouge">Square</code>，<code class="language-plaintext highlighter-rouge">Rectangle</code>，<code class="language-plaintext highlighter-rouge">Circle</code>。同时将三种类型进行组合创建了一个联合类型 （Union Type） <code class="language-plaintext highlighter-rouge">Shape</code>。 函数 <code class="language-plaintext highlighter-rouge">area</code> 接收一个 <code class="language-plaintext highlighter-rouge">Shape</code> 类型的数据并对其进行处理。因为 <code class="language-plaintext highlighter-rouge">Shape</code> 实际上有可能是三种类型中的其中一种，并不确定，所以需要对每个类型走不同的逻辑来处理。这里通过 <code class="language-plaintext highlighter-rouge">never</code> 实现了这样一个功能：假如后面我们又增加了一种新的形状类型，此时 <code class="language-plaintext highlighter-rouge">area</code> 函数能够自动抛错，告诉我们新增的类型没有相应的 <code class="language-plaintext highlighter-rouge">case</code> 分支来处理。</p>
+
+<h3 id="数组">数组</h3>
+
+<p>数组本身是容器，需要上面的基本类型联合使用。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 字符串数组 */</span>
+<span class="kd">let</span> <span class="nx">names</span><span class="p">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="cm">/** 存放数字的数组 */</span>
+<span class="kd">let</span> <span class="nx">nums</span><span class="p">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">number</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="cm">/** 数组中各元素类型不确定 */</span>
+<span class="kd">let</span> <span class="nx">data</span><span class="p">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">any</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>还可通过下面的方式来表示：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 字符串数组 */</span>
+<span class="kd">let</span> <span class="nx">names</span><span class="p">:</span> <span class="nx">string</span><span class="p">[];</span>
+
+<span class="cm">/** 存放数字的数组 */</span>
+<span class="kd">let</span> <span class="nx">nums</span><span class="p">:</span> <span class="nx">number</span><span class="p">[];</span>
+
+<span class="cm">/** 数组中各元素类型不确定 */</span>
+<span class="kd">let</span> <span class="nx">data</span><span class="p">:</span> <span class="nx">any</span><span class="p">[];</span>
+</code></pre></div></div>
+
+<p>当数组中元数个数有限且提前知晓每个位置的类型时，可将这种数据声明成元组（tuple，如果你用过 Python 应该不会陌生）。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">point</span><span class="p">:</span> <span class="p">[</span><span class="nx">number</span><span class="p">,</span> <span class="nx">number</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+<span class="kd">let</span> <span class="nx">formValidateResult</span><span class="p">:</span> <span class="p">[</span><span class="nx">booelan</span><span class="p">,</span> <span class="nx">string</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">false</span><span class="p">,</span> <span class="dl">"</span><span class="s2">请输入用户名</span><span class="dl">"</span><span class="p">];</span>
+</code></pre></div></div>
+
+<h3 id="枚举">枚举</h3>
+
+<p>枚举类型在强类型语言中是很常见的，用来标识变量可取的候选值。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Gender</span> <span class="p">{</span>
+    <span class="nx">Male</span><span class="p">,</span>
+    <span class="nx">Female</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Gender</span><span class="p">.</span><span class="nx">Female</span><span class="o">===</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// true</span>
+</code></pre></div></div>
+
+<p>枚举实质上是通过更加语义化的符号来表示数字类型的值，比如上面 <code class="language-plaintext highlighter-rouge">Gender.Female</code> 代表的值是 <code class="language-plaintext highlighter-rouge">1</code>，因为枚举默认从 0 开始。</p>
+
+<p>可通过手动指定的方式来改变默认的 0。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">enum Gender {
+</span><span class="gi">+  Male = 1,
+</span>  Female
+<span class="err">}</span>
+
+<span class="p">console.log(Gender.Female); // 2
+</span></code></pre></div></div>
+
+<p>当然，你也可以让枚举表示其他类型的值，而不是数字。只不过需要手动指定。如果手动指定非数字类型的值，那么枚举中的项是无法像数字那样自动自增以初始化自己，所以需要手动为每个项都显式指定一下它应该代表的值。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Gender</span> <span class="p">{</span>
+  <span class="nx">Male</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">male</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">Female</span> <span class="c1">// 🚨 Enum member must have initializer.</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>正确的做法：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Gender</span> <span class="p">{</span>
+  <span class="nx">Male</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">male</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">Female</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">female</span><span class="dl">"</span> <span class="c1">// ✅</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Gender</span><span class="p">.</span><span class="nx">Female</span><span class="p">);</span> <span class="c1">// female</span>
+</code></pre></div></div>
+
+<p>枚举中的值也不一定都得是同一类型，所以下面这样也是可以的：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Gender</span> <span class="p">{</span>
+  <span class="nx">Male</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">male</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">Female</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1">// ✅also ojbk</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Gender</span><span class="p">.</span><span class="nx">Female</span><span class="p">);</span> <span class="c1">// 2</span>
+</code></pre></div></div>
+
+<h3 id="函数类型">函数类型</h3>
+
+<p>函数的类型包含了入参及返回值两部分。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="nx">num</span><span class="p">:</span> <span class="nx">number</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">string</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>看起来像其他静态类型语言比如 Java 中的抽象方法，只有声明没有实现的样子。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Calculator</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+  <span class="nl">calculate</span><span class="p">:</span> <span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span> <span class="nx">y</span><span class="p">:</span> <span class="nx">number</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">Computer</span> <span class="kr">implements</span> <span class="nx">Calculator</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="kr">public</span> <span class="nx">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="nx">calculate</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span> <span class="nx">y</span><span class="p">:</span> <span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">counter</span><span class="p">:</span> <span class="nx">Calculator</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">counter</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">calculate</span><span class="p">:</span> <span class="p">(</span><span class="na">x</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="nx">number</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">x</span> <span class="o">-</span> <span class="nx">y</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="interface-与-type"><code class="language-plaintext highlighter-rouge">interface</code> 与 <code class="language-plaintext highlighter-rouge">type</code></h2>
+
+<p>通过上面的基本类型，可以抽象并定义对象。通过 <code class="language-plaintext highlighter-rouge">interface</code> 或 <code class="language-plaintext highlighter-rouge">type</code> 关键词，均可定义组合的复杂类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">Role</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">manager</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">employee</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">role</span><span class="p">:</span> <span class="nx">Role</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">type</code> 定义的类型，又叫 <code class="language-plaintext highlighter-rouge">type alias</code>，除了通过它创建类型，还可方便地为现有类型创建别名，体现了其 <code class="language-plaintext highlighter-rouge">alias</code> 的本意。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">Name</span> <span class="o">=</span> <span class="nx">string</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">myName</span><span class="p">:</span> <span class="nx">Name</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Tom</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>上面的示例意义不大， type alias 在<a href="https://www.typescriptlang.org/docs/handbook/advanced-types.html">高级类型</a>中的作用会非常明显，能够为复杂类型创建别名从而使用的时候只需要写别名即可。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">Name</span> <span class="o">=</span> <span class="nx">string</span><span class="p">;</span>
+<span class="nx">type</span> <span class="nx">NameResolver</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">string</span><span class="p">;</span>
+<span class="nx">type</span> <span class="nx">NameOrResolver</span> <span class="o">=</span> <span class="nx">Name</span> <span class="o">|</span> <span class="nx">NameResolver</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">getName</span><span class="p">(</span><span class="nx">n</span><span class="p">:</span> <span class="nx">NameOrResolver</span><span class="p">):</span> <span class="nx">Name</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">n</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">string</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">n</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">n</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>两种类型在使用上，没多大差别，只是尽量在代码中保持风格统一。更加具体的差异分析可继续阅读 <a href="https://github.com/wayou/wayou.github.io/issues/42">TypeScript: type alias 与 interface</a>。</p>
+
+<h2 id="交叉类型与联合类型">交叉类型与联合类型</h2>
+
+<p>交叉类型（Intersection Types）与联合类型（Union Types）也是属性高级类型中的内容，前面示例中有涉及到所以这里简单介绍。</p>
+
+<p>交叉类型是通过 <code class="language-plaintext highlighter-rouge">&amp;</code> 操作符创建的类型，表示新的类型为参与操作的这些类型的并集。它实际上是将多个类型进行合并，而不是像其名称那样取交集。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Student</span> <span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Employee</span> <span class="p">{</span>
+  <span class="nl">companyId</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">type</span> <span class="nx">SocialMan</span> <span class="o">=</span> <span class="nx">Student</span> <span class="o">&amp;</span> <span class="nx">Employee</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">tom</span><span class="p">:</span> <span class="nx">SocialMan</span><span class="p">;</span>
+
+<span class="nx">tom</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="nx">tom</span><span class="p">.</span><span class="nx">companyId</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">CID5241</span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">tom</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">ID3241</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>当一个学生加上工人的属性，他成了一个社会人，嗯。</p>
+
+<p>联合类型（Union Types）正如创建这种类型所使用的操作符 <code class="language-plaintext highlighter-rouge">|</code> 一样，他表示或的关系。新类型是个叠加态，在实际运行前，你不知道它到底所属哪种类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">addOne</span><span class="p">(</span><span class="nx">num</span><span class="p">:</span> <span class="nx">number</span> <span class="o">|</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/** 🚨 Operator '+' cannot be applied to types 'string | number' and '1'. */</span>
+  <span class="k">return</span> <span class="nx">num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>比如对入参加一的方法，JavaScript 中我们是可以这样干的，如果传入的是字符串，加号操作符会对其中一个做隐式转换。但结果可能不是你想要的数字加 1 而是变成了字符串相加。</p>
+
+<p>而 TypeScript 在此时就体现了其静态类型的优点，因为入参在这里是不确定的类型，随着输入的不同得到的结果是不可预期的，这大概率会导致 bug。而这个 bug 在 TypeScript 里被提前找了出来。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function addOne(num: number | string) {
+</span>  // ✅ 
+<span class="gi">+  return Number(num) + 1;
+</span><span class="err">}</span>
+</code></pre></div></div>
+
+<p>除了像上面入参不确定的情形，像前面示例有用到过的，将多个字符串联合，也是很常见的用法。甚至最佳实践中，建议你用联合字符串来代替枚举类型。But why? <a href="https://medium.com/@martin_hotell/10-typescript-pro-tips-patterns-with-or-without-react-5799488d6680">参见这里</a></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">Role</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">manager</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">employee</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="类型断言">类型断言</h2>
+
+<p>某些情况下，TypeScript 无法自动推断类型，此时可人工干预，对类型进行显式转换，我们称之为类型断言（Type assertions）。通过在值的前面放置尖括号，括号中指定需要的类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">someValue</span><span class="p">:</span> <span class="nx">any</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">this is a string</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">strLength</span><span class="p">:</span> <span class="nx">number</span> <span class="o">=</span> <span class="p">(</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="nx">someValue</span><span class="p">).</span><span class="nx">length</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>因为尖括号在写 React 组件时会有问题，<strong>容易被错误地当成 JSX 标签</strong>，所以 TypeScript 还支持另一种类型转换的操作，通过 <code class="language-plaintext highlighter-rouge">as</code> 关键字。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">someValue</span><span class="p">:</span> <span class="nx">any</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">this is a string</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">strLength</span><span class="p">:</span> <span class="nx">number</span> <span class="o">=</span> <span class="p">(</span><span class="nx">someValue</span> <span class="k">as</span> <span class="nx">string</span><span class="p">).</span><span class="nx">length</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>下面看一个更加实际的情况：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+  <span class="nl">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">male</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">female</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">sayName</span><span class="p">(</span><span class="nx">person</span><span class="p">:</span> <span class="nx">Person</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">tom</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">tom</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">male</span><span class="dl">"</span>
+<span class="p">};</span>
+
+<span class="cm">/** 🚨Type 'string' is not assignable to type '"male" | "female"' */</span>
+<span class="nx">sayName</span><span class="p">(</span><span class="nx">tom</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">tom</code> 没有显式指定为 <code class="language-plaintext highlighter-rouge">Person</code> 类型，但其实因为 TypeScript 的类型约束的是数据的结构，只要是形状上兼容，就可以将 <code class="language-plaintext highlighter-rouge">tom</code> 赋值给接收 <code class="language-plaintext highlighter-rouge">Person</code> 类型的入参。 这种机制也类似于你声明了一个变量并赋值个数字，这个变量自动就被推断出类型为数字一样，然后可以在任何地方当作数字来用，即便你并没有显式指明。</p>
+
+<p>所以这个示例中，我们需要修正一下初始化 <code class="language-plaintext highlighter-rouge">tom</code> 的对象中 <code class="language-plaintext highlighter-rouge">gender</code> 字段的类型，然后 TypeScript 就能正确推断出 <code class="language-plaintext highlighter-rouge">tom</code> 是个 <code class="language-plaintext highlighter-rouge">Person</code> 类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+  <span class="nl">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">male</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">female</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">sayName</span><span class="p">(</span><span class="nx">person</span><span class="p">:</span> <span class="nx">Person</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">tom</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">tom</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">male</span><span class="dl">"</span> <span class="k">as</span> <span class="dl">"</span><span class="s2">male</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">female</span><span class="dl">"</span>
+<span class="p">};</span>
+
+<span class="cm">/** ✅ ojbk */</span>
+<span class="nx">sayName</span><span class="p">(</span><span class="nx">tom</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>结合前面提到的类型别名，这里可以用 <code class="language-plaintext highlighter-rouge">type</code> 为性别创建一个别名类型，减少冗余。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gi">+ type Gender = "male" | "female";
+</span>
+interface Person {
+  name: string;
+<span class="gi">+  gender: Gender;
+</span><span class="err">}</span>
+
+<span class="p">function sayName(person: Person) {
+</span>  console.log(person);
+<span class="err">}</span>
+
+<span class="p">const tom = {
+</span>  name: "tom",
+<span class="gi">+  gender: "male" as Gender
+</span><span class="err">};</span>
+
+
+sayName(tom);
+</code></pre></div></div>
+
+<h2 id="可选参数与可空字段">可选参数与可空字段</h2>
+
+<p>定义类型时，如果字段后跟随一个问号，表示该字段可空，此时效果相当于是该类型自动与  <code class="language-plaintext highlighter-rouge">undefined</code> 进行了联合操作。以下两个类型是等效的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">Person</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">age</span><span class="p">?:</span> <span class="nx">number</span>
+<span class="p">};</span>
+
+<span class="nx">type</span> <span class="nx">Person2</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="nx">number</span> <span class="o">|</span> <span class="kc">undefined</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>对于函数入参而言，入参加上问号后，可将入参标识为可选，调用时可不传递。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span> <span class="nx">y</span><span class="p">?:</span> <span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="p">(</span><span class="nx">y</span> <span class="o">||</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>但此时可选的入参需要在参数列表中位于非可选的后面，像这样交换顺序后是不行的：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 🚨 A required parameter cannot follow an optional parameter. */</span>
+<span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">y</span><span class="p">?:</span> <span class="nx">number</span><span class="p">,</span> <span class="nx">x</span><span class="p">:</span> <span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="p">(</span><span class="nx">y</span> <span class="o">||</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>了解了一些基本的类型知识和写法就可以进行简单的业务编写了。你可以从官方的这个<a href="https://www.typescriptlang.org/samples/">模板页面</a>找到适合自己的技术栈作为练手的开始。</p>
+
+<p>然后，可以系统地浏览一遍 <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html">Handbook</a>，对 TypeScript 整体有个健全的了解。</p>
+
+<p>其中 <a href="https://www.typescriptlang.org/docs/handbook/advanced-types.html">Advanced Types</a> 章节里可以学习到进阶的类型定义和花式玩法，高级类型对于库的作者或写通用公共模块来说很有必要去了解。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Data_types">JavaScript data types and data structures</a></li>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html">TypeScript in 5 minutes</a></li>
+  <li><a href="http://2ality.com/2018/04/type-notation-typescript.html">Understanding TypeScript’s type notation</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/04/10/Egg.js-%E4%B8%AD%E5%85%A5%E5%8F%82%E7%9A%84%E6%A0%A1%E9%AA%8C/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Egg.js 中入参的校验"
+            >
+              Previous<br />
+              <span>Egg.js 中入参的校验</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="TypeScript 中的方法重载"
+            >
+              Next<br />
+              <span>TypeScript 中的方法重载</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

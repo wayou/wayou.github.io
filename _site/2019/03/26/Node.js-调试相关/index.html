@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Node.js 调试相关 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="Node.js 调试相关
+
+#0 Node.js 正确的书写方式
+
+为了防止后面出现混乱的各种书写，先来了解一下如何正确书写 node 的名称。
+
+下面使用来自@bitandbang 推文中的图片展示如何正确书写 Node.js 名称。
+
+
+Node.js 名称的正确书写方式
+
+--inspect 参数
+
+本地开发，无论是 web 应用还是命令行工具，使用 --inspect-brk 参数启..."
+  />
+   <meta property="article:published_time" content="2019-03-26T14:03:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/03/26/Node.js-%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    Node.js 调试相关 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/03/26/Node.js-%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>Node.js 调试相关</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">March 26, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="nodejs-调试相关">Node.js 调试相关</h1>
+
+<h2 id="0-nodejs-正确的书写方式">#0 Node.js 正确的书写方式</h2>
+
+<p>为了防止后面出现混乱的各种书写，先来了解一下如何正确书写 node 的名称。</p>
+
+<p>下面使用来自<a href="https://twitter.com/bitandbang/status/1087359646367731719">@bitandbang 推文</a>中的图片展示如何正确书写 Node.js 名称。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/nodejs-debug/assets/node_the_right_way.jpg" alt="Node.js 名称的正确书写方式" />
+<em>Node.js 名称的正确书写方式</em></p>
+
+<h3 id="--inspect-参数"><code class="language-plaintext highlighter-rouge">--inspect</code> 参数</h3>
+
+<p>本地开发，无论是 web 应用还是命令行工具，使用 <code class="language-plaintext highlighter-rouge">--inspect-brk</code> 参数启动程序，然后结合 Chrome DevTools 调试恐怕能满足大多数场景了。</p>
+
+<p>具体步骤：</p>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">--inspect-brk</code> 参数启动程序，会进入调试模式。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="sb">`</span>node <span class="nt">--inspect-brk</span> index.js<span class="sb">`</span>
+</code></pre></div></div>
+
+<p>这里使用 <code class="language-plaintext highlighter-rouge">--inspect-brk</code> 而非 <code class="language-plaintext highlighter-rouge">--inspect</code> 可保证代码第一时间断在开程序开头。如果使用后者，有可能无法进行后续操作。</p>
+
+<p>打开 Chrome 新开标签页访问 <a href="chrome://inspect"><code class="language-plaintext highlighter-rouge">chrome://inspect</code></a>。不出意外会看到刚刚创建的一个调试实例，直接点击 <code class="language-plaintext highlighter-rouge">inspect</code> 即可启动调试。因为是 <code class="language-plaintext highlighter-rouge">--inspect-brk</code> 启动的，调试界面打开后会断在程序开头。后面在哪里加断点就有很大自主权了。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/nodejs-debug/assets/chrome_inspect_panel.png" alt="`chrome://inspect` 界面" />
+<em><code class="language-plaintext highlighter-rouge">chrome://inspect</code> 界面</em></p>
+
+<p>需要注意的是，因为此时断在了程序开始，程序中其他文件可能没加载。所以无法看到。这种情况下，可事先在需要加断点的地方写上 <code class="language-plaintext highlighter-rouge">debugger</code>。</p>
+
+<h3 id="子进程中代码的调试">子进程中代码的调试</h3>
+
+<p>另一个需要注意的地方就是子进程。对于 <strong>子进程</strong> 中的代码，是无法断点的，这是调试大多数框架及复杂程序时的痛点。</p>
+
+<p>一个简单的子进程示例：</p>
+
+<p><em>index.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">cp</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">child_process</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">child</span> <span class="o">=</span> <span class="nx">cp</span><span class="p">.</span><span class="nx">fork</span><span class="p">(</span><span class="dl">'</span><span class="s1">./child</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">child</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">'</span><span class="s1">message</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">m</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">received: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">m</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">child</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="dl">'</span><span class="s1">Please up-case this string</span><span class="dl">'</span><span class="p">);</span>
+</code></pre></div></div>
+<p><em>child.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">process</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">'</span><span class="s1">message</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">m</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">debugger</span><span class="p">;</span>
+  <span class="c1">// Do work  (in this case just up-case the string</span>
+  <span class="nx">m</span> <span class="o">=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
+
+  <span class="c1">// Pass results back to parent process</span>
+  <span class="nx">process</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">(</span><span class="nx">m</span><span class="p">));</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>这里，<code class="language-plaintext highlighter-rouge">node --inspect-brk index.js</code> 启动调试后，<code class="language-plaintext highlighter-rouge">child.js</code> 中的 <code class="language-plaintext highlighter-rouge">debugger</code> 并不会生效，因为它的代码在子进程中。</p>
+
+<p>这也就是为什么，当你想调试 webpack 编译，恰好又用了类似 <a href="https://github.com/amireh/happypack">happypack</a> 这种多进程加速编译的工具时，发现 loader 及 插件中无法断点的原因。</p>
+
+<p>又比如，调试 eggjs，它也是多进程的模型，业务代码是运行在 worker 进程中的，直接通过 Node.js 的调试参数肯定是不行的。当然框架一般会有自身配套的调试方案，你可以安装 egg 的 vscode 调试插件，或者使用 egg-scripts 来启动调试。</p>
+
+<p>那是不是就无能为力了？当然不是，只是需要费劲一点。我们需要找到开启子进程的地方，在开启的时候加上调试参数。</p>
+
+<p>还是上面的示例，改造主文件为如下：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">var cp = require('child_process');
+</span><span class="gi">+var child = cp.fork('./child',[],{execArgv:['--inspect-brk']});
+</span>
+child.on('message', function(m) {
+  console.log('received: ' + m);
+<span class="err">});</span>
+
+<span class="p">child.send('Please up-case this string');
+</span></code></pre></div></div>
+
+<p>这样，就表示以调试模式来运行子进程中的代码，此时启动程序不要加 <code class="language-plaintext highlighter-rouge">inspect</code>，因为那是开启对主进程的调试，直接运行程序即可。<code class="language-plaintext highlighter-rouge">node index.js</code>。然后我们会在 <code class="language-plaintext highlighter-rouge">Chrome://inspect</code> 看到子进程已经 attach 到了调试界面。</p>
+
+<p>所以，无论是通过 <code class="language-plaintext highlighter-rouge">require('child_process'</code> 的 <code class="language-plaintext highlighter-rouge">exec</code> 还是 <code class="language-plaintext highlighter-rouge">spawn</code>，只需要找到开启子进程的地方，加上调试参数。</p>
+
+<p>但问题是，就看你能不能正确地找到所使用的框架工具他们开启子进程的地方。</p>
+
+<h3 id="善用-npx">善用 npx</h3>
+
+<p>调试 Node.js 模块时，特别是 npm 包，你需要手动拼出该模块的入口文件的路径，类似 <code class="language-plaintext highlighter-rouge">node —inspect node_modules/webpack/bin/webpack.js</code>, 但通过 <code class="language-plaintext highlighter-rouge">npx</code> 则不用，因为 npx 会自动在项目的 <code class="language-plaintext highlighter-rouge">node_modules</code> 或系统全局中寻找模块的入口文件，甚至如果本机没有安装，它还会自动搜索 registry 自动安装后执行。</p>
+
+<p>以至于你在初始化一个项目时，可使用如下命令：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npx license mit <span class="o">&gt;</span> LICENSE
+<span class="nv">$ </span>npx gitignore node
+<span class="nv">$ </span>npx covgen YOUR_EMAIL_ADDRESS
+<span class="nv">$ </span>npm init <span class="nt">-y</span>
+</code></pre></div></div>
+<p>即使你本地并没有安装 <code class="language-plaintext highlighter-rouge">mit</code>，<code class="language-plaintext highlighter-rouge">gitignore</code>，<code class="language-plaintext highlighter-rouge">covgen</code> 等 npm 包。</p>
+
+<p>使用 npx 时可通过 <code class="language-plaintext highlighter-rouge">—node-arg</code> 来传递参数给 Node.js。因为本质上 npx 也是执行 js 文件，与直接使用 <code class="language-plaintext highlighter-rouge">node</code> 命令来启动文件没什么差异。<code class="language-plaintext highlighter-rouge">—node-arg</code> 指定的参数会透传给 Node.js，所以，可以这样来启动一个 npm 包的调试：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npx —node-arg<span class="o">=</span>—inspect-brk webpack
+</code></pre></div></div>
+
+<h3 id="nodejs-内建的-debugger">Node.js 内建的 debugger</h3>
+
+<p>Node.js 自带的 v8 调试工具，是个命令行工具。操作起来是难用，但在远端服务器上这种不能使用 Chrome Devtools 进行可视化调试的场景下，就显得很有用了，比如调试路由重定向次数过多这种瞬间发生的问题，它能将代码及时在服务器上断下来，让我们慢慢分析现场。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>node inspect index.js
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/nodejs-debug/assets/node_builtin_debugger.png" alt="Node.js 自带的 debugger" />
+<em>Node.js 自带的 debugger</em></p>
+
+<p>进入调试模式后，代码会断在开始处。可通过以下常用命令进行 debug:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">c/cont</code>：断续执行，类似于 Chrome DevTools 中的 <kbd>F8</kbd></li>
+  <li><code class="language-plaintext highlighter-rouge">n/next</code>：步进，类似于 Chrome DevTools 中的 <kbd>F10</kbd></li>
+  <li><code class="language-plaintext highlighter-rouge">step/s</code>: 进入，类似于 Chrome DevTools 中的 <kbd>F11</kbd></li>
+  <li><code class="language-plaintext highlighter-rouge">setBreakpoint()/sb()</code>: 设置断点。
+    <ul>
+      <li>通过调用该函数可对代码设置断点。</li>
+      <li>直接调用则在当前所处的行设置断点。</li>
+      <li><code class="language-plaintext highlighter-rouge">sb(line_number)</code> 传递一个行数，对相应行设置上断点。</li>
+      <li><code class="language-plaintext highlighter-rouge">sb(file_name,line_number)</code> 传递文件名及行数，可对非当前文件进行断点的设置。</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">clearBreakpoint</code>: 参数与 <code class="language-plaintext highlighter-rouge">setBreakpoint</code> 类似，作用是清除断点。</li>
+  <li><code class="language-plaintext highlighter-rouge">breakpoints</code>，查看设置的断点。</li>
+</ul>
+
+<p>观察变量的值。在这种调试模式下，可通过输入 <code class="language-plaintext highlighter-rouge">repl</code> 进入 REPL（Read-Eval-Print-Loop） 模式来查看变量的值。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/nodejs-debug/assets/repl_in_node_debugger.png" alt="通过进入 `REPL` 模式查看断点处的变量值" />
+<em>通过进入 <code class="language-plaintext highlighter-rouge">REPL</code> 模式查看断点处的变量值</em></p>
+
+<p>实际使用中发现个弊端，就是打印出来的对象是不完整的，如上图。如果想查看没展示出来的属性，那就得记住属性名，然后手动点出来。你当然可以通过 <code class="language-plaintext highlighter-rouge">JSON.stringify(variable)</code> 将变量转字符后打出来。但 JSON 序列化可并不是处处都管用，比如 koa 中的 response, request 对象，如果尝试进行 JSON 序列化，会报 JSON 循环引用的错误。而且在这里的 REPL 环境下，不能调用 Node.js 模块，不然就可以通过自带的 <code class="language-plaintext highlighter-rouge">require('util').inspect(variable)</code> 来打印了。</p>
+
+<p>如果每次断在某处时，都需要查看某个变量的值，可通过设置 watcher 来更加方便地查看。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nx">watch</span><span class="p">(</span><span class="dl">'</span><span class="s1">my_expression</span><span class="dl">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="日志加-tail--f">日志加 <code class="language-plaintext highlighter-rouge">tail -f</code></h3>
+
+<p>服务器上面更加常用的应该还是日志加 <code class="language-plaintext highlighter-rouge">tail</code>，配合 <code class="language-plaintext highlighter-rouge">-f</code> 参数，可时实将最新的 log 输出到命令行。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">tail</span> <span class="nt">-f</span> /your/logs/log
+</code></pre></div></div>
+
+<h3 id="remote-debug">Remote Debug</h3>
+
+<p><a href="https://nodejs.org/en/docs/guides/debugging-getting-started/#enabling-remote-debugging-scenarios">Remote Debug</a> 这个就有点厉害了，没配置过，获取相应服务器权限设置好之后，估计没有比这个更便捷的调试服务器上代码的方式了。在有些资源或服务只在服务器环境才有的情况下，本地又不好还原场景。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://twitter.com/bitandbang/status/1087359646367731719">@bitandbang 关于如何正确书写 Node.js 的推文</a></li>
+  <li><a href="https://developer.ibm.com/tutorials/learn-nodejs-debugging-and-profiling-node-applications/">Learn Node.js, Unit 13: Debugging and profiling Node.js applications</a></li>
+  <li><a href="https://nodejs.org/en/docs/guides/debugging-getting-started/">Node.js 官方 debug 上手文档</a></li>
+  <li><a href="https://nodejs.org/api/debugger.html">Node.js 自带 debugger 文档</a></li>
+  <li><a href="https://stackoverflow.com/questions/16840623/how-to-debug-node-js-child-forked-process">How to debug Node.JS child forked process?</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/03/10/Webpack-SplitChunksPlugin-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Webpack SplitChunksPlugin 的三种模式"
+            >
+              Previous<br />
+              <span>Webpack SplitChunksPlugin 的三种模式</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/03/28/TypeScript-type-alias-%E4%B8%8E-interface/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="TypeScript: type alias 与 interface"
+            >
+              Next<br />
+              <span>TypeScript: type alias 与 interface</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

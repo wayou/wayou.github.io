@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="说出来你可能不信，Git 可以自动找 Bug - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="说出来你可能不信，Git 可以自动找 Bug
+
+之前提 bug 给 Chrome，注意到处理进程中有时会为 bug 贴上 Type-Bug-Regression 的标签，意即回归性 bug（Regression）。指该功能以前是好的，后续新功能开发或其他改动使该功能不好了。
+
+不一会儿便看到测试人员（可能是测试吧）指出了可能存在问题的某次提交：
+
+
+  看，这个提交之前的编译版本是 work..."
+  />
+   <meta property="article:published_time" content="2018-01-24T16:01:00Z">   
+  <meta property="article:tag" content="git" />
+   
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2018/01/24/%E8%AF%B4%E5%87%BA%E6%9D%A5%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E4%BF%A1-Git-%E5%8F%AF%E4%BB%A5%E8%87%AA%E5%8A%A8%E6%89%BE-Bug/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    说出来你可能不信，Git 可以自动找 Bug - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2018/01/24/%E8%AF%B4%E5%87%BA%E6%9D%A5%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E4%BF%A1-Git-%E5%8F%AF%E4%BB%A5%E8%87%AA%E5%8A%A8%E6%89%BE-Bug/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=git" title="git">git</a>
+                        
+                    </div>
+                    <h1>说出来你可能不信，Git 可以自动找 Bug</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">January 24, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h2 id="说出来你可能不信git-可以自动找-bug">说出来你可能不信，Git 可以自动找 Bug</h2>
+
+<p>之前提 <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=784780&amp;can=4&amp;q=&amp;colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified">bug</a> 给 Chrome，注意到处理进程中有时会为 bug 贴上 <code class="language-plaintext highlighter-rouge">Type-Bug-Regression</code> 的标签，意即回归性 bug（<a href="https://en.wikipedia.org/wiki/Software_regression">Regression</a>）。指该功能以前是好的，后续新功能开发或其他改动使该功能不好了。</p>
+
+<p>不一会儿便看到测试人员（可能是测试吧）指出了可能存在问题的某次提交：</p>
+
+<blockquote>
+  <p>看，这个提交之前的编译版本是 work 的！应该是这次提交引起的问题。</p>
+</blockquote>
+
+<p>然后开发陆续进行定位修复。</p>
+
+<p>至于测试是是怎么定位的，我猜他的工具箱里面有法宝。</p>
+
+<h3 id="不好意思我是开发">不好意思，我是开发</h3>
+
+<p>作为开发，碰到问题我们试图正面去刚。</p>
+
+<p>但情形也远不是别人想象的那样：</p>
+
+<blockquote>
+  <p>Bug 嘛，轻车熟路，表示写码多年已是老司机，望闻问切就知道毛病出在哪儿，甚至对于问题代码在哪个文件哪一行都大致有数。操起键盘就是一顿敲。</p>
+</blockquote>
+
+<p>这么行云流水，都不带假装思考的，莫不是先前埋下的彩蛋等着测试小哥发现，然后喝咖啡去了？</p>
+
+<p>所谓刚正面就是从 Bug 表象去倒追代码，回溯到问题可能的地方最后解决掉。这是正常情况，因为还有种可能就是很难定位，没有头绪的那种。这种情况注定会是一场持久战，打下来无非就是时间花了最后还是没定位，无疑让人感到沮丧，还有就是问题定位解决了但有种『我去原来是这个原因我咋早没想到』。不管怎样都不算高效。</p>
+
+<p>所以，如果遇到没有头绪或者感觉需要定位很久的问题，不防，用用「二分法」去定位 Bug。</p>
+
+<h3 id="二分法找-bug">二分法找 Bug</h3>
+
+<p>所谓「二分法」就是大概知道前面哪次提交的版本是正常的，截止到昨天的，上星期的，上个月的…不管怎样，在代码仓库的提交历史中，总能找到个时间点，这个 Bug 是不存在的。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>glog
+<span class="k">*</span> c25fd4a <span class="o">(</span>HEAD -&gt; master<span class="o">)</span> 5
+<span class="k">*</span> 5bd2f5a 4 -&gt; 我是有问题的提交
+<span class="k">*</span> c46f3ee 3
+<span class="k">*</span> 12ec265 2
+<span class="k">*</span> 130ac9b 1
+<span class="k">*</span> f0815ba 0
+</code></pre></div></div>
+
+<p>拿上面这个提交记录为例，我们在最新的提交 <code class="language-plaintext highlighter-rouge">5</code> 上面发现了问题，随便往前找到了提交 <code class="language-plaintext highlighter-rouge">0</code> 发现它是好的。 于是问题肯定出现在 0~5 这段提交中的某次代码提交（确切来说是 1~5，0 已经被确认是好的了）。</p>
+
+<p>机智的你当然不想从 1 到 5 挨个去试，很自然会想到找个中间值去试，将这些提交一分为二成两部分，这里我们假设选择 2 这个提交。</p>
+
+<p>一试发现是好的。说明 0~2 这一段提交都是好的。说明问题出在后续的提交中 3~5。</p>
+
+<p>二分大法果然好用，一下子将嫌疑提交减少了约一半。重复前面的步骤，将 3~5 这段提交再一分为二，找到中间的提交 4。一试发现问题还有，说明 4 这个提交有毛病！</p>
+
+<p>到这里就结束了么，没有。只因我们是上帝视角，前面告诉过你 4 这个提交就是真凶。此刻我们只知道 4,5 都是坏的，还需要验证一下 3 这个提交是否正常，只有把 3 验证了，才能唯一确定 4 是否就是问题源起的地方。</p>
+
+<p>相当于在第二轮的二分中，我们确定了 4~5 有问题，剩下 3 这个提交。继续二分，因为只有一个提交了，分不分都是它。</p>
+
+<p>测试后发现它是没问题的，于是确定从 4 这个提交开始出现了问题。于是我们就可以开心地 <code class="language-plaintext highlighter-rouge">git checkout 4</code> 来 diff 出问题了。</p>
+
+<p>二分的过程是在将定位问题的范围逐步缩小的过程。这一过程中，我们通过不断将范围一分为二，最后只试了三次将问题定位（2,4,3）。相比正常情况从 1 试到 5 确实省了不少工作量。如果一开始范围很大，提交数很多的情况下，这省下来的工作量就很可观了。</p>
+
+<h3 id="是时候祭出-git-自带的神器了">是时候祭出 Git 自带的神器了</h3>
+
+<p>说出来你可能不信，Git 内置了一个命令 <code class="language-plaintext highlighter-rouge">git bisect</code>，便是干上面这件事情的。</p>
+
+<p>人工去选择中间的提交，然后再 <code class="language-plaintext highlighter-rouge">git checkout</code> 到相应的提交，无疑有点繁琐。</p>
+
+<p>既然思路已经明朗，这些机械的事情完全可以交给工具去做嘛。而人需要做的就是，在 Git 将代码切到相应提交后，确认问题是否存在，然后告诉 Git 以便它进行下一步操作。</p>
+
+<p><code class="language-plaintext highlighter-rouge">man git-bisect</code> 可查看该命令详细说明，但就这里而言，只需掌握以下的命令便够我们使用了：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">git bisect start</code> 表示进入二分查找状态</li>
+  <li><code class="language-plaintext highlighter-rouge">git bisect good [&lt;rev&gt;]</code> 这里 <code class="language-plaintext highlighter-rouge">&lt;rev&gt;</code> 可以是某次提交的 HASH 值，也可以是分支名，Tag 名等能唯一标识一次提交的信息，该命令将标记指定的提交为无问题</li>
+  <li><code class="language-plaintext highlighter-rouge">git bisect bad [&lt;rev&gt;]</code> 该命令标记提交为有问题</li>
+  <li><code class="language-plaintext highlighter-rouge">git bisect reset</code> 退出二分查找状态</li>
+</ul>
+
+<p>假设我们现在处于 5 这个提交的位置，将前面查找问题的步骤用 <code class="language-plaintext highlighter-rouge">bisect</code> 命令走一遍会是如下的样子：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">git bisect start</code> 以开始二分查找</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/git-bisect/assets/0-start-bisect.png" alt="git bisect start" /></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">git bisect bad</code> 标记当前位置为 <code class="language-plaintext highlighter-rouge">bad</code> 告诉 Git 这里的提交是有问题的</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/git-bisect/assets/1-mark-bad.png" alt="标记最近的一次问题提交" /></p>
+
+<ul>
+  <li>在提交历史中回溯，找出一个没有问题的提交，并且告诉 Git 从这个提交开始查找。</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/git-bisect/assets/2-mark-1st-good.png" alt="标记查找的起点" /></p>
+
+<ul>
+  <li>
+    <p>该命令执行后，我们的查找范围就确定了，Git 自动找出了一个中间位置的提交，将代码切到了该提交的位置。</p>
+  </li>
+  <li>
+    <p>在这个新的提交位置上，我们编译代码验证问题是否存在，然后也是通过标记 <code class="language-plaintext highlighter-rouge">good</code> 或 <code class="language-plaintext highlighter-rouge">bad</code> 来告诉 Git 该次提交是否正常。</p>
+  </li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/git-bisect/assets/3-mark-2nd-good.png" alt="在新的提交位置验证并标记问题是否仍然存在" /></p>
+
+<ul>
+  <li>
+    <p>本次标记完成后，查找还没结束，于是 Git 又自动将我们定位到了一个新的位置。</p>
+  </li>
+  <li>
+    <p>这一步我们来到了提交信息为 <code class="language-plaintext highlighter-rouge">4</code> 的这次提交，重复前面的操作，验证问题是否存在并且进行标记。这里标记为 <code class="language-plaintext highlighter-rouge">bad</code> 表示 bug 出现在了这次提交。</p>
+  </li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/git-bisect/assets/4-mark-3rd-bad.png" alt="标记 bug 出现" /></p>
+
+<ul>
+  <li>
+    <p>这次标记之后，如前文所分析，查找还没有结束，还剩下一个提交 3 需要标记确认，于是 Git 自动将我们切到了提交信息为 3 的提交。</p>
+  </li>
+  <li>
+    <p>标记 3 这个提交为 <code class="language-plaintext highlighter-rouge">good</code></p>
+  </li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/git-bisect/assets/5-mark-4th-good.png" alt="标记 3 为 good" /></p>
+
+<ul>
+  <li>
+    <p>这次标记完成后，查找结束，问题已经定位。Git 会显示出定位的结果，如图中展示的那样。剩下就是去修复 Bug 了。</p>
+  </li>
+  <li>
+    <p>最后别忘了通过 <code class="language-plaintext highlighter-rouge">git bisect reset </code> 重置一下，退出 Git 的二分查找状态。</p>
+  </li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/git-bisect/assets/6-bisect-reset.png" alt="退出十分查找" /></p>
+
+<p>整套组合拳打下来，酣畅淋漓，让我们完成了一次愉快地 Bug 发现之旅。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>善用工具，事半功倍。不知道 Chrome 的测试小哥工具箱里的法宝，是不是此物。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/4713088/how-to-use-git-bisect">How to use git bisect?
+</a></li>
+  <li><a href="https://git-scm.com/docs/git-bisect">man git-bisect</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2018/01/18/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Webpack 调教之参数的投喂"
+            >
+              Previous<br />
+              <span>Webpack 调教之参数的投喂</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2018/02/05/%E5%BF%83%E4%B8%AD%E6%97%A0%E8%B7%AF%E7%94%B1-%E5%A4%84%E5%A4%84%E7%9A%86%E8%87%AA%E7%94%B1-react-router-v4-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="心中无路由，处处皆自由/react-router v4 动态路由"
+            >
+              Next<br />
+              <span>心中无路由，处处皆自由/react-router v4 动态路由</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="ipa 文件中资源的解析 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="获取 ipa 文件中资源的解析
+
+ipa 文件的获取
+
+以下步骤可以获取 App Store 中应用的 ipa 文件。获取到 ipa 文件后便可以进一步查看里面的资源或做其他研究学习。
+
+下面以星巴克中国的应用为例。
+
+
+  Mac 端从 App Store 安装 Apple Configurator 2。
+  
+    通过 USB 连接 iPhone 到 Mac，在 Apple Conf..."
+  />
+   <meta property="article:published_time" content="2019-11-23T09:11:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/11/23/ipa-%E6%96%87%E4%BB%B6%E4%B8%AD%E8%B5%84%E6%BA%90%E7%9A%84%E8%A7%A3%E6%9E%90/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    ipa 文件中资源的解析 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/11/23/ipa-%E6%96%87%E4%BB%B6%E4%B8%AD%E8%B5%84%E6%BA%90%E7%9A%84%E8%A7%A3%E6%9E%90/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>ipa 文件中资源的解析</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">November 23, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="获取-ipa-文件中资源的解析">获取 ipa 文件中资源的解析</h1>
+
+<h2 id="ipa-文件的获取">ipa 文件的获取</h2>
+
+<p>以下步骤可以获取 App Store 中应用的 ipa 文件。获取到 ipa 文件后便可以进一步查看里面的资源或做其他研究学习。</p>
+
+<p>下面以星巴克中国的应用为例。</p>
+
+<ul>
+  <li>Mac 端从 App Store 安装 <a href="https://apps.apple.com/cn/app/apple-configurator-2/id1037126344?l=en&amp;mt=12">Apple Configurator 2</a>。</li>
+  <li>
+    <p>通过 USB 连接 iPhone 到 Mac，在 Apple Configurator 2 选中该手机。</p>
+  </li>
+  <li>点击菜单上的 “+ Add” 添加按钮选择从 App Store 安装应用。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/69476713-523db080-0e18-11ea-81c3-6615000f6cf0.png" alt="使用 Apple Configurator 2 从 App Store 安装应用到手机" /></p>
+<p align="center">使用 Apple Configurator 2 从 App Store 安装应用到手机</p>
+
+<ul>
+  <li>然后按照步骤登录 Apple Id 安装需要的应用。只要在 App Store 购买获安装过的应用都会出现在里面。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/69476712-523db080-0e18-11ea-957d-f5113584a75c.png" alt="选择需要安装的应用" /></p>
+<p align="center">选择需要安装的应用</p>
+
+<ul>
+  <li>然后等待应用下载。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/69476711-523db080-0e18-11ea-9b28-9d9ea40d5519.png" alt="应用下载中..." /></p>
+<p align="center">应用下载中...</p>
+
+<ul>
+  <li>下载完成后会提示安装的选项，什么也不做，打开以下目录 <code class="language-plaintext highlighter-rouge">~/Library/Group Containers/K36BKF7T3D.group.com.apple.configurator/Library/Caches/Assets/TemporaryItems/MobileApps/</code>，此时 ipa 文件便在里面了。</li>
+</ul>
+
+<p>也可通过在命令行中执行如下语句打开对应目录：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>open ~/Library/Group<span class="se">\ </span>Containers/K36BKF7T3D.group.com.apple.configurator/Library/Caches/Assets/TemporaryItems/MobileApps/
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/69476791-73eb6780-0e19-11ea-81c5-9bafbe9004a8.png" alt="ipa 文件" /></p>
+<p align="center">ipa 文件</p>
+
+<h2 id="ipa-文件的解析">ipa 文件的解析</h2>
+
+<ul>
+  <li>将 ipa 文件复制出来，修改后缀名为 <code class="language-plaintext highlighter-rouge">.zip</code> 双击即可解压，在解压后的结果中可找到对应的 <code class="language-plaintext highlighter-rouge">.app</code> 文件，右键查看包内容便可看到应用内的各种资源。</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/69476709-510c8380-0e18-11ea-92a5-55cbf8601353.png" alt="应用包内的资源" /></p>
+<p align="center">应用包内的资源</p>
+
+<h2 id="icon-等图片资源的解析">icon 等图片资源的解析</h2>
+
+<p>上面的步骤可以拿到 logo 等非 <code class="language-plaintext highlighter-rouge">Images.xcassets</code> 下的图片资源，而这些 icon，banner 图片等会打包到 <code class="language-plaintext highlighter-rouge">Assets.car</code> （<a href="https://developer.apple.com/library/archive/documentation/Xcode/Reference/xcode_ref-Asset_Catalog_Format/index.html">Compiled Asset Catalogs</a>）文件下，可借助另外的工具来解析，比如 <a href="https://github.com/Marxon13/iOS-Asset-Extractor">Marxon13/iOS-Asset-Extractor</a>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>/iOSAssetExtractor <span class="nt">-i</span> path/to/Assets.car <span class="nt">-o</span> ./result <span class="nt">-g</span> 1
+</code></pre></div></div>
+
+<p>最终获取到的 icon 等图片资源：</p>
+
+<p><img width="1372" alt="Screen Shot 2019-11-23 at 21 24 29" src="https://user-images.githubusercontent.com/3783096/69479468-6b565980-0e38-11ea-9ffc-2548c791c788.png" /></p>
+<p align="center">app 中的 icon 资源</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://juejin.im/post/5db7fd23f265da4d194850c9">IOS Apple Configurator2 获取上架app 包资源</a></li>
+  <li><a href="https://github.com/Marxon13/iOS-Asset-Extractor">Marxon13/iOS-Asset-Extractor</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/10/15/CSS-ellipsis-%E4%B8%8E-padding-%E7%BB%93%E5%90%88%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="CSS `ellipsis` 与 `padding` 结合时的问题"
+            >
+              Previous<br />
+              <span>CSS `ellipsis` 与 `padding` 结合时的问题</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/11/25/Xcode-%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E9%BB%91%E5%B1%8F%E7%9A%84%E9%97%AE%E9%A2%98/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Xcode 真机调试黑屏的问题"
+            >
+              Next<br />
+              <span>Xcode 真机调试黑屏的问题</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

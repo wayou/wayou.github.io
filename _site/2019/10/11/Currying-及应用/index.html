@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Currying 及应用 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="Currying 及应用
+
+Currying，中文多翻译为柯里化，感觉这个音译还没有达到类似 Humor 之于幽默的传神地步，后面直接使用 Currying。
+
+什么是 Currying
+
+Currying 是这么一种机制，它将一个接收多个参数的函数，拆分成多个接收单个参数的函数。
+
+考察下面的代码：
+
+function add (a, b) {
+  return a + b;
+}
+
+add..."
+  />
+   <meta property="article:published_time" content="2019-10-11T16:10:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/10/11/Currying-%E5%8F%8A%E5%BA%94%E7%94%A8/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    Currying 及应用 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/10/11/Currying-%E5%8F%8A%E5%BA%94%E7%94%A8/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>Currying 及应用</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">October 11, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="currying-及应用">Currying 及应用</h1>
+
+<p>Currying，中文多翻译为<strong>柯里化</strong>，感觉这个音译还没有达到类似 Humor 之于幽默的传神地步，后面直接使用 Currying。</p>
+
+<h2 id="什么是-currying">什么是 Currying</h2>
+
+<p>Currying 是这么一种<strong>机制</strong>，它将一个接收多个参数的函数，拆分成多个接收单个参数的函数。</p>
+
+<p>考察下面的代码：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">add</span> <span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> <span class="c1">// returns 7</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">add</code> 接收两个参数 <code class="language-plaintext highlighter-rouge">a</code>，<code class="language-plaintext highlighter-rouge">b</code>，并返回它们的和 <code class="language-plaintext highlighter-rouge">a+b</code>。</p>
+
+<p>经过 curry 化处理后，函数成了如下形式：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">add</span> <span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>现在 <code class="language-plaintext highlighter-rouge">add</code> 接收一个参数 <code class="language-plaintext highlighter-rouge">a</code>，返回另一个接收一个参数 <code class="language-plaintext highlighter-rouge">b</code> 的函数。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">add</span><span class="p">(</span><span class="mi">3</span><span class="p">)(</span><span class="mi">4</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">add3</span> <span class="o">=</span> <span class="nx">add</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+
+<span class="nx">add3</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>现在当调用 <code class="language-plaintext highlighter-rouge">add(3)</code> 后，得到的不是和，而是另一个接收一个参数的函数，因此，<code class="language-plaintext highlighter-rouge">add</code> 的返回可以继续被调用，<code class="language-plaintext highlighter-rouge">add(3)(4)</code> 后面的这次调用才会将 4 加到 3 上得到和。</p>
+
+<p>而 <code class="language-plaintext highlighter-rouge">var add3 = add(3)</code> 这样的单次调用，得到的函数效果相当于是将 3 保存在了新函数的闭包中，该函数会对传入的参数加 3。</p>
+
+<p>注意这里提到了将入参 3 <strong>保存</strong> 到了闭包中后续使用，很容易联想到 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind"><code class="language-plaintext highlighter-rouge">Function.prototype.bind()</code></a>，它就可以对传入的函数提前绑定一些预设的入参：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">[,</span> <span class="nx">arg1</span><span class="p">[,</span> <span class="nx">arg2</span><span class="p">[,</span> <span class="p">...]]])</span>
+</code></pre></div></div>
+
+<p>后面会看到，正因为 <code class="language-plaintext highlighter-rouge">bind</code> 和 Currying 有点关系，在实现任意函数的 Currying 化时会用到它。</p>
+
+<p>注意到 Currying 化的定义，其实是将多个参数打散到多个函数中，这个过程可通过代码来自动化，以达到将任意多入参函数进行 Currying 化的目的，后面讨论实现。</p>
+
+<h2 id="偏函数partial-application">偏函数/Partial Application</h2>
+
+<p>区别与 Currying，如果在拆分入参的过程中，这些拆分出来的函数不是一次只应用其中的一个，而是任意多个，则这些函数就是部分应用（Parital application）了原函数中的入参，称作偏函数。</p>
+
+<p>考察下面的 <code class="language-plaintext highlighter-rouge">add</code> 函数，其实是将前面示例中的 <code class="language-plaintext highlighter-rouge">add</code> 入参进行了扩充，由两个增加到四个：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">+</span> <span class="nx">c</span> <span class="o">+</span> <span class="nx">d</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>那么如下的函数就都是偏函数，它们都部分应用了 <code class="language-plaintext highlighter-rouge">add</code> 的入参：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">partial1</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">+</span> <span class="nx">c</span> <span class="o">+</span> <span class="nx">d</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">partial2</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">+</span> <span class="nx">c</span> <span class="o">+</span> <span class="nx">d</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">partial3</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">+</span> <span class="nx">c</span> <span class="o">+</span> <span class="nx">d</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>偏函数中这种入参的拆分和部分应用，并不仅限于一层的拆分，可以是任意多次的:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">partial1</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="nx">partial2</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="nx">partial3</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">+</span> <span class="nx">c</span> <span class="o">+</span> <span class="nx">d</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="nx">partial1</span><span class="p">(</span><span class="mi">1</span><span class="p">)(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)(</span><span class="mi">4</span><span class="p">);</span> <span class="c1">// 10</span>
+</code></pre></div></div>
+
+<p>其中，<code class="language-plaintext highlighter-rouge">partial1</code>、<code class="language-plaintext highlighter-rouge">partial2</code>、<code class="language-plaintext highlighter-rouge">partial3</code> 一起构成了原 <code class="language-plaintext highlighter-rouge">add</code> 函数的偏函数。</p>
+
+<p>可以看到，偏函数是 Curring 更加一般（general）的形式，下面看如何实现将任意函数进行 Currying 化，或偏函数化。</p>
+
+<h2 id="将一般化函数进行-currying-化">将一般化函数进行 Currying 化</h2>
+
+<p>我们需要构造这么一个函数假设名叫 <code class="language-plaintext highlighter-rouge">curry</code>，</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">curry</span><span class="p">(</span><span class="nx">fn</span><span class="p">){</span>
+  <span class="c1">// 待实现</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>调用 <code class="language-plaintext highlighter-rouge">curry</code> 后，我们可以得到原函数 Curry 化后的版本，</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">add</span> <span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">currified</span> <span class="o">=</span> <span class="nx">curry</span><span class="p">(</span><span class="nx">add</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>即上述 <code class="language-plaintext highlighter-rouge">currified</code> 应该等效为：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">currified</span> <span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>首先，通过 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length"><code class="language-plaintext highlighter-rouge">Function.length</code></a> 是可以知道一个给定函数其预期的入参个数的。</p>
+
+<p>再加上前面提到的 <code class="language-plaintext highlighter-rouge">bind</code> 函数，可以得到如下的实现：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">curry</span><span class="p">(</span><span class="nx">f</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="nx">currify</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="nx">f</span><span class="p">.</span><span class="nx">length</span> <span class="p">?</span>
+      <span class="nx">f</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">args</span><span class="p">)</span> <span class="p">:</span>
+      <span class="nx">currify</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="p">...</span><span class="nx">args</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>下面测试一下：</p>
+
+<pre><code class="language-j">function add(a, b) {
+  return a + b;
+}
+
+var currified = curry(add);
+
+currified(1)(2); // 3
+</code></pre>
+
+<p>并且以上实现不只是简单的 Currying 化，可以是任意数量和任意次数的 parial application:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">+</span> <span class="nx">c</span> <span class="o">+</span> <span class="nx">d</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">currified</span> <span class="o">=</span> <span class="nx">curry</span><span class="p">(</span><span class="nx">add</span><span class="p">);</span>
+
+<span class="nx">currified</span><span class="p">(</span><span class="mi">1</span><span class="p">)(</span><span class="mi">2</span><span class="p">)(</span><span class="mi">3</span><span class="p">)(</span><span class="mi">4</span><span class="p">);</span> <span class="c1">// 10</span>
+<span class="nx">currified</span><span class="p">(</span><span class="mi">1</span><span class="p">)(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)(</span><span class="mi">4</span><span class="p">);</span> <span class="c1">// 10</span>
+<span class="nx">currified</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> <span class="c1">// 10</span>
+</code></pre></div></div>
+
+<p>总之就是各种形状<ruby>和<rp>（</rp><rt>hàn</rt><rp>）</rp></ruby>姿势，各种颜色<ruby>和<rp>（</rp><rt>hàn</rt><rp>）</rp></ruby>皮肤的组合。</p>
+
+<p>自动化的 CurryIng 倒是实现了，可说了半天，它具体有什么实用价值。</p>
+
+<h2 id="函数的组合function-composition">函数的组合（function composition）</h2>
+
+<p>我们知道代数里面可以有函数的组合，譬如：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f(x) = x * x
+g(y) = y + 1
+g(f(x)) = x * x + 1
+
+g(f(2)) = 2 * 2 + 1 = 5
+</code></pre></div></div>
+
+<p>上述代数表达转成 JavaScript 即：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">g</span><span class="p">(</span><span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">g</span><span class="p">(</span><span class="nx">f</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="c1">// 5</span>
+</code></pre></div></div>
+
+<p>这里用到了两个函数 <code class="language-plaintext highlighter-rouge">f</code>，<code class="language-plaintext highlighter-rouge">g</code> 联合起来得到一个结果，他们都分别只接收一个入参同时返回一个结果。</p>
+
+<p>像这样只接收一个入参并返回一个结果的函数，便符合组装的需求，可像上面这样自由组合。通过上面的讨论我们知道，任意函数都可经过 Currying 化处理后变成多个只接收单个入参的函数。这就为函数的组合提供了基础。</p>
+
+<p>因此我们可以将 <code class="language-plaintext highlighter-rouge">f</code>，<code class="language-plaintext highlighter-rouge">g</code> 的结合形成一个新的函数，这个函数作为对外的接口被调用即可。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">compose</span> <span class="o">=</span> <span class="nx">fn1</span> <span class="o">=&gt;</span> <span class="nx">fn2</span> <span class="o">=&gt;</span> <span class="nx">input</span> <span class="o">=&gt;</span> <span class="nx">fn1</span><span class="p">(</span><span class="nx">fn2</span><span class="p">(</span><span class="nx">input</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>使用：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">myFn</span> <span class="o">=</span> <span class="nx">compose</span><span class="p">(</span><span class="nx">f</span><span class="p">)(</span><span class="nx">g</span><span class="p">);</span>
+<span class="nx">myFn</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="c1">// 5</span>
+</code></pre></div></div>
+
+<p>像上面的 <code class="language-plaintext highlighter-rouge">compose</code> 还不够一般化，他只接收两个函数并对其进行结合，下面来看更加一般化的函数组合，将实现接收任意多个函数。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">pipe</span> <span class="o">=</span> <span class="p">(...</span><span class="nx">fns</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">input</span> <span class="o">=&gt;</span> <span class="nx">fns</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">mem</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">mem</span><span class="p">),</span> <span class="nx">input</span><span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">double</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">=&gt;</span> <span class="nx">x</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="kd">const</span> <span class="nx">addOne</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">=&gt;</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="kd">const</span> <span class="nx">square</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">=&gt;</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">x</span>
+
+<span class="nx">pipe</span><span class="p">(</span><span class="nx">square</span><span class="p">,</span> <span class="nx">double</span><span class="p">,</span> <span class="nx">addOne</span><span class="p">)(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>上面的 <code class="language-plaintext highlighter-rouge">pipe</code> 将对输入依次应用 入参中的各函数，所以取名 <code class="language-plaintext highlighter-rouge">pipe</code> 管道流。</p>
+
+<p>以上，函数的组装。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/36314/what-is-currying">What is ‘Currying’?</a></li>
+  <li><a href="https://medium.com/javascript-scene/curry-and-function-composition-2c208d774983">Curry and Function Composition</a></li>
+  <li><a href="https://medium.com/@juliomatcom/an-elegant-and-simple-curry-f-implementation-in-javascript-cf36252cff4c">An elegant and simple curry(f) implementation in Javascript</a></li>
+  <li><a href="https://lodash.com/docs/4.17.10#curry">lodash - curry</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length">Function.length</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Currying">Wikipedia  - Currying</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind">MDN - Function.prototype.bind()</a></li>
+  <li><a href="https://2ality.com/2011/09/currying-vs-part-eval.html">Currying versus partial application (with JavaScript code)</a></li>
+  <li><a href="https://2ality.com/2017/11/currying-in-js.html">Currying is not idiomatic in JavaScript</a></li>
+  <li><a href="https://medium.com/dailyjs/functional-js-6-function-composition-b7042c2ccffa">Functional JS #6: Function composition</a></li>
+  <li><a href="https://hackernoon.com/javascript-functional-composition-for-every-day-use-22421ef65a10">Functional JavaScript: Function Composition For Every Day Use</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/10/10/Mac-%E5%8B%BF%E6%89%B0%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%BF%AB%E6%8D%B7%E9%94%AE/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Mac 勿扰模式的快捷键"
+            >
+              Previous<br />
+              <span>Mac 勿扰模式的快捷键</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/10/12/http-equiv-meta-%E6%A0%87%E7%AD%BE/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="`http-equiv` meta 标签"
+            >
+              Next<br />
+              <span>`http-equiv` meta 标签</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

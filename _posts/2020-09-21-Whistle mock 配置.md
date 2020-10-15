@@ -2,11 +2,10 @@
 layout: post
 title: "Whistle mock 配置"
 date: 2020-09-21 22:09:00 +0800
-tags: 
+tags:
 ---
-    
-# Whistle mock 配置
 
+# Whistle mock 配置
 
 ## 安装依赖
 
@@ -19,23 +18,24 @@ $ npm i -g whistle.vase
 安装完成后，Whistle 插件界面会有对应展示，点击名称后进入插件配置界面，创建一个新的 mock 规则，引擎选择 「mock」:
 
 ![image](https://user-images.githubusercontent.com/3783096/93778459-83fdee80-fc58-11ea-92bb-7adf34fcb1ba.png)
-￼
 
 确定之后输入如下内容：
 
 ```json
 {
-  "list|3": [{
-    "id|+1": 10000,
-    "name": "@string",
-    "avatar": "http://lorempixel.com/100/100/"
-  }]
+  "list|3": [
+    {
+      "id|+1": 10000,
+      "name": "@string",
+      "avatar": "http://lorempixel.com/100/100/"
+    }
+  ]
 }
 ```
 
 更加详细的 mock 语法参见 [nuysoft/Mock Wiki](https://github.com/nuysoft/Mock/wiki/Syntax-Specification)。
 
-## 配置 Whistle 转发规则 
+## 配置 Whistle 转发规则
 
 添加 Whistle 转发规则，内容如下：
 
@@ -50,7 +50,6 @@ http://mock.local/test.json vase://sample_json
 完成上述配置后，访问 [http://mock.local/test.json](http://mock.local/test.json) 可以看到 mock 返回：
 
 ![image](https://user-images.githubusercontent.com/3783096/93778469-87917580-fc58-11ea-8274-e8a6ed8acced.png)
-￼
 
 ## 跨域问题
 
@@ -72,7 +71,6 @@ Access to fetch at 'https://some/api' from origin 'https://some/domain' has been
 # 可用于script标签上设置为 `crossorigin=use-credentials`的情形
 https://some/api resCors://enable vase://sample_json
 ```
-
 
 此设置虽然解决了跨域，但返回类型确不对：
 
@@ -105,5 +103,3 @@ http://some/api resHeaders://{CORSHeaders} vase://sample_json
 - [nuysoft/Mock Wiki](https://github.com/nuysoft/Mock/wiki/Syntax-Specification)
 - [Whistle 文档 - resCors](https://wproxy.org/whistle/rules/resCors.html)
 - [Access-Control-Allow-Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers)
-
-    

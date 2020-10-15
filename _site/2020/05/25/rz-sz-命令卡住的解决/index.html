@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="`rz/sz` 命令卡住的解决 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="rz/sz 命令卡住的解决
+
+通过 rz/sz 向服务器传输文件时，文件选择框没弹起，而是出现等待卡死的界面：
+
+$ rz -be
+�z waiting to receive.**B0100000063f694
+
+
+奇怪的是首次在本机 mac 上通过 iTerm2 使用时是成功的，过了几天才出现的该问题。
+
+无奈查看解决方案，发现需要进行如下一系列操作。
+
+安装 lrzsz
+
+首先需要在本机..."
+  />
+   <meta property="article:published_time" content="2020-05-25T15:05:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2020/05/25/rz-sz-%E5%91%BD%E4%BB%A4%E5%8D%A1%E4%BD%8F%E7%9A%84%E8%A7%A3%E5%86%B3/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    `rz/sz` 命令卡住的解决 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2020/05/25/rz-sz-%E5%91%BD%E4%BB%A4%E5%8D%A1%E4%BD%8F%E7%9A%84%E8%A7%A3%E5%86%B3/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>`rz/sz` 命令卡住的解决</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">May 25, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="rzsz-命令卡住的解决"><code class="language-plaintext highlighter-rouge">rz/sz</code> 命令卡住的解决</h1>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">rz/sz</code> 向服务器传输文件时，文件选择框没弹起，而是出现等待卡死的界面：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>rz <span class="nt">-be</span>
+�z waiting to receive.<span class="k">**</span>B0100000063f694
+</code></pre></div></div>
+
+<p>奇怪的是首次在本机 mac 上通过 iTerm2 使用时是成功的，过了几天才出现的该问题。</p>
+
+<p>无奈查看解决方案，发现需要进行如下一系列操作。</p>
+
+<h2 id="安装-lrzsz">安装 <code class="language-plaintext highlighter-rouge">lrzsz</code></h2>
+
+<p>首先需要在本机安装 <code class="language-plaintext highlighter-rouge">rz/sz</code> 命令。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew <span class="nb">install </span>lrzsz
+</code></pre></div></div>
+
+<p>检查安装：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>rz <span class="nt">--version</span>                                                                                          10:29:13
+rz <span class="o">(</span>lrzsz<span class="o">)</span> 0.12.20
+</code></pre></div></div>
+
+<h2 id="准备脚本">准备脚本</h2>
+
+<p>cd 到 <code class="language-plaintext highlighter-rouge">/usr/local/bin</code> 下，准备好 rz/sz 时需要执行的两个脚本：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cd</span> /usr/local/bin
+<span class="nv">$ </span><span class="nb">touch </span>iterm2-send-zmodem.sh iterm2-recv-zmodem.sh
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">iterm2-send-zmodem.sh</code> 写入如下内容：</p>
+
+<details>
+<summary>
+iterm2-send-zmodem.sh
+</summary>
+
+```sh
+#!/bin/bash
+# Author: Matt Mastracci (matthew@mastracci.com)
+# AppleScript from http://stackoverflow.com/questions/4309087/cancel-button-on-osascript-in-a-bash-script
+# licensed under cc-wiki with attribution required
+# Remainder of script public domain
+
+osascript -e 'tell application "iTerm2" to version' &gt; /dev/null 2&gt;&amp;1 &amp;&amp; NAME=iTerm2 || NAME=iTerm
+if [[ $NAME = "iTerm" ]]; then
+    FILE=`osascript -e 'tell application "iTerm" to activate' -e 'tell application "iTerm" to set thefile to choose file with prompt "Choose a file to send"' -e "do shell script (\"echo \"&amp;(quoted form of POSIX path of thefile as Unicode text)&amp;\"\")"`
+else
+    FILE=`osascript -e 'tell application "iTerm2" to activate' -e 'tell application "iTerm2" to set thefile to choose file with prompt "Choose a file to send"' -e "do shell script (\"echo \"&amp;(quoted form of POSIX path of thefile as Unicode text)&amp;\"\")"`
+fi
+if [[ $FILE = "" ]]; then
+    echo Cancelled.
+    # Send ZModem cancel
+    echo -e \\x18\\x18\\x18\\x18\\x18
+    sleep 1
+    echo
+    echo \# Cancelled transfer
+else
+    /usr/local/bin/sz "$FILE" -e -b
+    sleep 1
+    echo
+    echo \# Received $FILE
+fi
+```
+
+</details>
+
+<p><code class="language-plaintext highlighter-rouge">iterm2-recv-zmodem.sh</code> 写入如下内容：</p>
+
+<details>
+<summary>
+iterm2-recv-zmodem.sh
+</summary>
+
+```sh
+#!/bin/bash
+# Author: Matt Mastracci (matthew@mastracci.com)
+# AppleScript from http://stackoverflow.com/questions/4309087/cancel-button-on-osascript-in-a-bash-script
+# licensed under cc-wiki with attribution required
+# Remainder of script public domain
+
+osascript -e 'tell application "iTerm2" to version' &gt; /dev/null 2&gt;&amp;1 &amp;&amp; NAME=iTerm2 || NAME=iTerm
+if [[ $NAME = "iTerm" ]]; then
+    FILE=`osascript -e 'tell application "iTerm" to activate' -e 'tell application "iTerm" to set thefile to choose file with prompt "Choose a file to send"' -e "do shell script (\"echo \"&amp;(quoted form of POSIX path of thefile as Unicode text)&amp;\"\")"`
+else
+    FILE=`osascript -e 'tell application "iTerm2" to activate' -e 'tell application "iTerm2" to set thefile to choose file with prompt "Choose a file to send"' -e "do shell script (\"echo \"&amp;(quoted form of POSIX path of thefile as Unicode text)&amp;\"\")"`
+fi
+if [[ $FILE = "" ]]; then
+    echo Cancelled.
+    # Send ZModem cancel
+    echo -e \\x18\\x18\\x18\\x18\\x18
+    sleep 1
+    echo
+    echo \# Cancelled transfer
+else
+    /usr/local/bin/sz "$FILE" -e -b
+    sleep 1
+    echo
+    echo \# Received $FILE
+fi
+```
+
+</details>
+
+<h2 id="赋予脚本可执行权限">赋予脚本可执行权限</h2>
+
+<p>脚本准备好之后，需要通过 <code class="language-plaintext highlighter-rouge">chmod</code> 为其赋予可选择权限。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo chmod </span>777 /usr/local/bin/iterm2-<span class="k">*</span>
+</code></pre></div></div>
+
+<h2 id="配置-iterm2">配置 iTerm2</h2>
+
+<kdb>command</kdb>
+<ul>
+  <li>
+    <kdb>,</kdb>
+    <p>打开设置后依次进入 <code class="language-plaintext highlighter-rouge">Profiles</code> -&gt; <code class="language-plaintext highlighter-rouge">Default</code> -&gt; <code class="language-plaintext highlighter-rouge">Advanced</code> -&gt; <code class="language-plaintext highlighter-rouge">Triggers</code> -&gt; <code class="language-plaintext highlighter-rouge">Edit</code>，打开触发器的编辑界面。</p>
+  </li>
+</ul>
+
+<p>依次添加两个触发器，配置如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Regular expression: rz waiting to receive.\*\*B0100
+            Action: Run Silent Coprocess
+        Parameters: /usr/local/bin/iterm2-send-zmodem.sh
+           Instant: checked
+
+Regular expression: \*\*B00000000000000
+            Action: Run Silent Coprocess
+        Parameters: /usr/local/bin/iterm2-recv-zmodem.sh
+           Instant: checked
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/82773536-dda20800-9e74-11ea-942c-118a73a1bc92.png" alt="iTerm2 触发器编辑界面" /></p>
+<p align="center">iTerm2 触发器编辑界面</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://qq52o.me/2697.html">解决在 Mac 下 iTerm2 终端使用 sz 和 rz 命令报错问题</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/05/23/iOS-%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8%E7%9A%84%E8%B0%83%E8%AF%95/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="iOS 本地存储的调试"
+            >
+              Previous<br />
+              <span>iOS 本地存储的调试</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2020/05/26/TypeScript-%E4%B8%AD-Optional-Chaining-%E5%92%8C-Nullish-Coalescing/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="TypeScript 中 Optional Chaining 和 Nullish Coalescing"
+            >
+              Next<br />
+              <span>TypeScript 中 Optional Chaining 和 Nullish Coalescing</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

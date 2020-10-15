@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="理解时间复杂度 O(log n) - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="理解时间复杂度 O(log n)
+
+解决实际问题时，代码是否高效会成为问题解决的关键。高效的算法可以将资源开销控制在有限范围内将问题解决。而衡量一个算法优劣的标准则是时间复杂度，我们经常会看到 O(n) 这样的记号。
+
+对于 O(1) ，它表示时间复杂度为1，即解决这一问题的实现很直接，只需一步或者固定几个步骤。比如从哈希表中取值，通过索引只需在哈希表中查找一次便得到结果。而 O(n) 表示..."
+  />
+   <meta property="article:published_time" content="2017-12-06T17:12:00Z">   
+  <meta property="article:tag" content="algorithm" />
+   
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2017/12/06/%E7%90%86%E8%A7%A3%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-O(log-n)/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    理解时间复杂度 O(log n) - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2017/12/06/%E7%90%86%E8%A7%A3%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-O(log-n)/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=algorithm" title="algorithm">algorithm</a>
+                        
+                    </div>
+                    <h1>理解时间复杂度 O(log n)</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">December 6, 2017</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h2 id="理解时间复杂度-olog-n">理解时间复杂度 O(log n)</h2>
+
+<p>解决实际问题时，代码是否高效会成为问题解决的关键。高效的算法可以将资源开销控制在有限范围内将问题解决。而衡量一个算法优劣的标准则是时间复杂度，我们经常会看到 O(n) 这样的记号。</p>
+
+<p>对于 O(1) ，它表示时间复杂度为1，即解决这一问题的实现很直接，只需一步或者固定几个步骤。比如从哈希表中取值，通过索引只需在哈希表中查找一次便得到结果。而 O(n) 表示完成这一任务的时间复杂度与输入有关，与输入成正比，比如遍历数组。</p>
+
+<p>而 O(log n) 又该怎样理解？它的典型场景便是二分查找法，原理是不断将输入进行二等分直到找到目标。</p>
+
+<p>假设我们要从如下一个已经排好序长度为16的数列中找到指定的数字13：</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/a-sorted-array-of-16-elements.png" alt="一个长度为16已经排好序的数列" /></p>
+<p align="center">一个长度为16已经排好序的数列</p>
+
+<ul>
+  <li>找到中间元素，这里也就是元素16所处的位置，它中间为分界线将整个数列均分。</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/select-mid-as-pivot.png" alt="选中正中间的元素作为分界线" /></p>
+<p align="center">选中正中间的元素作为分界线</p>
+
+<ul>
+  <li>将目标与中间元素进行比较，因为13小于16，所以我们保留前半部分继续寻找。</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/keep-half.png" alt="保留前半部分" /></p>
+<p align="center">保留前半部分</p>
+
+<ul>
+  <li>重复上面的步骤，找到中间元素 8，因为13比8大，所以保留8后面的这部分</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/repeat-steps.png" alt="重复上面的步骤" /></p>
+<p align="center">重复上面的步骤</p>
+
+<ul>
+  <li>继续上面的步骤，直到没有剩余的元素便找到我们的目标了。</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/till-find-result.png" alt="直到找到目标" /></p>
+<p align="center">直到找到目标</p>
+
+<p>上面的步骤，每一次操作都将总数减小到原来的一半。我们从16个元素中找一个目标时二分了4次，<code class="language-plaintext highlighter-rouge">16*(1/2)*(1/2)*(1/2)*(1/2)</code> 总结成公式：</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/simplify-formula.png" alt="16个元素中二分的公式" /></p>
+<p align="center">16个元素中二分的公式</p>
+
+<p>推而广之，从 n 个元素中查找，需要多少次呢，还不知道，假设需要 k次。那么用上面的公式则可以表示为：</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/general-formula.png" alt="从 n 个元素中查找的公式" /></p>
+<p align="center">从 n 个元素中查找的公式</p>
+
+<p>去掉幂的括号则变成了：</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/separating-the-power.png" alt="去掉公式中幂的括号" /></p>
+<p align="center">去掉公式中幂的括号</p>
+
+<p>最后我们去掉分母，得到了一个简洁的公式：</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/common-formula.png" alt="简洁的公式" /></p>
+<p align="center">简洁的公式</p>
+
+<p>此时如何求 k 的值呢。就需要用到对数了。</p>
+
+<p>如果你对对数感到陌生了，可以先来回顾一下它的定义，请看来自百科的解释：</p>
+
+<blockquote>
+  <p>在数学中，对数是对求幂的逆运算，正如除法是乘法的倒数，反之亦然。 这意味着一个数字的对数是必须产生另一个固定数字（基数）的指数。
+ – <a href="https://baike.baidu.com/item/%E5%AF%B9%E6%95%B0/91326?fr=aladdin">百度百科 - 对数</a></p>
+</blockquote>
+
+<p>所以对上面公式两边取对数便得到了 k 的值，</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/understanding-logn-time-complexity/assets/log-formula.png" alt="对数公式" /></p>
+<p align="center">对数公式</p>
+
+<p>于是，我们推导出了如果输入为 n，查找一个结果的时间复杂度为 O(log n)。</p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://hackernoon.com/what-does-the-time-complexity-o-log-n-actually-mean-45f94bb5bfbf">What does the time complexity O(log n) actually mean?</a></li>
+  <li><a href="https://stackoverflow.com/questions/1592649/examples-of-algorithms-which-has-o1-on-log-n-and-olog-n-complexities">Examples of Algorithms which has O(1), O(n log n) and O(log n) complexities</a></li>
+  <li><a href="https://baike.baidu.com/item/%E5%AF%B9%E6%95%B0/91326?fr=aladdin">对数</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2017/12/05/source-map-%E7%9A%84%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="source map 的原理探究"
+            >
+              Previous<br />
+              <span>source map 的原理探究</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2017/12/28/%E6%8E%92%E5%88%97%E7%BB%84%E5%90%88%E9%97%AE%E9%A2%98/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title=" 排列组合问题"
+            >
+              Next<br />
+              <span> 排列组合问题</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

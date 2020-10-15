@@ -2,11 +2,10 @@
 layout: post
 title: "Puppeteer 截图及相关问题"
 date: 2019-04-04 21:04:00 +0800
-tags: 
+tags:
 ---
-    
-Puppeteer 截图及相关问题
-===
+
+# Puppeteer 截图及相关问题
 
 [Puppeteer](https://pptr.dev) 是 Headless Chrome 的 Node.js 封装。通过它可方便地对页面进行截图，或者保存成 PDF。
 
@@ -33,7 +32,7 @@ $ npx pkgrc yarn
 ```js
 const puppeteer = require("puppeteer");
 
-puppeteer.launch().then(async browser => {
+puppeteer.launch().then(async (browser) => {
   const page = await browser.newPage();
   await page.goto("https://example.com");
   await page.screenshot({ path: "screenshot.png" });
@@ -99,8 +98,8 @@ await page.screenshot({
     x: 0,
     y: 0,
     width: 400,
-    height: 400
-  }
+    height: 400,
+  },
 });
 ```
 
@@ -109,8 +108,8 @@ await page.screenshot({
 如果你使用过 Chrome DevTool 中的截图命令，或许知道，其中有一个针对元素进行截取的命令。
 
 ![Chrome DevTool 中对元素进行截图的命令](https://user-images.githubusercontent.com/3783096/55492896-93573980-566a-11e9-834f-9419a3758981.png)
-<p align="center">Chrome DevTool 中对元素进行截图的命令</p>
 
+<p align="center">Chrome DevTool 中对元素进行截图的命令</p>
 
 所以，除了对整个页面进行截取，Chrome 还支持对页面某个元素进行截取。通过 [`elementHandle .screenshot()`](https://pptr.dev/#?product=Puppeteer&version=v1.14.0&show=api-elementhandlescreenshotoptions) 可针对具体元素进行截取。
 
@@ -119,31 +118,30 @@ await page.screenshot({
 ```js
 const puppeteer = require("puppeteer");
 
-puppeteer.launch().then(async browser => {
+puppeteer.launch().then(async (browser) => {
   const page = await browser.newPage();
   await page.goto("https://example.com", {
-    waitUtil: "networkidle2"
+    waitUtil: "networkidle2",
   });
   const element = await page.$("body");
   await element.screenshot({
-    path: "screenshot.png"
+    path: "screenshot.png",
   });
 });
 ```
 
 其参数与 `page.screenshot()` 一样。需要注意的是，虽说一样，但其中是不能使用 `fullPage` 参数的。因为针对元素进行图片截取已经表明是局部截图了，与 `fullPage` 截取整个页面是冲突的，但它还是会自动滚动以截取完整的这个元素， `fullPage` 的优点没有丢掉。
 
-
 ## 数据的返回
 
 生成的图片可直接返回，也可保存成文件后返回文件地址。
 
-其中，截图方法 `page.screenshot([options])` 的返回是 `<Promise<string|Buffer>>`，即生成的可能是 buffer 数据，也可以是base64 形式的字符串数据，默认为 Buffer 内容，通过设置 `encoding` 参数为 `base64` 便可得到字符串形式的截图数据。
+其中，截图方法 `page.screenshot([options])` 的返回是 `<Promise<string|Buffer>>`，即生成的可能是 buffer 数据，也可以是 base64 形式的字符串数据，默认为 Buffer 内容，通过设置 `encoding` 参数为 `base64` 便可得到字符串形式的截图数据。
 
 以 Koa 为例，binary 形式的 buffer 数据直接赋值给 `ctx.body` 进行返回，通过 `response.attachment` 可设置返回的文件名。
 
 ```js
-app.use(async ctx => {
+app.use(async (ctx) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(url);
@@ -157,7 +155,7 @@ app.use(async ctx => {
 字符串形式时，需要注意拿到的并不是标准的图片 base64 格式，它只包含了数据部分，并没有文件类型部分，即 `data:image/png;base64`，所以需要手动拼接后才是正确可展示的图片。
 
 ```js
-app.use(async ctx => {
+app.use(async (ctx) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(url);
@@ -172,7 +170,7 @@ app.use(async ctx => {
 当然，字符串形式下，仍然是可以返回成文件下载的形式的，
 
 ```js
-app.use(async ctx => {
+app.use(async (ctx) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(url);
@@ -199,7 +197,7 @@ async function run() {
   await page.goto("https://www.google.com/chromebook/");
   await page.pdf({
     path: "puppeteer.pdf",
-    format: "A4"
+    format: "A4",
   });
 
   await browser.close();
@@ -213,6 +211,7 @@ run();
 需要注意的是，如果页面中使用了背景图片，上面代码截取出来是看不到的。
 
 ![截图 PDF 时背景图片未显示](https://user-images.githubusercontent.com/3783096/55738983-c3338200-5a5a-11e9-9874-22002bb8da20.png)
+
 <p align="center">截图 PDF 时背景图片未显示</p>
 
 需要设置截取时的 ` printBackground` 参数为 `true`：
@@ -226,8 +225,8 @@ run();
 ```
 
 ![修正后截图的 PDF 背景图片正常显示](https://user-images.githubusercontent.com/3783096/55739102-fa099800-5a5a-11e9-93e6-f9840eba698d.png)
-<p align="center">修正后截图的 PDF 背景图片正常显示</p>
 
+<p align="center">修正后截图的 PDF 背景图片正常显示</p>
 
 ## 一些问题
 
@@ -236,9 +235,9 @@ run();
 部署到全新的 Linux 环境时，大概率你会看到截来的图片中中文无法显示。
 
 ![中文字体缺失的情况](https://user-images.githubusercontent.com/3783096/55492861-833f5a00-566a-11e9-9ae2-f4b09a16becc.png)
+
 <p align="center">中文字体缺失的情况</p>
 
-￼
 那是因为系统缺少中文字体，Chromium 无法正常渲染。你需要[安装](https://help.accusoft.com/PCC/v11.2/HTML/Installing%20Asian%20Fonts%20on%20Ubuntu%20and%20Debian.html)中文字体，通过包管理工具或者手动下载安装。
 
 ```sh
@@ -297,9 +296,9 @@ $ ldd node_modules/puppeteer/.local-chromium/linux-641577/chrome-linux/chrome | 
         libgdk-3.so.0 => not found
         libgdk_pixbuf-2.0.so.0 => not found
 ```
+
 </p>
 </details>
-
 
 那么多，一个个搜索（因为这里例出的名称不一定就是直接可用来安装的名称）安装多麻烦。所以需要用其他方法。
 
@@ -391,6 +390,7 @@ The following additional packages will be installed:
   libxrender1 libxshmfence1 libxss1 libxt6 libxtst6 libxv1 libxxf86dga1 libxxf86vm1 perl-openssl-defaults sgml-base shared-mime-info
   x11-common x11-utils x11-xserver-utils xdg-user-dirs xdg-utils xkb-data xml-core
 ```
+
 </p>
 </details>
 
@@ -448,10 +448,9 @@ Removing google-chrome-unstable (75.0.3745.4-1) ...
 Processing triggers for mime-support (3.60) ...
 Processing triggers for man-db (2.7.6.1-2) ...
 ```
+
 </p>
 </details>
-
-
 
 ### sandbox 的问题
 
@@ -466,10 +465,10 @@ Linux 上 Puppeteer 启动 Chromium 时可能会看到如下的错误提示：
 ```js
 const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
 ```
+
 但考虑到安全问题，Puppeteer 是[强烈不建议](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#setting-up-chrome-linux-sandbox)在无沙盒环境下运行，除非加载的页面其内容是绝对可信的。
 
 如果需要设置在沙盒中运行，可参考[文档中的两种方法](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#recommended-enable-user-namespace-cloning)。
-
 
 ## 相关资源
 
@@ -477,5 +476,3 @@ const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
 - [How to Update and Install Latest Chrome in Linux/Ubuntu](https://linoxide.com/linux-how-to/install-latest-chrome-run-terminal-ubuntu/)
 - [How to Manually Install, Update, and Uninstall Fonts on Linux](https://medium.com/source-words/how-to-manually-install-update-and-uninstall-fonts-on-linux-a8d09a3853b0)
 - [Installing Asian Fonts on Ubuntu & Debian](https://help.accusoft.com/PCC/v11.2/HTML/Installing%20Asian%20Fonts%20on%20Ubuntu%20and%20Debian.html)
-
-    

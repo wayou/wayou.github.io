@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="TypeScript 装饰器的执行原理 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="TypeScript 装饰器的执行原理
+
+装饰器本质上提供了对被装饰对象 Property​ Descriptor 的操作，在运行时被调用。
+
+因为对于同一对象来说，可同时运用多个装饰器，然后装饰器中又可对被装饰对象进行任意的修改甚至是替换掉实现，直观感觉会有一些主观认知上的错觉，需要通过代码来验证一下。
+
+比如，假若每个装饰器都对被装饰对象的有替换，其结果会怎样？
+
+多个装饰器的应用
+
+通..."
+  />
+   <meta property="article:published_time" content="2019-06-13T15:06:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/06/13/TypeScript-%E8%A3%85%E9%A5%B0%E5%99%A8%E7%9A%84%E6%89%A7%E8%A1%8C%E5%8E%9F%E7%90%86/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    TypeScript 装饰器的执行原理 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/06/13/TypeScript-%E8%A3%85%E9%A5%B0%E5%99%A8%E7%9A%84%E6%89%A7%E8%A1%8C%E5%8E%9F%E7%90%86/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>TypeScript 装饰器的执行原理</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">June 13, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="typescript-装饰器的执行原理">TypeScript 装饰器的执行原理</h1>
+
+<p>装饰器本质上提供了对被装饰对象 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor">Property​ Descriptor</a> 的操作，在运行时被调用。</p>
+
+<p>因为对于同一对象来说，可同时运用多个装饰器，然后装饰器中又可对被装饰对象进行任意的修改甚至是替换掉实现，直观感觉会有一些主观认知上的错觉，需要通过代码来验证一下。</p>
+
+<p>比如，假若每个装饰器都对被装饰对象的有替换，其结果会怎样？</p>
+
+<h2 id="多个装饰器的应用">多个装饰器的应用</h2>
+
+<p>通过编译运行以下示例代码并查看其结果可以得到一些直观感受：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">f(): evaluated</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">_target</span><span class="p">:</span> <span class="kr">any</span><span class="p">,</span> <span class="nx">key</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">descriptor</span><span class="p">:</span> <span class="nx">PropertyDescriptor</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">original</span> <span class="o">=</span> <span class="nx">descriptor</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+    <span class="nx">descriptor</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">[])</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`[f]before </span><span class="p">${</span><span class="nx">key</span><span class="p">}</span><span class="s2"> called`</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+      <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">original</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`[f]after </span><span class="p">${</span><span class="nx">key</span><span class="p">}</span><span class="s2"> called`</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">f(): called</span><span class="dl">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">descriptor</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">g</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">g(): evaluated</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">_target</span><span class="p">:</span> <span class="kr">any</span><span class="p">,</span> <span class="nx">key</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">descriptor</span><span class="p">:</span> <span class="nx">PropertyDescriptor</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">original</span> <span class="o">=</span> <span class="nx">descriptor</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+    <span class="nx">descriptor</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">[])</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`[g]before </span><span class="p">${</span><span class="nx">key</span><span class="p">}</span><span class="s2"> called`</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+      <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">original</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`[g]after </span><span class="p">${</span><span class="nx">key</span><span class="p">}</span><span class="s2"> called`</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">g(): called</span><span class="dl">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">descriptor</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">C</span> <span class="p">{</span>
+  <span class="p">@</span><span class="nd">f</span><span class="p">()</span>
+  <span class="p">@</span><span class="nd">g</span><span class="p">()</span>
+  <span class="nx">foo</span><span class="p">(</span><span class="nx">count</span><span class="p">:</span> <span class="kr">number</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`foo called </span><span class="p">${</span><span class="nx">count</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">C</span><span class="p">();</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">foo</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>先放出执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f<span class="o">()</span>: evaluated
+g<span class="o">()</span>: evaluated
+g<span class="o">()</span>: called
+f<span class="o">()</span>: called
+<span class="o">[</span>f]before foo called <span class="o">[</span> 0 <span class="o">]</span>
+<span class="o">[</span>g]before foo called <span class="o">[</span> 0 <span class="o">]</span>
+foo called 0
+<span class="o">[</span>g]after foo called <span class="o">[</span> 0 <span class="o">]</span>
+<span class="o">[</span>f]after foo called <span class="o">[</span> 0 <span class="o">]</span>
+<span class="o">[</span>f]before foo called <span class="o">[</span> 1 <span class="o">]</span>
+<span class="o">[</span>g]before foo called <span class="o">[</span> 1 <span class="o">]</span>
+foo called 1
+<span class="o">[</span>g]after foo called <span class="o">[</span> 1 <span class="o">]</span>
+<span class="o">[</span>f]after foo called <span class="o">[</span> 1 <span class="o">]</span>
+</code></pre></div></div>
+
+<p>下面来详细分析。</p>
+
+<h2 id="编译后的装饰器代码">编译后的装饰器代码</h2>
+
+<p>首页看看编译后变成 JavaScript 的代码，毕竟这是实际运行的代码：</p>
+
+<details>
+<summary>
+编译后的代码
+</summary>
+
+```js
+var __decorate = (this &amp;&amp; this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c &lt; 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" &amp;&amp; typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i &gt;= 0; i--) if (d = decorators[i]) r = (c &lt; 3 ? d(r) : c &gt; 3 ? d(target, key, r) : d(target, key)) || r;
+    return c &gt; 3 &amp;&amp; r &amp;&amp; Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this &amp;&amp; this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" &amp;&amp; typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+function f() {
+    console.log("f(): evaluated");
+    return function (_target, key, descriptor) {
+        var original = descriptor.value;
+        descriptor.value = function () {
+            var args = [];
+            for (var _i = 0; _i &lt; arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            console.log("[f]before " + key + " called", args);
+            var result = original.apply(this, args);
+            console.log("[f]after " + key + " called", args);
+            return result;
+        };
+        console.log("f(): called");
+        return descriptor;
+    };
+}
+function g() {
+    console.log("g(): evaluated");
+    return function (_target, key, descriptor) {
+        var original = descriptor.value;
+        descriptor.value = function () {
+            var args = [];
+            for (var _i = 0; _i &lt; arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            console.log("[g]before " + key + " called", args);
+            var result = original.apply(this, args);
+            console.log("[g]after " + key + " called", args);
+            return result;
+        };
+        console.log("g(): called");
+        return descriptor;
+    };
+}
+var C = /** @class */ (function () {
+    function C() {
+    }
+    C.prototype.foo = function (count) {
+        console.log("foo called " + count);
+    };
+    __decorate([
+        f(),
+        g(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Number]),
+        __metadata("design:returntype", void 0)
+    ], C.prototype, "foo", null);
+    return C;
+}());
+var c = new C();
+c.foo(0);
+c.foo(1);
+```
+
+</details>
+
+<p>先看经过 TypeScript 编译后的代码，重点看这一部分：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">C</span> <span class="o">=</span> <span class="cm">/** @class */</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">function</span> <span class="nx">C</span><span class="p">()</span> <span class="p">{</span>
+    <span class="p">}</span>
+    <span class="nx">C</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">count</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo called </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">count</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="nx">__decorate</span><span class="p">([</span>
+        <span class="nx">f</span><span class="p">(),</span>
+        <span class="nx">g</span><span class="p">(),</span>
+        <span class="nx">__metadata</span><span class="p">(</span><span class="dl">"</span><span class="s2">design:type</span><span class="dl">"</span><span class="p">,</span> <span class="nb">Function</span><span class="p">),</span>
+        <span class="nx">__metadata</span><span class="p">(</span><span class="dl">"</span><span class="s2">design:paramtypes</span><span class="dl">"</span><span class="p">,</span> <span class="p">[</span><span class="nb">Number</span><span class="p">]),</span>
+        <span class="nx">__metadata</span><span class="p">(</span><span class="dl">"</span><span class="s2">design:returntype</span><span class="dl">"</span><span class="p">,</span> <span class="k">void</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">],</span> <span class="nx">C</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="dl">"</span><span class="s2">foo</span><span class="dl">"</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">C</span><span class="p">;</span>
+<span class="p">}());</span>
+</code></pre></div></div>
+
+<h2 id="tslib-中装饰器的实现">tslib 中装饰器的实现</h2>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">__decorate</code> 为 TypeScript 经 <a href="https://github.com/microsoft/tslib">tslib</a> 提供的 Decorator 实现，其源码为：</p>
+
+<p><a href="https://github.com/microsoft/tslib/blob/e1aae12c74c57200f72a7f9cfb53321e0c43b616/tslib.js#L90">tslib/tslib.js(经过格式化)</a></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">__decorate</span> <span class="o">=</span>
+  <span class="p">(</span><span class="k">this</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">__decorate</span><span class="p">)</span> <span class="o">||</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">decorators</span><span class="p">,</span> <span class="nx">target</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">desc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span>
+      <span class="nx">r</span> <span class="o">=</span>
+        <span class="nx">c</span> <span class="o">&lt;</span> <span class="mi">3</span>
+          <span class="p">?</span> <span class="nx">target</span>
+          <span class="p">:</span> <span class="nx">desc</span> <span class="o">===</span> <span class="kc">null</span>
+          <span class="p">?</span> <span class="p">(</span><span class="nx">desc</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyDescriptor</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">key</span><span class="p">))</span>
+          <span class="p">:</span> <span class="nx">desc</span><span class="p">,</span>
+      <span class="nx">d</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">Reflect</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">object</span><span class="dl">"</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nb">Reflect</span><span class="p">.</span><span class="nx">decorate</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">function</span><span class="dl">"</span><span class="p">)</span>
+      <span class="nx">r</span> <span class="o">=</span> <span class="nb">Reflect</span><span class="p">.</span><span class="nx">decorate</span><span class="p">(</span><span class="nx">decorators</span><span class="p">,</span> <span class="nx">target</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">desc</span><span class="p">);</span>
+    <span class="k">else</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">decorators</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">((</span><span class="nx">d</span> <span class="o">=</span> <span class="nx">decorators</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span>
+          <span class="nx">r</span> <span class="o">=</span> <span class="p">(</span><span class="nx">c</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="p">?</span> <span class="nx">d</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span> <span class="p">:</span> <span class="nx">c</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="p">?</span> <span class="nx">d</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">r</span><span class="p">)</span> <span class="p">:</span> <span class="nx">d</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">key</span><span class="p">))</span> <span class="o">||</span> <span class="nx">r</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">c</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="nx">r</span> <span class="o">&amp;&amp;</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">r</span><span class="p">),</span> <span class="nx">r</span><span class="p">;</span>
+  <span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="装饰器的执行顺序">装饰器的执行顺序</h2>
+
+<p>配合编译后代码和这里装饰器的实现来看，进一步<a href="https://github.com/wayou/wayou.github.io/issues/103">之前了解到的</a>关于装饰器被求值和执行的顺序，</p>
+
+<p>源码中应用装饰器的地方：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="p">@</span><span class="nd">f</span><span class="p">()</span>
+  <span class="p">@</span><span class="nd">g</span><span class="p">()</span>
+  <span class="nx">foo</span><span class="p">(</span><span class="nx">count</span><span class="p">:</span> <span class="kr">number</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`foo called </span><span class="p">${</span><span class="nx">count</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后这里的 <code class="language-plaintext highlighter-rouge">@f() @g()</code> 按照该顺序传递给了 <code class="language-plaintext highlighter-rouge">__decorate</code> 函数，</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  __decorate(
+    [
+<span class="gi">+      f(),
++      g(),
+</span>      __metadata("design:type", Function),
+      __metadata("design:paramtypes", [Number]),
+      __metadata("design:returntype", void 0)
+    ],
+    C.prototype,
+    "foo",
+    null
+  );
+</code></pre></div></div>
+
+<p>然后在 <code class="language-plaintext highlighter-rouge">__decorate</code> 函数体中，对传入的 <code class="language-plaintext highlighter-rouge">decorators</code> 从数据最后开始，取出装饰器函数顺次执行，</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">var __decorate =
+</span>  (this &amp;&amp; this.__decorate) ||
+  function(decorators, target, key, desc) {
+    var c = arguments.length,
+      r =
+        c &lt; 3
+          ? target
+          : desc === null
+          ? (desc = Object.getOwnPropertyDescriptor(target, key))
+          : desc,
+      d;
+    if (typeof Reflect === "object" &amp;&amp; typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+<span class="gi">+      for (var i = decorators.length - 1; i &gt;= 0; i--)
+</span>        if ((d = decorators[i]))
+          r = (c &lt; 3 ? d(r) : c &gt; 3 ? d(target, key, r) : d(target, key)) || r;
+    return c &gt; 3 &amp;&amp; r &amp;&amp; Object.defineProperty(target, key, r), r;
+  };
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">r</code> 便是装成器的返回，会被当作被装饰对象的新的属性描述器（Property Descriptor）来重新定义被装饰的对象：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">r</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>所以，像示例代码中多个装饰器均对被装饰对象有修改，原则上和多次调用 <code class="language-plaintext highlighter-rouge">Object.defineProperty()</code> 相当。</p>
+
+<h2 id="objectdefineproperty"><code class="language-plaintext highlighter-rouge">Object.defineProperty()</code></h2>
+
+<p>而调用 <code class="language-plaintext highlighter-rouge">Object.defineProperty()</code> 的结果是后面的会覆盖前面的，比如来看这里一个简单的示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="dl">"</span><span class="s2">foo</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">configurable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">value</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">1</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="dl">"</span><span class="s2">foo</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">2</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span> <span class="c1">// 2</span>
+</code></pre></div></div>
+
+<p><strong>注意：</strong> 根据 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description">MDN 对 <code class="language-plaintext highlighter-rouge">defineProperty</code> 的描述</a>，<code class="language-plaintext highlighter-rouge">configurable</code> 在缺省时为 <code class="language-plaintext highlighter-rouge">false</code>，所以如果要重复定义同一个 <code class="language-plaintext highlighter-rouge">key</code>，需要显式将其置为 <code class="language-plaintext highlighter-rouge">true</code>。</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">configurable</code></p>
+
+  <p><code class="language-plaintext highlighter-rouge">true</code> if and only if the type of this property descriptor may be changed and if the &gt; property may be deleted from the corresponding object.
+Defaults to <code class="language-plaintext highlighter-rouge">false</code>.</p>
+</blockquote>
+
+<p>回到本文开头的示例，为了进一步验证，可通过将运用装饰之后的属性描述器打印出来：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyDescriptor</span><span class="p">(</span><span class="nx">C</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="dl">"</span><span class="s2">foo</span><span class="dl">"</span><span class="p">).</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+</code></pre></div></div>
+
+<p>输出结果为：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+            var args <span class="o">=</span> <span class="o">[]</span><span class="p">;</span>
+            <span class="k">for</span> <span class="o">(</span>var _i <span class="o">=</span> 0<span class="p">;</span> _i &lt; arguments.length<span class="p">;</span> _i++<span class="o">)</span> <span class="o">{</span>
+                args[_i] <span class="o">=</span> arguments[_i]<span class="p">;</span>
+            <span class="o">}</span>
+            console.log<span class="o">(</span><span class="s2">"[f]before "</span> + key + <span class="s2">" called"</span>, args<span class="o">)</span><span class="p">;</span>
+            var result <span class="o">=</span> original.apply<span class="o">(</span>this, args<span class="o">)</span><span class="p">;</span>
+            console.log<span class="o">(</span><span class="s2">"[f]after "</span> + key + <span class="s2">" called"</span>, args<span class="o">)</span><span class="p">;</span>
+            <span class="k">return </span>result<span class="p">;</span>
+        <span class="o">}</span>
+</code></pre></div></div>
+
+<p>那么这里引出另一个问题，通过装饰器重复定义同一属性时，并没有显式返回一个 <code class="language-plaintext highlighter-rouge">configurable:true</code> 的对象，那为何在运用多个装饰器重复定义时没报错。</p>
+
+<h2 id="装饰器入参中的-descriptor">装饰器入参中的 <code class="language-plaintext highlighter-rouge">descriptor</code></h2>
+
+<p>答案就只有一个，那就是装饰器传入的 <code class="language-plaintext highlighter-rouge">descriptor</code> 已经是 <code class="language-plaintext highlighter-rouge">configurable</code> 为 <code class="language-plaintext highlighter-rouge">true</code> 的状态。</p>
+
+<p>为了验证，只需要在 <code class="language-plaintext highlighter-rouge">@f()</code> 或 <code class="language-plaintext highlighter-rouge">@g()</code> 任意一个装饰器中将 <code class="language-plaintext highlighter-rouge">descriptor</code> 打印出来即可。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function g() {
+</span>  console.log("g(): evaluated");
+  return function(_target: any, key: string, descriptor: PropertyDescriptor) {
+<span class="gi">+      console.log(descriptor)
+</span>    const original = descriptor.value;
+    descriptor.value = function(...args: any[]) {
+      console.log(`[g]before ${key} called`, args);
+      const result = original.apply(this, args);
+      console.log(`[g]after ${key} called`, args);
+      return result;
+    };
+    console.log("g(): called");
+    return descriptor;
+  };
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>输出的 <code class="language-plaintext highlighter-rouge">descriptor</code>：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">{</span>
+  value: <span class="o">[</span>Function],
+  writable: <span class="nb">true</span>,
+  enumerable: <span class="nb">true</span>,
+  configurable: <span class="nb">true</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>这便是最终运行时会执行的 <code class="language-plaintext highlighter-rouge">foo</code> 方法真身。</p>
+
+<p>可以看到确实是最后生效的装饰器确实是后运用的 <code class="language-plaintext highlighter-rouge">@f()</code>。因此你确实可以这么理解多个装饰器的重叠应用为，那一切都还说得通，就是 后运用的装饰器中 对被装饰对象的替换 会覆盖掉 先运用的装饰器 对被装饰对象的替换。</p>
+
+<p>But,</p>
+
+<p>这解释不了它的输出结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f<span class="o">()</span>: evaluated
+g<span class="o">()</span>: evaluated
+g<span class="o">()</span>: called
+f<span class="o">()</span>: called
+<span class="o">[</span>f]before foo called <span class="o">[</span> 0 <span class="o">]</span>
+<span class="o">[</span>g]before foo called <span class="o">[</span> 0 <span class="o">]</span>
+foo called 0
+<span class="o">[</span>g]after foo called
+<span class="o">[</span>f]after foo called
+<span class="o">[</span>f]before foo called <span class="o">[</span> 1 <span class="o">]</span>
+<span class="o">[</span>g]before foo called <span class="o">[</span> 1 <span class="o">]</span>
+foo called 1
+<span class="o">[</span>g]after foo called
+<span class="o">[</span>f]after foo called
+</code></pre></div></div>
+
+<h2 id="装饰器嵌套">装饰器嵌套</h2>
+
+<p>原因就在于这句代码：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">original</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>因为这句，<code class="language-plaintext highlighter-rouge">@f()</code> 和 <code class="language-plaintext highlighter-rouge">@g()</code> 便不是简单的覆盖关系，而是形成了嵌套关系。</p>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">original</code> 为 <code class="language-plaintext highlighter-rouge">descriptor.value</code>，即装饰器传入的 <code class="language-plaintext highlighter-rouge">descriptor</code> 的一个副本。我们在进行覆盖前保存了一下原方法的副本，</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 保存原始的被装饰对象</span>
+<span class="kd">const</span> <span class="nx">original</span> <span class="o">=</span> <span class="nx">descriptor</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+
+<span class="c1">// 替换被装饰对象</span>
+<span class="nx">descriptor</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="kr">any</span><span class="p">[])</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>因为装饰器的目的只是<strong>对已有的对象进行修饰加强</strong>，所以你不能粗暴地将原始的对象直接替换成新的实现（当然你确实可以那样粗暴的），那样并不符合大多数应用场景。所以在进行替换时，先保存原始对象（这里原始对象是 <code class="language-plaintext highlighter-rouge">foo</code> 方法），然后在新的实现中对原始对象再进行调用，这样来实现了对原始对象进行修饰，添加新的特性。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">descriptor.value = function(...args: any[]) {
+</span>    console.log(`[g]before ${key} called`, args);
+<span class="gi">+    const result = original.apply(this, args);
+</span>    console.log(`[g]after ${key} called`, args);
+    return result;
+<span class="err">};</span>
+</code></pre></div></div>
+
+<p>通过这种方式，多个装饰器对被装饰对象的修改可以层层传递下去，而不至于丢失。</p>
+
+<p>下面把每个装饰器接收到的属性描述器打印出来：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function f() {
+</span>  console.log("f(): evaluated");
+  return function(_target: any, key: string, descriptor: PropertyDescriptor) {
+    const original = descriptor.value;
+<span class="gi">+    console.log("[f] receive descriptor:", original.toString());
+</span>    descriptor.value = function(...args: any[]) {
+      console.log(`[f]before ${key} called`, args);
+      const result = original.apply(this, args);
+      console.log(`[f]after ${key} called`, args);
+      return result;
+    };
+    console.log("f(): called");
+    return descriptor;
+  };
+<span class="err">}</span>
+
+<span class="p">function g() {
+</span>  console.log("g(): evaluated");
+  return function(_target: any, key: string, descriptor: PropertyDescriptor) {
+    const original = descriptor.value;
+<span class="gi">+    console.log("[g] receive descriptor:", original.toString());
+</span>    descriptor.value = function(...args: any[]) {
+      console.log(`[g]before ${key} called`, args);
+      const result = original.apply(this, args);
+      console.log(`[g]after ${key} called`, args);
+      return result;
+    };
+    console.log("g(): called");
+    return descriptor;
+  };
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>输出结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>g] receive descriptor:
+ <span class="k">function</span> <span class="o">(</span>count<span class="o">)</span> <span class="o">{</span>
+        console.log<span class="o">(</span><span class="s2">"foo called "</span> + count<span class="o">)</span><span class="p">;</span>
+    <span class="o">}</span>
+
+<span class="o">[</span>f] receive descriptor:
+ <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+            var args <span class="o">=</span> <span class="o">[]</span><span class="p">;</span>
+            <span class="k">for</span> <span class="o">(</span>var _i <span class="o">=</span> 0<span class="p">;</span> _i &lt; arguments.length<span class="p">;</span> _i++<span class="o">)</span> <span class="o">{</span>
+                args[_i] <span class="o">=</span> arguments[_i]<span class="p">;</span>
+            <span class="o">}</span>
+            console.log<span class="o">(</span><span class="s2">"[g]before "</span> + key + <span class="s2">" called"</span>, args<span class="o">)</span><span class="p">;</span>
+            var result <span class="o">=</span> original.apply<span class="o">(</span>this, args<span class="o">)</span><span class="p">;</span>
+            console.log<span class="o">(</span><span class="s2">"[g]after "</span> + key + <span class="s2">" called"</span>, args<span class="o">)</span><span class="p">;</span>
+            <span class="k">return </span>result<span class="p">;</span>
+        <span class="o">}</span>
+</code></pre></div></div>
+
+<p>这里的示例中，先是 <code class="language-plaintext highlighter-rouge">@g()</code> 被调用，它接收到的 <code class="language-plaintext highlighter-rouge">descriptor</code> 就是原始的 <code class="language-plaintext highlighter-rouge">foo</code> 方法的属性描述器，打印出其值便是原始的 <code class="language-plaintext highlighter-rouge">foo</code> 方法的方法体，</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="p">(</span><span class="nx">count</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo called </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">count</span><span class="p">);</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>经过 <code class="language-plaintext highlighter-rouge">@g()</code> 处理后的属性描述器传递给了下一个装饰器 <code class="language-plaintext highlighter-rouge">@f()</code>，所以后者接收到的是经过处理后新的属性描述器，即 <code class="language-plaintext highlighter-rouge">@g()</code> 返回的那个：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="p">[];</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">_i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">_i</span> <span class="o">&lt;</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">_i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">args</span><span class="p">[</span><span class="nx">_i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">[</span><span class="nx">_i</span><span class="p">];</span>
+            <span class="p">}</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">[g]before </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> called</span><span class="dl">"</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+            <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">original</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">[g]after </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> called</span><span class="dl">"</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后将 <code class="language-plaintext highlighter-rouge">@f()</code> 中 <code class="language-plaintext highlighter-rouge">original</code> 替换成上述代码便是最终 <code class="language-plaintext highlighter-rouge">@f()</code> 返回的最终 <code class="language-plaintext highlighter-rouge">foo</code> 的样子，大致是这样的：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">descriptor</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="nx">any</span><span class="p">[])</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`[f]before </span><span class="p">${</span><span class="nx">key</span><span class="p">}</span><span class="s2"> called`</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+
+  <span class="c1">// g 开始</span>
+  <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">_i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">_i</span> <span class="o">&lt;</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">_i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">args</span><span class="p">[</span><span class="nx">_i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">[</span><span class="nx">_i</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">[g]before </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> called</span><span class="dl">"</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+
+  <span class="c1">// foo 开始</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`foo called </span><span class="p">${</span><span class="nx">count</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="c1">// foo 结束</span>
+
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">[g]after </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> called</span><span class="dl">"</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+  <span class="c1">// g 结束</span>
+  
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`[f]after </span><span class="p">${</span><span class="nx">key</span><span class="p">}</span><span class="s2"> called`</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>所以最终的 <code class="language-plaintext highlighter-rouge">foo</code> 方法其实是 <code class="language-plaintext highlighter-rouge">f(g(x))</code> 两者嵌套组合的结果，像数学上的函数调用一样。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>多个装饰器运用于同一对象时，其求值和执行顺序是相反的，</p>
+
+<p>对于类似这样的调用：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">@</span><span class="nd">f</span>
+<span class="p">@</span><span class="nd">g</span>
+<span class="nx">x</span>
+</code></pre></div></div>
+
+<ul>
+  <li>求值顺序是由上往下</li>
+  <li>执行顺序是由下往上</li>
+</ul>
+
+<p>通常情况下我们只关心执行顺序，除非是在编写复杂的装饰器工厂方法时。同时需要注意到，这里所指的装饰器<strong>执行顺序</strong> 是装饰器本身被调用的顺序，如果是装饰方法，这和 <code class="language-plaintext highlighter-rouge">descriptor.value</code> 被执行的顺序是两码事，后者的执行是层层嵌套的方式，联想 Koa 中间件的<strong>洋葱圈</strong>模型。</p>
+
+<p>如果多个装饰器中都对被装饰对象有所修改，注意嵌套过程中修改被覆盖的问题，如果不想要产生覆盖，装饰器中应该有对被装饰对象保存副本并且调用，方法通过 <code class="language-plaintext highlighter-rouge">fn.apply()</code>，类则可通过返回一个新的但继承自被装饰对象的新类来实现，比如：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">classDecorator</span><span class="o">&lt;</span><span class="nx">T</span> <span class="kd">extends</span> <span class="p">{</span><span class="k">new</span><span class="p">(...</span><span class="na">args</span><span class="p">:</span><span class="kr">any</span><span class="p">[]):{}}</span><span class="o">&gt;</span><span class="p">(</span><span class="kd">constructor</span><span class="p">:</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">class</span> <span class="kd">extends</span> <span class="kd">constructor</span> <span class="p">{</span>
+        <span class="nx">newProperty</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">new property</span><span class="dl">"</span><span class="p">;</span>
+        <span class="nx">hello</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">override</span><span class="dl">"</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="p">@</span><span class="nd">classDecorator</span>
+<span class="kd">class</span> <span class="nx">Greeter</span> <span class="p">{</span>
+    <span class="nx">property</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">property</span><span class="dl">"</span><span class="p">;</span>
+    <span class="nl">hello</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">m</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">hello</span> <span class="o">=</span> <span class="nx">m</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">new</span> <span class="nx">Greeter</span><span class="p">(</span><span class="dl">"</span><span class="s2">world</span><span class="dl">"</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>这里覆盖了被装饰类的构造器，但其他未修改的部分仍是原来类中的样子，因为这里返回的是一个 <code class="language-plaintext highlighter-rouge">extends</code> 后的新类。</p>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/06/12/TCP-%E4%B8%8E-UDP/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="TCP 与 UDP"
+            >
+              Previous<br />
+              <span>TCP 与 UDP</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/06/14/ES-%E6%8F%90%E6%A1%88%E7%9A%84%E5%90%84%E7%8A%B6%E6%80%81/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="ES 提案的各状态"
+            >
+              Next<br />
+              <span>ES 提案的各状态</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

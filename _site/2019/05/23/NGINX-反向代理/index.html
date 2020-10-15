@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="NGINX 反向代理 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="NGINX 反向代理
+
+代理与反向代理
+
+假设网络上有三台机器：
+
+  X：你的电脑
+  Y：代理服务器
+  Z：网站
+
+
+通常，你会直接访问需要的网络资源，此时路径是由你的电脑直接到网站 X-&gt;Z。
+
+代理（Proxy）
+
+但某些情况下，X 并不能直接访问到 Z。原因可能是两方面的，
+
+
+  X 所在的网络将 Z 进行了屏蔽封锁，比如公司内网禁用一些娱乐性质的网站，防止员工工作时间娱..."
+  />
+   <meta property="article:published_time" content="2019-05-23T15:05:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/05/23/NGINX-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    NGINX 反向代理 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/05/23/NGINX-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>NGINX 反向代理</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">May 23, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="nginx-反向代理">NGINX 反向代理</h1>
+
+<h2 id="代理与反向代理">代理与反向代理</h2>
+
+<p>假设网络上有三台机器：</p>
+<ul>
+  <li>X：你的电脑</li>
+  <li>Y：代理服务器</li>
+  <li>Z：网站</li>
+</ul>
+
+<p>通常，你会直接访问需要的网络资源，此时路径是由你的电脑直接到网站 X-&gt;Z。</p>
+
+<h3 id="代理proxy">代理（Proxy）</h3>
+
+<p>但某些情况下，X 并不能直接访问到 Z。原因可能是两方面的，</p>
+
+<ul>
+  <li>X 所在的网络将 Z 进行了屏蔽封锁，比如公司内网禁用一些娱乐性质的网站，防止员工工作时间娱乐。</li>
+  <li>Z 将 X 进行了屏蔽。比如 Z 发现来自 X 的请求异常，怀疑是恶意攻击，所以将 X 的 IP 封掉。</li>
+</ul>
+
+<p>此时 Y 在中间可充当 X 的代理，将 X 的请求转发到 Z，拿到内容后再返回给 X。此时路径为 X-&gt;Y-&gt;Z。</p>
+
+<p>也就是说，代理是 X 端主动配置和发起的，X 明确知道 Y 并不是返回内容的服务器。</p>
+
+<h3 id="反向代理-reverse-proxy"><strong>反向</strong>代理 (Reverse Proxy)</h3>
+
+<p>某些情况下，Z 不想让 X 直接访问，所以配置一个 Y 在前面充当代理提供服务。</p>
+
+<p>此时，作为用户访问的是 Y，并不知道 Z 才是真正提供服务的机器，用户<strong>被</strong>代理了，相比前面，所以这里是 <strong>反向</strong>代理。</p>
+
+<p>反向代理下，Z 在后台对外不公开只内网可访问，而作为反向代理的 Y 对外公开可通过公网访问。</p>
+
+<p>反向代理的场景：</p>
+
+<ul>
+  <li>比如 Z 是个大型网站，请求量巨大，单台机器是无法满足所有请求的，所以同样的网站内容部署在了多台机器上。然后配置一台反向代理的机器，将请求再就近转发到某台机器。比如 CDN。</li>
+  <li>负载均衡。将请求平均分配到各机器，以至于不会让某些机器过载，同时将挂掉的机器其请求转发到还在正常运行的机器上。</li>
+</ul>
+
+<h2 id="nginx-中反向代理的配置">NGINX 中反向代理的配置</h2>
+
+<h2 id="请求转发">请求转发</h2>
+
+<p>通过 <a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass"><code class="language-plaintext highlighter-rouge">proxy_pass</code></a> 可将请求直接转发。</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="n">/some/path/</span> <span class="p">{</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://www.example.com/link/</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>目标地址中的 path 部分会替换掉 <code class="language-plaintext highlighter-rouge">location</code> 参数中对应位置中的 path。比如这里 <code class="language-plaintext highlighter-rouge">/some/path/page.html</code> 会被转发到 <code class="language-plaintext highlighter-rouge">http://www.example.com/link/page.html</code>。</p>
+
+<p>其中目标地址可以是 IP，或带端口，</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="p">~</span> <span class="sr">\.php</span> <span class="p">{</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://127.0.0.1:8000</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>除了转发到 HTTP 服务器，还支持其他类型协议的转发，相应的指令为：</p>
+
+<ul>
+  <li><a href="http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_pass"><code class="language-plaintext highlighter-rouge">fastcgi_pass</code></a> 转发到 FastCGI 服务器</li>
+  <li><a href="http://nginx.org/en/docs/http/ngx_http_uwsgi_module.html#uwsgi_pass"><code class="language-plaintext highlighter-rouge">uwsgi_pass</code></a> 转发到 uwsgi 服务器</li>
+  <li><a href="http://nginx.org/en/docs/http/ngx_http_scgi_module.html#scgi_pass"><code class="language-plaintext highlighter-rouge">scgi_pass</code></a> 转发到 SCGI 服务</li>
+  <li><a href="http://nginx.org/en/docs/http/ngx_http_memcached_module.html#memcached_pass"><code class="language-plaintext highlighter-rouge">memcached_pass</code></a> 转到到 memcached 服务器</li>
+</ul>
+
+<h2 id="请求头的转发">请求头的转发</h2>
+
+<p>默认情况下 NGINX 为代理的请求设置上了两个请求头，<code class="language-plaintext highlighter-rouge">Host</code> 设置成 <code class="language-plaintext highlighter-rouge">$proxy_host</code> 变量的值，<code class="language-plaintext highlighter-rouge">Connection</code> 设置为 <code class="language-plaintext highlighter-rouge">close</code>。其他值为空的请求头会去掉。通过 <a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_set_header"><code class="language-plaintext highlighter-rouge">proxy_set_header</code></a> 指令可修改代理时的请求头。</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="n">/some/path/</span> <span class="p">{</span>
+    <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
+    <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://localhost:8000</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>代理时如果想禁止某个头部的传递，直接将其设置为空即可，</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="n">/some/path/</span> <span class="p">{</span>
+    <span class="kn">proxy_set_header</span> <span class="s">Accept-Encoding</span> <span class="s">""</span><span class="p">;</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://localhost:8000</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="buffer-的设置">Buffer 的设置</h2>
+
+<p>作为代理，在拿到完整响应前将结果暂存在内部的 buffer 数据中，拿到完整响应后再将结果返回到客户端。这种将响应暂存的方式可提高代理的效率，而同步的方式会浪费代理服务器的资源。</p>
+
+<p>默认 buffer 模式为开启状态，可通过 <a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering"><code class="language-plaintext highlighter-rouge">proxy_buffering</code></a> 进行开关。</p>
+
+<p><a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffers"><code class="language-plaintext highlighter-rouge">proxy_buffers</code></a> 控制单个请求为其分配的 buffer 大小和数量。</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="n">/some/path/</span> <span class="p">{</span>
+    <span class="kn">proxy_buffers</span> <span class="mi">16</span> <span class="mi">4k</span><span class="p">;</span>
+    <span class="kn">proxy_buffer_size</span> <span class="mi">2k</span><span class="p">;</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://localhost:8000</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>关闭某些 location 下的 buffer 设置：</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="n">/some/path/</span> <span class="p">{</span>
+    <span class="kn">proxy_buffering</span> <span class="no">off</span><span class="p">;</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://localhost:8000</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="出口地址">出口地址</h3>
+
+<p>通过 <a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_bind"><code class="language-plaintext highlighter-rouge">proxy_bind</code></a> 指令可配置代理服务器的出口地址，然后配置内部机器只接收来自该出口地址的请求。</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="n">/app1/</span> <span class="p">{</span>
+    <span class="kn">proxy_bind</span> <span class="mi">127</span><span class="s">.0.0.1</span><span class="p">;</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://example.com/app1/</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">location</span> <span class="n">/app2/</span> <span class="p">{</span>
+    <span class="kn">proxy_bind</span> <span class="mi">127</span><span class="s">.0.0.2</span><span class="p">;</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://example.com/app2/</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>IP 地址也可指定为变量，比如 <a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#var_server_addr"><code class="language-plaintext highlighter-rouge">$server_addr</code></a> 为接收请求机器的 IP。</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="n">/app3/</span> <span class="p">{</span>
+    <span class="kn">proxy_bind</span> <span class="nv">$server_addr</span><span class="p">;</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://example.com/app3/</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/">NGINX Reverse Proxy</a></li>
+  <li><a href="https://www.nginx.com/resources/glossary/reverse-proxy-server/">What Is a Reverse Proxy Server?</a></li>
+  <li><a href="https://stackoverflow.com/questions/224664/difference-between-proxy-server-and-reverse-proxy-server">Difference between proxy server and reverse proxy server</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/05/21/NGINX-%E9%85%8D%E7%BD%AE%E6%B8%85%E5%8D%95/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="NGINX 配置清单"
+            >
+              Previous<br />
+              <span>NGINX 配置清单</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/05/24/MySQL-%E4%BA%8B%E5%8A%A1/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="MySQL 事务"
+            >
+              Next<br />
+              <span>MySQL 事务</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

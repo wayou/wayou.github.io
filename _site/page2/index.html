@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:description"
+    content="ここは牛さんの部落格です"
+  />
+  
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/page2/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/page2/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Page Header -->
+
+
+
+
+
+
+
+<header class="intro-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading">
+        
+          <h1>牛さんの部落格</h1>
+          <span class="subheading">ここは牛さんの部落格です</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
+    <!-- PostList Container -->
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
+<div class="post-preview">
+  <a href="/2020/09/10/npm-install-%E6%97%B6-postinstall-%E8%84%9A%E6%9C%AC%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+    <h2 class="post-title">npm install 时 postinstall 脚本找不到的问题</h2>
+    
+  </a>
+  <p class="post-meta">September 10, 2020</p>
+  <div class="post-content-preview">
+     npm install 时 postinstall 脚本找不到的问题
+
+一些 npm 包在安装时会报如下 postinstall 脚本找不到的问题，比如 ``
+
+$ npm i protobuf... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/09/10/xed-%E5%91%BD%E4%BB%A4%E4%B8%8D%E5%8F%AF%E7%94%A8%E7%9A%84%E4%BF%AE%E6%AD%A3/">
+    <h2 class="post-title">`xed` 命令不可用的修正</h2>
+    
+  </a>
+  <p class="post-meta">September 10, 2020</p>
+  <div class="post-content-preview">
+     xed 命令不可用的修正
+
+通过 xed 命令可在命令行中调起 Xcode。
+
+当执行 xed 报如下错误时：
+
+$  xed .
+xcode-select: error: tool 'xed'... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/09/10/Postman-%E8%B0%83%E8%AF%95-HTTPS-%E6%8E%A5%E5%8F%A3%E6%97%B6%E5%8E%BB%E6%8E%89%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81/">
+    <h2 class="post-title">Postman 调试 HTTPS 接口时去掉证书验证</h2>
+    
+  </a>
+  <p class="post-meta">September 10, 2020</p>
+  <div class="post-content-preview">
+     Postman 调试 HTTPS 接口时去掉证书验证
+
+如果机器对外有安全性要求，只能提供 HTTPS，同时还没绑定域名，使用 Postman 进行接口调试时，通过 IP 去访问机器上的服务是会... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/09/08/iTerm2-Session-%E5%85%B1%E4%BA%AB/">
+    <h2 class="post-title">iTerm2 Session 共享</h2>
+    
+  </a>
+  <p class="post-meta">September 8, 2020</p>
+  <div class="post-content-preview">
+     iTerm2 Session 共享
+
+当前 session 登录远程机器后，新开窗口还需要重新输入密码登录，有点繁琐。
+
+$ ssh username@remote
+pin+password:
+... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/09/08/Mac-%E6%8A%B9%E6%8E%89%E7%A3%81%E7%9B%98%E5%A4%B1%E8%B4%A5%E7%9A%84%E8%A7%A3%E5%86%B3/">
+    <h2 class="post-title">Mac 抹掉磁盘失败的解决</h2>
+    
+  </a>
+  <p class="post-meta">September 8, 2020</p>
+  <div class="post-content-preview">
+     Mac 抹掉磁盘失败的解决
+
+使用 Mac 磁盘工具进行抹除操作时，报 Erase process has failed. Click Done to continue. 错误，如图：
+
+
+Ma... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/09/04/Nest-%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E6%9C%8D%E5%8A%A1%E4%B8%8E-404-%E7%9A%84%E5%A4%84%E7%90%86/">
+    <h2 class="post-title">Nest 静态文件服务与 404 的处理</h2>
+    
+  </a>
+  <p class="post-meta">September 4, 2020</p>
+  <div class="post-content-preview">
+     Nest 静态文件服务与 404 的处理
+
+准备工作
+
+创建项目
+
+为了更好地展示问题及解决方案，先创建个示例项目。
+
+
+  安装工具
+
+
+$ npm i -g @nestjs/cli
+
+
+
+ ... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/09/02/%E8%85%BE%E8%AE%AF%E4%BA%91%E5%89%8D%E7%AB%AF%E5%9B%A2%E9%98%9F%E4%BA%BA%E6%89%8D%E3%81%AE%E5%8B%9F%E9%9B%86%E4%B8%AD/">
+    <h2 class="post-title">腾讯云前端团队人才の募集中</h2>
+    
+  </a>
+  <p class="post-meta">September 2, 2020</p>
+  <div class="post-content-preview">
+     腾讯云，前端岗，舞台比心大，坑位预留中，速速来🔥
+
+ 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/08/28/Crontab-%E7%9A%84%E4%BD%BF%E7%94%A8/">
+    <h2 class="post-title">Crontab 的使用</h2>
+    
+  </a>
+  <p class="post-meta">August 28, 2020</p>
+  <div class="post-content-preview">
+     Crontab 的使用
+
+crontab 用于设置定时任务，通过 cat /etc/crontab 可查看 crontab 示例：
+
+$ cat /etc/crontab 
+SHELL=/bin... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/08/26/npm-ci-%E4%B8%8E-install-%E7%9A%84%E5%8C%BA%E5%88%AB/">
+    <h2 class="post-title">npm ci 与 install 的区别</h2>
+    
+  </a>
+  <p class="post-meta">August 26, 2020</p>
+  <div class="post-content-preview">
+     npm ci 与 install 的区别
+
+
+  要求必需有 package-lock.json 或 npm-shrinkwrap.json 文件存在
+  如果 lock 与 package.j... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/08/20/%E5%8E%BB%E6%8E%89-echo-%E7%BB%93%E5%B0%BE%E7%9A%84%E6%8D%A2%E8%A1%8C/">
+    <h2 class="post-title">去掉 echo 结尾的换行</h2>
+    
+  </a>
+  <p class="post-meta">August 20, 2020</p>
+  <div class="post-content-preview">
+     去掉 echo 结尾的换行
+
+考察如下 shell 脚本：
+
+$ echo “node -v:” &amp;&amp; node -v
+“node -v:”
+v14.4.0
+
+
+输出成了现行。
+... 
+  </div>
+</div>
+
+
+<!-- Pager -->
+
+<ul class="pager">
+  
+  <li class="previous">
+    <a
+      href="/"
+      >&larr;</a
+    >
+  </li>
+   
+  <li class="next">
+    <a
+      href="/page3"
+      >&rarr;</a
+    >
+  </li>
+  
+</ul>
+
+
+    </div>
+    <!-- Sidebar Container -->
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
+
+
+
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
+</div>
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

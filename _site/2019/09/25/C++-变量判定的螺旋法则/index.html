@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="C++ 变量判定的螺旋法则 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="C++ 变量判定的螺旋法则
+
+C++ 中一个标识符配合着各种修饰界定符，使得标识符的本意不那么直观一眼就能看出，甚至需要仔细分析，才能知道该标识符的具体你含义。
+
+比如：
+
+void (*signal(int, void (*fp)(int)))(int);
+
+
+其中 signal 是什么？
+
+螺旋法则
+
+对于如何进行变量的辩识，有个非官方的 “顺时针/螺旋法则（Clockwise/Spir..."
+  />
+   <meta property="article:published_time" content="2019-09-25T15:09:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/09/25/C++-%E5%8F%98%E9%87%8F%E5%88%A4%E5%AE%9A%E7%9A%84%E8%9E%BA%E6%97%8B%E6%B3%95%E5%88%99/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    C++ 变量判定的螺旋法则 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/09/25/C++-%E5%8F%98%E9%87%8F%E5%88%A4%E5%AE%9A%E7%9A%84%E8%9E%BA%E6%97%8B%E6%B3%95%E5%88%99/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>C++ 变量判定的螺旋法则</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">September 25, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="c-变量判定的螺旋法则">C++ 变量判定的螺旋法则</h1>
+
+<p>C++ 中一个标识符配合着各种修饰界定符，使得标识符的本意不那么直观一眼就能看出，甚至需要仔细分析，才能知道该标识符的具体你含义。</p>
+
+<p>比如：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">signal</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)(</span><span class="kt">int</span><span class="p">)))(</span><span class="kt">int</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">signal</code> 是什么？</p>
+
+<h2 id="螺旋法则">螺旋法则</h2>
+
+<p>对于如何进行变量的辩识，有个非官方的 “顺时针/螺旋法则（Clockwise/Spiral Rule）” 可用来帮助辩识。</p>
+
+<p>该法则的内容，简单来说，为了搞清楚一个未知标识符的含义，我们可以：</p>
+
+<ol>
+  <li>从我们需要判定的标识符开始，顺时针画圈，遇到如下符号时，用对应的语义替换：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">[x]</code> 或 <code class="language-plaintext highlighter-rouge">[]</code> =&gt; 容量为 <code class="language-plaintext highlighter-rouge">x</code> 的数组或数组</li>
+      <li><code class="language-plaintext highlighter-rouge">(type1,type2...)</code> =&gt; 接收 <code class="language-plaintext highlighter-rouge">type1</code>、<code class="language-plaintext highlighter-rouge">type2</code>… 的函数，返回值为（待定）</li>
+      <li><code class="language-plaintext highlighter-rouge">*</code> =&gt; 指向（类型待定）的指针</li>
+    </ul>
+  </li>
+  <li>重复上面的步骤直到语句中所有符号都被遍历过。</li>
+  <li>始终优先解析括号括起来的部分。</li>
+</ol>
+
+<h2 id="实地演练">实地演练</h2>
+
+<h3 id="一个简单的示例">一个简单的示例</h3>
+
+<p>先从一个简单的开始，判定如下语句中 <code class="language-plaintext highlighter-rouge">str</code> 的含义：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                     <span class="o">+-------+</span>
+                     <span class="o">|</span> <span class="o">+-+</span>   <span class="o">|</span>
+                     <span class="o">|</span> <span class="o">^</span> <span class="o">|</span>   <span class="o">|</span>
+                <span class="kt">char</span> <span class="o">*</span><span class="n">str</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+                 <span class="o">^</span>   <span class="o">^</span>   <span class="o">|</span>   <span class="o">|</span>
+                 <span class="o">|</span>   <span class="o">+---+</span>   <span class="o">|</span>
+                 <span class="o">+-----------+</span>
+</code></pre></div></div>
+
+<p>根据螺旋法则，如上面线图标识所示，</p>
+<ul>
+  <li>从 <code class="language-plaintext highlighter-rouge">str</code> 这个需要被判定的对象出发。</li>
+  <li>螺旋路径上第一次遇到的是 <code class="language-plaintext highlighter-rouge">[</code> 左方括号，由此我们知道，<code class="language-plaintext highlighter-rouge">str</code> 是一个尺寸为 10 的数组。</li>
+  <li>继续旋转，遇到 <code class="language-plaintext highlighter-rouge">*</code>，所以 <code class="language-plaintext highlighter-rouge">str</code> 是一个尺寸为 10 的数组，数组元素为指针。</li>
+  <li>继续，遇到 <code class="language-plaintext highlighter-rouge">;</code> 标识语句的结束。</li>
+  <li>再继续，遇到 <code class="language-plaintext highlighter-rouge">char</code>，所以 <code class="language-plaintext highlighter-rouge">str</code> 是一个尺寸为 10 的数组，数组元素为指向 <code class="language-plaintext highlighter-rouge">char</code> 类型的指针。</li>
+</ul>
+
+<h3 id="进阶">进阶</h3>
+
+<p>回到文章开头那个语句，来判定其中 <code class="language-plaintext highlighter-rouge">signal</code> 的含义。</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                      <span class="o">+-----------------------------+</span>
+                      <span class="o">|</span>                  <span class="o">+---+</span>      <span class="o">|</span>
+                      <span class="o">|</span>  <span class="o">+---+</span>           <span class="o">|+-+|</span>      <span class="o">|</span>
+                      <span class="o">|</span>  <span class="o">^</span>   <span class="o">|</span>           <span class="o">|^</span> <span class="o">||</span>      <span class="o">|</span>
+                <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">signal</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)(</span><span class="kt">int</span><span class="p">)))(</span><span class="kt">int</span><span class="p">);</span>
+                 <span class="o">^</span>    <span class="o">^</span>      <span class="o">|</span>      <span class="o">^</span>    <span class="o">^</span>  <span class="o">||</span>      <span class="o">|</span>
+                 <span class="o">|</span>    <span class="o">+------+</span>      <span class="o">|</span>    <span class="o">+--+|</span>      <span class="o">|</span>
+                 <span class="o">|</span>                  <span class="o">+--------+</span>      <span class="o">|</span>
+                 <span class="o">+----------------------------------+</span>
+</code></pre></div></div>
+
+<p>由螺旋法则画出如上的线图，进而可分析：</p>
+
+<ul>
+  <li>从要判定的 <code class="language-plaintext highlighter-rouge">signal</code> 出发首次遇到 <code class="language-plaintext highlighter-rouge">(</code> 左括号，表示 <code class="language-plaintext highlighter-rouge">signal</code> 是一个函数，入参为 <code class="language-plaintext highlighter-rouge">int</code> 和 …</li>
+  <li>此处需要需要进一步运用螺旋法则先确定 <code class="language-plaintext highlighter-rouge">fp</code> 的含义，才能进而确认 <code class="language-plaintext highlighter-rouge">signal</code> 这个函数的完整入参。所以从 <code class="language-plaintext highlighter-rouge">fp</code> 了发进行一次子螺旋。</li>
+  <li>因为需要优先解析括号括起来的部分，所以转一圈回来首次遇到的是 <code class="language-plaintext highlighter-rouge">*</code>，由此 <code class="language-plaintext highlighter-rouge">fp</code> 是一个指针。</li>
+  <li>继续解析 <code class="language-plaintext highlighter-rouge">fp</code>，遇到 <code class="language-plaintext highlighter-rouge">(</code>，所以 <code class="language-plaintext highlighter-rouge">fp</code> 是一个指向函数的指针，这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 类型的入参。</li>
+  <li>继续下去，遇到 <code class="language-plaintext highlighter-rouge">void</code>，所以 <code class="language-plaintext highlighter-rouge">fp</code> 是一个指向函数的指针，这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 类型的入参并且返回值为空。</li>
+  <li>至此完成了 <code class="language-plaintext highlighter-rouge">fp</code> 的解析，可以知道 <code class="language-plaintext highlighter-rouge">signal</code> 的类型为：
+    <ul>
+      <li>是一个函数，入参为：
+        <ul>
+          <li>一个 int 类型</li>
+          <li>一个指向函数的指针，这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 类型的入参并且返回值为空</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>路径跑到 <code class="language-plaintext highlighter-rouge">signal</code> 的螺旋中，遇到 <code class="language-plaintext highlighter-rouge">*</code>（紧邻 <code class="language-plaintext highlighter-rouge">signal</code> 左边），所以 <code class="language-plaintext highlighter-rouge">signal</code> 是
+    <ul>
+      <li>一个函数，入参为：
+        <ul>
+          <li>一个 int 类型</li>
+          <li>一个指向函数的指针，这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 类型的入参并且返回值为空</li>
+        </ul>
+      </li>
+      <li>返回值为指针</li>
+    </ul>
+  </li>
+  <li>再继续，遇到 <code class="language-plaintext highlighter-rouge">(</code>，接上面，返回值为指向另一函数的指针，被指向的这个函数接收一个 <code class="language-plaintext highlighter-rouge">int</code> 入参。</li>
+  <li>最后，遇到 <code class="language-plaintext highlighter-rouge">void</code>，<code class="language-plaintext highlighter-rouge">signal</code> 返回值指向的这个函数的返回值为空。</li>
+</ul>
+
+<p>最后捋一下 <code class="language-plaintext highlighter-rouge">signal</code> 的完整类型为：接收一个 <code class="language-plaintext highlighter-rouge">int</code>，一个指向接收一个 <code class="language-plaintext highlighter-rouge">int</code> 并且返回值为空的函数的指针，这两个参数的函数，并且返回值为指向一个接收 <code class="language-plaintext highlighter-rouge">int</code> 型返回为空的函数…Orz。</p>
+
+<h3 id="成员函数的判定">成员函数的判定</h3>
+
+<p>螺旋施法没有给出在 <code class="language-plaintext highlighter-rouge">const</code> 参与的情况下的判定，不过<strong>因为 <code class="language-plaintext highlighter-rouge">const</code> 默认修饰紧邻其左边的元素，如果右边无元素，则修饰左边的元素</strong>。因此只需要将 const 和它修饰的元素作为整体来看，就还是可以使用螺旋法则的。</p>
+
+<p>考察如下语句：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="kt">int</span><span class="o">*</span><span class="k">const</span> <span class="n">Method3</span><span class="p">(</span><span class="k">const</span> <span class="kt">int</span><span class="o">*</span><span class="k">const</span><span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</code></pre></div></div>
+<p>当函数后面紧跟一个 <code class="language-plaintext highlighter-rouge">const</code> 时，表示该成员函数的作用域内 <code class="language-plaintext highlighter-rouge">*this</code> 是常量，即无法在该函数体内对所类的实体进行修改。</p>
+
+<p>下面对上面的语句进行分析：</p>
+
+<ul>
+  <li>从 <code class="language-plaintext highlighter-rouge">Method3</code> 出发，遇到 <code class="language-plaintext highlighter-rouge">(</code>，所以 <code class="language-plaintext highlighter-rouge">Method3</code> 是一个函数，接收一个引用作为入参 <code class="language-plaintext highlighter-rouge">const int*const&amp;</code> 部分。</li>
+  <li>该引用的类型是 <code class="language-plaintext highlighter-rouge">const int*const</code>，指向整形常量的常量指针。</li>
+  <li>继续遇到 <code class="language-plaintext highlighter-rouge">*const</code>，所以函数的返回值为常量指针。指针指向的类型为 <code class="language-plaintext highlighter-rouge">const int</code> 整形常量。</li>
+  <li>函数末尾的 <code class="language-plaintext highlighter-rouge">const</code> 如前所述，标识函数体内不修改实例。</li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="http://c-faq.com/decl/spiral.anderson.html">The ``Clockwise/Spiral Rule’’</a></li>
+  <li><a href="http://duramecho.com/ComputerInformation/WhyHowCppConst.html">The C++ ‘const’ Declaration: Why &amp; How</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/09/24/React-+-TypeScript-%E9%BB%98%E8%AE%A4-Props-%E7%9A%84%E5%A4%84%E7%90%86/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="React + TypeScript 默认 Props 的处理"
+            >
+              Previous<br />
+              <span>React + TypeScript 默认 Props 的处理</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/09/26/JavaScript-Map-%E5%92%8C-Set/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="JavaScript Map 和 Set"
+            >
+              Next<br />
+              <span>JavaScript Map 和 Set</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

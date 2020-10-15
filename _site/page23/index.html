@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:description"
+    content="ここは牛さんの部落格です"
+  />
+  
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/page23/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/page23/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Page Header -->
+
+
+
+
+
+
+
+<header class="intro-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading">
+        
+          <h1>牛さんの部落格</h1>
+          <span class="subheading">ここは牛さんの部落格です</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
+    <!-- PostList Container -->
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
+<div class="post-preview">
+  <a href="/2018/01/24/%E8%AF%B4%E5%87%BA%E6%9D%A5%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E4%BF%A1-Git-%E5%8F%AF%E4%BB%A5%E8%87%AA%E5%8A%A8%E6%89%BE-Bug/">
+    <h2 class="post-title">说出来你可能不信，Git 可以自动找 Bug</h2>
+    
+  </a>
+  <p class="post-meta">January 24, 2018</p>
+  <div class="post-content-preview">
+     说出来你可能不信，Git 可以自动找 Bug
+
+之前提 bug 给 Chrome，注意到处理进程中有时会为 bug 贴上 Type-Bug-Regression 的标签，意即回归性 bug（Re... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2018/01/18/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82/">
+    <h2 class="post-title">Webpack 调教之参数的投喂</h2>
+    
+  </a>
+  <p class="post-meta">January 18, 2018</p>
+  <div class="post-content-preview">
+     Webpack 调教之参数的投喂
+
+考虑这样的场景：站点支持多国语言（i18n），编译时想支持指定语言来编译。这便涉及到传参了。
+
+一般，项目中会配置 npm scripts 来跑一些任务，常规... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2018/01/12/CSS-%E5%B1%9E%E6%80%A7%E6%8E%92%E5%BA%8F%E5%8D%83%E5%8D%83%E4%B8%87-%E6%88%91%E5%8F%AA%E7%88%B1%E9%82%A3%E4%B8%80%E7%A7%8D/">
+    <h2 class="post-title">CSS 属性排序千千万，我只爱那一种</h2>
+    
+  </a>
+  <p class="post-meta">January 12, 2018</p>
+  <div class="post-content-preview">
+     CSS 属性排序千千万，我只爱那一种
+
+不知道有多少人思考过将 CSS 属性排序的问题。反正在我书写网页的无数个日子里，是有想过这个问题的。
+
+因为大多数时候，调样式写属性完全就是按需要来，调一... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2018/01/03/%E4%BA%8B%E4%BB%B6%E7%9A%84%E5%86%92%E6%B3%A1%E4%B8%8E%E6%8D%95%E8%8E%B7/">
+    <h2 class="post-title">事件的冒泡与捕获</h2>
+    
+  </a>
+  <p class="post-meta">January 3, 2018</p>
+  <div class="post-content-preview">
+     事件的冒泡与捕获
+
+事件绑定
+
+给元素绑定事件可以通过属性 onclick，也可以使用 addEventListner。addEventListner 被大多数主流浏览器及 IE9 之后的 IE... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2017/12/28/%E6%8E%92%E5%88%97%E7%BB%84%E5%90%88%E9%97%AE%E9%A2%98/">
+    <h2 class="post-title"> 排列组合问题</h2>
+    
+  </a>
+  <p class="post-meta">December 28, 2017</p>
+  <div class="post-content-preview">
+     排列组合问题
+
+排列和组合是两个问题，因为有相似性，所以通常放一起。
+
+所谓排列，是跟顺序有关的，比如从 1,2,3 中取三个数出来，序列 1,2,3 与 1,3,2 是两个不同的序列。这便是排... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2017/12/06/%E7%90%86%E8%A7%A3%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-O(log-n)/">
+    <h2 class="post-title">理解时间复杂度 O(log n)</h2>
+    
+  </a>
+  <p class="post-meta">December 6, 2017</p>
+  <div class="post-content-preview">
+     理解时间复杂度 O(log n)
+
+解决实际问题时，代码是否高效会成为问题解决的关键。高效的算法可以将资源开销控制在有限范围内将问题解决。而衡量一个算法优劣的标准则是时间复杂度，我们经常会看到 ... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2017/12/05/source-map-%E7%9A%84%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/">
+    <h2 class="post-title">source map 的原理探究</h2>
+    
+  </a>
+  <p class="post-meta">December 5, 2017</p>
+  <div class="post-content-preview">
+     source map 的原理探究
+
+线上产品代码一般是编译过的，前端的编译处理过程包括不限于
+
+
+  转译器/Transpilers (Babel, Traceur)
+  编译器/Compile... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2017/12/02/%E5%89%8D%E7%AB%AF%E5%BC%82%E5%B8%B8%E7%9B%91%E6%8E%A7/">
+    <h2 class="post-title">前端异常监控</h2>
+    
+  </a>
+  <p class="post-meta">December 2, 2017</p>
+  <div class="post-content-preview">
+     前端异常监控
+
+如果说前端的异常监控有个救星的话，我想那就是 window.onerror 这个全局错误监听事件了。它给了我们统一处理前端全局错误的机会，使得错误上报有了一线生机。
+
+windo... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2017/11/30/apply-vs-call-vs-bind/">
+    <h2 class="post-title">apply vs call vs bind </h2>
+    
+  </a>
+  <p class="post-meta">November 30, 2017</p>
+  <div class="post-content-preview">
+     apply vs call vs bind
+
+apply 与 call
+
+js 有三个方法可以改变函数的执行上下文，apply，call和bind，三者都系 Function 对象上的原型方法。... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2017/11/30/CSS-%E7%9B%92%E6%A8%A1%E5%9E%8B/">
+    <h2 class="post-title">CSS 盒模型</h2>
+    
+  </a>
+  <p class="post-meta">November 30, 2017</p>
+  <div class="post-content-preview">
+     CSS 盒模型
+
+编程中我们常讲万物皆对象，面向对象编程嘛。写 CSS 的时候，则万物皆矩形，元素即方块。
+
+
+
+CSS 盒模型镇楼图 - 图片来自 W3C
+
+页面中的元素，包含内容块（cont... 
+  </div>
+</div>
+
+
+<!-- Pager -->
+
+<ul class="pager">
+  
+  <li class="previous">
+    <a
+      href="/page22"
+      >&larr;</a
+    >
+  </li>
+   
+  <li class="next">
+    <a
+      href="/page24"
+      >&rarr;</a
+    >
+  </li>
+  
+</ul>
+
+
+    </div>
+    <!-- Sidebar Container -->
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
+
+
+
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
+</div>
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

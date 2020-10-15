@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Make 编译脚本上手 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="Make 编译脚本上手
+
+考察下面的示例代码：
+
+main.c
+#include &lt;stdio.h&gt;
+
+int main(){
+    printf("hello world!");
+    return 0;
+}
+
+
+正常情况下，通过 gcc 在命令行将其编译后产出相应文件，可执行文件或 object 文件等。
+
+$ gcc -o main.out main.c
+
+
+上面命令编..."
+  />
+   <meta property="article:published_time" content="2019-06-27T16:06:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/06/27/Make-%E7%BC%96%E8%AF%91%E8%84%9A%E6%9C%AC%E4%B8%8A%E6%89%8B/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    Make 编译脚本上手 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/06/27/Make-%E7%BC%96%E8%AF%91%E8%84%9A%E6%9C%AC%E4%B8%8A%E6%89%8B/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>Make 编译脚本上手</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">June 27, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="make-编译脚本上手">Make 编译脚本上手</h1>
+
+<p>考察下面的示例代码：</p>
+
+<p><em>main.c</em></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"hello world!"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>正常情况下，通过 <code class="language-plaintext highlighter-rouge">gcc</code> 在命令行将其编译后产出相应文件，可执行文件或 object 文件等。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-o</span> main.out main.c
+</code></pre></div></div>
+
+<p>上面命令编译后运行 <code class="language-plaintext highlighter-rouge">main.out</code> 可执行文件。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>./main.out
+hello world!
+</code></pre></div></div>
+
+<h2 id="make-工具">Make 工具</h2>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">make</code> 命令，可以将上面的编译进行有效自动化管理。通过将从输入文件到输出文件的编译无则编写成 Makefile 脚本，Make 工具将自动处理文件间依赖及是否需要编译的检测。</p>
+
+<p><code class="language-plaintext highlighter-rouge">make</code> 命令所使用的编译配置文件可以是 <code class="language-plaintext highlighter-rouge">Makefile</code>，<code class="language-plaintext highlighter-rouge">makefile</code> 或 <code class="language-plaintext highlighter-rouge">GUNMake</code>。</p>
+
+<p>其中定义任务的基本语法为：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>target1 <span class="o">[</span>target2 ...]: <span class="o">[</span>pre-req-1 pre-req-2 ...]
+	<span class="o">[</span>command1
+	 command2
+	 ......]
+</code></pre></div></div>
+
+<p>上面形式也可称作是一条编译规则（rule）。</p>
+
+<p>其中，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">target</code> 为任务名或文件产出。如果该任务不产出文件，则称该任务为 <code class="language-plaintext highlighter-rouge">Phony Targets</code>。<code class="language-plaintext highlighter-rouge">make</code> 内置的 phony target 有 <code class="language-plaintext highlighter-rouge">all</code>, <code class="language-plaintext highlighter-rouge">install</code> 及 <code class="language-plaintext highlighter-rouge">clean</code> 等，这些任务都不实际产出文件，一般用来执行一些命令。</li>
+  <li><code class="language-plaintext highlighter-rouge">pre-req123...</code> 这些是依赖项，即该任务所需要的外部输入，这些输入可以是其他文件，也可以是其他任务产出的文件。</li>
+  <li><code class="language-plaintext highlighter-rouge">command</code> 为该任务具体需要执行的 shell 命令。</li>
+</ul>
+
+<h2 id="makefile-示例">Makefile 示例</h2>
+
+<p>比如文章最开始的编译，可通过编写下面的 Makefile 来完成：</p>
+
+<p><em>Makefile</em></p>
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">all</span><span class="o">:</span><span class="nf">main.out</span>
+
+<span class="nl">main.out</span><span class="o">:</span> <span class="nf">main.c</span>
+	gcc <span class="nt">-o</span> main.out main.c
+
+<span class="nl">clean</span><span class="o">:</span>
+	<span class="nb">rm </span>main.out
+</code></pre></div></div>
+
+<p>上面的 Makefile 中定义了三个任务，调用时可通过 <code class="language-plaintext highlighter-rouge">make &lt;target name&gt;</code> 形式来调用。</p>
+
+<p>比如:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make main.out
+gcc <span class="nt">-o</span> main.out main.c
+</code></pre></div></div>
+
+<p>产出 <code class="language-plaintext highlighter-rouge">main.out</code> 文件。</p>
+
+<p>再比如：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make clean
+<span class="nb">rm </span>main.out
+</code></pre></div></div>
+
+<p>该 <code class="language-plaintext highlighter-rouge">clean</code> 任务清除刚刚生成的 <code class="language-plaintext highlighter-rouge">main.out</code> 文件。</p>
+
+<p>三个任务中，<code class="language-plaintext highlighter-rouge">all</code> 为内置的任务名，一般一个 Makefile 中都会包含，当直接调用 <code class="language-plaintext highlighter-rouge">make</code> 后面没有跟任务名时，默认执行的就是 <code class="language-plaintext highlighter-rouge">all</code>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make
+gcc <span class="nt">-o</span> main.out main.c
+</code></pre></div></div>
+
+<h2 id="命令的换行">命令的换行</h2>
+
+<p>如果一条编译规则中所要执行的 shell 命令有单条很长的情况，可通过 <code class="language-plaintext highlighter-rouge">\</code> 来换行。</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">main.out</span><span class="o">:</span> <span class="nf">main.c</span>
+    <span class="err">gcc</span> <span class="err">\</span>
+    <span class="err">-o</span> <span class="err">main.out</span> <span class="err">\</span>
+    <span class="err">main.c</span>
+</code></pre></div></div>
+
+<p>注意 <code class="language-plaintext highlighter-rouge">\</code> 与命令结尾处需要间隔一个空格，否则识别出错。</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">main.out</span><span class="o">:</span> <span class="nf">main.c</span>
+    <span class="err">gcc\</span> <span class="c"># 🚨
+</span>    <span class="err">-o</span> <span class="err">main.out\</span> <span class="c"># 🚨
+</span>    <span class="err">main.c</span>
+</code></pre></div></div>
+
+<h2 id="任务间的依赖">任务间的依赖</h2>
+
+<p>前面调用 <code class="language-plaintext highlighter-rouge">all</code> 的效果等同于调用 <code class="language-plaintext highlighter-rouge">main.out</code> 任务，因为 <code class="language-plaintext highlighter-rouge">all</code> 的输入依赖为 <code class="language-plaintext highlighter-rouge">main.out</code> 文件。Make 在执行任务前会先检查其输入的依赖项，执行 <code class="language-plaintext highlighter-rouge">all</code> 时发现它依赖 <code class="language-plaintext highlighter-rouge">main.out</code> 文件，于是本地查找，发现本地没有，再从 Makefile 中查找看是否有相应任务会产生该文件，结果确实有相应任务能产生该文件，所以先执行能够产生依赖项的任务。</p>
+
+<h2 id="增量编译">增量编译</h2>
+
+<p>使用 Makefile 进行编译有个好处是，在执行任务时，它会先检查依赖项是否比需要产出的文件新，如果说依赖项更新新，则说明我们需要产出的目标文件属于过时的产物，需要重新生成。</p>
+
+<p>什么意思。比如上面的示例，当执行</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make main.out 
+</code></pre></div></div>
+<p>试图生成 <code class="language-plaintext highlighter-rouge">main.out</code> 产出时，会检查这个任务的依赖文件 <code class="language-plaintext highlighter-rouge">main.c</code> 是否有修改过。</p>
+
+<p>比如前面我们已经执行过该任务产生过 <code class="language-plaintext highlighter-rouge">main.out</code>。再次执行时，会得到如下提示：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make main.out 
+make: <span class="sb">`</span>main.out<span class="s1">' is up to date.
+</span></code></pre></div></div>
+
+<p><strong>NOTE:</strong> 上面是 Mac 上最新版本的 Make 工具（GNU Make 3.81）的提示语，老版或其他变种工具得到的可能是 <code class="language-plaintext highlighter-rouge">Nothing to be done for \</code>main.out` `。</p>
+
+<p>现在对输入文件 <code class="language-plaintext highlighter-rouge">main.c</code> 进行修改：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#include</span> &lt;stdio.h&gt;
+
+int main(){
+<span class="gd">-     printf("hello world!");
+</span><span class="gi">+     printf("hello wayou!");
+</span>    return 0;
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>再次执行 <code class="language-plaintext highlighter-rouge">make main.out</code> 会发现任务正常执行并产生了新的输出，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make main.out
+gcc <span class="nt">-o</span> main.out main.c
+
+<span class="nv">$ </span>./main.out
+hello wayou!⏎
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">main.c</code> 修改后，它在文件上来说，就比 <code class="language-plaintext highlighter-rouge">main.out</code> 更新了，所以我们说 <code class="language-plaintext highlighter-rouge">main.out</code> 这个目标， <strong>过时（out-dated）</strong> 了。</p>
+
+<p>过时的任务才会被重新执行，而未过时的会跳过，并输出相应信息。</p>
+
+<p>以上，Makefile 天然实现了增量编译的效果，在大型项目下会节省不少编译时间，因为它只编译过期的任务。</p>
+
+<h2 id="phony-类型任务的执行">Phony 类型任务的执行</h2>
+
+<p>需要注意的是，phony 类型的任务永远都属于过时类型，即，每次 <code class="language-plaintext highlighter-rouge">make</code> 都会执行。因为这种类型的任务它没有文件产出，就无所谓检查，它的主体只是调用了另外的命令而以。</p>
+
+<p>拿这里的 <code class="language-plaintext highlighter-rouge">all</code> 来说，当我们执行 <code class="language-plaintext highlighter-rouge">make</code> 或 <code class="language-plaintext highlighter-rouge">make all</code> 时，得到：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make
+make: Nothing to be <span class="k">done for</span> <span class="sb">`</span>all<span class="s1">'.
+</span></code></pre></div></div>
+
+<p>这里看不出来 <code class="language-plaintext highlighter-rouge">all</code> 有没有执行，因为目前它还没有包含任何一句命令，调用 <code class="language-plaintext highlighter-rouge">all</code> 后实际执行的是它的依赖文件 <code class="language-plaintext highlighter-rouge">main.out</code> 中的任务，而因为后者已经是最新的了，所以无须执行，所以得到了如上的输出。</p>
+
+<p>为了验证 phony 类型任务是否每次都执行，向 <code class="language-plaintext highlighter-rouge">all</code> 及 <code class="language-plaintext highlighter-rouge">main.out</code> 中添加 <code class="language-plaintext highlighter-rouge">echo</code> 命令打印一些信息、</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">all:main.out
+</span><span class="gi">+	echo "[all] done"
+</span>
+main.out: main.c
+	gcc -o main.out main.c
+<span class="gi">+	echo "[main.out] done"
+</span>
+clean:
+	rm main.out
+</code></pre></div></div>
+
+<p>再次执行：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make
+<span class="nb">echo</span> <span class="s2">"[all] done"</span>
+<span class="o">[</span>all] <span class="k">done</span>
+
+<span class="nv">$ </span>make
+<span class="nb">echo</span> <span class="s2">"[all] done"</span>
+<span class="o">[</span>all] <span class="k">done</span>
+
+<span class="nv">$ </span>make main.out
+make: <span class="sb">`</span>main.out<span class="s1">' is up to date.
+</span></code></pre></div></div>
+
+<p>可以看到，属于 phony 类型的任务 <code class="language-plaintext highlighter-rouge">all</code> 每次都会执行其中定义的 shell 命令，而非 phony 类型的任务 <code class="language-plaintext highlighter-rouge">main.out</code> 则走了增量编译的逻辑。</p>
+
+<h2 id="变量宏">变量/宏</h2>
+
+<p>Makefile 中可使用变量（宏）来让脚本更加灵活和减少冗余。</p>
+
+<p>其中变量使用 <code class="language-plaintext highlighter-rouge">$</code> 加圆括号或花括号的形式来使用，<code class="language-plaintext highlighter-rouge">$(VAR)</code>，定义时类似于 C 中定义宏，所以变量也可叫 Makefile 中的宏，</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CC</span><span class="o">=</span>gcc
+</code></pre></div></div>
+
+<p>这里定义 <code class="language-plaintext highlighter-rouge">CC</code> 表示 <code class="language-plaintext highlighter-rouge">gcc</code> 编译工具。然后在后续编译命令中，就可以使用 <code class="language-plaintext highlighter-rouge">$(CC)</code> 代替 <code class="language-plaintext highlighter-rouge">gcc</code> 来书写 shell 命令了。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gi">+ CC=gcc
+</span>
+all:main.out
+
+main.out: main.c
+<span class="gd">-	gcc -o main.out main.c
+</span><span class="gi">+	$(CC) -o main.out main.c
+</span>
+clean:
+	rm main.out
+</code></pre></div></div>
+
+<p>这样做的好处是什么？因为编译工具可能随着平台或环境或需要编译的目标不同，而不同。比如 <code class="language-plaintext highlighter-rouge">gcc</code> 只是用来编译 C 代码的，如果是 C++ 你可能要用 <code class="language-plaintext highlighter-rouge">g++</code> 来编译。如果是编译 WebAssembly 则需要使用 <code class="language-plaintext highlighter-rouge">emcc</code>。</p>
+
+<p>无论怎样变，我们只需要修改定义在文件开头的 <code class="language-plaintext highlighter-rouge">CC</code> 变量即可，无须修改其他地方。这当然只是其中一点好处。</p>
+
+<h2 id="自动变量automatic-variables">自动变量/Automatic Variables</h2>
+
+<p>自动变量/Automatic Variables 是在编译规则匹配后工具进行设置的，具体包括：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">$@</code>：代表产出文件名</li>
+  <li><code class="language-plaintext highlighter-rouge">$*</code>：代表产出文件名不包括扩展名</li>
+  <li><code class="language-plaintext highlighter-rouge">$&lt;</code>：依赖项中第一个文件名</li>
+  <li><code class="language-plaintext highlighter-rouge">$^</code>：空格分隔的去重后的所有依赖项</li>
+  <li><code class="language-plaintext highlighter-rouge">$+</code>：同上，但没去重</li>
+  <li><code class="language-plaintext highlighter-rouge">$?</code>：同上，但只包含比产出更新的那些依赖</li>
+</ul>
+
+<p>这些变量都只有一个符号，区别于正常用字母命名的变量需要使用 <code class="language-plaintext highlighter-rouge">$(VAL)</code> 的形式来使用，自动变量无需加括号。</p>
+
+<p>利用自动变量，前面示例可改造成：</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CC</span><span class="o">=</span>gcc
+
+<span class="nv">TARGET</span><span class="o">=</span>main.out
+
+<span class="nl">all</span><span class="o">:</span><span class="nf">$(TARGET)</span>
+
+<span class="nl">$(TARGET)</span><span class="o">:</span> <span class="nf">main.c</span>
+	<span class="nv">$(CC)</span> <span class="nt">-o</span> <span class="nv">$@</span> <span class="nv">$^</span>
+
+<span class="nl">clean</span><span class="o">:</span>
+	<span class="nb">rm</span> <span class="nv">$(TARGET)</span>
+</code></pre></div></div>
+
+<p>减少了重复代码，更加易于维护，需要修改时，改动比较小。</p>
+
+<h2 id="vpath--vpath">VPATH &amp; vpath</h2>
+
+<p>可通过 <code class="language-plaintext highlighter-rouge">VPATH</code> 指定依赖文件及产出文件的搜索目录。</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">VPATH</span> <span class="o">=</span> src include
+</code></pre></div></div>
+
+<p>通过小写的 <code class="language-plaintext highlighter-rouge">vpath</code> 可指定具体的文件名及扩展名类型，</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">vpath</span> <span class="err">%.c</span> <span class="err">src</span>
+<span class="err">vpath</span> <span class="err">%.h</span> <span class="err">include</span>
+</code></pre></div></div>
+
+<p>此处 <code class="language-plaintext highlighter-rouge">%</code> 表示文件名。</p>
+
+<h2 id="依赖规则dependency-rules">依赖规则/Dependency Rules</h2>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">Main.o </span><span class="o">:</span> <span class="nf">Main.h Test1.h Test2.h</span>
+<span class="nl">Test1.o </span><span class="o">:</span> <span class="nf">Test1.h Test2.h</span>
+<span class="nl">Test2.o </span><span class="o">:</span> <span class="nf">Test2.h</span>
+</code></pre></div></div>
+
+<p>像这种，只定义了产出与依赖没包含任务命令的无则，叫作依赖无则。因为它只定义了某个产出依赖哪些输入，故名。</p>
+
+<p>这种规则可达到这种效果，即，右边任何文件有变更，左边的产出便成为过时的了。</p>
+
+<h2 id="匹配规则pattern-rules">匹配规则/Pattern Rules</h2>
+
+<p>区别于明确指定了产出与依赖，如果一条规则包含通配符，则称作匹配规则（Pattern Rules）。</p>
+
+<p>比如，</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">%.o</span><span class="o">:</span> <span class="nf">%.c</span>
+    <span class="err">gcc</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">$^</span>
+</code></pre></div></div>
+
+<p>上面定义了这么一条编译规则，将所有匹配到的 c 文件编译成 Object 产出。</p>
+
+<p>有什么用？</p>
+
+<p>这种规则一般不是直接调用的，是被其他它规则触间接使用。比如上面的依赖规则。</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">%.o </span><span class="o">:</span> <span class="nf">%.cpp</span>
+  <span class="err">g++</span> <span class="err">-g</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">-c</span> <span class="err">$&lt;</span>
+
+<span class="nl">Main.o </span><span class="o">:</span> <span class="nf">Main.h Test1.h Test2.h</span>
+<span class="nl">Test1.o </span><span class="o">:</span> <span class="nf">Test1.h Test2.h</span>
+<span class="nl">Test2.o </span><span class="o">:</span> <span class="nf">Test2.h</span>
+</code></pre></div></div>
+
+<p>当右侧这些头文件有变动时，左边的产出会在 <code class="language-plaintext highlighter-rouge">make</code> 时被检测到过时，于是会被执行。当执行时匹配规则 <code class="language-plaintext highlighter-rouge">%.o</code> 会被匹配到，所以匹配规则里面的命令会执行，从而将 <code class="language-plaintext highlighter-rouge">cpp</code> 文件编译成相应 Object 文件。达到了依赖更新后批量更新产出的目的，而不写成这样：</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">Main.o </span><span class="o">:</span> <span class="nf">Main.h Test1.h Test2.h</span>
+    <span class="err">g++</span> <span class="err">-g</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">-c</span> <span class="err">$&lt;</span>
+<span class="nl">Test1.o </span><span class="o">:</span> <span class="nf">Test1.h Test2.h</span>
+    <span class="err">g++</span> <span class="err">-g</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">-c</span> <span class="err">$&lt;</span>
+<span class="nl">Test2.o </span><span class="o">:</span> <span class="nf">Test2.h</span>
+    <span class="err">g++</span> <span class="err">-g</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">-c</span> <span class="err">$&lt;</span>
+</code></pre></div></div>
+
+<h2 id="一个实际一点的示例">一个实际一点的示例</h2>
+
+<p>添加 <a href="http://lame.sourceforge.net/using.php">lame</a> 依赖到项目并将其编译打包。</p>
+
+<p>首先下载并解压 lame 到项目目录：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wget https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz
+<span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-zxvf</span> lame-3.100.tar.gz
+</code></pre></div></div>
+
+<p>主程序中调用 lame，这只仅简单地打印其版本信息：</p>
+
+<p><em>main.c</em></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+#include "./lame-3.100/include/lame.h"
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">ver</span> <span class="o">=</span> <span class="n">get_lame_version</span><span class="p">();</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"lame ver: %s"</span><span class="p">,</span> <span class="o">*</span><span class="n">ver</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译项目的 Makefile:</p>
+
+<p><em>Makefile</em></p>
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CC</span><span class="o">=</span>gcc
+
+<span class="nv">TARGET</span><span class="o">=</span>main.out
+<span class="nv">ENTRY</span><span class="o">=</span>main.c
+<span class="nv">LAME_DIR</span><span class="o">=</span>lame-3.100
+
+<span class="nl">all</span><span class="o">:</span> <span class="nf">$(TARGET)</span>
+
+<span class="nl">$(TARGET)</span><span class="o">:</span> <span class="nf">$(ENTRY) $(LAME_DIR)/libmp3lame/.libs/libmp3lame.a</span>
+	<span class="nv">$(CC)</span> <span class="nt">-o</span> <span class="nv">$@</span> <span class="se">\</span>
+	<span class="nv">$^</span>
+
+<span class="nl">$(LAME_DIR)/libmp3lame/.libs/libmp3lame.a</span><span class="o">:</span> 
+	<span class="nb">cd</span> <span class="nv">$(LAME_DIR)</span><span class="p">;</span> ./configure <span class="p">;</span> make
+
+<span class="nl">clean</span><span class="o">:</span>
+	<span class="nb">rm</span> <span class="nv">$(TARGET)</span>
+</code></pre></div></div>
+
+<p>编译并运行：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make
+<span class="nv">$ </span>./main.out
+lame ver: 3⏎
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html#zz-2.">GCC and Make Compiling, Linking and Building C/C++ Applications</a></li>
+  <li><a href="http://kirste.userpage.fu-berlin.de/chemnet/use/info/make/make_10.html">Using Implicit Rules</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/06/26/%E5%88%A9%E7%94%A8-chunked-%E7%B1%BB%E5%9E%8B%E5%93%8D%E5%BA%94%E5%AE%9E%E7%8E%B0%E5%90%8E%E5%8F%B0%E8%AF%B7%E6%B1%82%E7%9A%84%E7%9B%91%E5%90%AC/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="利用 chunked 类型响应实现后台请求的监听"
+            >
+              Previous<br />
+              <span>利用 chunked 类型响应实现后台请求的监听</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/06/29/CSS-%E9%80%89%E6%8B%A9%E5%99%A8%E6%9D%83%E9%87%8D%E8%AE%A1%E7%AE%97%E8%A7%84%E5%88%99/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="CSS 选择器权重计算规则"
+            >
+              Next<br />
+              <span>CSS 选择器权重计算规则</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

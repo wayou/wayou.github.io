@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="clang-format 的 Xcode 集成 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="clang-format 的 Xcode 集成
+
+之前文章 Xcode 中配置 clang-format 格式化 C++ 代码 中介绍的格式化方法有两个问题，
+
+
+  不能格式化整个文件，必需先选中文本
+  不支持项目中的 .clang-format 配置文件，只能读取全局的
+
+
+利用 Xcode 自带的 Behaviors 可绑定快捷键执行一些任务，比如执行 shell 脚本。
+
+而这里执..."
+  />
+   <meta property="article:published_time" content="2019-12-03T15:12:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/12/03/clang-format-%E7%9A%84-Xcode-%E9%9B%86%E6%88%90/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    clang-format 的 Xcode 集成 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/12/03/clang-format-%E7%9A%84-Xcode-%E9%9B%86%E6%88%90/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>clang-format 的 Xcode 集成</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">December 3, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="clang-format-的-xcode-集成">clang-format 的 Xcode 集成</h1>
+
+<p>之前文章 <a href="https://github.com/wayou/wayou.github.io/issues/116">Xcode 中配置 clang-format 格式化 C++ 代码</a> 中介绍的格式化方法有两个问题，</p>
+
+<ul>
+  <li>不能格式化整个文件，必需先选中文本</li>
+  <li>不支持项目中的 <code class="language-plaintext highlighter-rouge">.clang-format</code> 配置文件，只能读取全局的</li>
+</ul>
+
+<p>利用 Xcode 自带的 Behaviors 可绑定快捷键执行一些任务，比如执行 shell 脚本。</p>
+
+<p>而这里执行的 shell 脚本较 Automator 中的脚本区别在于，可以解决上面提到的两个问题。</p>
+
+<ul>
+  <li>脚本中通过执行 Apple Script 获取到当前正在编辑文件的路径，达到格式化整个文件的目的，无需进行文本选择。</li>
+  <li>因为执行上下文不在全局，所以项目中的 <code class="language-plaintext highlighter-rouge">.clang-format</code> 配置文件可以生效。这样格式配置可跟着项目走。</li>
+</ul>
+
+<h2 id="创建格式化脚本">创建格式化脚本</h2>
+
+<p>首先创建一个 Behavior 中需要执行的脚本，在这个脚本中完成文件路径的获取，clang-format 的执行。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># exec &amp; &gt;&gt; ~/Desktop/test.log</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/bin:<span class="nv">$PATH</span>
+<span class="nv">file</span><span class="o">=</span><span class="sb">`</span>osascript <span class="nt">-e</span> <span class="s2">"tell application id </span><span class="se">\"</span><span class="s2">com.apple.dt.Xcode</span><span class="se">\"</span><span class="s2">
+    set CurrentActiveDocument to document 1 whose name ends with (word -1 of (get name of   window 1))
+    set WhatYouWant to path of CurrentActiveDocument
+end tell"</span><span class="sb">`</span>
+<span class="c"># echo $file &gt;&gt;  ~/Desktop/test.log</span>
+clang-format <span class="nt">-i</span> <span class="nt">-style</span><span class="o">=</span>file <span class="nv">$file</span>
+</code></pre></div></div>
+
+<p>将脚本保存到某个位置譬如 <code class="language-plaintext highlighter-rouge">x/y/z/foramt.sh</code>。</p>
+
+<h2 id="赋予脚本可执行权限">赋予脚本可执行权限</h2>
+
+<p>然后通过以下命令保证脚本有执行权限：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">chmod</span> +x x/y/z/foramt.sh
+</code></pre></div></div>
+
+<h2 id="配置-xcode-behavior">配置 Xcode behavior</h2>
+
+<ul>
+  <li>打开 Xcode behavior</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70046680-7613aa00-1601-11ea-9e9e-c958123985c3.png" alt="打开 Xcode behavior" /></p>
+<p align="center">Xcode behavior</p>
+
+<ul>
+  <li>
+    <p>点击左下角的 <code class="language-plaintext highlighter-rouge">+</code> 添加新的 behavior，随便取个名称，再点击名称旁边的 ⌘ 为该项绑定一个快捷键，比如 <code class="language-plaintext highlighter-rouge">⌘+⇧+M</code>，</p>
+  </li>
+  <li>
+    <p>右边内容区域最下面勾选 <code class="language-plaintext highlighter-rouge">Run</code> 并选择前面步骤保存的 shell 文件。</p>
+  </li>
+</ul>
+
+<p>最后完成后看起来是这样：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70046663-701dc900-1601-11ea-957f-21662325a6a0.png" alt="配置 Xcode behavior" /></p>
+<p align="center">配置 Xcode behavior</p>
+
+<h2 id="使用">使用</h2>
+
+<p>配置完成后，在编码过程中可通过前面配置的快捷键进行整个文件的格式化了。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/70046649-6a27e800-1601-11ea-99bb-adf6d288582e.gif" alt="格式化效果" /></p>
+<p align="center">格式化效果</p>
+
+<p>如果项目根目录有放置 <code class="language-plaintext highlighter-rouge">.clang-format</code> 文件，则会正常读取到。同时这种方式还支持不同目录下放置不同的 <code class="language-plaintext highlighter-rouge">.clang-format</code> 配置文件，因为 clang-format 在格式化文件是，是会从文件所在目录向上逐级查找格式化配置文件的。</p>
+
+<h2 id="gotchas">gotchas</h2>
+
+<p>实际使用过程中发现该命令会有失效的情况，具体还不知道是 xcode behavior 没执行还是 clang-format 的问题。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/10341327/xcode-4-can-i-get-a-path-to-the-currently-active-file-via-applescript/14602063">Xcode 4 : Can I get a path to the currently active file via AppleScript?</a></li>
+  <li><a href="http://jeffreysambells.com/2012/07/26/path-to-current-xcode-document-in-bash">Path to Current Xcode Document</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/12/01/Objective-C-%E5%B1%9E%E6%80%A7%E7%9A%84%E5%A3%B0%E6%98%8E%E5%8F%8A-@dynamic/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Objective-C 属性的声明及 @dynamic"
+            >
+              Previous<br />
+              <span>Objective-C 属性的声明及 @dynamic</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/12/06/iOS-%E5%BA%94%E7%94%A8%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="iOS 应用的本地化"
+            >
+              Next<br />
+              <span>iOS 应用的本地化</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

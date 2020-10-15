@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="CSS 属性排序千千万，我只爱那一种 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="CSS 属性排序千千万，我只爱那一种
+
+不知道有多少人思考过将 CSS 属性排序的问题。反正在我书写网页的无数个日子里，是有想过这个问题的。
+
+因为大多数时候，调样式写属性完全就是按需要来，调一个加一条，样式调好后，整个元素的代码也就确定了。
+
+偶尔会因为美观刻意把自己认为需要提前的属性放到前面一下，仅此而已。
+
+这种下意识的行为让我觉得，冥冥之中，应该有一些可用的约定，来指导我们，将这些纷..."
+  />
+   <meta property="article:published_time" content="2018-01-12T18:01:00Z">   
+  <meta property="article:tag" content="css" />
+   
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2018/01/12/CSS-%E5%B1%9E%E6%80%A7%E6%8E%92%E5%BA%8F%E5%8D%83%E5%8D%83%E4%B8%87-%E6%88%91%E5%8F%AA%E7%88%B1%E9%82%A3%E4%B8%80%E7%A7%8D/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    CSS 属性排序千千万，我只爱那一种 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2018/01/12/CSS-%E5%B1%9E%E6%80%A7%E6%8E%92%E5%BA%8F%E5%8D%83%E5%8D%83%E4%B8%87-%E6%88%91%E5%8F%AA%E7%88%B1%E9%82%A3%E4%B8%80%E7%A7%8D/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=css" title="css">css</a>
+                        
+                    </div>
+                    <h1>CSS 属性排序千千万，我只爱那一种</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">January 12, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h2 id="css-属性排序千千万我只爱那一种">CSS 属性排序千千万，我只爱那一种</h2>
+
+<p>不知道有多少人思考过将 CSS 属性排序的问题。反正在我书写网页的无数个日子里，是有想过这个问题的。</p>
+
+<p>因为大多数时候，调样式写属性完全就是按需要来，调一个加一条，样式调好后，整个元素的代码也就确定了。</p>
+
+<p>偶尔会因为美观刻意把自己认为需要提前的属性放到前面一下，仅此而已。</p>
+
+<p>这种下意识的行为让我觉得，冥冥之中，应该有一些可用的约定，来指导我们，将这些纷繁的 CSS 样式属性进行合理地排列。</p>
+
+<p>果不其然，著名 CSS 站点 css-tricks 为此专门做了个<a href="https://css-tricks.com/poll-results-how-do-you-order-your-css-properties/">问卷调查</a>，结果显示：</p>
+
+<ul>
+  <li>按类型来分组的占 45%</li>
+  <li>完全不 care 这件事，写起来随意的占39%</li>
+  <li>按属性字母顺序的占14%</li>
+  <li>最后还有按一行代码长度来排序的占2%</li>
+</ul>
+
+<p>感受下最后这种排序方式：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.button</span> <span class="p">{</span>
+    <span class="nl">box-shadow</span><span class="p">:</span> <span class="nb">inset</span> <span class="m">.25em</span> <span class="m">.25em</span> <span class="m">.5em</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">.3</span><span class="p">),</span> <span class="m">.5em</span> <span class="m">.5em</span> <span class="m">0</span> <span class="m">#444</span><span class="p">;</span>
+    <span class="nl">font-family</span><span class="p">:</span> <span class="n">Avenir</span><span class="p">,</span> <span class="n">Helvetica</span><span class="p">,</span> <span class="n">Arial</span><span class="p">,</span> <span class="nb">sans-serif</span><span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="m">.25em</span> <span class="nb">solid</span> <span class="m">#196e76</span><span class="p">;</span>
+    <span class="nl">text-decoration</span><span class="p">:</span> <span class="nb">underline</span><span class="p">;</span>
+    <span class="nl">text-transform</span><span class="p">:</span> <span class="nb">uppercase</span><span class="p">;</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">inline-block</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">1em</span> <span class="m">4em</span> <span class="m">2em</span><span class="p">;</span>
+    <span class="nl">text-align</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">1em</span> <span class="nb">auto</span><span class="p">;</span>
+    <span class="nl">font-size</span><span class="p">:</span> <span class="m">3em</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="m">#fff</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="将-css-属性排序的意义">将 CSS 属性排序的意义</h3>
+
+<p>属性顺序本无关紧要，夫意欲何为？</p>
+
+<p>我认为，让 CSS 属性保持一定的规律有一些好处：</p>
+
+<ul>
+  <li>作为写程序的人，除了希望代码的输出具有确定性，即每写一行代码我知道我在写什么，我能预知到结果，还希望从代码风格上保持一致，这样在写类似功能时，写出来的东西是有某种确定性的，代码会有种统一的风格在里面，同时阅读起来会很轻松</li>
+  <li>当这些看似杂乱无序的属性在书写时遵从一定规律后，改起来会很方便。比如我习惯将 <code class="language-plaintext highlighter-rouge">width</code>，<code class="language-plaintext highlighter-rouge">height</code>这种基本的常用的属性写在元素样式的最前面，我在改的时候就直接到最前面去找</li>
+  <li>会有一种，哲学上的美。恩，就是看起来舒心的那种。写码也是种艺术创作，只不过陈老师用相机，我们用键盘。没有风格的编码是新手，想到哪写到哪，而具有一定风格的代码或许是老司机，虽然所坚持的风格不一定普适。</li>
+</ul>
+
+<h3 id="盒模型规则的排序">盒模型规则的排序</h3>
+
+<p>关于 CSS 属性书写时的排序问题，是有一些讨论已经存在的，比如 StackOverflow 上的这个提问 <a href="https://stackoverflow.com/questions/4878655/conventional-order-of-css-properties">Conventional Order of CSS properties</a>，里面有提到一个叫作 <a href="https://web.archive.org/web/20130227044124/http://fordinteractive.com/2009/02/order-of-the-day-css-properties/">The CSS Box Model Convention</a> 的约定，该约定里罗列的顺序是按照 CSS 盒模型来的。</p>
+
+<p>具体来说，可概括为如下的分组顺序：</p>
+
+<ol>
+  <li>展示类型及文档流相关/Display &amp; Flow</li>
+  <li>定位信息/Positioning</li>
+  <li>元素尺寸/Dimensions</li>
+  <li>边距边框/Margins, Padding, Borders, Outline</li>
+  <li>文字排版/Typographic Styles</li>
+  <li>背景/Backgrounds</li>
+  <li>其他如透明度，光标样式及衍生内容/Opacity, Cursors, Generated Content</li>
+</ol>
+
+<p>具体到代码：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">el</span> <span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">visibility</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">float</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">clear</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">top</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">right</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">bottom</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">left</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">z-index</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">min-width</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">max-width</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">min-height</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">max-height</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">overflow</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">margin-top</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">margin-right</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">margin-bottom</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">margin-left</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">padding-top</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">padding-right</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">padding-bottom</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">padding-left</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-top</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-right</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-bottom</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-left</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-width</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-top-width</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-right-width</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-bottom-width</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-left-width</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-style</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-top-style</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-right-style</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-bottom-style</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-left-style</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-color</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-top-color</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-right-color</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-bottom-color</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-left-color</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">outline</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">list-style</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">table-layout</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">caption-side</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-collapse</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">border-spacing</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">empty-cells</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">font</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">font-family</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">font-size</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">line-height</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">font-weight</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">text-align</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">text-indent</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">text-transform</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">text-decoration</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">letter-spacing</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">word-spacing</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">white-space</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">vertical-align</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">background</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">background-image</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">background-repeat</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">background-position</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">opacity</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">cursor</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">content</span><span class="p">:</span> <span class="p">;</span>
+    <span class="nl">quotes</span><span class="p">:</span> <span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="按字母排序">按字母排序</h3>
+
+<p>除了上面这个比较知名的规则，还有一种大部分人用的方式则更加简单粗暴，那就是上面问卷结果中有出现过的，按属性的字母排序（Alphabetical），用的人还不少。这种规则简单明了，写起来也不用多想，个人觉得没多大必要，有点为了排序而排序的感觉，并无多大实用之处。</p>
+
+<h3 id="按照重要性的分组排序">按照重要性的分组排序</h3>
+
+<p>来自 Guy Routledge 的<a href="https://webdesign.tutsplus.com/articles/outside-in-ordering-css-properties-by-importance--cms-21685">这篇文章</a>展示了一种分组及按照重要性排序的方式，或者说基于此种方式下他自己的一种排序规则。</p>
+
+<p>总结起来就是<code class="language-plaintext highlighter-rouge">outside in</code>，由外向内，从元素与外界的关系，是否会影响外部布局，到外边距，内边距等。</p>
+
+<ol>
+  <li>布局相关(position, float, clear, display)，因为元素的布局会对对相邻元素产生影响，自身甚至会脱离原来的文档流，所以比较重要</li>
+  <li>盒模型相关(width, height, margin, padding)</li>
+  <li>外观 (color, background, border, box-shadow)</li>
+  <li>文字排版 (font-size, font-family, text-align, text-transform)</li>
+  <li>其他 (cursor, overflow, z-index)</li>
+</ol>
+
+<h4 id="一个示例">一个示例</h4>
+
+<p>按照上面这种重要性分组的顺序，来看一个示例。</p>
+
+<p>假若有一个按钮：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">/* &lt;a href="#" class="button"&gt;Order now &amp;rarr;&lt;/a&gt; */</span>
+<span class="nc">.button</span> <span class="p">{</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>因为想让按钮有纵向高度，所以将默认的 <code class="language-plaintext highlighter-rouge">display</code> 由 <code class="language-plaintext highlighter-rouge">inline</code> 改成 <code class="language-plaintext highlighter-rouge">inline-block</code>.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.button</span> <span class="p">{</span>
+<span class="err">    </span><span class="nl">display</span><span class="p">:</span><span class="n">inline-block</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>解决了布局，接下来便是盒模型相关的，内外边距，根据由外而内的顺序，所以先 <code class="language-plaintext highlighter-rouge">margin</code> 再 <code class="language-plaintext highlighter-rouge">padding</code>。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.button</span> <span class="p">{</span>
+<span class="err">    </span><span class="nl">display</span><span class="p">:</span><span class="n">inline-block</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">margin</span><span class="p">:</span><span class="m">1em</span> <span class="m">0</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">padding</span><span class="p">:</span><span class="m">1em</span> <span class="m">4em</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后是外观展现。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.button</span> <span class="p">{</span>
+<span class="err">    </span><span class="nl">display</span><span class="p">:</span><span class="n">inline-block</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">margin</span><span class="p">:</span><span class="m">1em</span> <span class="m">0</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">padding</span><span class="p">:</span><span class="m">0.5em</span> <span class="m">3em</span><span class="p">;</span>
+<span class="err"> </span>
+<span class="err">    </span><span class="nl">color</span><span class="p">:</span><span class="m">#fff</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">background</span><span class="p">:</span><span class="m">#196e76</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>最后加上对按钮文字的排版修饰完工。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.button</span> <span class="p">{</span>
+<span class="err">    </span><span class="nl">display</span><span class="p">:</span><span class="n">inline-block</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">margin</span><span class="p">:</span><span class="m">1em</span> <span class="m">0</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">padding</span><span class="p">:</span><span class="m">1em</span> <span class="m">4em</span><span class="p">;</span>
+<span class="err"> </span>
+<span class="err">    </span><span class="nl">color</span><span class="p">:</span><span class="m">#fff</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">background</span><span class="p">:</span><span class="m">#196e76</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">border</span><span class="p">:</span><span class="m">0.25em</span> <span class="nb">solid</span> <span class="m">#196e76</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">box-shadow</span><span class="p">:</span><span class="nb">inset</span> <span class="m">0.25em</span> <span class="m">0.25em</span> <span class="m">0.5em</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0.3</span><span class="p">),</span> 
+<span class="err">               </span><span class="m">0.5em</span> <span class="m">0.5em</span> <span class="m">0</span> <span class="m">#444</span><span class="p">;</span>
+<span class="err"> </span>
+<span class="err">    </span><span class="nl">font-size</span><span class="p">:</span><span class="m">3em</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">font-family</span><span class="p">:</span><span class="n">Avenir</span><span class="p">,</span> <span class="n">Helvetica</span><span class="p">,</span> <span class="n">Arial</span><span class="p">,</span> <span class="nb">sans-serif</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">text-align</span><span class="p">:</span><span class="nb">center</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">text-transform</span><span class="p">:</span><span class="nb">uppercase</span><span class="p">;</span>
+<span class="err">    </span><span class="nl">text-decoration</span><span class="p">:</span><span class="nb">none</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这一规则大致与前面的盒模型规则类似。</p>
+
+<h3 id="我眼中的排序规则">我眼中的排序规则</h3>
+
+<p>就我个人而言，倾向于将比较重要的常用的放在靠前位置，像元素的长宽<code class="language-plaintext highlighter-rouge">width</code> <code class="language-plaintext highlighter-rouge">height</code>这种，影响尺寸，也很直观，我认为是比较重要的属性。</p>
+
+<p>其次是<code class="language-plaintext highlighter-rouge">position</code> 这种规定了元素定位的属性，再然后是 <code class="language-plaintext highlighter-rouge">border</code> <code class="language-plaintext highlighter-rouge">color</code> 这种次要的外观属性等。</p>
+
+<p>虽然在这排序的过程中，会自动将同类的属性进行分组。但其实要细说下来，同一类别中也不好区分哪条在前，哪条在后比较好，也就是说虽然内心有个大致的重要性分组，但某个分组内再进行排序的话，自己其实也没有个清晰的准则。</p>
+
+<p>比如 <code class="language-plaintext highlighter-rouge">width</code> 和<code class="language-plaintext highlighter-rouge">height</code> 谁先谁后？或许在确定了整体排序规则后，同一分组内的排序就没那么重要了。</p>
+
+<p>所以，用工具解决就不用那么纠结。CSS 属性排序千千万，我只爱那一种，那一种，用工具解决的那一种。</p>
+
+<h3 id="工具">工具</h3>
+
+<p>CSS 属性本来就没有一个标来准规定先写谁后写谁，怎样写都能工作，正是这样的情况导致你想找一种确定的书写方式的时候，面临选择的困难，每个人会有自己的偏好，这个很难达成统一。</p>
+
+<p>在团队内，常见的会推 JS 的编码风格，甚至会推相应的工具来强制检查。却很少听到有为 CSS 来做这样的风格统一的。我觉得即使不为了考虑团队代码风格的一致性问题，从本文开始列的因素中来看，个人至少是需要养成一种属于自己风格的书写规范，或者选择一种规范来始终坚持。养成习惯后，写起 CSS 下笔如有神，文思如泉涌。</p>
+
+<p>如果觉得手工排序麻烦，那么也有相应的工作来自动格式化 CSS 代码的。比如  <a href="http://csscomb.com/">CSScomb
+</a>。相应的有编辑器插件，Node CLI 工具。同时 VSCode 的应用市场也有<a href="https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-csscomb">相应实现</a>可以选择安装。</p>
+
+<p>当然，该工具有自己的一套排序机制，它主要还是对 CSS 的分组及格式化方面的支持，并没有使用上面的某种规则来排序。但使用它能够保证 CSS 属性按照一定顺序恒定输出。如果你同意他的这种格式化风格的话，使用这个插件会是比较省事的选择。</p>
+
+<p>通过他提供的在线工具我尝试了一个示例，大部分是相同的代码，两个类名里面打乱了顺序，第二个类里面进行了属性的删减，期望的输出结果是两个按钮类中每个属性所处的位置不变。</p>
+
+<p><em>格式化前</em></p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.btn</span> <span class="p">{</span>
+  <span class="nl">display</span><span class="p">:</span> <span class="n">inline-block</span><span class="p">;</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">1em</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">3em</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">1em</span> <span class="m">4em</span><span class="p">;</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="m">#fff</span><span class="p">;</span>
+  <span class="nl">box-shadow</span><span class="p">:</span> <span class="nb">inset</span> <span class="m">0.25em</span> <span class="m">0.25em</span> <span class="m">0.5em</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0.3</span><span class="p">),</span> <span class="m">0.5em</span> <span class="m">0.5em</span> <span class="m">0</span> <span class="m">#444</span><span class="p">;</span>
+  <span class="nl">background</span><span class="p">:</span> <span class="m">#196e76</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">0.25em</span> <span class="nb">solid</span> <span class="m">#196e76</span><span class="p">;</span>
+  <span class="nl">text-decoration</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span>
+  <span class="nl">font-family</span><span class="p">:</span> <span class="n">Avenir</span><span class="p">,</span> <span class="n">Helvetica</span><span class="p">,</span> <span class="n">Arial</span><span class="p">,</span> <span class="nb">sans-serif</span><span class="p">;</span>
+  <span class="nl">text-align</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+  <span class="nl">text-transform</span><span class="p">:</span> <span class="nb">uppercase</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.btn2</span> <span class="p">{</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">0.25em</span> <span class="nb">solid</span> <span class="m">#196e76</span><span class="p">;</span>
+  <span class="nl">text-transform</span><span class="p">:</span> <span class="nb">uppercase</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">1em</span> <span class="m">4em</span><span class="p">;</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="m">#fff</span><span class="p">;</span>
+  <span class="nl">box-shadow</span><span class="p">:</span> <span class="nb">inset</span> <span class="m">0.25em</span> <span class="m">0.25em</span> <span class="m">0.5em</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0.3</span><span class="p">),</span> <span class="m">0.5em</span> <span class="m">0.5em</span> <span class="m">0</span> <span class="m">#444</span><span class="p">;</span>
+  <span class="nl">background</span><span class="p">:</span> <span class="m">#196e76</span><span class="p">;</span>
+  <span class="nl">text-decoration</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">3em</span><span class="p">;</span>
+  <span class="nl">font-family</span><span class="p">:</span> <span class="n">Avenir</span><span class="p">,</span> <span class="n">Helvetica</span><span class="p">,</span> <span class="n">Arial</span><span class="p">,</span> <span class="nb">sans-serif</span><span class="p">;</span>
+  <span class="nl">text-align</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><em>格式化后</em></p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.btn</span>
+<span class="p">{</span>
+    <span class="nl">font-family</span><span class="p">:</span> <span class="n">Avenir</span><span class="p">,</span> <span class="n">Helvetica</span><span class="p">,</span> <span class="n">Arial</span><span class="p">,</span> <span class="nb">sans-serif</span><span class="p">;</span>
+    <span class="nl">font-size</span><span class="p">:</span> <span class="m">3em</span><span class="p">;</span>
+
+    <span class="nl">display</span><span class="p">:</span> <span class="n">inline-block</span><span class="p">;</span>
+
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">1em</span> <span class="m">0</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">1em</span> <span class="m">4em</span><span class="p">;</span>
+
+    <span class="nl">text-align</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+    <span class="nl">text-decoration</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span>
+    <span class="nl">text-transform</span><span class="p">:</span> <span class="nb">uppercase</span><span class="p">;</span>
+
+    <span class="nl">color</span><span class="p">:</span> <span class="m">#fff</span><span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="m">.25em</span> <span class="nb">solid</span> <span class="m">#196e76</span><span class="p">;</span>
+    <span class="nl">background</span><span class="p">:</span> <span class="m">#196e76</span><span class="p">;</span>
+    <span class="nl">box-shadow</span><span class="p">:</span> <span class="nb">inset</span> <span class="m">.25em</span> <span class="m">.25em</span> <span class="m">.5em</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">.3</span><span class="p">),</span> <span class="m">.5em</span> <span class="m">.5em</span> <span class="m">0</span> <span class="m">#444</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.btn2</span>
+<span class="p">{</span>
+    <span class="nl">font-family</span><span class="p">:</span> <span class="n">Avenir</span><span class="p">,</span> <span class="n">Helvetica</span><span class="p">,</span> <span class="n">Arial</span><span class="p">,</span> <span class="nb">sans-serif</span><span class="p">;</span>
+    <span class="nl">font-size</span><span class="p">:</span> <span class="m">3em</span><span class="p">;</span>
+
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">1em</span> <span class="m">4em</span><span class="p">;</span>
+
+    <span class="nl">text-align</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+    <span class="nl">text-decoration</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span>
+    <span class="nl">text-transform</span><span class="p">:</span> <span class="nb">uppercase</span><span class="p">;</span>
+
+    <span class="nl">color</span><span class="p">:</span> <span class="m">#fff</span><span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="m">.25em</span> <span class="nb">solid</span> <span class="m">#196e76</span><span class="p">;</span>
+    <span class="nl">background</span><span class="p">:</span> <span class="m">#196e76</span><span class="p">;</span>
+    <span class="nl">box-shadow</span><span class="p">:</span> <span class="nb">inset</span> <span class="m">.25em</span> <span class="m">.25em</span> <span class="m">.5em</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">.3</span><span class="p">),</span> <span class="m">.5em</span> <span class="m">.5em</span> <span class="m">0</span> <span class="m">#444</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>该插件支持自定义样式规则，通过其提供的<a href="http://csscomb.com/config">在线工具</a>可以方便地生成满足自己风格的规则。使用<a href="https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-csscomb">VSCode 插件</a> 需要注意，需要在设置中指定一种格式化预设配置才能生效。</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"csscomb.preset"</span><span class="p">:</span><span class="w"> </span><span class="s2">"csscomb"</span><span class="w"> </span><span class="err">//其他规则或者自定义规则</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>除了在编辑器中进行设置，还可以生成一个配置文件，放在项目根目录中，类似<code class="language-plaintext highlighter-rouge">.editorconfig</code>，这样项目中其他人可以共用同一份配置，达到团队代码风格的统一。</p>
+
+<h3 id="结论">结论</h3>
+
+<p>港真，按照一定规则格式之后的 CSS 代码会看起来舒心很多。</p>
+
+<p>选择一种风格，或者形成并保持自己的风格。程序人生路漫漫，代码风格常相伴。</p>
+
+<p>「你吃的苦会照亮你未来的路」，你的坚持，不会是白白的付出。</p>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/css-properties-order-convention/assets/ice_boy.jpg" alt="冰花男孩" /></p>
+
+<h3 id="相关资源">相关资源</h3>
+
+<ul>
+  <li><a href="https://css-tricks.com/poll-results-how-do-you-order-your-css-properties/">Poll Results: How do you order your CSS properties?</a></li>
+  <li><a href="https://webdesign.tutsplus.com/articles/outside-in-ordering-css-properties-by-importance--cms-21685">“Outside In” — Ordering CSS Properties by Importance</a></li>
+  <li><a href="https://stackoverflow.com/questions/4878655/conventional-order-of-css-properties">Conventional Order of CSS properties</a></li>
+  <li><a href="http://csscomb.com/">CSScomb</a></li>
+  <li><a href="https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-csscomb">CSScomb VSCode 插件</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2018/01/03/%E4%BA%8B%E4%BB%B6%E7%9A%84%E5%86%92%E6%B3%A1%E4%B8%8E%E6%8D%95%E8%8E%B7/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="事件的冒泡与捕获"
+            >
+              Previous<br />
+              <span>事件的冒泡与捕获</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2018/01/18/Webpack-%E8%B0%83%E6%95%99%E4%B9%8B%E5%8F%82%E6%95%B0%E7%9A%84%E6%8A%95%E5%96%82/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Webpack 调教之参数的投喂"
+            >
+              Next<br />
+              <span>Webpack 调教之参数的投喂</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

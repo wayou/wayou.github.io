@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="MySQL 联表查询 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="MySQL 联表查询
+
+关系型数据库，免不了表之间存在各种引用与关联。这些关联是通过主键与外键搭配来形成的。所以，取数据时，很大情况下单张表无法满足需求，额外的数据则需要将其他表加入到查询中来，这便是 JOIN 关键字完成的操作。
+
+
+  MySQL 中 JOIN, CROSS JOIN 和 INNER JOIN 三者语法功能上相同，可互换，而 SQL 标准中，INNER JOIN 需要搭配..."
+  />
+   <meta property="article:published_time" content="2019-05-13T16:05:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/05/13/MySQL-%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    MySQL 联表查询 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/05/13/MySQL-%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>MySQL 联表查询</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">May 13, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="mysql-联表查询">MySQL 联表查询</h1>
+
+<p>关系型数据库，免不了表之间存在各种引用与关联。这些关联是通过主键与外键搭配来形成的。所以，取数据时，很大情况下单张表无法满足需求，额外的数据则需要将其他表加入到查询中来，这便是 <code class="language-plaintext highlighter-rouge">JOIN</code> 关键字完成的操作。</p>
+
+<ul>
+  <li>MySQL 中 <code class="language-plaintext highlighter-rouge">JOIN</code>, <code class="language-plaintext highlighter-rouge">CROSS JOIN</code> 和 <code class="language-plaintext highlighter-rouge">INNER JOIN</code> 三者语法功能上相同，可互换，而 SQL 标准中，<code class="language-plaintext highlighter-rouge">INNER JOIN</code> 需要搭配 <code class="language-plaintext highlighter-rouge">ON</code> 语句。</li>
+</ul>
+
+<p>多表联合查询时，可省略 JOIN 关键字，以逗号分隔多张表，此时默认会当作 INNER JOIN 来处理。比如,</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">table1</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> 
+       <span class="n">table2</span><span class="p">.</span><span class="o">*</span> 
+<span class="k">FROM</span>   <span class="n">table1</span><span class="p">,</span> 
+       <span class="n">table2</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<p>等效于：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">table1</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> 
+       <span class="n">table2</span><span class="p">.</span><span class="o">*</span> 
+<span class="k">FROM</span>   <span class="n">table1</span> 
+       <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">table2</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<ul>
+  <li>但这种通过逗号隐式指定的联表形式其优先级要低于直接通过关键字（<code class="language-plaintext highlighter-rouge">INNER JOIN</code>, <code class="language-plaintext highlighter-rouge">CROSS JOIN</code>, <code class="language-plaintext highlighter-rouge">LEFT JOIN</code>）指定的形式。所以 <code class="language-plaintext highlighter-rouge">t1, t2 JOIN t3</code> 会被解析成 <code class="language-plaintext highlighter-rouge">(t1, (t2 JOIN t3))</code> 而不是 <code class="language-plaintext highlighter-rouge">((t1, t2) JOIN t3)</code></li>
+</ul>
+
+<p>需要注意的是，当逗号形式与其他联表关键词结合时，在指定了联表条件，比如通过 <code class="language-plaintext highlighter-rouge">ON</code> 条件时，会报错。</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">ON</code> 指定的联表条件其语法同 <code class="language-plaintext highlighter-rouge">WHERE</code>，所有后者可接受的表达式都可用于 <code class="language-plaintext highlighter-rouge">ON</code>。两者看起来功能上雷同，<code class="language-plaintext highlighter-rouge">ON</code> 一般用于指定联表条件，即表之间怎么被联合，而 <code class="language-plaintext highlighter-rouge">WHERE</code> 则用于过滤结果。</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">LEFT JOIN</code> 时，右边表中不满足 <code class="language-plaintext highlighter-rouge">ON</code> 或 <code class="language-plaintext highlighter-rouge">USING</code> 指定的条件时，会在结果中以 <code class="language-plaintext highlighter-rouge">NULL</code> 呈现。</p>
+  </li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">left_tbl</span><span class="p">.</span><span class="o">*</span>
+  <span class="k">FROM</span> <span class="n">left_tbl</span> <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">right_tbl</span> <span class="k">ON</span> <span class="n">left_tbl</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">right_tbl</span><span class="p">.</span><span class="n">id</span>
+  <span class="k">WHERE</span> <span class="n">right_tbl</span><span class="p">.</span><span class="n">id</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>通过此方法可方便地过滤出右边表中不符合条件的记录。</p>
+
+<ul>
+  <li>联表查询时可为每张参与进来的表指定别名，方便在其他表达式中引用。两种方式，一个是通过 <code class="language-plaintext highlighter-rouge">AS</code> 关键字 <code class="language-plaintext highlighter-rouge">tbl_name AS alias_name</code>，另一种是直接在表名后面跟上别名，<code class="language-plaintext highlighter-rouge">tbl_name alias_name</code>。</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">t1</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t2</span><span class="p">.</span><span class="n">salary</span>
+  <span class="k">FROM</span> <span class="n">employee</span> <span class="k">AS</span> <span class="n">t1</span> <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">info</span> <span class="k">AS</span> <span class="n">t2</span> <span class="k">ON</span> <span class="n">t1</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">t2</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="n">t1</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t2</span><span class="p">.</span><span class="n">salary</span>
+  <span class="k">FROM</span> <span class="n">employee</span> <span class="n">t1</span> <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">info</span> <span class="n">t2</span> <span class="k">ON</span> <span class="n">t1</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">t2</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>一条查询语句中的子查询必需取一个别名，这样才能在其他表达式中引用。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">AS</span> <span class="n">t1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">USING(join_column_list)</code> 语句指定两个表中均包含的列，查询时只针对这里指定的列进行比较。</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">b</span> <span class="k">USING</span> <span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge"> NATURAL [LEFT] JOIN</code> 与 <code class="language-plaintext highlighter-rouge">INNER JOIN</code> 和 <code class="language-plaintext highlighter-rouge">LEFT JOIN</code> 配合使用了 <code class="language-plaintext highlighter-rouge">USING</code> 指定表中所有列的情况等效。</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">RIGHT JOIN</code> 与 <code class="language-plaintext highlighter-rouge">LEFT JOIN</code> 类似，只是最终结果是依据右边表，将左边表中不符合的在结果中以 NULL 呈现。为了方便在不同数据库间迁移，推荐始终使用 <code class="language-plaintext highlighter-rouge">LEFT JOIN</code>。</p>
+  </li>
+</ul>
+
+<p>一些 <code class="language-plaintext highlighter-rouge">JOIN</code> 示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">table1</span><span class="p">,</span> <span class="n">table2</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">table1</span> <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">table2</span> <span class="k">ON</span> <span class="n">table1</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">table2</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">table1</span> <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">table2</span> <span class="k">ON</span> <span class="n">table1</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">table2</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">table1</span> <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">table2</span> <span class="k">USING</span> <span class="p">(</span><span class="n">id</span><span class="p">);</span>
+
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">table1</span> <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">table2</span> <span class="k">ON</span> <span class="n">table1</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">table2</span><span class="p">.</span><span class="n">id</span>
+  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">table3</span> <span class="k">ON</span> <span class="n">table2</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">table3</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">NATURAL JOIN</code> 的结果中不会有重复的列。因为其与 <code class="language-plaintext highlighter-rouge">USING</code> 雷同，所以 <code class="language-plaintext highlighter-rouge">USING</code> 时也没有复杂的列。</li>
+</ul>
+
+<p>考察下面的示例：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t1</span> <span class="p">(</span><span class="n">i</span> <span class="nb">INT</span><span class="p">,</span> <span class="n">j</span> <span class="nb">INT</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t2</span> <span class="p">(</span><span class="n">k</span> <span class="nb">INT</span><span class="p">,</span> <span class="n">j</span> <span class="nb">INT</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t1</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t2</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t1</span> <span class="k">NATURAL</span> <span class="k">JOIN</span> <span class="n">t2</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t1</span> <span class="k">JOIN</span> <span class="n">t2</span> <span class="k">USING</span> <span class="p">(</span><span class="n">j</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>查询结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+------+------+------+
+| j    | i    | k    |
++------+------+------+
+|    1 |    1 |    1 |
++------+------+------+
++------+------+------+
+| j    | i    | k    |
++------+------+------+
+|    1 |    1 |    1 |
++------+------+------+
+</code></pre></div></div>
+
+<p>结果中同名的列只出现一次，且都是值相同的那些记录。</p>
+
+<p>通过向两表中插入一条新记录，令它们的 <code class="language-plaintext highlighter-rouge">j</code> 不相同，再进行测试。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t1</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">1</span> <span class="k">row</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t2</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">1</span> <span class="k">row</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t1</span> <span class="k">natural</span> <span class="k">join</span> <span class="n">t2</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">------+------+------+</span>
+<span class="o">|</span> <span class="n">j</span>    <span class="o">|</span> <span class="n">i</span>    <span class="o">|</span> <span class="n">k</span>    <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+------+------+</span>
+<span class="o">|</span>    <span class="mi">2</span> <span class="o">|</span>    <span class="mi">2</span> <span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+------+------+</span>
+<span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">USING</code> 和 <code class="language-plaintext highlighter-rouge">ON</code> 作为条件时其他限制的联合条件是一样的，可互相转换。但在 <code class="language-plaintext highlighter-rouge">SELECT *</code> 返回结果时，还是有差异的。前者只在 <code class="language-plaintext highlighter-rouge">USING</code> 中指定的列中返回合并后的结果，后者则针对的是表中所有列。</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">b</span> <span class="k">USING</span> <span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">)</span>
+<span class="n">a</span> <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">b</span> <span class="k">ON</span> <span class="n">a</span><span class="p">.</span><span class="n">c1</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">c1</span> <span class="k">AND</span> <span class="n">a</span><span class="p">.</span><span class="n">c2</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">c2</span> <span class="k">AND</span> <span class="n">a</span><span class="p">.</span><span class="n">c3</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">c3</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">USING</code> 情况下的返回：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">COALESCE</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">c1</span><span class="p">),</span> <span class="n">COALESCE</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">c2</span><span class="p">),</span> <span class="n">COALESCE</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">c3</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">c3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">ON</code> 的返回：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">c3</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">c3</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ON</code> 语句中只能引用其操作表（operands）中的表。</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t1</span> <span class="p">(</span><span class="n">i1</span> <span class="nb">INT</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t2</span> <span class="p">(</span><span class="n">i2</span> <span class="nb">INT</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t3</span> <span class="p">(</span><span class="n">i3</span> <span class="nb">INT</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>针对上面的表，以下查询会报错：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM t1 JOIN t2 ON <span class="o">(</span>i1 <span class="o">=</span> i3<span class="o">)</span> JOIN t3<span class="p">;</span>
+ERROR 1054 <span class="o">(</span>42S22<span class="o">)</span>: Unknown column <span class="s1">'i3'</span> <span class="k">in</span> <span class="s1">'on clause'</span>
+</code></pre></div></div>
+
+<p>而以下查询则可以：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SELECT <span class="k">*</span> FROM t1 JOIN t2 JOIN t3 ON <span class="o">(</span>i1 <span class="o">=</span> i3<span class="o">)</span><span class="p">;</span>
+Empty <span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>因为此时 <code class="language-plaintext highlighter-rouge">t3</code> 在 <code class="language-plaintext highlighter-rouge">ON</code> 语句的操作范围内了。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/join.html">MySQL 8.0 Reference Manual - 13.2.10.2 JOIN Syntax</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/union.html">MySQL 8.0 Reference Manual - 13.2.10.3 UNION Syntax</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/05/12/MySQL-%E8%A1%A8%E5%92%8C%E5%88%97%E7%9A%84%E6%B3%A8%E9%87%8A/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="MySQL 表和列的注释"
+            >
+              Previous<br />
+              <span>MySQL 表和列的注释</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/05/15/MySQL-UNION-%E6%9F%A5%E8%AF%A2/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="MySQL UNION 查询"
+            >
+              Next<br />
+              <span>MySQL UNION 查询</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Node.js 命令行工具的编写 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="Node.js 命令行工具的编写
+
+日常开发中，编写 Node.js 命令行工具来完成一些小任务是很常见的操作。其编写也不难，和日常编写 Node.js 代码并无二致。
+
+package.json 中的 bin 字段
+
+一个 npm 模块，如果在 package.json 中指定了 bin 字段，那说明该模块提供了可在命令行执行的命令，这些命令就是在 bin 字段中指定的。
+
+package..."
+  />
+   <meta property="article:published_time" content="2019-04-13T15:04:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/04/13/Node.js-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%E7%9A%84%E7%BC%96%E5%86%99/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    Node.js 命令行工具的编写 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/04/13/Node.js-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%E7%9A%84%E7%BC%96%E5%86%99/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>Node.js 命令行工具的编写</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">April 13, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="nodejs-命令行工具的编写">Node.js 命令行工具的编写</h1>
+
+<p>日常开发中，编写 Node.js 命令行工具来完成一些小任务是很常见的操作。其编写也不难，和日常编写 Node.js 代码并无二致。</p>
+
+<h2 id="packagejson-中的-bin-字段"><code class="language-plaintext highlighter-rouge">package.json</code> 中的 <code class="language-plaintext highlighter-rouge">bin</code> 字段</h2>
+
+<p>一个 npm 模块，如果在 <code class="language-plaintext highlighter-rouge">package.json</code> 中指定了 <code class="language-plaintext highlighter-rouge">bin</code> 字段，那说明该模块提供了可在命令行执行的命令，这些命令就是在 <code class="language-plaintext highlighter-rouge">bin</code> 字段中指定的。</p>
+
+<p><em>package.json</em></p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"bin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"myapp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./cli.js"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>程序安装后会可在命令行执行 <code class="language-plaintext highlighter-rouge">myapp</code> 命令，实际执行的就是指定的这个 <code class="language-plaintext highlighter-rouge">cli.js</code> 文件。如果是全局安装，会将这个目标 js 文件映射到 <code class="language-plaintext highlighter-rouge">prefix/bin</code> 目录下，而如果是在项目中安装，则映射到 <code class="language-plaintext highlighter-rouge">./node_modules/.bin/</code> 目录下。</p>
+
+<p>比如上面的示例，全局安装后会将 <code class="language-plaintext highlighter-rouge">cli.js</code> 映射到 <code class="language-plaintext highlighter-rouge">/usr/local/bin/myapp</code> 目录下。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看项目中安装的所有可执行模块</span>
+<span class="nv">$ </span>ll node_modules/.bin
+...
+webpack -&gt; ../webpack/bin/webpack.js
+...
+</code></pre></div></div>
+
+<p>如果你的 npm 包只提供了一个可执行的命令，可直接将 <code class="language-plaintext highlighter-rouge">bin</code> 字段设置为目标文件，此时命令行中可执行的 CLI 命令名为 npm 包名（即 <code class="language-plaintext highlighter-rouge">name</code> 字段）。</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-program"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.2.5"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"bin"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./path/to/program"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>所以上面的配置和下面这个配置是等效的。</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-program"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.2.5"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"bin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"my-program"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./path/to/program"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>执行：</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>my-program 
+</code></pre></div></div>
+
+<h2 id="cli-命令的编写">CLI 命令的编写</h2>
+
+<p>为项目添加 README 文件是很常见的操作，每次都从零开始是没必要的。这时候就可以通过创建一个 README 模板，然后写一个 CLI 工具来生成到项目中。这样，将工具安装到全局或通过 <code class="language-plaintext highlighter-rouge">npx</code> 就可以方便地完成 README 文件的创建。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npx mkreadme
+README.md created
+</code></pre></div></div>
+
+<h3 id="初始化项目">初始化项目</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm init <span class="nt">-y</span>
+</code></pre></div></div>
+
+<p>修改 <code class="language-plaintext highlighter-rouge">package.json</code> 文件为如下内容：</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mkreadme"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"bin"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./cli.js"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1.0"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MIT"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="创建入口文件">创建入口文件</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">touch </span>cli.js
+</code></pre></div></div>
+
+<p>入口文件即 <code class="language-plaintext highlighter-rouge">bin</code> 字段所指向的文件，它可以是任何文件名，只需要在行首指定运行环境即可。Node.js 的 CLI 命令，期望的运行环境当然是 Node.js。</p>
+
+<p><em>cli.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp"> #!/usr/bin/env node
+</span> <span class="c1">// 其他代码...</span>
+</code></pre></div></div>
+
+<p>然后添加我们的功能代码，从远端获取一个 README 模板文件到本地。</p>
+
+<p><em>cli.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#!/usr/bin/env node
+</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">fs</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">https</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">https</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">TEMPLATE_FILE</span> <span class="o">=</span>
+  <span class="dl">"</span><span class="s2">https://raw.githubusercontent.com/wayou/readme-template/master/README.md</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">file</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">createWriteStream</span><span class="p">(</span><span class="dl">"</span><span class="s2">README.md</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">https</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">TEMPLATE_FILE</span><span class="p">,</span> <span class="nx">resposne</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">resposne</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">README.md created</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>这里，我们将模板文件放远端的一个位置然后通过网络请求下载下来，而不是直接放到 npm 模块中。这样做的好处是后面可以随时更新我们的模板文件而无须重新发布这个 npm 模块。</p>
+
+<h3 id="调试">调试</h3>
+
+<p>通过在当前开发目录进行 <code class="language-plaintext highlighter-rouge">link</code> 操作可进行本地调试。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm <span class="nb">link</span>
+</code></pre></div></div>
+
+<details>
+<summary>
+link 操作的输出信息
+</summary>
+
+```sh
+npm WARN mkreadme@0.1.0 No description
+npm WARN mkreadme@0.1.0 No repository field.
+
+up to date in 3.435s
+found 0 vulnerabilities
+
+/Users/wayou/.nvm/versions/node/v11.14.0/bin/mkreadme -&gt; /Users/wayou/.nvm/versions/node/v11.14.0/lib/node_modules/mkreadme/cli.js
+/Users/wayou/.nvm/versions/node/v11.14.0/lib/node_modules/mkreadme -&gt; /Users/wayou/Documents/dev/github/mkreadme
+```
+</details>
+
+<p>然后就可以在任何地方执行刚刚创建的 CLI 命令了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mkreadme
+README.md created
+</code></pre></div></div>
+
+<h3 id="参数的获取">参数的获取</h3>
+
+<p>让命令支持参数可以实现更加灵活的功能。通过 <code class="language-plaintext highlighter-rouge">process.argv</code> 在代码中能够获取到来自命令行的输入。但需要注意它返回的参数列表中前两位是 Node.js 的路径和当前项目的路径，从第三个元素开始才是命令中用户输入的数据。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#!/usr/bin/env</span> node
+
+const fs = require("fs");
+<span class="p">const https = require("https");
+</span>
+const TEMPLATE_FILE =
+  "https://raw.githubusercontent.com/wayou/readme-template/master/README.md";
+
++ const [, , ...args] = process.argv;
+
+const file = fs.createWriteStream("README.md");
+<span class="gi">+ const url = args[0] || TEMPLATE_FILE;
++ https.get(url, resposne =&gt; {
+</span>  resposne.pipe(file);
+  console.log("README.md created");
+<span class="err">});</span>
+</code></pre></div></div>
+
+<p>通过添加参数的支持，我们可以让使用者手动指定一个模板地址以下载对应的模板文件。</p>
+
+<h3 id="发布">发布</h3>
+
+<p>最后一步就是发布出去，这样所有人就能安装使用了。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm publish <span class="nt">--access</span> public
+</code></pre></div></div>
+
+<h3 id="安装与使用">安装与使用</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm i <span class="nt">-g</span> mkreadme
+<span class="nv">$ </span>mkreadme
+README.md created
+</code></pre></div></div>
+
+<p>除了像上面将命令安装到全局使用外，个人更加推荐的方式是通过 <code class="language-plaintext highlighter-rouge">npx</code>。<code class="language-plaintext highlighter-rouge">npx</code> 会自动查找本机是否有安装相应模块，如果没有的话，自动去远端查找并执行。通过 <code class="language-plaintext highlighter-rouge">npx</code> 就不用安装到本地，每次运行都可以使用远端最新的版本。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npx mkreadme
+README.md created
+</code></pre></div></div>
+
+<h3 id="后续的优化">后续的优化</h3>
+
+<p>示例中只实现了基本的功能，作为一个功能健全的实用工具，可以做以下的优化：</p>
+
+<ul>
+  <li>生成时做重名判断，如果已经存在 README 文件则提示是否覆盖。</li>
+  <li>文件下载和创建过程中的异常处理及提示。</li>
+  <li>提供并打印帮助信息，对使用者更加友好。</li>
+  <li>对输出进行格式化，高亮输出相关信息，使信息更易读。</li>
+</ul>
+
+<h3 id="完整的示例">完整的示例</h3>
+
+<p>上面示例中的代码可在 <a href="https://github.com/wayou/mkreadme">mkreadme</a> 这个仓库中找到。同时也发布到了 npm，可直接使用体验该工具。</p>
+
+<h2 id="三方工具">三方工具</h2>
+
+<p>命令行工具能够打印帮助和使用信息是很重要的，如果自己输出的话，会面临格式化这些内容的麻烦。
+如果提供的参数很多，解析处理用户输入的参数也是件很麻烦的事。</p>
+
+<p>像参数校验，错误提示及帮助信息的输出，这些命令行工具基本的功能已经有三方库比较成熟地解决了，比如 <a href="https://github.com/tj/commander.js/">commander.js</a>。通过这个库可方便地编写更加复杂的命令行工具。</p>
+
+<p>至于将输出信息进行高亮加彩色进行展示，也有相应三方库比如 <a href="https://github.com/chalk/chalk">chalk</a>。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://docs.npmjs.com/files/package.json#bin">npm-package.json 文档关于 <code class="language-plaintext highlighter-rouge">bin</code> 字段的描述</a></li>
+  <li><a href="https://github.com/chalk/chalk">chalk</a></li>
+  <li><a href="https://github.com/tj/commander.js/">commander.js</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/04/12/TypeScript-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E9%87%8D%E8%BD%BD/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="TypeScript 中的方法重载"
+            >
+              Previous<br />
+              <span>TypeScript 中的方法重载</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/04/14/TypeScript-%E4%B8%AD%E9%9D%9E%E4%BB%A3%E7%A0%81%E6%A8%A1%E5%9D%97%E7%9A%84%E5%AF%BC%E5%85%A5/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="TypeScript 中非代码模块的导入"
+            >
+              Next<br />
+              <span>TypeScript 中非代码模块的导入</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Kafka 的安装及启动 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="Kafka 的安装及启动
+
+Linux 服务器
+
+CentOS 为例。
+
+Kafka 安装
+
+获取下载地址，下载后解压。
+
+$ wget https://mirror.bit.edu.cn/apache/kafka/2.5.0/kafka_2.12-2.5.0.tgz
+$ tar -zxvf kafka_2.12-2.5.0.tgz &amp;&amp; cd kafka_2.12-2.5...."
+  />
+   <meta property="article:published_time" content="2020-05-13T15:05:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2020/05/13/Kafka-%E7%9A%84%E5%AE%89%E8%A3%85%E5%8F%8A%E5%90%AF%E5%8A%A8/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    Kafka 的安装及启动 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2020/05/13/Kafka-%E7%9A%84%E5%AE%89%E8%A3%85%E5%8F%8A%E5%90%AF%E5%8A%A8/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>Kafka 的安装及启动</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">May 13, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="kafka-的安装及启动">Kafka 的安装及启动</h1>
+
+<h2 id="linux-服务器">Linux 服务器</h2>
+
+<p>CentOS 为例。</p>
+
+<h3 id="kafka-安装">Kafka 安装</h3>
+
+<p>获取下载地址，下载后解压。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wget https://mirror.bit.edu.cn/apache/kafka/2.5.0/kafka_2.12-2.5.0.tgz
+<span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-zxvf</span> kafka_2.12-2.5.0.tgz <span class="o">&amp;&amp;</span> <span class="nb">cd </span>kafka_2.12-2.5.0
+</code></pre></div></div>
+
+<p>具体参考官网 <a href="https://kafka.apache.org/quickstart">Kafka - Quickstart</a>。</p>
+
+<h3 id="启动-kafka">启动 Kafka</h3>
+
+<p>Kafka 依赖 <a href="https://zookeeper.apache.org/">ZooKeeper</a>，所以需要先运行后者。Kafak 安装目录下自带了 ZooKeeper，可直接运行无须单独安装。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/zookeeper-server-start.sh config/zookeeper.properties
+</code></pre></div></div>
+
+<p>运行 Zookeeper 时发现机器上没有 Java，报错信息如下：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/zookeeper-server-start.sh config/zookeeper.properties
+/root/dev/kafka/bin/kafka-run-class.sh: line 315: <span class="nb">exec</span>: java: not found
+</code></pre></div></div>
+
+<p>所以需要先安装 Java。</p>
+
+<p>安装 Java 过程中如果 yum 报 https 错误，提示 404 repo 地址无效等，</p>
+
+<details>
+<summary>yum install java 时的报错信息</summary>
+
+```sh
+$ yum install java-1.6.0-openjdk
+Failed to set locale, defaulting to C
+Loaded plugins: fastestmirror
+base                                                                                                                                                                                                                                   | 3.6 kB  00:00:00
+epel                                                                                                                                                                                                                                   | 4.7 kB  00:00:00
+extras                                                                                                                                                                                                                                 | 3.4 kB  00:00:00
+https://repo.mongodb.org/yum/redhat/2.2/mongodb-org/4.2/x86_64/repodata/repomd.xml: [Errno 14] HTTPS Error 404 - Not Found
+Trying other mirror.
+To address this issue please refer to the below knowledge base article
+
+https://access.redhat.com/articles/1320623
+
+If above article doesn't help to resolve this issue please create a bug on https://bugs.centos.org/
+
+
+
+ One of the configured repositories failed (MongoDB Repository),
+ and yum doesn't have enough cached data to continue. At this point the only
+ safe thing yum can do is fail. There are a few ways to work "fix" this:
+
+     1. Contact the upstream for the repository and get them to fix the problem.
+
+     2. Reconfigure the baseurl/etc. for the repository, to point to a working
+        upstream. This is most often useful if you are using a newer
+        distribution release than is supported by the repository (and the
+        packages for the previous distribution release still work).
+
+     3. Disable the repository, so yum won't use it by default. Yum will then
+        just ignore the repository until you permanently enable it again or use
+        --enablerepo for temporary usage:
+
+            yum-config-manager --disable mongodb-org-4.2
+
+     4. Configure the failing repository to be skipped, if it is unavailable.
+        Note that yum will try to contact the repo. when it runs most commands,
+        so will have to try and fail each time (and thus. yum will be be much
+        slower). If it is a very temporary problem though, this is often a nice
+        compromise:
+
+            yum-config-manager --save --setopt=mongodb-org-4.2.skip_if_unavailable=true
+
+failure: repodata/repomd.xml from mongodb-org-4.2: [Errno 256] No more mirrors to try.
+https://repo.mongodb.org/yum/redhat/2.2/mongodb-org/4.2/x86_64/repodata/repomd.xml: [Errno 14] HTTPS Error 404 - Not Found
+```
+
+</details>
+
+<p>根据提示，执行 <code class="language-plaintext highlighter-rouge">yum-config-manager --disable mongodb-org-4.2</code> 后再次安装就成功了。</p>
+
+<p>检查 Java 的安装：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>java <span class="nt">-version</span>
+java version <span class="s2">"1.6.0_38"</span>
+OpenJDK Runtime Environment <span class="o">(</span>IcedTea6 1.13.10<span class="o">)</span> <span class="o">(</span>rhel-1.13.10.0.el7_2-x86_64<span class="o">)</span>
+OpenJDK 64-Bit Server VM <span class="o">(</span>build 23.25-b01, mixed mode<span class="o">)</span>
+
+</code></pre></div></div>
+
+<p>另，如果需要卸载，执行 <code class="language-plaintext highlighter-rouge">yum remove java-1.6.0-openjdk</code></p>
+
+<p>再次运行 <code class="language-plaintext highlighter-rouge">bin/zookeeper-server-start.sh config/zookeeper.properties</code> 发现前面安装的 Java 版本不对，低了…</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/zookeeper-server-start.sh config/zookeeper.properties
+Exception <span class="k">in </span>thread <span class="s2">"main"</span> java.lang.UnsupportedClassVersionError: org/apache/zookeeper/server/quorum/QuorumPeerMain : Unsupported major.minor version 52.0
+	at java.lang.ClassLoader.defineClass1<span class="o">(</span>Native Method<span class="o">)</span>
+	at java.lang.ClassLoader.defineClass<span class="o">(</span>ClassLoader.java:643<span class="o">)</span>
+	at java.security.SecureClassLoader.defineClass<span class="o">(</span>SecureClassLoader.java:142<span class="o">)</span>
+	at java.net.URLClassLoader.defineClass<span class="o">(</span>URLClassLoader.java:277<span class="o">)</span>
+	at java.net.URLClassLoader.access<span class="nv">$000</span><span class="o">(</span>URLClassLoader.java:73<span class="o">)</span>
+	at java.net.URLClassLoader<span class="nv">$1</span>.run<span class="o">(</span>URLClassLoader.java:212<span class="o">)</span>
+	at java.security.AccessController.doPrivileged<span class="o">(</span>Native Method<span class="o">)</span>
+	at java.net.URLClassLoader.findClass<span class="o">(</span>URLClassLoader.java:205<span class="o">)</span>
+	at java.lang.ClassLoader.loadClass<span class="o">(</span>ClassLoader.java:323<span class="o">)</span>
+	at sun.misc.Launcher<span class="nv">$AppClassLoader</span>.loadClass<span class="o">(</span>Launcher.java:294<span class="o">)</span>
+	at java.lang.ClassLoader.loadClass<span class="o">(</span>ClassLoader.java:268<span class="o">)</span>
+Could not find the main class: org.apache.zookeeper.server.quorum.QuorumPeerMain. Program will exit.
+</code></pre></div></div>
+
+<p>根据提示最小应该为 52 的版本，根据 <a href="https://stackoverflow.com/questions/22489398/unsupported-major-minor-version-52-0">Unsupported major.minor version 52.0 [duplicate]</a>可知 52 对应的语义化版本。</p>
+
+<p>同时，可通过 <code class="language-plaintext highlighter-rouge">yum list available java\*</code> 命令查询到 yum 上可安装的版本，找一个满足要求的安装即可，<code class="language-plaintext highlighter-rouge">yum install java-1.8.0-openjdk</code>。</p>
+
+<p>再次检查安装：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>java <span class="nt">-version</span>
+openjdk version <span class="s2">"1.8.0_71"</span>
+OpenJDK Runtime Environment <span class="o">(</span>build 1.8.0_71-b15<span class="o">)</span>
+OpenJDK 64-Bit Server VM <span class="o">(</span>build 25.71-b15, mixed mode<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="启动-kafka-服务">启动 Kafka 服务</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/kafka-server-start.sh config/server.properties
+</code></pre></div></div>
+
+<h3 id="创建-topic">创建 Topic</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/kafka-topics.sh <span class="nt">--create</span> <span class="nt">--bootstrap-server</span> localhost:9092 <span class="nt">--replication-factor</span> 1 <span class="nt">--partitions</span> 1 <span class="nt">--topic</span> <span class="nb">test</span>
+</code></pre></div></div>
+
+<h3 id="创建生产者">创建生产者</h3>
+
+<p>创建生产者发送消息</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/kafka-console-producer.sh <span class="nt">--bootstrap-server</span> localhost:9092 <span class="nt">--topic</span> <span class="nb">test</span>
+</code></pre></div></div>
+
+<h3 id="创建消费者">创建消费者</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/kafka-console-consumer.sh <span class="nt">--bootstrap-server</span> localhost:9092 <span class="nt">--topic</span> <span class="nb">test</span> <span class="nt">--from-beginning</span>
+</code></pre></div></div>
+
+<p>此时发消息的地方有新增数据时，消费者处会实时获取到。</p>
+
+<h2 id="mac-本机">mac 本机</h2>
+
+<h3 id="修改-kafka-配置">修改 Kafka 配置</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>vi /usr/local/etc/kafka/server.properties
+</code></pre></div></div>
+
+<p>将 <code class="language-plaintext highlighter-rouge">listeners=PLAINTEXT://:9092</code> 取消其注释并修改成如下形式后保存：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#</span> The address the socket server listens on. It will get the value returned from
+<span class="err">#</span> java.net.InetAddress.getCanonicalHostName() if not configured.
+<span class="err">#</span>   FORMAT:
+<span class="err">#</span>     listeners = listener_name://host_name:port
+<span class="err">#</span>   EXAMPLE:
+<span class="err">#</span>     listeners = PLAINTEXT://your.host.name:9092
+<span class="gd">- listeners=PLAINTEXT://:9092
+</span><span class="gi">+ listeners=PLAINTEXT://localhost:9092
+</span>
+# Hostname and port the broker will advertise to producers and consumers. If not set,
+<span class="err">#</span> it uses the value for "listeners" if configured.  Otherwise, it will use the value
+<span class="err">#</span> returned from java.net.InetAddress.getCanonicalHostName().
+<span class="err">#advertised.listeners=PLAINTEXT://your.host.name:9092</span>
+</code></pre></div></div>
+
+<h3 id="启动-zookeeper">启动 zookeeper</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew services start zookeeper                                          
+<span class="o">==&gt;</span> Successfully started <span class="sb">`</span>zookeeper<span class="sb">`</span> <span class="o">(</span>label: homebrew.mxcl.zookeeper<span class="o">)</span>
+</code></pre></div></div>
+
+<p><strong>注：</strong> 通过 brew 和 zookeeper 自己的命令启动时，停止服务也需要对应的命令，即，<code class="language-plaintext highlighter-rouge">brew services stop zookeeper</code> 只会停止 brew 启动的服务。</p>
+
+<h3 id="启动-kafka-1">启动 kafka</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew services start kafka                                                
+<span class="o">==&gt;</span> Successfully started <span class="sb">`</span>kafka<span class="sb">`</span> <span class="o">(</span>label: homebrew.mxcl.kafka<span class="o">)</span>
+</code></pre></div></div>
+
+<p>上面是以服务形式常驻启动，如果临时启动，可使用下面的命令：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>zkServer start
+<span class="nv">$ </span>kafka-server-start /usr/local/etc/kafka/server.properties
+</code></pre></div></div>
+
+<h3 id="创建-topic-1">创建 Topic</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kafka-topics <span class="nt">--create</span> <span class="nt">--zookeeper</span> localhost:2181 <span class="nt">--replication-factor</span> 1 <span class="nt">--partitions</span> 1 <span class="nt">--topic</span> <span class="nb">test</span>
+</code></pre></div></div>
+
+<p>如果出现如下错误：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Exception <span class="k">in </span>thread <span class="s2">"main"</span> kafka.zookeeper.ZooKeeperClientTimeoutException: Timed out waiting <span class="k">for </span>connection <span class="k">while in </span>state: CONNECTING
+	at kafka.zookeeper.ZooKeeperClient.<span class="nv">$anonfun$waitUntilConnected$3</span><span class="o">(</span>ZooKeeperClient.scala:262<span class="o">)</span>
+	at kafka.zookeeper.ZooKeeperClient.waitUntilConnected<span class="o">(</span>ZooKeeperClient.scala:258<span class="o">)</span>
+	at kafka.zookeeper.ZooKeeperClient.&lt;init&gt;<span class="o">(</span>ZooKeeperClient.scala:119<span class="o">)</span>
+	at kafka.zk.KafkaZkClient<span class="nv">$.</span>apply<span class="o">(</span>KafkaZkClient.scala:1863<span class="o">)</span>
+	at kafka.admin.TopicCommand<span class="nv">$ZookeeperTopicService$.</span>apply<span class="o">(</span>TopicCommand.scala:341<span class="o">)</span>
+	at kafka.admin.TopicCommand<span class="nv">$.</span>main<span class="o">(</span>TopicCommand.scala:55<span class="o">)</span>
+	at kafka.admin.TopicCommand.main<span class="o">(</span>TopicCommand.scala<span class="o">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>检查 zookeeper 服务是否正常：</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>zkServer status                                                        22:22:32
+/usr/bin/java
+ZooKeeper JMX enabled by default
+Using config: /usr/local/etc/zookeeper/zoo.cfg
+Client port found: 2181. Client address: localhost.
+Error contacting service. It is probably not running.
+</code></pre></div></div>
+
+<p>如果是像上面这样，zookeeper 根本没启动成功。虽然 <code class="language-plaintext highlighter-rouge">brew services start zookeeper</code> 及 <code class="language-plaintext highlighter-rouge">zkServer start</code> 都会提示启动成功，这是比较坑爹的地方。</p>
+
+<p>然后不要相信网上列的那一系列可能原因：</p>
+
+<ul>
+  <li>host 没绑</li>
+  <li>端口占用</li>
+  <li>dataDir 目录不存在或权限不足</li>
+  <li>myid 文件缺失或内容不对</li>
+  <li>…</li>
+</ul>
+
+<p>此时需要做的是先停掉服务，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew services start zookeeper
+<span class="c"># 或</span>
+<span class="nv">$ </span>zkServer stop
+</code></pre></div></div>
+
+<p>然后打开 <code class="language-plaintext highlighter-rouge">/usr/local/etc/zookeeper/log4j.properties</code> 配置文件看日志在哪，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat</span> /usr/local/etc/zookeeper/log4j.properties
+log4j.rootCategory<span class="o">=</span>WARN, zklog
+log4j.appender.zklog <span class="o">=</span> org.apache.log4j.RollingFileAppender
+log4j.appender.zklog.File <span class="o">=</span> /usr/local/var/log/zookeeper/zookeeper.log
+log4j.appender.zklog.Append <span class="o">=</span> <span class="nb">true
+</span>log4j.appender.zklog.layout <span class="o">=</span> org.apache.log4j.PatternLayout
+log4j.appender.zklog.layout.ConversionPattern <span class="o">=</span> %d<span class="o">{</span>yyyy-MM-dd HH:mm:ss<span class="o">}</span> %c<span class="o">{</span>1<span class="o">}</span> <span class="o">[</span>%p] %m%n
+</code></pre></div></div>
+
+<p>可以看到，日志文件在 <code class="language-plaintext highlighter-rouge">/usr/local/var/log/zookeeper/zookeeper.log</code> 里面，可以看看里面有没有报错以帮助排查启动的问题。</p>
+
+<p>新开窗口使用 <code class="language-plaintext highlighter-rouge">tail -f</code> 打开日志，然后重新尝试启动 zookeeper 可以看到如下输出：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">tail</span> <span class="nt">-n</span> 50 <span class="nt">-f</span> /usr/local/var/log/zookeeper/zookeeper.log
+2020-05-13 09:58:43 QuorumPeerMain <span class="o">[</span>WARN] Either no config or no quorum defined <span class="k">in </span>config, running  <span class="k">in </span>standalone mode
+2020-05-13 09:58:43 ContextHandler <span class="o">[</span>WARN] o.e.j.s.ServletContextHandler@e45f292<span class="o">{</span>/,null,UNAVAILABLE<span class="o">}</span> contextPath ends with /<span class="k">*</span>
+2020-05-13 09:58:43 ContextHandler <span class="o">[</span>WARN] Empty contextPath
+2020-05-13 09:58:43 NIOServerCnxnFactory <span class="o">[</span>ERROR] Thread Thread[main,5,main] died
+java.lang.NoSuchMethodError: java.nio.ByteBuffer.clear<span class="o">()</span>Ljava/nio/ByteBuffer<span class="p">;</span>
+	at org.apache.jute.BinaryOutputArchive.stringToByteBuffer<span class="o">(</span>BinaryOutputArchive.java:77<span class="o">)</span>
+	at org.apache.jute.BinaryOutputArchive.writeString<span class="o">(</span>BinaryOutputArchive.java:107<span class="o">)</span>
+	at org.apache.zookeeper.data.Id.serialize<span class="o">(</span>Id.java:50<span class="o">)</span>
+	at org.apache.jute.BinaryOutputArchive.writeRecord<span class="o">(</span>BinaryOutputArchive.java:123<span class="o">)</span>
+	at org.apache.zookeeper.data.ACL.serialize<span class="o">(</span>ACL.java:51<span class="o">)</span>
+	at org.apache.zookeeper.server.ReferenceCountedACLCache.serialize<span class="o">(</span>ReferenceCountedACLCache.java:136<span class="o">)</span>
+	at org.apache.zookeeper.server.DataTree.serialize<span class="o">(</span>DataTree.java:1218<span class="o">)</span>
+	at org.apache.zookeeper.server.util.SerializeUtils.serializeSnapshot<span class="o">(</span>SerializeUtils.java:152<span class="o">)</span>
+	at org.apache.zookeeper.server.persistence.FileSnap.serialize<span class="o">(</span>FileSnap.java:210<span class="o">)</span>
+	at org.apache.zookeeper.server.persistence.FileSnap.serialize<span class="o">(</span>FileSnap.java:227<span class="o">)</span>
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.save<span class="o">(</span>FileTxnSnapLog.java:406<span class="o">)</span>
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.restore<span class="o">(</span>FileTxnSnapLog.java:248<span class="o">)</span>
+	at org.apache.zookeeper.server.ZKDatabase.loadDataBase<span class="o">(</span>ZKDatabase.java:240<span class="o">)</span>
+	at org.apache.zookeeper.server.ZooKeeperServer.loadData<span class="o">(</span>ZooKeeperServer.java:290<span class="o">)</span>
+	at org.apache.zookeeper.server.ZooKeeperServer.startdata<span class="o">(</span>ZooKeeperServer.java:450<span class="o">)</span>
+	at org.apache.zookeeper.server.NIOServerCnxnFactory.startup<span class="o">(</span>NIOServerCnxnFactory.java:764<span class="o">)</span>
+	at org.apache.zookeeper.server.ServerCnxnFactory.startup<span class="o">(</span>ServerCnxnFactory.java:98<span class="o">)</span>
+	at org.apache.zookeeper.server.ZooKeeperServerMain.runFromConfig<span class="o">(</span>ZooKeeperServerMain.java:144<span class="o">)</span>
+	at org.apache.zookeeper.server.ZooKeeperServerMain.initializeAndRun<span class="o">(</span>ZooKeeperServerMain.java:106<span class="o">)</span>
+	at org.apache.zookeeper.server.ZooKeeperServerMain.main<span class="o">(</span>ZooKeeperServerMain.java:64<span class="o">)</span>
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun<span class="o">(</span>QuorumPeerMain.java:128<span class="o">)</span>
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main<span class="o">(</span>QuorumPeerMain.java:82<span class="o">)</span>
+</code></pre></div></div>
+
+<p>原因就很明朗了， java 中报错找不到对应方法。根据 <a href="https://stackoverflow.com/a/60613000/1553656">Kafka with Zookeeper 3.5.7 Crash NoSuchMethodError: java.nio.ByteBuffer.flip()</a> 这个类似问题下的回答，解决办法有两个：</p>
+
+<ul>
+  <li>升级 java 到 1.9</li>
+  <li>降级 zookeeper 到 3.14.x</li>
+</ul>
+
+<p>看了下使用 brew 安装后的版本：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>java <span class="nt">-version</span>
+openjdk version <span class="s2">"1.8.0_252"</span>
+OpenJDK Runtime Environment <span class="o">(</span>AdoptOpenJDK<span class="o">)(</span>build 1.8.0_252-b09<span class="o">)</span>
+OpenJDK 64-Bit Server VM <span class="o">(</span>AdoptOpenJDK<span class="o">)(</span>build 25.252-b09, mixed mode<span class="o">)</span>
+
+<span class="nv">$ </span>brew info zookeeper
+zookeeper: stable 3.5.7 <span class="o">(</span>bottled<span class="o">)</span>, HEAD
+Centralized server <span class="k">for </span>distributed coordination of services
+...
+</code></pre></div></div>
+
+<p>因为是本机，升级 java 会比较容易操作些，直接：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew cask <span class="nb">install </span>java
+...
+</code></pre></div></div>
+
+<p>完成后查看 java 版本，已经来到了最新的 14.0：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>java <span class="nt">-version</span>
+openjdk version <span class="s2">"14.0.1"</span> 2020-04-14
+OpenJDK Runtime Environment <span class="o">(</span>build 14.0.1+7<span class="o">)</span>
+OpenJDK 64-Bit Server VM <span class="o">(</span>build 14.0.1+7, mixed mode, sharing<span class="o">)</span>
+</code></pre></div></div>
+
+<p>再次启动 zookeeper，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>zkServer start
+/usr/bin/java
+ZooKeeper JMX enabled by default
+Using config: /usr/local/etc/zookeeper/zoo.cfg
+Starting zookeeper ... STARTED
+</code></pre></div></div>
+
+<p>同时查看日志输出：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2020-05-13 10:35:47 QuorumPeerMain [WARN] Either no config or no quorum defined in config, running  in standalone mode
+2020-05-13 10:35:47 ContextHandler [WARN] o.e.j.s.ServletContextHandler@69b2283a{/,null,UNAVAILABLE} contextPath ends with /*
+2020-05-13 10:35:47 ContextHandler [WARN] Empty contextPath
+2020-05-13 10:35:47 ZooKeeperServerMain [ERROR] Unable to start AdminServer, exiting abnormally
+org.apache.zookeeper.server.admin.AdminServer$AdminServerException: Problem starting AdminServer on address 0.0.0.0, port 8080 and command URL /commands
+	at org.apache.zookeeper.server.admin.JettyAdminServer.start(JettyAdminServer.java:107)
+	at org.apache.zookeeper.server.ZooKeeperServerMain.runFromConfig(ZooKeeperServerMain.java:138)
+	at org.apache.zookeeper.server.ZooKeeperServerMain.initializeAndRun(ZooKeeperServerMain.java:106)
+	at org.apache.zookeeper.server.ZooKeeperServerMain.main(ZooKeeperServerMain.java:64)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:128)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main(QuorumPeerMain.java:82)
+Caused by: java.io.IOException: Failed to bind to /0.0.0.0:8080
+	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:346)
+	at org.eclipse.jetty.server.ServerConnector.open(ServerConnector.java:308)
+	at org.eclipse.jetty.server.AbstractNetworkConnector.doStart(AbstractNetworkConnector.java:80)
+	at org.eclipse.jetty.server.ServerConnector.doStart(ServerConnector.java:236)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:68)
+	at org.eclipse.jetty.server.Server.doStart(Server.java:396)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:68)
+	at org.apache.zookeeper.server.admin.JettyAdminServer.start(JettyAdminServer.java:103)
+	... 5 more
+Caused by: java.net.BindException: Address already in use
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Net.java:479)
+	at java.base/sun.nio.ch.Net.bind(Net.java:468)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:220)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:88)
+	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:342)
+	... 12 more
+</code></pre></div></div>
+
+<p>可以看到，仍然报错，但错误已经变了。看来前面的步骤起作用了。再来看新的报错，</p>
+
+<p>错误信息里关键信息是 <code class="language-plaintext highlighter-rouge">Problem starting AdminServer on address 0.0.0.0, port 8080 and command URL /commands</code>。</p>
+
+<p>看来是端口占用的问题，查看 zookeeper 配置并添加 <code class="language-plaintext highlighter-rouge">admin.serverPort</code> 配置，修改默认的 8080 到其他端口：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>vi /usr/local/etc/zookeeper/zoo.cfg
+</code></pre></div></div>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#</span> The number of snapshots to retain in dataDir
+<span class="err">#autopurge.snapRetainCount=3</span>
+# Purge task interval in hours
+<span class="err">#</span> Set to "0" to disable auto purge feature
+<span class="err">#autopurge.purgeInterval=1</span>
++ admin.serverPort=8089
+</code></pre></div></div>
+
+<p>再次尝试启动并查看日志：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2020-05-13 10:56:13 QuorumPeerMain [WARN] Either no config or no quorum defined in config, running  in standalone mode
+2020-05-13 10:56:13 ContextHandler [WARN] o.e.j.s.ServletContextHandler@69b2283a{/,null,UNAVAILABLE} contextPath ends with /*
+2020-05-13 10:56:13 ContextHandler [WARN] Empty contextPath
+2020-05-13 10:56:13 ZooKeeperServerMain [ERROR] Unexpected exception, exiting abnormally
+java.net.BindException: Address already in use
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Net.java:479)
+	at java.base/sun.nio.ch.Net.bind(Net.java:468)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:220)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:88)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:80)
+	at org.apache.zookeeper.server.NIOServerCnxnFactory.configure(NIOServerCnxnFactory.java:687)
+	at org.apache.zookeeper.server.ZooKeeperServerMain.runFromConfig(ZooKeeperServerMain.java:143)
+	at org.apache.zookeeper.server.ZooKeeperServerMain.initializeAndRun(ZooKeeperServerMain.java:106)
+	at org.apache.zookeeper.server.ZooKeeperServerMain.main(ZooKeeperServerMain.java:64)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:128)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main(QuorumPeerMain.java:82)
+</code></pre></div></div>
+
+<p>错误已经更新成了 <code class="language-plaintext highlighter-rouge">Address already in use</code>。这个就是之前有起过 zookeeper 但忘了关，不管怎样，通过下面对应的命令关闭一下即可：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew services start zookeeper
+<span class="c"># 或</span>
+<span class="nv">$ </span>zkServer stop
+</code></pre></div></div>
+
+<p>再次启动：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>zkServer start
+/usr/bin/java
+ZooKeeper JMX enabled by default
+Using config: /usr/local/etc/zookeeper/zoo.cfg
+Starting zookeeper ... STARTED
+</code></pre></div></div>
+
+<p>查看日志已经没有异样了：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2020-05-13 11:57:01 QuorumPeerMain [WARN] Either no config or no quorum defined in config, running  in standalone mode
+2020-05-13 11:57:02 ContextHandler [WARN] o.e.j.s.ServletContextHandler@69b2283a{/,null,UNAVAILABLE} contextPath ends with /*
+2020-05-13 11:57:02 ContextHandler [WARN] Empty contextPath
+</code></pre></div></div>
+
+<p>再通过 <code class="language-plaintext highlighter-rouge">zkServer status</code> 查看 zookeeper 状态，不出意外可以看到 <code class="language-plaintext highlighter-rouge">Mode: standalone</code> 字样表示单例启动成功，因为没有配集群所以是本机单例。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>zkServer status                                                            11:57:01
+/usr/bin/java
+ZooKeeper JMX enabled by default
+Using config: /usr/local/etc/zookeeper/zoo.cfg
+Client port found: 2181. Client address: localhost.
+Mode: standalone
+</code></pre></div></div>
+
+<p>最后，可以成功创建 Topic 了:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kafka-topics <span class="nt">--create</span> <span class="nt">--zookeeper</span> localhost:2181 <span class="nt">--replication-factor</span> 1 <span class="nt">--partitions</span> 1 <span class="nt">--topic</span> <span class="nb">test
+</span>Created topic test.
+</code></pre></div></div>
+
+<h3 id="创建生产者-1">创建生产者</h3>
+
+<p>创建生产者并生成消息：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kafka-console-producer <span class="nt">--broker-list</span> localhost:9092 <span class="nt">--topic</span> <span class="nb">test</span>
+<span class="o">&gt;</span> hello
+</code></pre></div></div>
+
+<p>以上命令执行后会进入交互命令行，每输入一行代表一条消息。</p>
+
+<h3 id="创建消费者-1">创建消费者</h3>
+
+<p>消费消息：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kafka-console-consumer <span class="nt">--bootstrap-server</span> localhost:9092 <span class="nt">--topic</span> <span class="nb">test</span> <span class="nt">--from-beginning</span>
+<span class="o">&gt;</span> hello
+</code></pre></div></div>
+
+<p>启动后会从队列起始处开始消费消息并输出。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://kafka.apache.org/quickstart">Kafka - Quickstart</a></li>
+  <li><a href="https://colobu.com/2019/09/27/install-Kafka-on-Mac/">在 MacOS 上安装 Kafka</a></li>
+  <li><a href="https://medium.com/@Ankitthakur/apache-kafka-installation-on-mac-using-homebrew-a367cdefd273">Apache Kafka Installation on Mac using Homebrew</a></li>
+  <li><a href="https://stackoverflow.com/a/3855359/1553656">Find (and kill) process locking port 3000 on Mac</a></li>
+  <li><a href="https://stackoverflow.com/a/58557904/1553656">ZooKepper Unable to start AdminServer, exiting abnormally</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/05/09/%E8%B7%A8%E5%9F%9F%E5%8F%8A%E8%A7%A3%E5%86%B3/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="跨域及解决"
+            >
+              Previous<br />
+              <span>跨域及解决</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2020/05/13/MySQL-%E9%87%8D%E7%BD%AE-root-%E5%AF%86%E7%A0%81/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="MySQL 重置 root 密码"
+            >
+              Next<br />
+              <span>MySQL 重置 root 密码</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

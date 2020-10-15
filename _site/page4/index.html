@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:description"
+    content="ここは牛さんの部落格です"
+  />
+  
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/page4/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/page4/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Page Header -->
+
+
+
+
+
+
+
+<header class="intro-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading">
+        
+          <h1>牛さんの部落格</h1>
+          <span class="subheading">ここは牛さんの部落格です</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    
+    <!-- NO SIDEBAR -->
+    <!-- PostList Container -->
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 postlist-container"
+    >
+      
+<div class="post-preview">
+  <a href="/2020/06/24/iTerm2-%E4%B8%AD%E5%AE%9E%E7%8E%B0%E5%91%BD%E4%BB%A4%E5%AE%8C%E6%88%90%E6%97%B6%E8%BF%9B%E8%A1%8C%E9%80%9A%E7%9F%A5/">
+    <h2 class="post-title">iTerm2 中实现命令完成时进行通知</h2>
+    
+  </a>
+  <p class="post-meta">June 24, 2020</p>
+  <div class="post-content-preview">
+     iTerm2 中实现命令完成时进行通知
+
+执行一个耗时很长的命令时，或命令耗时不确定，可以配置 iTerm2 在命令完成或失败时主动通知，而不用我们自己时不时地去检查。
+
+say
+
+可在命令后跟... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/06/20/Node.js-%E4%B8%AD%E8%8E%B7%E5%8F%96%E6%9C%AC%E6%9C%BA%E5%85%AC%E7%BD%91-IP/">
+    <h2 class="post-title">Node.js 中获取本机公网 IP</h2>
+    
+  </a>
+  <p class="post-meta">June 20, 2020</p>
+  <div class="post-content-preview">
+     Node.js 中获取本机公网 IP
+
+本地开发 Node.js 服务端功能时，大部分情况以 localhost 作为 host 启动服务器。使用公网 IP 启动，则可以在手机或其他任意设备上访... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/06/19/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84-SOLID-%E5%8E%9F%E5%88%99/">
+    <h2 class="post-title">面向对象编程中的 SOLID 原则</h2>
+    
+  </a>
+  <p class="post-meta">June 19, 2020</p>
+  <div class="post-content-preview">
+     面向对象编程中的 SOLID 原则
+
+
+  单一功能原则/Single-responsibility principle
+    
+      对象应该尽量功能单/A class should ... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/06/19/Cookie-%E7%9A%84%E4%B8%8B%E5%8F%91%E4%B8%8E%E5%9B%9E%E4%BC%A0/">
+    <h2 class="post-title">Cookie 的下发与回传</h2>
+    
+  </a>
+  <p class="post-meta">June 19, 2020</p>
+  <div class="post-content-preview">
+     Cookie 的下发与回传
+
+服务器下发 Cookie
+
+下发通过 Set-Cookie 响应头设置，后跟需要设置的 cookie 名 = 连接其值。再后面通过 ; 分隔的其他修改属性。
+
+Se... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/06/14/pip-install-%E5%AE%89%E8%A3%85-Python-%E4%BE%9D%E8%B5%96%E6%97%B6%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/">
+    <h2 class="post-title">pip install 安装 Python 依赖时权限问题的解决</h2>
+    
+  </a>
+  <p class="post-meta">June 14, 2020</p>
+  <div class="post-content-preview">
+     pip install 安装 Python 依赖时权限问题的解决
+
+从 Github clone Python 项目，安装依赖时报如下错误：
+
+$ pip install -r requirem... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/06/12/MySQL-%E7%89%88%E6%9C%AC%E5%9B%9E%E9%80%80/">
+    <h2 class="post-title">MySQL 版本回退</h2>
+    
+  </a>
+  <p class="post-meta">June 12, 2020</p>
+  <div class="post-content-preview">
+     MySQL 版本回退
+
+一般来说，本机通过 brew install mysql 安装到的是默认的最新的 MySQL，这里是 MySQL 8。
+
+因为云端使用的老版本，比如 MySQL 5.7。... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/06/05/Docker-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8D%E8%B6%B3%E8%AD%A6%E5%91%8A%E7%9A%84%E6%B6%88%E9%99%A4/">
+    <h2 class="post-title">Docker 配置文件权限不足警告的消除</h2>
+    
+  </a>
+  <p class="post-meta">June 5, 2020</p>
+  <div class="post-content-preview">
+     Docker 配置文件权限不足警告的消除
+
+Docker CLI 命令出现权限不足的 warning 时，
+
+$ docker help
+WARNING: Error loading confi... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/06/04/Git-%E8%A7%A3%E5%86%B3%E5%86%B2%E7%AA%81%E6%97%B6%E6%8C%87%E5%AE%9A%E4%BD%BF%E7%94%A8%E6%9D%A5%E8%87%AA%E8%B0%81%E7%9A%84%E5%8F%98%E6%9B%B4/">
+    <h2 class="post-title">Git 解决冲突时指定使用来自谁的变更</h2>
+    
+  </a>
+  <p class="post-meta">June 4, 2020</p>
+  <div class="post-content-preview">
+     Git 解决冲突时指定使用来自谁的变更
+
+git rebase 出现文件冲突时，正常来讲，该一个一个文件打开对比，检查冲突项然后决定使用哪部分的变更。
+
+但是在明确知道应该使用谁的变更时，可通过... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/06/03/Redis-%E7%9A%84%E4%BD%BF%E7%94%A8/">
+    <h2 class="post-title">Redis 的使用</h2>
+    
+  </a>
+  <p class="post-meta">June 3, 2020</p>
+  <div class="post-content-preview">
+     Redis 的使用
+
+安装
+
+$ brew install redis
+
+
+检查安装：
+
+$ redis-server -v
+Redis server v=6.0.3 sha=00000000:... 
+  </div>
+</div>
+
+<div class="post-preview">
+  <a href="/2020/05/28/%E6%96%B0%E8%A3%85-MySQL-%E6%97%A0%E6%B3%95%E7%99%BB%E5%85%A5%E7%9A%84%E8%A7%A3%E5%86%B3/">
+    <h2 class="post-title">新装 MySQL 无法登入的解决</h2>
+    
+  </a>
+  <p class="post-meta">May 28, 2020</p>
+  <div class="post-content-preview">
+     新装 MySQL 无法登入的解决
+
+通过 brew 新安装的 MySQL 无法通过 root 用户登录，报如下的错误：
+
+$ mysql -uroot
+Error: Access denied ... 
+  </div>
+</div>
+
+
+<!-- Pager -->
+
+<ul class="pager">
+  
+  <li class="previous">
+    <a
+      href="/page3"
+      >&larr;</a
+    >
+  </li>
+   
+  <li class="next">
+    <a
+      href="/page5"
+      >&rarr;</a
+    >
+  </li>
+  
+</ul>
+
+
+    </div>
+    <!-- Sidebar Container -->
+    <div
+      class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
+
+
+
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
+</div>
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

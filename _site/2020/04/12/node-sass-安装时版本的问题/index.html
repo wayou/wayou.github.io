@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="node-sass 安装时版本的问题 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="node-sass 安装时版本的问题
+
+项目中有依赖 node-sass 时，需要注意本意 Node.js 版本是否与项目所使用的 node-sass 版本匹配，因为 node-sass 对 Node.js 版本有严格要求：
+
+
+  
+    
+      NodeJS
+      Minimum node-sass version
+      Node Module
+    
+  
+  
+..."
+  />
+   <meta property="article:published_time" content="2020-04-12T10:04:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2020/04/12/node-sass-%E5%AE%89%E8%A3%85%E6%97%B6%E7%89%88%E6%9C%AC%E7%9A%84%E9%97%AE%E9%A2%98/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    node-sass 安装时版本的问题 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2020/04/12/node-sass-%E5%AE%89%E8%A3%85%E6%97%B6%E7%89%88%E6%9C%AC%E7%9A%84%E9%97%AE%E9%A2%98/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>node-sass 安装时版本的问题</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">April 12, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="node-sass-安装时版本的问题">node-sass 安装时版本的问题</h1>
+
+<p>项目中有依赖 node-sass 时，需要注意本意 Node.js 版本是否与项目所使用的 node-sass 版本匹配，因为 node-sass 对 Node.js 版本有严格要求：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>NodeJS</th>
+      <th>Minimum node-sass version</th>
+      <th>Node Module</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Node 13</td>
+      <td>4.13+</td>
+      <td>79</td>
+    </tr>
+    <tr>
+      <td>Node 12</td>
+      <td>4.12+</td>
+      <td>72</td>
+    </tr>
+    <tr>
+      <td>Node 11</td>
+      <td>4.10+</td>
+      <td>67</td>
+    </tr>
+    <tr>
+      <td>Node 10</td>
+      <td>4.9+</td>
+      <td>64</td>
+    </tr>
+    <tr>
+      <td>Node 8</td>
+      <td>4.5.3+</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>否则在执行 <code class="language-plaintext highlighter-rouge">npm install</code> 时会看到如下常见的安装错误：</p>
+
+<details>
+<summary>安装 node-sass 时的版本错误</summary>
+
+
+```sh
+warning Error running install script for optional dependency: "/Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass: Command failed.
+Exit code: 1
+Command: node scripts/build.js
+Arguments:
+Directory: /Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass
+Output:
+Building: /Users/wayou/.nvm/versions/node/v12.1.0/bin/node /Users/wayou/work/dev/github/angular-acbsws/node_modules/node-gyp/bin/node-gyp.js rebuild --verbose --libsass_ext= --libsass_cflags= --libsass_ldflags= --libsass_library=
+gyp info it worked if it ends with ok
+gyp verb cli [
+gyp verb cli   '/Users/wayou/.nvm/versions/node/v12.1.0/bin/node',
+gyp verb cli   '/Users/wayou/work/dev/github/angular-acbsws/node_modules/node-gyp/bin/node-gyp.js',
+gyp verb cli   'rebuild',
+gyp verb cli   '--verbose',
+gyp verb cli   '--libsass_ext=',
+gyp verb cli   '--libsass_cflags=',
+gyp verb cli   '--libsass_ldflags=',
+gyp verb cli   '--libsass_library='
+gyp verb cli ]
+gyp info using node-gyp@3.8.0
+gyp info using node@12.1.0 | darwin | x64
+gyp verb command rebuild []
+gyp verb command clean []
+gyp verb clean removing \"build\" directory
+gyp verb command configure []
+gyp verb check python checking for Python executable \"/usr/bin/python\" in the PATH
+gyp verb `which` succeeded /usr/bin/python /usr/bin/python
+gyp verb check python version `/usr/bin/python -c \"import sys; print \"2.7.16
+gyp verb check python version .%s.%s\" % sys.version_info[:3];\"` returned: %j
+gyp verb get node dir no --target version specified, falling back to host node version: 12.1.0
+gyp verb command install [ '12.1.0' ]
+gyp verb install input version string \"12.1.0\"
+gyp verb install installing version: 12.1.0
+gyp verb install --ensure was passed, so won't reinstall if already installed
+gyp verb install version is already installed, need to check \"installVersion\"
+gyp verb got \"installVersion\" 9
+gyp verb needs \"installVersion\" 9
+gyp verb install version is good
+gyp verb get node dir target node version installed: 12.1.0
+gyp verb build dir attempting to create \"build\" dir: /Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass/build
+gyp verb build dir \"build\" dir needed to be created? /Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass/build
+gyp verb build/config.gypi creating config file
+gyp verb build/config.gypi writing out config file: /Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass/build/config.gypi
+gyp verb config.gypi checking for gypi file: /Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass/config.gypi
+gyp verb common.gypi checking for gypi file: /Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass/common.gypi
+gyp verb gyp gyp format was not specified; forcing \"make\"
+gyp info spawn /usr/bin/python
+gyp info spawn args [
+gyp info spawn args   '/Users/wayou/work/dev/github/angular-acbsws/node_modules/node-gyp/gyp/gyp_main.py',
+gyp info spawn args   'binding.gyp',
+gyp info spawn args   '-f',
+gyp info spawn args   'make',
+gyp info spawn args   '-I',
+gyp info spawn args   '/Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass/build/config.gypi',
+gyp info spawn args   '-I',
+gyp info spawn args   '/Users/wayou/work/dev/github/angular-acbsws/node_modules/node-gyp/addon.gypi',
+gyp info spawn args   '-I',
+gyp info spawn args   '/Users/wayou/.node-gyp/12.1.0/include/node/common.gypi',
+gyp info spawn args   '-Dlibrary=shared_library',
+gyp info spawn args   '-Dvisibility=default',
+gyp info spawn args   '-Dnode_root_dir=/Users/wayou/.node-gyp/12.1.0',
+gyp info spawn args   '-Dnode_gyp_dir=/Users/wayou/work/dev/github/angular-acbsws/node_modules/node-gyp',
+gyp info spawn args   '-Dnode_lib_file=/Users/wayou/.node-gyp/12.1.0/&lt;(target_arch)/node.lib',
+gyp info spawn args   '-Dmodule_root_dir=/Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass',
+gyp info spawn args   '-Dnode_engine=v8',
+gyp info spawn args   '--depth=.',
+gyp info spawn args   '--no-parallel',
+gyp info spawn args   '--generator-output',
+gyp info spawn args   'build',
+gyp info spawn args   '-Goutput_dir=.'
+gyp info spawn args ]
+gyp verb command build []
+gyp verb build type Release
+gyp verb architecture x64
+gyp verb node dev dir /Users/wayou/.node-gyp/12.1.0
+gyp verb `which` succeeded for `make` /usr/bin/make
+gyp info spawn make
+gyp info spawn args [ 'V=1', 'BUILDTYPE=Release', '-C', 'build' ]
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/ast.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/ast.o ../src/libsass/src/ast.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/ast_fwd_decl.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/ast_fwd_decl.o ../src/libsass/src/ast_fwd_decl.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/backtrace.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/backtrace.o ../src/libsass/src/backtrace.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/base64vlq.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/base64vlq.o ../src/libsass/src/base64vlq.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/bind.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/bind.o ../src/libsass/src/bind.cpp
+  cc '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/cencode.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/cencode.o ../src/libsass/src/cencode.c
+../src/libsass/src/cencode.c:50:5: warning: declaration does not declare anything [-Wmissing-declarations]
+                                __attribute__ ((fallthrough));
+                                ^
+../src/libsass/src/cencode.c:64:5: warning: declaration does not declare anything [-Wmissing-declarations]
+                                __attribute__ ((fallthrough));
+                                ^
+2 warnings generated.
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/check_nesting.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/check_nesting.o ../src/libsass/src/check_nesting.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/color_maps.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/color_maps.o ../src/libsass/src/color_maps.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/constants.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/constants.o ../src/libsass/src/constants.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/context.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/context.o ../src/libsass/src/context.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/cssize.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/cssize.o ../src/libsass/src/cssize.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/emitter.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/emitter.o ../src/libsass/src/emitter.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/environment.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/environment.o ../src/libsass/src/environment.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/error_handling.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/error_handling.o ../src/libsass/src/error_handling.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/eval.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/eval.o ../src/libsass/src/eval.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/expand.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/expand.o ../src/libsass/src/expand.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/extend.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/extend.o ../src/libsass/src/extend.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/file.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/file.o ../src/libsass/src/file.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/functions.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/functions.o ../src/libsass/src/functions.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/inspect.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/inspect.o ../src/libsass/src/inspect.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/json.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/json.o ../src/libsass/src/json.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/lexer.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/lexer.o ../src/libsass/src/lexer.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/listize.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/listize.o ../src/libsass/src/listize.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/memory/SharedPtr.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/memory/SharedPtr.o ../src/libsass/src/memory/SharedPtr.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/node.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/node.o ../src/libsass/src/node.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/operators.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/operators.o ../src/libsass/src/operators.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/output.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/output.o ../src/libsass/src/output.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/parser.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/parser.o ../src/libsass/src/parser.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/plugins.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/plugins.o ../src/libsass/src/plugins.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/position.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/position.o ../src/libsass/src/position.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/prelexer.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/prelexer.o ../src/libsass/src/prelexer.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/remove_placeholders.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/remove_placeholders.o ../src/libsass/src/remove_placeholders.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/sass.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/sass.o ../src/libsass/src/sass.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/sass2scss.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/sass2scss.o ../src/libsass/src/sass2scss.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/sass_context.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/sass_context.o ../src/libsass/src/sass_context.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/sass_functions.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/sass_functions.o ../src/libsass/src/sass_functions.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/sass_util.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/sass_util.o ../src/libsass/src/sass_util.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/sass_values.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/sass_values.o ../src/libsass/src/sass_values.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/source_map.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/source_map.o ../src/libsass/src/source_map.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/subset_map.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/subset_map.o ../src/libsass/src/subset_map.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/to_c.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/to_c.o ../src/libsass/src/to_c.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/to_value.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/to_value.o ../src/libsass/src/to_value.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/units.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/units.o ../src/libsass/src/units.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/utf8_string.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/utf8_string.o ../src/libsass/src/utf8_string.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/util.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/util.o ../src/libsass/src/util.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=libsass' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DLIBSASS_VERSION=\"3.5.4\"' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=c++11 -stdlib=libc++ -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/libsass/src/libsass/src/values.o.d.raw   -c -o Release/obj.target/libsass/src/libsass/src/values.o ../src/libsass/src/values.cpp
+  rm -f Release/sass.a &amp;&amp; ./gyp-mac-tool filter-libtool libtool  -static -o Release/sass.a Release/obj.target/libsass/src/libsass/src/ast.o Release/obj.target/libsass/src/libsass/src/ast_fwd_decl.o Release/obj.target/libsass/src/libsass/src/backtrace.o Release/obj.target/libsass/src/libsass/src/base64vlq.o Release/obj.target/libsass/src/libsass/src/bind.o Release/obj.target/libsass/src/libsass/src/cencode.o Release/obj.target/libsass/src/libsass/src/check_nesting.o Release/obj.target/libsass/src/libsass/src/color_maps.o Release/obj.target/libsass/src/libsass/src/constants.o Release/obj.target/libsass/src/libsass/src/context.o Release/obj.target/libsass/src/libsass/src/cssize.o Release/obj.target/libsass/src/libsass/src/emitter.o Release/obj.target/libsass/src/libsass/src/environment.o Release/obj.target/libsass/src/libsass/src/error_handling.o Release/obj.target/libsass/src/libsass/src/eval.o Release/obj.target/libsass/src/libsass/src/expand.o Release/obj.target/libsass/src/libsass/src/extend.o Release/obj.target/libsass/src/libsass/src/file.o Release/obj.target/libsass/src/libsass/src/functions.o Release/obj.target/libsass/src/libsass/src/inspect.o Release/obj.target/libsass/src/libsass/src/json.o Release/obj.target/libsass/src/libsass/src/lexer.o Release/obj.target/libsass/src/libsass/src/listize.o Release/obj.target/libsass/src/libsass/src/memory/SharedPtr.o Release/obj.target/libsass/src/libsass/src/node.o Release/obj.target/libsass/src/libsass/src/operators.o Release/obj.target/libsass/src/libsass/src/output.o Release/obj.target/libsass/src/libsass/src/parser.o Release/obj.target/libsass/src/libsass/src/plugins.o Release/obj.target/libsass/src/libsass/src/position.o Release/obj.target/libsass/src/libsass/src/prelexer.o Release/obj.target/libsass/src/libsass/src/remove_placeholders.o Release/obj.target/libsass/src/libsass/src/sass.o Release/obj.target/libsass/src/libsass/src/sass2scss.o Release/obj.target/libsass/src/libsass/src/sass_context.o Release/obj.target/libsass/src/libsass/src/sass_functions.o Release/obj.target/libsass/src/libsass/src/sass_util.o Release/obj.target/libsass/src/libsass/src/sass_values.o Release/obj.target/libsass/src/libsass/src/source_map.o Release/obj.target/libsass/src/libsass/src/subset_map.o Release/obj.target/libsass/src/libsass/src/to_c.o Release/obj.target/libsass/src/libsass/src/to_value.o Release/obj.target/libsass/src/libsass/src/units.o Release/obj.target/libsass/src/libsass/src/utf8_string.o Release/obj.target/libsass/src/libsass/src/util.o Release/obj.target/libsass/src/libsass/src/values.o
+  c++ '-DNODE_GYP_MODULE_NAME=binding' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DBUILDING_NODE_EXTENSION' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../../../../../nan -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=gnu++1y -stdlib=libc++ -fno-rtti -fno-exceptions -std=c++11 -MMD -MF ./Release/.deps/Release/obj.target/binding/src/binding.o.d.raw   -c -o Release/obj.target/binding/src/binding.o ../src/binding.cpp
+  c++ '-DNODE_GYP_MODULE_NAME=binding' '-DUSING_UV_SHARED=1' '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1' '-DV8_DEPRECATION_WARNINGS' '-DV8_IMMINENT_DEPRECATION_WARNINGS' '-D_DARWIN_USE_64_BIT_INODE=1' '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DOPENSSL_THREADS' '-DBUILDING_NODE_EXTENSION' -I/Users/wayou/.node-gyp/12.1.0/include/node -I/Users/wayou/.node-gyp/12.1.0/src -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/config -I/Users/wayou/.node-gyp/12.1.0/deps/openssl/openssl/include -I/Users/wayou/.node-gyp/12.1.0/deps/uv/include -I/Users/wayou/.node-gyp/12.1.0/deps/zlib -I/Users/wayou/.node-gyp/12.1.0/deps/v8/include -I../../../../../nan -I../src/libsass/include  -Os -gdwarf-2 -mmacosx-version-min=10.7 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -std=gnu++1y -stdlib=libc++ -fno-rtti -fno-exceptions -std=c++11 -MMD -MF ./Release/.deps/Release/obj.target/binding/src/create_string.o.d.raw   -c -o Release/obj.target/binding/src/create_string.o ../src/create_string.cpp
+../src/create_string.cpp:17:25: error: no matching constructor for initialization of 'v8::String::Utf8Value'
+  v8::String::Utf8Value string(value);
+                        ^      ~~~~~
+/Users/wayou/.node-gyp/12.1.0/include/node/v8.h:3002:5: note: candidate constructor not viable: no known conversion from 'v8::Local&lt;v8::Value&gt;' to 'const v8::String::Utf8Value' for 1st argument
+    Utf8Value(const Utf8Value&amp;) = delete;
+    ^
+/Users/wayou/.node-gyp/12.1.0/include/node/v8.h:2995:5: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+    Utf8Value(Isolate* isolate, Local&lt;v8::Value&gt; obj);
+    ^
+1 error generated.
+make: *** [Release/obj.target/binding/src/create_string.o] Error 1
+gyp ERR! build error
+gyp ERR! stack Error: `make` failed with exit code: 2
+gyp ERR! stack     at ChildProcess.onExit (/Users/wayou/work/dev/github/angular-acbsws/node_modules/node-gyp/lib/build.js:262:23)
+gyp ERR! stack     at ChildProcess.emit (events.js:196:13)
+gyp ERR! stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:256:12)
+gyp ERR! System Darwin 19.3.0
+gyp ERR! command \"/Users/wayou/.nvm/versions/node/v12.1.0/bin/node\" \"/Users/wayou/work/dev/github/angular-acbsws/node_modules/node-gyp/bin/node-gyp.js\" \"rebuild\" \"--verbose\" \"--libsass_ext=\" \"--libsass_cflags=\" \"--libsass_ldflags=\" \"--libsass_library=\"
+gyp ERR! cwd /Users/wayou/work/dev/github/angular-acbsws/node_modules/@angular-devkit/build-angular/node_modules/node-sass
+gyp ERR! node -v v12.1.0
+gyp ERR! node-gyp -v v3.8.0
+success Saved lockfile.
+warning odpeknvxnlq.angular@0.0.0: "dependencies" has dependency "jasmine-core" with range "3.5.0" that collides with a dependency in "devDependencies" of the same name with version "~2.99.1"
+success Saved 1 new dependency.
+info Direct dependencies
+└─ node-sass@4.13.1
+info All dependencies
+└─ node-sass@4.13.1
+✨  Done in 127.96s.
+```
+
+</details>
+
+<p>通过查看本地的 lock 文件（yarn.lock 或者 package-lock.json）可以知道本地依赖的 node-sass 版本，再和本地的 Node.js 环境一对比可确定出问题，这里 Angular 项目中，通过 yarn.lock 发现使用的 node-sass 为 4.9.3，根据 node-sass 文档中的表格，可知我们需要使用 Node 10.</p>
+
+<details>
+<summary>yarn.lock</summary>
+
+
+```
+"@angular-devkit/build-angular@~0.10.0":
+  version "0.10.7"
+  resolved "https://registry.npm.taobao.org/@angular-devkit/build-angular/download/@angular-devkit/build-angular-0.10.7.tgz#facfde114c25a4ca3cc5eb6178052a454e597c4c"
+  integrity sha1-+s/eEUwlpMo8xetheAUqRU5ZfEw=
+  dependencies:
+    "@angular-devkit/architect" "0.10.7"
+    "@angular-devkit/build-optimizer" "0.10.7"
+    "@angular-devkit/build-webpack" "0.10.7"
+    "@angular-devkit/core" "7.0.7"
+    "@ngtools/webpack" "7.0.7"
+    ajv "6.5.3"
+    autoprefixer "9.1.5"
+    circular-dependency-plugin "5.0.2"
+    clean-css "4.2.1"
+    copy-webpack-plugin "4.5.4"
+    file-loader "2.0.0"
+    glob "7.1.3"
+    istanbul "0.4.5"
+    istanbul-instrumenter-loader "3.0.1"
+    karma-source-map-support "1.3.0"
+    less "3.8.1"
+    less-loader "4.1.0"
+    license-webpack-plugin "2.0.2"
+    loader-utils "1.1.0"
+    mini-css-extract-plugin "0.4.3"
+    minimatch "3.0.4"
+    opn "5.3.0"
+    parse5 "4.0.0"
+    portfinder "1.0.17"
+    postcss "7.0.5"
+    postcss-import "12.0.0"
+    postcss-loader "3.0.0"
+    raw-loader "0.5.1"
+    rxjs "6.3.3"
+    sass-loader "7.1.0"
+    semver "5.5.1"
+    source-map-loader "0.2.4"
+    source-map-support "0.5.9"
+    speed-measure-webpack-plugin "^1.2.3"
+    stats-webpack-plugin "0.7.0"
+    style-loader "0.23.0"
+    stylus "0.54.5"
+    stylus-loader "3.0.2"
+    terser-webpack-plugin "1.1.0"
+    tree-kill "1.2.0"
+    webpack "4.19.1"
+    webpack-dev-middleware "3.3.0"
+    webpack-dev-server "3.1.8"
+    webpack-merge "4.1.4"
+    webpack-sources "1.2.0"
+    webpack-subresource-integrity "1.1.0-rc.6"
+  optionalDependencies:
+    node-sass "4.9.3"
+```
+
+
+</details>
+
+<p>如果不是老项目，没有历史包袱，建议直接使用最新的 Node.js 搭配最新的 node-sass 使用即可，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>yarn add <span class="nt">-D</span> node-sass@latest
+</code></pre></div></div>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://github.com/sass/node-sass#node-sass">sass/node-sass</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/03/01/Objective-C-%E4%B8%AD%E8%AE%A1%E6%97%B6%E5%99%A8%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%8F%96%E6%B6%88/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Objective-C 中计时器设置与取消"
+            >
+              Previous<br />
+              <span>Objective-C 中计时器设置与取消</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2020/04/17/%E9%85%8D%E7%BD%AE-VSCode-%E4%BB%A5%E6%B6%88%E9%99%A4-Angular-%E9%A1%B9%E7%9B%AE%E4%B8%AD%E8%A3%85%E9%A5%B0%E5%99%A8%E7%9A%84%E6%8A%A5%E9%94%99%E4%BF%A1%E6%81%AF/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="配置 VSCode 以消除 Angular 项目中装饰器的报错信息"
+            >
+              Next<br />
+              <span>配置 VSCode 以消除 Angular 项目中装饰器的报错信息</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

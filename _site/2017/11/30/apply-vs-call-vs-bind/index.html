@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="apply vs call vs bind  - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="apply vs call vs bind
+
+apply 与 call
+
+js 有三个方法可以改变函数的执行上下文，apply，call和bind，三者都系 Function 对象上的原型方法。
+
+var name = 'foo',
+    obj = {
+        name: 'bar',
+        sayHello: function() {
+            cons..."
+  />
+   <meta property="article:published_time" content="2017-11-30T18:12:00Z">   
+  <meta property="article:tag" content="javascript" />
+   
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2017/11/30/apply-vs-call-vs-bind/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    apply vs call vs bind  - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2017/11/30/apply-vs-call-vs-bind/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=javascript" title="javascript">javascript</a>
+                        
+                    </div>
+                    <h1>apply vs call vs bind </h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">November 30, 2017</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h2 id="apply-vs-call-vs-bind">apply vs call vs bind</h2>
+
+<h3 id="apply-与-call"><code class="language-plaintext highlighter-rouge">apply</code> 与 <code class="language-plaintext highlighter-rouge">call</code></h3>
+
+<p>js 有三个方法可以改变函数的执行上下文，<code class="language-plaintext highlighter-rouge">apply</code>，<code class="language-plaintext highlighter-rouge">call</code>和<code class="language-plaintext highlighter-rouge">bind</code>，三者都系 <code class="language-plaintext highlighter-rouge">Function</code> 对象上的原型方法。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">foo</span><span class="dl">'</span><span class="p">,</span>
+    <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bar</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">sayHello</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">();</span><span class="c1">//bar</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="c1">//foo</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="c1">//foo</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)();</span><span class="c1">//foo</span>
+</code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">apply</code> 与 <code class="language-plaintext highlighter-rouge">call</code> 其实相当于调用函数，只不过调用时可以传递一个指定的上下文。而 <code class="language-plaintext highlighter-rouge">bind</code> 则不是立即调用，而是生成一个新的函数，新函数的上下文被指定为了传入的上下文。</p>
+
+<p>前两者，如果你纠结于它们的区别，那就是参数。</p>
+
+<p><code class="language-plaintext highlighter-rouge">apply</code>方法的签名：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">func</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">,</span> <span class="p">[</span><span class="nx">argsArray</span><span class="p">])</span>
+</code></pre></div></div>
+<p>其中，<code class="language-plaintext highlighter-rouge">argsArray</code> 是个类数组对象，并非真正的数据。
+什么意思？联想一下，在函数体中，我们可以通过一个隐藏的 <code class="language-plaintext highlighter-rouge">arguments</code> 变量来获取入参。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">f</span><span class="p">(){</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arguments</span><span class="p">)}</span>
+<span class="nx">f</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nx">f</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">world</span><span class="dl">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-apply-call-and-bind/assets/array-like-arguments.png" alt="函数体中类数组的 `arguments` 变量" /></p>
+
+<p><em>函数体中类数组的 <code class="language-plaintext highlighter-rouge">arguments</code> 变量</em></p>
+
+<p>我们看到，函数体中的 <code class="language-plaintext highlighter-rouge">arguments</code> 变量中用从0开始的索引记录了函数调用时的入参，可以通过索引访依次访问到每个入参。</p>
+
+<p>有没有一点感觉了？是吧，意味着，我们可以将一个函数的入参，直接通过 <code class="language-plaintext highlighter-rouge">arguments</code> 作为 <code class="language-plaintext highlighter-rouge">apply</code> 时的参数。</p>
+
+<p>请看示例：假如我们想改写原生的 <code class="language-plaintext highlighter-rouge">console.log</code>，让它在每次 log 的时候带上时间</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">obj</span><span class="o">=</span><span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span><span class="dl">'</span><span class="s1">susan</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">say</span><span class="p">:</span><span class="kd">function</span><span class="p">(){</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">say</span><span class="p">(</span><span class="dl">'</span><span class="s1">, how old are you?</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">say</span><span class="p">(</span><span class="dl">'</span><span class="s1">, how beautiful are you?</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">by the way, got time tonight?</span><span class="dl">'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>上面一大段在讨论什么？
+其实我想说，虽然平时我们介绍 <code class="language-plaintext highlighter-rouge">apply</code> 会说第一个参数指定上下文，后面跟参数数组，并且也是这么用的，我们会构造数组传递给它，</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]);</span>
+</code></pre></div></div>
+
+<p>但我在想，是不是人们在设计它的时候，其实是期望用在直接传递 <code class="language-plaintext highlighter-rouge">arguments</code> 的场景下，不然用类数组作为参数序列真的有点别扭不是。这样说来，不止 <code class="language-plaintext highlighter-rouge">arguments</code>，同样作为类数组，<code class="language-plaintext highlighter-rouge">document.querySelectorAll</code> 类似这样的选择器返回的 DOM 节点集合，也是正统的 <code class="language-plaintext highlighter-rouge">apply</code> 第二参数候选人。</p>
+
+<p><code class="language-plaintext highlighter-rouge">call</code>方法的签名：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">func</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">,</span> <span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="p">...)</span>
+</code></pre></div></div>
+
+<p>如果你苦恼于记不住，容易将两者搞混，到底谁在调用时传正常逗号分隔的入参，谁又接收类数组的入参。有个方法，<code class="language-plaintext highlighter-rouge">call</code> 本身英文意思就与 <code class="language-plaintext highlighter-rouge">invoke</code> 相近，有「调用」的意思，所以，我们在使用 <code class="language-plaintext highlighter-rouge">call</code>的时候，传参就像正常调用一个函数一个传递就行了。反之，既然记住了 <code class="language-plaintext highlighter-rouge">call</code> 是正常类型的传参，那剩下 <code class="language-plaintext highlighter-rouge">apply</code> 就是传递类数组参数喽。</p>
+
+<h3 id="bind"><code class="language-plaintext highlighter-rouge">bind</code></h3>
+
+<p>它的方法签名：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">fun</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">[,</span> <span class="nx">arg1</span><span class="p">[,</span> <span class="nx">arg2</span><span class="p">[,</span> <span class="p">...]]])</span>
+</code></pre></div></div>
+
+<p>你可能会问，既然已经有两个这样牛逼的方法了，还要 <code class="language-plaintext highlighter-rouge">bind</code> 何用。<code class="language-plaintext highlighter-rouge">bind</code> 在异步及事件中很有用。因为 <code class="language-plaintext highlighter-rouge">call</code> 和 <code class="language-plaintext highlighter-rouge">apply</code> 是立即执行的，而在异步及事件绑定时，我们需要提供的是一个函数。</p>
+
+<p>考察下面的例子：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">1</span> <span class="p">},</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">log</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">log</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span> <span class="c1">// 会打印出全局 a 的值 2，而非对象 o.a</span>
+</code></pre></div></div>
+
+<p>我们想让 <code class="language-plaintext highlighter-rouge">log</code> 执行上下文绑定到对象 <code class="language-plaintext highlighter-rouge">a</code> 身上，于是进行下面的尝试：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">1</span> <span class="p">},</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">log</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">log</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">o</span><span class="p">),</span> <span class="mi">1000</span><span class="p">);</span> <span class="c1">//立即进行了打印输出，而不是等待1000毫秒</span>
+</code></pre></div></div>
+
+<p>执行结果是立即进行了输出，而没有等待。因为 <code class="language-plaintext highlighter-rouge">bind</code> 或 <code class="language-plaintext highlighter-rouge">call</code> 是对函数的调用，当代码执行到的时候当然就是直接执行了。而 <code class="language-plaintext highlighter-rouge">setTimeout</code> 这里需要传入一个函数，但同时我们又想绑定这个函数的上下文。这时候 <code class="language-plaintext highlighter-rouge">bind</code> 就派上用场了。</p>
+
+<p>再举另一种场景下的例子。原生方法作为工具方法调用的时候，为了确保正常调用，是需要带上原生上下文的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">$</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querSelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span><span class="c1">//现在可以愉快地使用 `$` 来选择 DOM 啦，假装在使用 jQuery</span>
+<span class="nx">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">body</span><span class="dl">'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/wayou/wayou.github.io/master/posts/js-apply-call-and-bind/assets/alias-native-method.png" alt="alias 原生方法" /></p>
+
+<p><em>alias 原生方法</em></p>
+
+<h3 id="相关资料">相关资料</h3>
+
+<ul>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply">Function.prototype.apply()</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call">Function.prototype.call()</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind">Function.prototype.bind()</a></li>
+  <li><a href="https://stackoverflow.com/questions/15455009/javascript-call-apply-vs-bind">Javascript call() &amp; apply() vs bind()?</a></li>
+  <li><a href="https://stackoverflow.com/questions/37487497/beginner-explicit-this-binding-javascript">Beginner - Explicit this Binding JavaScript</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2017/11/30/CSS-%E7%9B%92%E6%A8%A1%E5%9E%8B/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="CSS 盒模型"
+            >
+              Previous<br />
+              <span>CSS 盒模型</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2017/12/02/%E5%89%8D%E7%AB%AF%E5%BC%82%E5%B8%B8%E7%9B%91%E6%8E%A7/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="前端异常监控"
+            >
+              Next<br />
+              <span>前端异常监控</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

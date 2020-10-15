@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="React 虚拟 DOM 的差异检测机制 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="React 虚拟 DOM 的差异检测机制
+
+React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上，减少了频繁操作真实 DOM 的时间消耗，但将成本转移到了 JavaScript 中，因为要计算新旧 DOM 树的差异嘛。所以这个计算差异的算法是否高效，就很关键了。React 中其计算差异的过程叫 Reconciliation，可理解成调和前后两次渲染的差异。
+
+正式讨论前..."
+  />
+   <meta property="article:published_time" content="2019-04-21T14:04:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/04/21/React-%E8%99%9A%E6%8B%9F-DOM-%E7%9A%84%E5%B7%AE%E5%BC%82%E6%A3%80%E6%B5%8B%E6%9C%BA%E5%88%B6/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    React 虚拟 DOM 的差异检测机制 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/04/21/React-%E8%99%9A%E6%8B%9F-DOM-%E7%9A%84%E5%B7%AE%E5%BC%82%E6%A3%80%E6%B5%8B%E6%9C%BA%E5%88%B6/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>React 虚拟 DOM 的差异检测机制</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">April 21, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="react-虚拟-dom-的差异检测机制">React 虚拟 DOM 的差异检测机制</h1>
+
+<p>React 使用虚拟 DOM 将计算好之后的更新发送到真实的 DOM 树上，减少了频繁操作真实 DOM 的时间消耗，但将成本转移到了 JavaScript 中，因为要计算新旧 DOM 树的差异嘛。所以这个计算差异的算法是否高效，就很关键了。React 中其计算差异的过程叫 <a href="https://reactjs.org/docs/reconciliation.html">Reconciliation</a>，可理解成调和前后两次渲染的差异。</p>
+
+<p>正式讨论前，先来看个问题。</p>
+
+<h2 id="问题">问题</h2>
+
+<p>假设我们有一个展示百分比的柱状条组件，其宽度由是传入的数值决定。并且它带动画，如果传入的值变化，那么柱状条应该由 0 动画到需要展示的宽度。</p>
+
+<p>即想要实现的效果如下：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56455403-7623aa00-6390-11e9-9b91-77a13173f104.gif" alt="预期的百分比柱状条效果" /></p>
+<p align="center">预期的百分比柱状条效果</p>
+
+<p>所以我们写了如下的柱状条组件：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Bar</span><span class="p">({</span> <span class="nx">score</span> <span class="p">})</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">width</span><span class="p">,</span> <span class="nx">setWidth</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+  <span class="c1">// 调试用</span>
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">组件初始化完成</span><span class="dl">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">组件即将销毁</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="p">},</span> <span class="p">[]);</span>
+
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">score 发生变化</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">timer</span> <span class="o">=</span> <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">setWidth</span><span class="p">(</span><span class="nx">score</span><span class="p">);</span>
+    <span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">clearTimeout</span><span class="p">(</span><span class="nx">timer</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="p">},</span> <span class="p">[</span><span class="nx">score</span><span class="p">]);</span>
+
+  <span class="kd">const</span> <span class="nx">style</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">width</span><span class="p">:</span> <span class="s2">`</span><span class="p">${</span><span class="nx">width</span><span class="p">}</span><span class="s2">%`</span>
+  <span class="p">};</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">bar-wrap'</span><span class="dl">"</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">bar</span><span class="dl">"</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">style</span><span class="p">}</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="nx">width</span><span class="p">}</span>
+      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>因为要实现动画，所以一开始我们并不将组件接收到的值应用到样式上，而是先将宽度设置为 0，等组件完成初始化之后，再在 <code class="language-plaintext highlighter-rouge">setTimeout</code> 中将组件的宽度设置为传入的 props 上的值，这样就能看到动画了。</p>
+
+<p>调用：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">data1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">];</span>
+<span class="kd">const</span> <span class="nx">data2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">];</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">data</span><span class="p">,</span> <span class="nx">setData</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="nx">data1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">button</span>
+        <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">setData</span><span class="p">(</span><span class="nx">prev</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">prev</span> <span class="o">===</span> <span class="nx">data1</span> <span class="p">?</span> <span class="nx">data2</span> <span class="p">:</span> <span class="nx">data1</span><span class="p">));</span>
+        <span class="p">}}</span>
+      <span class="o">&gt;</span>
+        <span class="k">switch</span> <span class="nx">data</span>
+      <span class="o">&lt;</span><span class="sr">/button</span><span class="err">&gt;
+</span>      <span class="p">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">score</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+          <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">Bar</span> <span class="nx">score</span><span class="o">=</span><span class="p">{</span><span class="nx">score</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>        <span class="p">);</span>
+      <span class="p">})}</span>
+    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>实际得到的结果：</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56455407-8c316a80-6390-11e9-91bd-36ccdfe7741d.gif" alt="实际得到的结果" /></p>
+<p align="center">实际得到的结果</p>
+
+<p>每次的动画不会从 0  开始，第二个元素根本就没有动画。通过查看打印到控制台的信息，可发现在数据发生变化后，<code class="language-plaintext highlighter-rouge">&lt;Bar&gt;</code> 组件是没有销毁的，说明该组件在 props 更新时进行了复用，这是观察到的一点线索。</p>
+
+<p>你可能会说，这里应该在每次渲染前，也就是 <code class="language-plaintext highlighter-rouge">setTimeout</code> 之前，先重置一下数据将宽度设置为 0，这样便能得到想要实现的效果：每次都从 0 开始动画。同时，为了看清过程，不防将 <code class="language-plaintext highlighter-rouge">setTimeout</code> 的时间暂时加大。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  useEffect(() =&gt; {
+    console.log("score 发生变化");
+<span class="gi">+    setWidth(0);
+</span>    const timer = setTimeout(() =&gt; {
+      setWidth(score);
+<span class="gd">-    }, 0);
+</span><span class="gi">+    }, 1000);
+</span>
+    return () =&gt; {
+      clearTimeout(timer);
+    };
+  }, [score]);
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56455414-a0756780-6390-11e9-993e-f5100c513010.gif" alt="每次动画前初始化" /></p>
+<p align="center">每次动画前初始化</p>
+
+<p>可以看到，并没有什么用。依然会有一个减小的动画。如果将 <code class="language-plaintext highlighter-rouge">setTimeout</code> 置回到 0，只是看不到这个缩减到 0 过程，而是缩减到目标值的这一过程。并且对于第二个元素，因为前后 props 并没有发生变化，连缩小的过程也没有。</p>
+
+<h2 id="react-的-diff-机制">React 的 diff 机制</h2>
+
+<p>对于树的差异检测，按照<a href="https://grfia.dlsi.ua.es/ml/algorithms/references/editsurvey_bille.pdf">这个论文</a>中描述的算法实现，其时间复杂度为 O(n<sup>3</sup>) 。而页面中 DOM 节点很容易上千，这样一次渲染需要 diff 的操作超过十亿，显然不可行。所以 React 在进行 diff 时作了两个假设前提：</p>
+
+<ul>
+  <li>如果父元素不同，其子节点产生不同的树。</li>
+  <li>开发者可通过为元素指定 <code class="language-plaintext highlighter-rouge">key</code> 来标识元素的唯一性，提高 React 差异检测时的效率。</li>
+</ul>
+
+<p>基于这两点假设，在进行 diff 时可以少很多工作量，</p>
+
+<ul>
+  <li>diff 过程中，如果发现原来某个位置的元素其类型变化了，则无需继续遍历其子元素，直接认为该元素连同所有子节点都需要被替换掉。</li>
+  <li>diff 过程中，如果元素的 <code class="language-plaintext highlighter-rouge">key</code> 与上一次渲染时没发生变化，则判定为不需要重新渲染，进而也无需往下继续遍历其子元素。</li>
+</ul>
+
+<p>这样假设之后，React 的 diff 算法做到了时间复杂度为 O(n)。</p>
+
+<h3 id="dom-节点的-diff">DOM 节点的 diff</h3>
+
+<p>区分为节点类型变化与没变化两种情况，</p>
+
+<p>对于前后再次渲染中，同一位置元素类型变化的情况，如前文所述，对该元素及其子节点整个更新。比如由 <code class="language-plaintext highlighter-rouge">&lt;section&gt;</code> 变成 <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>，该位置的 <code class="language-plaintext highlighter-rouge">&lt;section&gt;</code> 及其所有子节点将整个销毁，其中的状态也丢弃掉，创建 <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> 及相应子元素替换在该位置。</p>
+
+<p>对于类型没变的情况则比较元素的属性，得出差异后只更新相应属性，比如 <code class="language-plaintext highlighter-rouge">className</code>。样式有更新也只计算出变化的样式属性然后只更新该属性。</p>
+
+<h3 id="组件节点的-diff">组件节点的 diff</h3>
+
+<p>对于自己写的组件，类型变化时同 DOM 节点一样，将整个组件实例销毁，其中各状态将丢失，所有子节点也都销毁，这些组件的 <code class="language-plaintext highlighter-rouge">componentWillUnmount()</code> 生命周期函数将被触发。然后实例化新类型的组件替换在该位置，新实例化的组件其 <code class="language-plaintext highlighter-rouge">componentWillMount()</code> 及 <code class="language-plaintext highlighter-rouge">componentDidMount()</code> 生命周期函数将顺次触发。</p>
+
+<p>如果该位置组件类型没变，说明只需要根据变化的 <code class="language-plaintext highlighter-rouge">props</code> 更新组件即可，无需重新实例化新的组件。<strong>组件实例中的状态将在两次渲染中被保留复用</strong>，组件的 <code class="language-plaintext highlighter-rouge">componentWillReceiveProps()</code> 及 <code class="language-plaintext highlighter-rouge">componentWillUpdate()</code> 生命周期函数将触发。</p>
+
+<h3 id="子节点的遍历及-key-属性">子节点的遍历及 <code class="language-plaintext highlighter-rouge">key</code> 属性</h3>
+
+<p>上面描述了节点对比后的处理。对于节点内子节点，递归遍历时，应用相同的逻辑。考察下面的示例代码：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">&lt;ul&gt;
+</span>  &lt;li&gt;first&lt;/li&gt;
+  &lt;li&gt;second&lt;/li&gt;
+<span class="gd">&lt;/ul&gt;
+</span>
+&lt;ul&gt;
+  &lt;li&gt;first&lt;/li&gt;
+  &lt;li&gt;second&lt;/li&gt;
+<span class="gi">+  &lt;li&gt;third&lt;/li&gt;
+</span><span class="gd">&lt;/ul&gt;
+</span></code></pre></div></div>
+
+<p>React 在遍历 <code class="language-plaintext highlighter-rouge">&lt;ul&gt;</code> 的子节点时，能够将前两个 <code class="language-plaintext highlighter-rouge">&lt;li&gt;</code> 元素匹配，保持不动，然后将新增的 <code class="language-plaintext highlighter-rouge">&lt;li&gt;third&lt;/li&gt;</code> 附加在列表最后，完成更新。</p>
+
+<p>如果新插入的元素不在列表最后，而是在最前面或中间，事情就开始发生变化。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">&lt;ul&gt;
+</span>  &lt;li&gt;Duke&lt;/li&gt;
+  &lt;li&gt;Villanova&lt;/li&gt;
+<span class="gd">&lt;/ul&gt;
+</span>
+&lt;ul&gt;
+<span class="gi">+  &lt;li&gt;Connecticut&lt;/li&gt;
+</span>  &lt;li&gt;Duke&lt;/li&gt;
+  &lt;li&gt;Villanova&lt;/li&gt;
+<span class="gd">&lt;/ul&gt;
+</span></code></pre></div></div>
+
+<p>这时 React 简单地按位置来对比更的模式就变得不那么智能了。由前文所述，</p>
+
+<ul>
+  <li>在进行第一个子元素 <code class="language-plaintext highlighter-rouge">&lt;li&gt;</code> 的对比时，发现其内容由 <code class="language-plaintext highlighter-rouge">&lt;li&gt;Duke&lt;/li&gt;</code> 变为了 <code class="language-plaintext highlighter-rouge">&lt;li&gt;Connecticut&lt;/li&gt;</code>，于是将该位置的元素更新。</li>
+  <li>继续对比，发现原来第二个位置的 <code class="language-plaintext highlighter-rouge">&lt;li&gt;Villanova&lt;/li&gt;</code> 变为了 <code class="language-plaintext highlighter-rouge">&lt;li&gt;Duke&lt;/li&gt;</code>，执行更新操作。</li>
+  <li>再继续发现需要新增 <code class="language-plaintext highlighter-rouge">&lt;li&gt;Villanova&lt;/li&gt;</code> 元素。</li>
+</ul>
+
+<p>这是 React 真实的流程，并不是我们一眼就能看出来的那个样子，只需要在列表开头插入那个新增的元素，将其他子元素保留即可。</p>
+
+<p>所以，对于这样的列表类型，如果元素频繁变动，势必导致更新的效率会很低。问题的根本在于 React 不能识别前后两次渲染哪些元素其实是同一个，而是根据其在组件树中的位置来进行 diff 的。如果我们手动为元素指定一个唯一标识，这个标识在前后再次渲染时如果不变的话，这样就相当于告诉 React 它们是同一个元素，而不是按照其所在列表中的位置来进行 diff。</p>
+
+<p>这便是元素身上的 <code class="language-plaintext highlighter-rouge">key</code> 属性。其值一定是能够唯一标识该元素的，这个唯一是指兄弟节点之间唯一即可，比如列表中同类型的列表元素。如果兄弟节点 <code class="language-plaintext highlighter-rouge">key</code> 重复，React 会有警告提醒。</p>
+
+<p>再来看上面的示例，</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="dl">"</span><span class="s2">2015</span><span class="dl">"</span><span class="o">&gt;</span><span class="nx">Duke</span><span class="o">&lt;</span><span class="sr">/li</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="dl">"</span><span class="s2">2016</span><span class="dl">"</span><span class="o">&gt;</span><span class="nx">Villanova</span><span class="o">&lt;</span><span class="sr">/li</span><span class="err">&gt;
+</span><span class="o">&lt;</span><span class="sr">/ul</span><span class="err">&gt;
+</span>
+<span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="dl">"</span><span class="s2">2014</span><span class="dl">"</span><span class="o">&gt;</span><span class="nx">Connecticut</span><span class="o">&lt;</span><span class="sr">/li</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="dl">"</span><span class="s2">2015</span><span class="dl">"</span><span class="o">&gt;</span><span class="nx">Duke</span><span class="o">&lt;</span><span class="sr">/li</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="dl">"</span><span class="s2">2016</span><span class="dl">"</span><span class="o">&gt;</span><span class="nx">Villanova</span><span class="o">&lt;</span><span class="sr">/li</span><span class="err">&gt;
+</span><span class="o">&lt;</span><span class="sr">/ul</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+<p>通过读取元素身上的 <code class="language-plaintext highlighter-rouge">key</code>，再次比较时 React 能够智能地得出结论，本次更新只需要插入 <code class="language-plaintext highlighter-rouge">&lt;li key="2014"&gt;Connecticut&lt;/li&gt;</code>，剩余的其他子节点可直接复用。这样处理子节点的 diff 时效率就大大提升了。</p>
+
+<p>所以你通过遍历方式生成一堆子节点时，React 会提示你需要为元素设置 <code class="language-plaintext highlighter-rouge">key</code> 属性。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Warning: Each child in a list should have a unique "key" prop.
+</code></pre></div></div>
+
+<p>默认情况下，如果没有显式指定 <code class="language-plaintext highlighter-rouge">key</code>，React 默认使用其在列表中的索引作为 <code class="language-plaintext highlighter-rouge">key</code>。但这个属性最好是来自需要渲染的数据条目的 id，这样能够最大程度地与数据保持一致，如果数据变化了，id 必然变化，则重新渲染。直接使用 <code class="language-plaintext highlighter-rouge">for</code> 循环中的 <code class="language-plaintext highlighter-rouge">index</code> 索引来做为 <code class="language-plaintext highlighter-rouge">key</code> 是不推荐的。因为索引不体现数据的变化，如果列表数据变化了，比如进行了排序，原来位置的数据可能不是原来的那条数据了，但因为<strong>索引没变</strong>，React 按照每个位置还是同一个元素的 diff 逻辑来处理，该位置的组件复用前一次渲染的状态，势必产生 bug。下面是一个简单展示这一问题的示例：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Item</span><span class="p">({</span> <span class="nx">name</span> <span class="p">})</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">score</span><span class="p">,</span> <span class="nx">setScore</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">();</span>
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+      <span class="nx">name</span><span class="p">:{</span><span class="nx">name</span><span class="p">}</span>
+      <span class="o">&lt;</span><span class="nx">input</span>
+        <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span>
+        <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">e</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">setScore</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+        <span class="p">}}</span>
+      <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="nx">score</span> <span class="nx">is</span><span class="p">:</span> <span class="p">{</span><span class="nx">score</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">persons</span><span class="p">,</span> <span class="nx">updatePersons</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">([</span><span class="dl">"</span><span class="s2">tom</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">david</span><span class="dl">"</span><span class="p">]);</span>
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nx">h3</span><span class="o">&gt;</span><span class="kd">set</span> <span class="nx">age</span> <span class="k">for</span> <span class="nx">each</span> <span class="nx">person</span><span class="o">&lt;</span><span class="sr">/h3</span><span class="err">&gt;
+</span>      <span class="p">{</span><span class="nx">persons</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">name</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">&lt;</span><span class="nx">Item</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">index</span><span class="p">}</span> <span class="nx">name</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span> <span class="sr">/&gt;</span><span class="err">;
+</span>      <span class="p">})}</span>
+      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">button</span>
+          <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">updatePersons</span><span class="p">(</span><span class="nx">prev</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="dl">"</span><span class="s2">lily</span><span class="dl">"</span><span class="p">,</span> <span class="p">...</span><span class="nx">prev</span><span class="p">]);</span>
+          <span class="p">}}</span>
+        <span class="o">&gt;</span>
+          <span class="nx">add</span> <span class="nx">person</span>
+        <span class="o">&lt;</span><span class="sr">/button</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>上面的示例遍历一个包含了姓名的数组，为每个人生成一行可输入分数的表单项。同时我们将每个生成项的 <code class="language-plaintext highlighter-rouge">key</code> 设置成索引 <code class="language-plaintext highlighter-rouge">index</code>。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56455432-d4e92380-6390-11e9-9577-cbf9e5b820d5.gif" alt="展示将 `key` 设置成索引导致组件内部状态不对的问题" /></p>
+<p align="center">展示将 `key` 设置成索引导致组件内部状态不对的问题</p>
+
+<p>可以看到，分数设置在列表中子组件中，当添加新的条目后，原来索引位置的组件复用之前的组件状态，因为该位置 <code class="language-plaintext highlighter-rouge">key</code> 相同，不会整个重新渲染。所以新增在第一位的 <code class="language-plaintext highlighter-rouge">lily</code>，本来还没有为其设置分数，但它使用了原来在那个位置的 <code class="language-plaintext highlighter-rouge">tom</code> 的分数，同时，其他元素因为位置变化了，他们所持有的状态都错位了。</p>
+
+<p>修正 <code class="language-plaintext highlighter-rouge">key</code> 之后再次操作表现就正常了。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function App() {
+</span>  const [persons, updatePersons] = useState(["tom", "david"]);
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;set age for each person&lt;/h3&gt;
+      {persons.map((name, index) =&gt; {
+<span class="gd">-        return &lt;Item key={index} name={name} /&gt;;
+</span><span class="gi">+        return &lt;Item key={name} name={name} /&gt;;
+</span>      })}
+      &lt;div&gt;
+        &lt;button
+          onClick={() =&gt; {
+            updatePersons(prev =&gt; ["lily", ...prev]);
+          }}
+        &gt;
+          add person
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>这里假设每条数据其 <code class="language-plaintext highlighter-rouge">name</code> 值是不一样的，所以将它作为列表元素的唯一标识。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56455435-eb8f7a80-6390-11e9-81c0-bda0b3c36ae6.gif" alt="修正 `key` 之后的正常表现" /></p>
+<p align="center">修正 `key` 之后的正常表现</p>
+
+<h2 id="问题的解决">问题的解决</h2>
+
+<p>回到文章开头的问题，就可以理解其表现了。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">data1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">];</span>
+<span class="kd">const</span> <span class="nx">data2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>默认情况下，React 使用 index 作为 <code class="language-plaintext highlighter-rouge">key</code>。</p>
+
+<ul>
+  <li>对于第一条数据，其值由 10 变化到 50，动画正常，当再次设置时，其由 50 变回到 10。因为组件并没有重新初始化，所以其初始值确实是 50，所以看到了由 50 到 10 这个缩减的动画。</li>
+  <li>而对于第二条数据，因为前后值没变化，执行动画的 <code class="language-plaintext highlighter-rouge">setTimeout</code> 都不会执行。</li>
+</ul>
+
+<p>修正的方法可以为元素指定一个随机的 <code class="language-plaintext highlighter-rouge">key</code>，这样每次组件都会重新渲染，不会复用之前的状态。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">function App() {
+</span>  const [data, setData] = useState(data1);
+  return (
+    &lt;div&gt;
+      &lt;button
+        onClick={() =&gt; {
+          setData(prev =&gt; (prev === data1 ? data2 : data1));
+        }}
+      &gt;
+        switch data
+      &lt;/button&gt;
+      {data.map((score, index) =&gt; {
+        return (
+<span class="gd">-          &lt;div&gt;
+</span><span class="gi">+          &lt;div key={Math.random()}&gt;
+</span>            &lt;Bar score={score} /&gt;
+          &lt;/div&gt;
+        );
+      })}
+    &lt;/div&gt;
+  );
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56455403-7623aa00-6390-11e9-9b91-77a13173f104.gif" alt="修正后的百分比柱状条效果" /></p>
+<p align="center">修正后的百分比柱状条效果</p>
+
+<p>将 <code class="language-plaintext highlighter-rouge">key</code> 设置成随机值是不推荐的做法，因为这样 React 就没法在渲染过程中对组件进行重用的优化。但像这里的特殊情况，你需要知道的是其中的原理，然后清楚自己在这样做时的影响。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>虚拟 DOM 将操作浏览器 DOM 的成本一部分转嫁到了 JavaScript 中，即进行差异计算的成本。提高了渲染的效率，但某些情况下也会是一个坑。</p>
+
+<p>需要注意的是，React 的差异算法高效性是在两个假设前提下进行的，</p>
+
+<ul>
+  <li>如果父元素不同，其子节点产生不同的树。</li>
+  <li>开发者可通过为元素指定 <code class="language-plaintext highlighter-rouge">key</code> 来标识元素的唯一性，提高 React 差异检测时的效率。</li>
+</ul>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://reactjs.org/docs/reconciliation.html">Reconciliation</a></li>
+  <li><a href="https://medium.com/@robinpokorny/index-as-a-key-is-an-anti-pattern-e0349aece318">Index as a key is an anti-pattern</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="下拉框中选项的快速定位"
+            >
+              Previous<br />
+              <span>下拉框中选项的快速定位</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/04/22/%E5%85%B3%E4%BA%8E-JavaScript-%E4%B8%AD%E7%9A%84%E7%BB%A7%E6%89%BF/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="关于 JavaScript 中的继承"
+            >
+              Next<br />
+              <span>关于 JavaScript 中的继承</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

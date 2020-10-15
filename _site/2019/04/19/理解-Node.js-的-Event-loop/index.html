@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="理解 Node.js 的 Event loop - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="理解 Node.js 的 Event loop
+
+问题
+
+考察如下代码，脑回路中运行并输出结果：
+
+
+console.log("1");
+
+setTimeout(function setTimeout1() {
+  console.log("2");
+  process.nextTick(function nextTick1() {
+    console.log("3");
+  });
+ ..."
+  />
+   <meta property="article:published_time" content="2019-04-19T15:04:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/04/19/%E7%90%86%E8%A7%A3-Node.js-%E7%9A%84-Event-loop/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    理解 Node.js 的 Event loop - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/04/19/%E7%90%86%E8%A7%A3-Node.js-%E7%9A%84-Event-loop/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>理解 Node.js 的 Event loop</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">April 19, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="理解-nodejs-的-event-loop">理解 Node.js 的 Event loop</h1>
+
+<h2 id="问题">问题</h2>
+
+<p>考察如下代码，脑回路中运行并输出结果：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">1</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="nx">setTimeout1</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">2</span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span> <span class="nx">nextTick1</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">3</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">});</span>
+  <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span> <span class="nx">promise1</span><span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">4</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">resolve</span><span class="p">();</span>
+  <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="nx">promiseThen1</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">5</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">});</span>
+  <span class="nx">setImmediate</span><span class="p">(</span><span class="kd">function</span> <span class="nx">immediate1</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">immediate</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span> <span class="nx">nextTick2</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">6</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">async start</span><span class="dl">"</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">bar</span><span class="p">();</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">async end</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">foo</span><span class="p">();</span>
+
+<span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span> <span class="nx">promise2</span><span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">7</span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">resolve</span><span class="p">();</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="nx">promiseThen2</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">8</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="nx">setTimeout2</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">9</span><span class="dl">"</span><span class="p">);</span>
+  
+  <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span> <span class="nx">promise3</span><span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">11</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">resolve</span><span class="p">();</span>
+  <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="nx">promiseThen3</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">12</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span> <span class="nx">nextTick3</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">10</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="js-事件循环">JS 事件循环</h2>
+
+<p>JS 是单线程，朴素地讲，同时只能完成一件事件。如果有耗时的任务，那后续的所有任务都要等待其完成才能执行。</p>
+
+<p>为了避免这种阻塞，引入了事件循环。即，将代码的执行分成一个个很小的阶段（一次循环），每个阶段重复相应的事情，直到所有任务都完成。</p>
+
+<p>一个阶段包含以下部分：</p>
+
+<ul>
+  <li>Timers：到期的定时器任务，<code class="language-plaintext highlighter-rouge">setTimeout</code>，<code class="language-plaintext highlighter-rouge">setInterval</code> 等注册的任务</li>
+  <li>IO Callbacks：IO 操作，比如网络请求，文件读写</li>
+  <li>IO Polling：IO 任务的注册</li>
+  <li>Set Immediate：通过 <code class="language-plaintext highlighter-rouge">setImmediate</code> 注册的任务</li>
+  <li>Close：<code class="language-plaintext highlighter-rouge">close</code> 事件的回调，比如 TCP 的断开</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/51124121-80498000-1858-11e9-8c69-33c760b08904.png" alt="image" /></p>
+<p align="center">Ticks and Phases of the Node.js Event Loop <i>图片来自 Daniel Khan 的 Medium 博客，见文末</i></p>
+
+<p>同步代码及上面每个环节结束时都会清空一遍微任务队列，记住这点很重要！</p>
+
+<h2 id="代码执行流程">代码执行流程</h2>
+
+<p>执行的流程是，</p>
+<ul>
+  <li>将代码顺序执行。</li>
+  <li>遇到异步任务，将任务压入待执行队列后继续往下。</li>
+  <li>完成同步代码后，检查是否有微任务（通过 <code class="language-plaintext highlighter-rouge">Promise</code>，<code class="language-plaintext highlighter-rouge">process.nextTick</code>，<code class="language-plaintext highlighter-rouge">async/await</code> 等注册），如果有，则清空。</li>
+  <li>清空微任务队列后，从待执行队列中取出最先压入的任务顺序执行，重复步骤一。</li>
+</ul>
+
+<p>另，</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">async/await</code> 本质上是 <code class="language-plaintext highlighter-rouge">Promise</code>，所以其表现会和 Promise 一致。</li>
+  <li><code class="language-plaintext highlighter-rouge">process.nextTick</code> 注册的回调优先级高于 Promise。</li>
+  <li><code class="language-plaintext highlighter-rouge">setImmediate</code> 可看成 Node.js 版本的 <code class="language-plaintext highlighter-rouge">setTimeout</code>，所以可与后者同等对待。</li>
+</ul>
+
+<h2 id="示例代码分析">示例代码分析</h2>
+
+<h3 id="round-1">Round 1</h3>
+
+<ul>
+  <li>首先遇到同步代码 <code class="language-plaintext highlighter-rouge">console.log(1)</code>，立即执行输出 <code class="language-plaintext highlighter-rouge">1</code></li>
+  <li>接下来是一个 <code class="language-plaintext highlighter-rouge">setTimeout</code> 定时器，将其回调压入待执行队列 <code class="language-plaintext highlighter-rouge">[setTimeout1]</code></li>
+  <li>遇到 <code class="language-plaintext highlighter-rouge">process.nextTick</code>，将其回调 <code class="language-plaintext highlighter-rouge">nextTick2</code> 压入微任务队列 <code class="language-plaintext highlighter-rouge">[nextTick2]</code></li>
+  <li>然后是 async 函数 <code class="language-plaintext highlighter-rouge">foo</code> 的调用，立即执行并输出 <code class="language-plaintext highlighter-rouge">async start</code></li>
+  <li>然后是 <code class="language-plaintext highlighter-rouge">await</code> 语句，这所在的地方会创建并返回 Promise，所以这里会执行其后面的表达式，也就是 <code class="language-plaintext highlighter-rouge">bar()</code> 函数的调用。</li>
+  <li>执行 <code class="language-plaintext highlighter-rouge">bar</code> 函数，输出 <code class="language-plaintext highlighter-rouge">bar</code></li>
+  <li>在执行了 <code class="language-plaintext highlighter-rouge">await </code> 后面的语句后，它所代表的 Promise 就创建完成了，<code class="language-plaintext highlighter-rouge">foo</code> 函数体后续的代码相当于 promise 的 <code class="language-plaintext highlighter-rouge">then</code>，放入微任务队列 <code class="language-plaintext highlighter-rouge">[nextTick2, rest_of_foo]</code></li>
+  <li>继续往下遇到 <code class="language-plaintext highlighter-rouge">new Promise</code>，执行 Promise 的创建输出 <code class="language-plaintext highlighter-rouge">7</code>，将它的 <code class="language-plaintext highlighter-rouge">then</code> 回调压入微任务队列 <code class="language-plaintext highlighter-rouge">[nextTick2, rest_of_foo,promiseThen2]</code></li>
+  <li>遇到另一个 <code class="language-plaintext highlighter-rouge">setTimeout</code>，回调压入待执行队列 <code class="language-plaintext highlighter-rouge">[setTimeout1，setTimeout2]</code></li>
+  <li>至此，代码执行完了一轮。此时的输出应该是 <code class="language-plaintext highlighter-rouge">1, async start, bar,7</code></li>
+</ul>
+
+<h3 id="round-2">Round 2</h3>
+
+<ul>
+  <li>查看微任务队列，并清空。所以依次执行 <code class="language-plaintext highlighter-rouge">[nextTick2, rest_of_foo,promiseThen2]</code>，输出 <code class="language-plaintext highlighter-rouge">6,async end,8</code>。</li>
+</ul>
+
+<h3 id="round-3">Round 3</h3>
+
+<ul>
+  <li>查看待执行队列 <code class="language-plaintext highlighter-rouge">[setTimeout1，setTimeout2]</code>，先执行 <code class="language-plaintext highlighter-rouge">setTimout1</code></li>
+  <li>遇到 <code class="language-plaintext highlighter-rouge">console.log(2)</code> 输出2</li>
+  <li>遇到 <code class="language-plaintext highlighter-rouge">process.nextTick</code> 将 <code class="language-plaintext highlighter-rouge">nextTick1</code> 压入微任务队列 <code class="language-plaintext highlighter-rouge">[nextTick1]</code></li>
+  <li>遇到 <code class="language-plaintext highlighter-rouge">new Promise</code> 立即执行 输出 <code class="language-plaintext highlighter-rouge">4</code>，执行 <code class="language-plaintext highlighter-rouge">resolve()</code> 后将 <code class="language-plaintext highlighter-rouge">promiseThen1</code> 压入微任务队列 <code class="language-plaintext highlighter-rouge">[nextTick1,promiseThen1]</code></li>
+  <li>遇到 <code class="language-plaintext highlighter-rouge">setImmediate</code> 将回调压入待执行队列 <code class="language-plaintext highlighter-rouge">[setTimeout2,immediate1]</code></li>
+  <li>此时 <code class="language-plaintext highlighter-rouge">setTimeout1</code> 执行完毕，此时的输出应该为  <code class="language-plaintext highlighter-rouge">2,4</code></li>
+</ul>
+
+<h3 id="round-4">Round 4</h3>
+
+<ul>
+  <li>检查微任务队列 <code class="language-plaintext highlighter-rouge">[nextTick1,promiseThen1]</code> 依次执行并输出 <code class="language-plaintext highlighter-rouge">3,5</code></li>
+</ul>
+
+<h3 id="round-5">Round 5</h3>
+
+<ul>
+  <li>检查待执行队列 <code class="language-plaintext highlighter-rouge">[setTimeout2,immediate1]</code>,执行 <code class="language-plaintext highlighter-rouge">setTimeout2</code></li>
+  <li>遇到 <code class="language-plaintext highlighter-rouge">console</code>输出 <code class="language-plaintext highlighter-rouge">9</code></li>
+  <li>遇到 <code class="language-plaintext highlighter-rouge">new Promise</code> 执行并输出 <code class="language-plaintext highlighter-rouge">11</code>,将 <code class="language-plaintext highlighter-rouge">promiseThen3</code> 压入微任务队列 <code class="language-plaintext highlighter-rouge">[promiseThen3]</code></li>
+  <li>遇到 <code class="language-plaintext highlighter-rouge">process.nextTick</code> 将 <code class="language-plaintext highlighter-rouge">nextTick3</code> 压入微执行队列。注意，因为 <code class="language-plaintext highlighter-rouge">process.nextTick</code> 的优先级高于 Promise，所以压入后的结果是： <code class="language-plaintext highlighter-rouge">[nextTick3,promiseThen3]</code></li>
+  <li>此时 <code class="language-plaintext highlighter-rouge">setTimeout2</code> 执行完毕，输出为 <code class="language-plaintext highlighter-rouge">9,11</code></li>
+</ul>
+
+<h3 id="round-6">Round 6</h3>
+
+<ul>
+  <li>检查微任务队列 <code class="language-plaintext highlighter-rouge">[nextTick3，promiseThen3]</code> 执行并输出  <code class="language-plaintext highlighter-rouge">10,12</code></li>
+</ul>
+
+<h3 id="round-7">Round 7</h3>
+
+<ul>
+  <li>检查待执行队列 <code class="language-plaintext highlighter-rouge">[immediate1]</code>，执行并输出 <code class="language-plaintext highlighter-rouge">immediate</code></li>
+</ul>
+
+<p>至此，走完了所有代码。</p>
+
+<h2 id="结果">结果</h2>
+
+<p>以下是文章开头的结果：</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1
+async start
+bar
+7
+6
+async end
+8
+2
+4
+3
+5
+9
+11
+10
+12
+immediate
+</code></pre></div></div>
+
+<h3 id="参考">参考</h3>
+
+<ul>
+  <li><a href="https://juejin.im/post/5a6155126fb9a01cb64edb45">Event Loop 的规范和实现</a></li>
+  <li><a href="https://juejin.im/post/59e85eebf265da430d571f89">这一次，彻底弄懂 JavaScript 执行机制</a></li>
+  <li><a href="https://medium.com/the-node-js-collection/what-you-should-know-to-really-understand-the-node-js-event-loop-and-its-metrics-c4907b19da4c">What you should know to really understand the Node.js Event Loop</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/04/18/%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%B8%AD%E7%9A%84-vi-%E6%A8%A1%E5%BC%8F/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="命令行中的 vi 模式"
+            >
+              Previous<br />
+              <span>命令行中的 vi 模式</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/04/20/%E4%B8%8B%E6%8B%89%E6%A1%86%E4%B8%AD%E9%80%89%E9%A1%B9%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="下拉框中选项的快速定位"
+            >
+              Next<br />
+              <span>下拉框中选项的快速定位</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

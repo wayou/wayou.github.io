@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="TypeScript: type alias 与 interface - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="TypeScript:  type alias 与 interface
+
+官方文档中有关于两者对比的信息，隐藏在 TypeScript Handbook 中，见 Interfaces vs. Type Aliases 部分。
+
+但因为这一部分很久没更新了，所以其中描述的内容不一定全对。
+
+比如，
+
+区别点之一：type alias 不会创建新的类型，体现在错误信息上。
+
+
+  One dif..."
+  />
+   <meta property="article:published_time" content="2019-03-28T15:03:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/03/28/TypeScript-type-alias-%E4%B8%8E-interface/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    TypeScript: type alias 与 interface - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/03/28/TypeScript-type-alias-%E4%B8%8E-interface/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>TypeScript: type alias 与 interface</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">March 28, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="typescript--type-alias-与-interface">TypeScript:  type alias 与 interface</h1>
+
+<p>官方文档中有关于两者对比的信息，隐藏在 TypeScript Handbook 中，见 <a href="https://www.typescriptlang.org/docs/handbook/advanced-types.html"><code class="language-plaintext highlighter-rouge">Interfaces vs. Type Aliases</code></a> 部分。</p>
+
+<p>但因为这一部分很久没更新了，所以其中描述的内容不一定全对。</p>
+
+<p>比如，</p>
+
+<h3 id="区别点之一type-alias-不会创建新的类型体现在错误信息上">区别点之一：type alias 不会创建新的类型，体现在错误信息上。</h3>
+
+<blockquote>
+  <p>One difference is, that interfaces create a new name that is used everywhere. Type aliases don’t create a new name — for instance, error messages won’t use the alias name.</p>
+</blockquote>
+
+<p>不完全正确。直接通过 type 定义的初始类型，是会创建相应的类型名称的。</p>
+
+<p>什么意思呢。就是说，不是使用 <code class="language-plaintext highlighter-rouge">&amp;</code>, <code class="language-plaintext highlighter-rouge">|</code> 等操作符创建的 union type 及 intersection type。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">Person</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// [x] Property 'age' is missing in type '{ name: string; }' but required in type 'Person'.ts(2741)</span>
+<span class="kd">const</span> <span class="nx">bob</span><span class="p">:</span> <span class="nx">Person</span> <span class="o">=</span> <span class="p">{</span> 
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">bob</span><span class="dl">"</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>注意这里错误信息使用的是类型 <code class="language-plaintext highlighter-rouge">Person</code> 而不是对应的 plain object 对象。</p>
+
+<h3 id="区别点之二type-alias-不能被-extends-和-implements">区别点之二：type alias 不能被 <code class="language-plaintext highlighter-rouge">extends</code> 和 <code class="language-plaintext highlighter-rouge">implements</code>。</h3>
+
+<p>实际上在扩展和实现上二者已经没有区别，甚至可以混用，比如让一个 class 同时实现 interface 和 type alias 定义的类型。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">PointType</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">x</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">y</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kr">interface</span> <span class="nx">PointInterface</span> <span class="p">{</span>
+  <span class="nl">a</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">b</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">Shape</span> <span class="kr">implements</span> <span class="nx">PointType</span><span class="p">,</span> <span class="nx">PointInterface</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="kr">public</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kr">public</span> <span class="nx">b</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="kr">public</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="kr">public</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="区别点之三type-alias-不能扩展和实现其他类型">区别点之三：type alias 不能扩展和实现其他类型</h3>
+
+<p>不完全正确。因为通过正交操作符（intersection type） <code class="language-plaintext highlighter-rouge">&amp;</code> 可以达到 <code class="language-plaintext highlighter-rouge">extends</code> 的目的。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Job</span> <span class="p">{</span>
+  <span class="nl">title</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">type</span> <span class="nx">EmployeeType</span> <span class="o">=</span> <span class="nx">Person</span> <span class="o">&amp;</span> <span class="nx">Job</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nx">Employee</span> <span class="kr">implements</span> <span class="nx">EmployeeType</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="kr">public</span> <span class="nx">name</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Nobody</span><span class="dl">"</span><span class="p">,</span> <span class="kr">public</span> <span class="nx">title</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Noone</span><span class="dl">"</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>上面可以看到，两者大部分情况下不用过多区分。</p>
+
+<p>在使用了 union type 的时候，一些区别才开始显现。其实也算不得区别，因为只有 type alias 可通过 union type 定义。</p>
+
+<h3 id="当-type-包含-union-type-时该类型是不能被实现和扩展的">当 type 包含 union type 时，该类型是不能被实现和扩展的。</h3>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Triangle</span> <span class="p">{</span>
+  <span class="nl">area</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Square</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">type</span> <span class="nx">ShapeType</span> <span class="o">=</span> <span class="nx">Triangle</span> <span class="o">|</span> <span class="nx">Square</span><span class="p">;</span>
+
+<span class="c1">// [x] An interface can only extend an object type or intersection of object types with statically known members.ts(2312)</span>
+<span class="kr">interface</span> <span class="nx">MyShape</span> <span class="kd">extends</span> <span class="nx">ShapeType</span><span class="p">;</span> 
+
+
+<span class="kd">class</span> <span class="nx">Shape</span> <span class="kr">implements</span> <span class="nx">ShapeType</span><span class="p">{</span>
+<span class="c1">// [x] A class can only implement an object type or intersection of object types with statically known members.ts(2422)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>因为 union type 描述的是一个<strong>或者</strong>的状态，一个类不可能即是此类型也是另外种类型。interface 也不可能继承一个类型还不确定的类型。</p>
+
+<h3 id="类型合并">类型合并</h3>
+
+<p>最明显的一点区别，是在进行类型合并（<a href="https://www.typescriptlang.org/docs/handbook/declaration-merging.html">Declaration Merging</a>）的时候，type alias 是不会被合并的，而同名的多个 interface 会合并成一个。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">person</span><span class="p">:</span> <span class="nx">Person</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Bob</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">9</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>对于 type alias，存在同名时直接报错。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">Person</span> <span class="p">{</span>  <span class="c1">// [x] Duplicate identifier 'Person'.ts(2300)</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">type</span> <span class="nx">Person</span> <span class="p">{</span> <span class="c1">// [x] Duplicate identifier 'Person'.ts(2300)</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>明白这点对于三方库的作者来说很重要。假如你写了个 npm 包，导出的是 type，则使用者无法通过简单定义同名类型来进行扩充。</p>
+
+<p>所以，写库的时候，尽量使用 interface。</p>
+
+<h3 id="结论">结论</h3>
+
+<p>官方推荐用 interface，其他无法满足需求的情况下用 type alias。</p>
+
+<p>但其实，因为 union type 和 intersection type 是很常用的，所以避免不了大量使用 type alias 的场景，一些复杂类型也需要通过组装后形成 type alias 来使用。所以，如果想保持代码统一，可尽量选择使用 type alias。通过上面的对比，type alias 其实可函盖 interface 的大部分场景。</p>
+
+<p>对于 React 组件中 props 及 state，使用 type alias，这样能够保证使用组件的地方不能随意在上面添加属性。如果有自定义需求，可通过 HOC （Higher-Order Components）二次封装。</p>
+
+<p>编写三方库时使用 interface，其更加灵活自动的类型合并可应对未知的复杂使用场景。</p>
+
+<h3 id="相关资料">相关资料</h3>
+
+<ul>
+  <li><a href="https://medium.com/@martin_hotell/interface-vs-type-alias-in-typescript-2-7-2a8f1777af4c">Interface vs Type alias in TypeScript 2.7</a></li>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/advanced-types.html">TypeScript Handbook</a></li>
+  <li><a href="https://kendaleiv.com/typescript-constructor-assignment-public-and-private-keywords/">TypeScript Constructor Assignment: public and private Keywords</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/03/26/Node.js-%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Node.js 调试相关"
+            >
+              Previous<br />
+              <span>Node.js 调试相关</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/03/31/Accept-%E4%B8%8E-Content-Type/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Accept 与 Content-Type"
+            >
+              Next<br />
+              <span>Accept 与 Content-Type</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

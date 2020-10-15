@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="C/C++ 中的宏/Macro - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="C/C++ 中的宏/Macro
+
+宏（Macro）本质上就是代码片段，通过别名来使用。在编译前的预处理中，宏会被替换为真实所指代的代码片段，即下图中 Preprocessor 处理的部分。
+
+
+C/C++ 代码编译过程 - 图片来自 ntu.edu.sg
+
+根据用法的不同，分两种，Object-like 和 Function-like。前者用于 Object 对象，后者用于函数方法。
+
+C/..."
+  />
+   <meta property="article:published_time" content="2019-06-25T17:06:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/06/25/C-C++-%E4%B8%AD%E7%9A%84%E5%AE%8F-Macro/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    C/C++ 中的宏/Macro - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/06/25/C-C++-%E4%B8%AD%E7%9A%84%E5%AE%8F-Macro/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>C/C++ 中的宏/Macro</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">June 25, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="cc-中的宏macro">C/C++ 中的宏/Macro</h1>
+
+<p>宏（Macro）本质上就是代码片段，通过别名来使用。在编译前的预处理中，宏会被替换为真实所指代的代码片段，即下图中 Preprocessor 处理的部分。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/59971360-37d38280-95ad-11e9-880f-4399cc42381c.png" alt="C/C++ 代码编译过程" /></p>
+<p align="center">C/C++ 代码编译过程 - 图片来自 <a href="https://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html">ntu.edu.sg</a></p>
+
+<p>根据用法的不同，分两种，Object-like 和 Function-like。前者用于 Object 对象，后者用于函数方法。</p>
+
+<p>C/C++ 代码编译过程中，可通过相应参数来获取到各编译步骤中的产出，比如想看被预处理编译之后的宏，使用 <code class="language-plaintext highlighter-rouge">gcc</code> 使加上 <code class="language-plaintext highlighter-rouge">-E</code> 参数。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-E</span> macro.c
+</code></pre></div></div>
+
+<h2 id="宏的定义">宏的定义</h2>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">#define</code> 指令定义一个宏。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define NAME_OF_MACRO value
+</span></code></pre></div></div>
+
+<p>比如，以下代码定义了一个名为 <code class="language-plaintext highlighter-rouge">BUFFER_SIZE</code> 的宏，指代 <code class="language-plaintext highlighter-rouge">1024</code> 这个数字。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define BUFFER_SIZE 1024
+</span></code></pre></div></div>
+
+<p>使用时，</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">foo</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">malloc</span> <span class="p">(</span><span class="n">BUFFER_SIZE</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>使用预处理器编译：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-E</span> test.c
+</code></pre></div></div>
+
+<p>编译结果：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">foo</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">malloc</span> <span class="p">(</span><span class="mi">1024</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="多行">多行</h3>
+
+<p>宏的定义是跟随 <code class="language-plaintext highlighter-rouge">#define</code> 在一同一行内的，但可通过 反斜杠 <code class="language-plaintext highlighter-rouge">\</code> 实现换行从而定义出多行的宏。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+#define GREETING_STR \
+  "hello \
+world"
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="n">GREETING_STR</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>多行的宏经过编译后会还原到一行中。</p>
+
+<p><em>test.c</em></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+#define GREETING_STR \
+  "hello \
+world"
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> <span class="n">printf</span><span class="p">(</span><span class="n">GREETING_STR</span><span class="p">);</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>编译后：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"hello world"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="宏展开时的顺序">宏展开时的顺序</h3>
+
+<p>宏的展开是在处理源码时按照其出现位置进行的，如果宏定义有嵌套关系，也是层层进行展开，比如：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="cp">#define GREETING_NAME "wayou"
+#define GREETING "hello," GREETING_NAME
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="n">GREETING</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>首先遇到 <code class="language-plaintext highlighter-rouge">GREETING</code>，将其展开成 <code class="language-plaintext highlighter-rouge">GREETING_NAME "wayou"</code>，然后发现另一个宏 <code class="language-plaintext highlighter-rouge">GREETING_NAME</code>，将其展开最后得到 <code class="language-plaintext highlighter-rouge">"hello," "wayou"</code>。所以编译后的代码为：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"hello,"</span> <span class="s">"wayou"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>其展开的顺序并不是宏定义时的顺序，为了验证，可将上面示例代码中两个宏的定义调换一下，得到：</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">-#define GREETING_NAME "wayou"
+</span><span class="err">#define</span> GREETING "hello," GREETING_NAME
+<span class="gi">+#define GREETING_NAME "wayou"
+</span></code></pre></div></div>
+
+<p>再次编译查看产出，会发现没有区别，也不会报 <code class="language-plaintext highlighter-rouge">GREETING</code> 中所依赖的 <code class="language-plaintext highlighter-rouge">GREETING_NAME</code> 找不到的错。其实 <code class="language-plaintext highlighter-rouge">#define</code> 只是告诉编译器定义了这么个宏，而具体的求值，则是使用宏的地方才开始的。</p>
+
+<p>像下面这样，当宏存在覆盖时，会以新的为准，其结果为 37。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define BUFSIZE 1020
+#define TABLESIZE BUFSIZE
+#undef BUFSIZE
+#define BUFSIZE 37
+</span></code></pre></div></div>
+
+<h2 id="object-like-宏">Object-like 宏</h2>
+
+<p>Object-like 类型的宏看起来就像普通的数据对象，故名。多用于数字常量的情形下。且宏名一般使用全大写形式方便识别。像上面示例中，都是 Object-like 的。</p>
+
+<h2 id="function-like-宏">Function-like 宏</h2>
+
+<p>也可定义出使用时像是方法调用一样的宏，这便是 Function-like 类型的宏。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define lang_init()  c_init()
+</span><span class="n">lang_init</span><span class="p">()</span>
+
+<span class="c1">// 编译后</span>
+<span class="n">c_init</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>函数类型的宏只在以方法调用形式使用时才会被展开，即名称后加括号，否则会被忽略。当宏名和函数名重名时，这一策略就会显得有用了，比如：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">extern</span> <span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="cp">#define foo() </span><span class="cm">/* optimized inline version */</span><span class="cp">
+</span><span class="err">…</span>
+  <span class="n">foo</span><span class="p">();</span>
+  <span class="n">funcptr</span> <span class="o">=</span> <span class="n">foo</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">foo()</code> 的调用会来自宏里面定义的那个函数，而 <code class="language-plaintext highlighter-rouge">funcptr</code> 会正确地指向函数地址，如果后者也被宏展开，则成了 <code class="language-plaintext highlighter-rouge">funptr=foo()</code> 显然就不对了。</p>
+
+<p>函数类型的宏在定义时需注意，宏名与后面括号不能有空格，否则就是普通的 Object-like 类型对象。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define lang_init ()    c_init()
+</span><span class="n">lang_init</span><span class="p">()</span>
+
+<span class="c1">// 编译后：</span>
+<span class="p">()</span> <span class="n">c_init</span><span class="p">()()</span>
+</code></pre></div></div>
+
+<h2 id="宏的参数">宏的参数</h2>
+
+<p>函数类型的宏，可以像正常函数一样指定入参，入参需为逗号分隔合法的 C 字面量。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))
+</span>  <span class="n">x</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>          <span class="err">→</span>  <span class="n">x</span> <span class="o">=</span> <span class="p">((</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">));</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>          <span class="err">→</span>  <span class="n">y</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+  <span class="n">z</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">28</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>    <span class="err">→</span>  <span class="n">z</span> <span class="o">=</span> <span class="p">((</span><span class="n">a</span> <span class="o">+</span> <span class="mi">28</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">28</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">));</span>
+</code></pre></div></div>
+
+<h3 id="入参中的括号">入参中的括号</h3>
+
+<p>入参中只需要括号对称，但不要求方括号或花括号成对出现，所以下面的代码：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">macro</span> <span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">x</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>其入参实际为 <code class="language-plaintext highlighter-rouge">array[x = y</code> 和 <code class="language-plaintext highlighter-rouge">x + 1]</code>。</p>
+
+<h3 id="入参的展开">入参的展开</h3>
+
+<p>入参本质上也是宏，对象类型的宏，在函数宏展示时，这些参数也被展示到了函数宏的函数体里。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">min</span> <span class="p">(</span><span class="n">min</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">c</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>首先被展开成：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">min</span> <span class="p">(((</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">)),</span> <span class="p">(</span><span class="n">c</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>然后进一步展开成（此处换行为方便阅读，实际编译后没有）：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">((((</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">)))</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">c</span><span class="p">)</span>
+ <span class="o">?</span> <span class="p">(((</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">)))</span>
+ <span class="o">:</span> <span class="p">(</span><span class="n">c</span><span class="p">))</span>
+</code></pre></div></div>
+
+<h3 id="参数的缺省">参数的缺省</h3>
+
+<p>函数宏在使用时其入参可缺省，但不能全部缺省，至少提供一个入参。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">min</span><span class="p">(,</span> <span class="n">b</span><span class="p">)</span>        <span class="err">→</span> <span class="p">((</span>   <span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span>   <span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">b</span><span class="p">))</span>
+<span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">)</span>        <span class="err">→</span> <span class="p">((</span><span class="n">a</span>  <span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span> <span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">a</span>  <span class="p">)</span> <span class="o">:</span> <span class="p">(</span> <span class="p">))</span>
+<span class="n">min</span><span class="p">(,)</span>          <span class="err">→</span> <span class="p">((</span>   <span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span> <span class="p">)</span> <span class="o">?</span> <span class="p">(</span>   <span class="p">)</span> <span class="o">:</span> <span class="p">(</span> <span class="p">))</span>
+<span class="n">min</span><span class="p">((,),)</span>       <span class="err">→</span> <span class="p">(((,))</span> <span class="o">&lt;</span> <span class="p">(</span> <span class="p">)</span> <span class="o">?</span> <span class="p">((,))</span> <span class="o">:</span> <span class="p">(</span> <span class="p">))</span>
+
+<span class="n">min</span><span class="p">()</span>      <span class="n">error</span><span class="err">→</span> <span class="n">macro</span> <span class="s">"min"</span> <span class="n">requires</span> <span class="mi">2</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">but</span> <span class="n">only</span> <span class="mi">1</span> <span class="n">given</span>
+<span class="n">min</span><span class="p">(,,)</span>    <span class="n">error</span><span class="err">→</span> <span class="n">macro</span> <span class="s">"min"</span> <span class="n">passed</span> <span class="mi">3</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">but</span> <span class="n">takes</span> <span class="n">just</span> <span class="mi">2</span>
+</code></pre></div></div>
+
+<h3 id="字符化stringizing">字符化/Stringizing</h3>
+
+<p>如果函数宏中入参在字符串中，是不会被展开的，它就是普通的字符串字面量，这样的结果是符合预期的。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define foo(x) x, "x"
+</span><span class="n">foo</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>        <span class="err">→</span> <span class="n">bar</span><span class="p">,</span> <span class="s">"x"</span>
+</code></pre></div></div>
+
+<p>但如果确实想将入参展开成字符串，可在使用入参时，加上 <code class="language-plaintext highlighter-rouge">#</code> 前缀。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define WARN_IF(EXP) \
+do { if (EXP) \
+        fprintf (stderr, "Warning: " #EXP "\n"); } \
+while (0)
+</span><span class="n">WARN_IF</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+     <span class="err">→</span> <span class="k">do</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+           <span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Warning: "</span> <span class="s">"x == 0"</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>此处 <code class="language-plaintext highlighter-rouge">#EXP</code> 在字符串中会被正确展开。What’s more, 如果这里的 <code class="language-plaintext highlighter-rouge">x</code> 也是宏，那只会在 <code class="language-plaintext highlighter-rouge">if</code> 语句中进行展开。</p>
+
+<h2 id="拼接">拼接</h2>
+
+<p>通过 <code class="language-plaintext highlighter-rouge">##</code> 可将两个宏展开成一个，即将两者进行了拼接，这种操作叫 “token pasting”，或 “token concatenation”，就是拼接嘛。</p>
+
+<p>宏拼接一般用在需要拼接的宏是来自宏参数的情况，其他情况，大可直接将两个宏写在一起即可，用不着 <code class="language-plaintext highlighter-rouge">##</code> 指令。</p>
+
+<p>考察下面这个场景，其中命令名重复出现：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">command</span>
+<span class="p">{</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)</span> <span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<span class="p">{</span>
+  <span class="p">{</span> <span class="s">"quit"</span><span class="p">,</span> <span class="n">quit_command</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="s">"help"</span><span class="p">,</span> <span class="n">help_command</span> <span class="p">},</span>
+  <span class="err">…</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>通过定义宏配合拼接，可达到精简代码的目的：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define COMMAND(NAME)  { #NAME, NAME ## _command }
+</span>
+<span class="k">struct</span> <span class="n">command</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span>
+<span class="p">{</span>
+  <span class="n">COMMAND</span> <span class="p">(</span><span class="n">quit</span><span class="p">),</span>
+  <span class="n">COMMAND</span> <span class="p">(</span><span class="n">help</span><span class="p">),</span>
+  <span class="err">…</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="不定参数">不定参数</h2>
+
+<p>像普通函数一样，函数类型的宏也可定义接收不定参数。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define eprintf(…) fprintf (stderr, __VA_ARGS__)
+</span></code></pre></div></div>
+
+<p>调用时，命名参数后面，包括逗号都会进入到 <code class="language-plaintext highlighter-rouge">__VA_ARGS__</code> 关键字当中。但 C++ 中还支持对这些参数命名从而不用 <code class="language-plaintext highlighter-rouge">__VA_ARGS__</code>。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eprintf</span> <span class="p">(</span><span class="s">"%s:%d: "</span><span class="p">,</span> <span class="n">input_file</span><span class="p">,</span> <span class="n">lineno</span><span class="p">)</span>
+
+<span class="c1">// 编译后：</span>
+<span class="n">fprintf</span> <span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"%s:%d: "</span><span class="p">,</span> <span class="n">input_file</span><span class="p">,</span> <span class="n">lineno</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>C++ 中可这么写：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define eprintf(args…) fprintf (stderr, args)
+</span></code></pre></div></div>
+
+<h3 id="不定参数与命名参数混合的情况">不定参数与命名参数混合的情况</h3>
+
+<p>不定参数为命名参数后面省略的部分。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define eprintf(format, …) fprintf (stderr, format, __VA_ARGS__)
+</span></code></pre></div></div>
+
+<h2 id="预设的宏">预设的宏</h2>
+
+<p>标准库及编译器中预设了一些有用的宏，可以在<a href="https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html#Predefined-Macros">这里</a> 查阅。</p>
+
+<h2 id="取消和重置宏">取消和重置宏</h2>
+
+<p>当某个宏不再使用时，可通过 <code class="language-plaintext highlighter-rouge">#undef</code> 将取注销掉。<code class="language-plaintext highlighter-rouge">#undef</code> 后紧跟宏名，后面不要跟其他东西，即使是函数类型的宏。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define FOO 4
+</span><span class="n">x</span> <span class="o">=</span> <span class="n">FOO</span><span class="p">;</span>        <span class="err">→</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+<span class="cp">#undef FOO
+</span><span class="n">x</span> <span class="o">=</span> <span class="n">FOO</span><span class="p">;</span>        <span class="err">→</span> <span class="n">x</span> <span class="o">=</span> <span class="n">FOO</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="两个宏相似的定义">两个宏相似的定义</h3>
+
+<p>满足以下条件时，我们认为两者是相似的：</p>
+
+<ul>
+  <li>类型相同，比如同为对象类型，或函数类型的宏</li>
+  <li>展开后各位置的符号（token）相同</li>
+  <li>如果是函数宏，入参相同</li>
+  <li>空白的不限但出现的位置相同</li>
+</ul>
+
+<p>比如，下面这些是相似的：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define FOUR (2 + 2)
+#define FOUR         (2    +    2)
+#define FOUR (2 </span><span class="cm">/* two */</span><span class="cp"> + 2)
+</span></code></pre></div></div>
+
+<p>而下面这些则不然：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define FOUR (2 + 2)
+#define FOUR ( 2+2 ) // 空白位置不一样 
+#define FOUR (2 * 2) // 宏的内容不一样
+#define FOUR(score,and,seven,years,ago) (2 + 2) // 入参不一样
+</span></code></pre></div></div>
+
+<h3 id="宏重复定义时的表现">宏重复定义时的表现</h3>
+
+<p>对于使用了 <code class="language-plaintext highlighter-rouge">#undef</code> 注销过的宏，再次定义同名的宏时，要求新定义的宏不与老的相似。</p>
+
+<p>而如果说一个已经存在的宏，并没有注销，重复定义时，如果相似，则新的定义会忽略，如果不相似，编译器会报警告同时使用新定义的宏。这允许在多个文件中定义同一个宏。</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://gcc.gnu.org/onlinedocs/cpp/Macros.html">gcc - Macros</a></li>
+  <li><a href="http://www.cplusplus.com/reference/">Standard C++ Library reference</a></li>
+  <li><a href="https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html">3.7.1 Standard Predefined Macros</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/06/24/SSL-TLS-%E9%93%BE%E6%8E%A5%E7%9A%84%E5%BB%BA%E7%AB%8B-%E6%8F%A1%E6%89%8B/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="SSL/TLS 链接的建立/握手"
+            >
+              Previous<br />
+              <span>SSL/TLS 链接的建立/握手</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/06/26/%E5%88%A9%E7%94%A8-chunked-%E7%B1%BB%E5%9E%8B%E5%93%8D%E5%BA%94%E5%AE%9E%E7%8E%B0%E5%90%8E%E5%8F%B0%E8%AF%B7%E6%B1%82%E7%9A%84%E7%9B%91%E5%90%AC/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="利用 chunked 类型响应实现后台请求的监听"
+            >
+              Next<br />
+              <span>利用 chunked 类型响应实现后台请求的监听</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

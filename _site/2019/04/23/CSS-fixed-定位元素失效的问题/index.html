@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="CSS fixed 定位元素失效的问题 - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="CSS fixed 定位元素失效的问题
+
+一个示例
+
+考察下面的代码：
+
+  &lt;head&gt;
+    &lt;title&gt;css filter issue&lt;/title&gt;
+    &lt;style&gt;
+      body {
+        height: 200vh;
+        background: #ddd;
+      }
+      .co..."
+  />
+   <meta property="article:published_time" content="2019-04-23T15:04:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2019/04/23/CSS-fixed-%E5%AE%9A%E4%BD%8D%E5%85%83%E7%B4%A0%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    CSS fixed 定位元素失效的问题 - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2019/04/23/CSS-fixed-%E5%AE%9A%E4%BD%8D%E5%85%83%E7%B4%A0%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>CSS fixed 定位元素失效的问题</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">April 23, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="css-fixed-定位元素失效的问题">CSS fixed 定位元素失效的问题</h1>
+
+<h2 id="一个示例">一个示例</h2>
+
+<p>考察下面的代码：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;title&gt;</span>css filter issue<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+      <span class="nt">body</span> <span class="p">{</span>
+        <span class="nl">height</span><span class="p">:</span> <span class="m">200vh</span><span class="p">;</span>
+        <span class="nl">background</span><span class="p">:</span> <span class="m">#ddd</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="nc">.container</span> <span class="p">{</span>
+        <span class="nl">background</span><span class="p">:</span> <span class="n">grey</span><span class="p">;</span>
+        <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="nc">.fixed</span> <span class="p">{</span>
+        <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+        <span class="nl">position</span><span class="p">:</span> <span class="nb">fixed</span><span class="p">;</span>
+        <span class="nl">top</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+        <span class="nl">right</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"fixed"</span><span class="nt">&gt;</span>fixed item<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+</code></pre></div></div>
+
+<p>页面中有一个位于右上角 <code class="language-plaintext highlighter-rouge">position: fixed</code> 定位的元素。按照预期，在页面滚动时它将固定在那个位置。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56503363-c1cc8400-6547-11e9-95f1-b8a96cf3eb66.gif" alt="正常的 fixed 元素其表现" /></p>
+<p align="center">正常的 fixed 元素其表现</p>
+
+<p>现在对容器加应用 CSS <code class="language-plaintext highlighter-rouge">filter</code> 样式，</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code> .container {
+<span class="gi">+  filter: invert(1);
+</span>   background: grey;
+   height: 200px;
+ }
+</code></pre></div></div>
+
+<p>再观察结果，注意到 <code class="language-plaintext highlighter-rouge">fixed</code> 元素不再 <code class="language-plaintext highlighter-rouge">fixed</code> 了。</p>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56503387-d872db00-6547-11e9-8b14-ba39ed214c5d.gif" alt="fixed 元素不再生效" /></p>
+<p align="center">fixed 元素不再生效</p>
+
+<h2 id="原因">原因</h2>
+
+<p>根据 <a href="https://drafts.fxtf.org/filter-effects/#FilterProperty">W3C 对 <code class="language-plaintext highlighter-rouge">filter</code> 的描述</a>：</p>
+
+<blockquote>
+  <p>A value other than none for the filter property results in the <strong>creation of a containing block for absolute and fixed positioned descendant</strong>s unless the element it applies to is a document root element in the current browsing context. The list of functions are applied in the order provided.</p>
+</blockquote>
+
+<p>对于指定了 <code class="language-plaintext highlighter-rouge">filter</code> 样式且值不为 <code class="language-plaintext highlighter-rouge">none</code> 时，被应用该样式的元素其子元素中如果有 <code class="language-plaintext highlighter-rouge">position</code> 为 <code class="language-plaintext highlighter-rouge">absolute</code> 或 <code class="language-plaintext highlighter-rouge">fixed</code> 的元素，会为这些元素创建一个新的容器，使得这些绝对或固定定位的元素其定位的基准相对于这个新创建的容器。</p>
+
+<p>相同的情况对 <code class="language-plaintext highlighter-rouge">transform</code> 也适用，以下是 <a href="http://www.w3.org/TR/css3-2d-transforms/#transform-rendering">W3C 规范的描述</a>：</p>
+
+<blockquote>
+  <p>In the HTML namespace, any value other than none for the transform results in the creation of both a stacking context and a containing block. The object acts as a containing block for fixed positioned descendants.</p>
+</blockquote>
+
+<h2 id="解决">解决</h2>
+
+<p>这里只看 <code class="language-plaintext highlighter-rouge">filter</code> 的修复。条件允许的情况下，有如下两种方式。</p>
+
+<h3 id="将-filter-应用到根节点">将 <code class="language-plaintext highlighter-rouge">filter</code> 应用到根节点</h3>
+
+<p>因为根据规范中对 <code class="language-plaintext highlighter-rouge">filter</code> 的描述，如果 <code class="language-plaintext highlighter-rouge">filter</code> 应用到根节点，则不会创建新的容器。所以可以将 <code class="language-plaintext highlighter-rouge">filter</code> 样式写到 <code class="language-plaintext highlighter-rouge">html</code>，如果条件允许的话。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">html</span><span class="p">{</span>
+    <span class="nl">filter</span><span class="p">:</span> <span class="nb">invert</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56503398-e9235100-6547-11e9-9977-a736fe3ecb06.gif" alt="将 `filter` 应用到根节点后的修复" /></p>
+<p align="center">将 `filter` 应用到根节点后的修复</p>
+
+<h3 id="将-filter-应用到非正常定位的元素上">将 <code class="language-plaintext highlighter-rouge">filter</code> 应用到非正常定位的元素上</h3>
+
+<p>对于 <code class="language-plaintext highlighter-rouge">filter</code> 样式，还可以将其只应用到出问题的这些非正常定位的元素身上来解决。</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code> .fixed {
+<span class="gi">+   filter: invert(1);
+</span>   color: red;
+   position: fixed;
+   top: 0;
+   right: 0;
+ }
+</code></pre></div></div>
+
+<p><img src="https://user-images.githubusercontent.com/3783096/56503420-f9d3c700-6547-11e9-94b7-78ac92310d46.gif" alt="将 `filter` 应用到固定定位的元素本身身上" /></p>
+<p align="center">将 `filter` 应用到固定定位的元素本身身上</p>
+
+<h2 id="相关资源">相关资源</h2>
+
+<ul>
+  <li><a href="https://github.com/w3c/fxtf-drafts/issues/11">filter should be defined to establish a containing block for fixed and absolutely positioned elements</a></li>
+  <li><a href="https://stackoverflow.com/questions/52937708/css-filter-on-parent-breaks-child-positioning">CSS-Filter on parent breaks child positioning</a></li>
+  <li><a href="https://stackoverflow.com/questions/15194313/transform3d-not-working-with-position-fixed-children">‘transform3d’ not working with position: fixed children</a></li>
+  <li><a href="https://stackoverflow.com/a/18764086/1553656">Fixed element disappears in Chrome</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2019/04/22/%E5%85%B3%E4%BA%8E-JavaScript-%E4%B8%AD%E7%9A%84%E7%BB%A7%E6%89%BF/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="关于 JavaScript 中的继承"
+            >
+              Previous<br />
+              <span>关于 JavaScript 中的继承</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2019/04/24/%E7%90%86%E8%A7%A3-KMP-%E7%AE%97%E6%B3%95/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="理解 KMP 算法"
+            >
+              Next<br />
+              <span>理解 KMP 算法</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>

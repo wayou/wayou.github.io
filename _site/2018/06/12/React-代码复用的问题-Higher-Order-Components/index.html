@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="notes about the coding life" />
+  <meta name="keywords" content="牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="React 代码复用的问题 - Higher-Order Components - 牛さんの部落格|刘哇勇的部落格"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="React 代码复用的问题 - Higher-Order Components
+
+代码复用，我们很容易想到组件。组件确实也是 React 中最主要的复用单元。大部分情况下是满足需求的，但有一些例外的情况。
+
+问题/The problem
+假如我们有个展示图表数据的 Dashboard 组件。它会做权限检查，只有登录后才能看到；它还会在组件初始化之后发请求获取数据。
+
+Dashboard.js..."
+  />
+   <meta property="article:published_time" content="2018-06-12T15:06:00Z">    
+  <meta property="og:image" content="http://0.0.0.0:4000" />
+  <meta property="og:url" content="http://0.0.0.0:4000/2018/06/12/React-%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98-Higher-Order-Components/" />
+  <meta property="og:site_name" content="牛さんの部落格|刘哇勇的部落格" />
+
+  <title>
+    React 代码复用的问题 - Higher-Order Components - 牛さんの部落格|刘哇勇的部落格
+  </title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="http://0.0.0.0:4000/2018/06/12/React-%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98-Higher-Order-Components/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/blog.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+</head>
+
+
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
+    <!-- Navigation -->
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle">
+          <span class="sr-only">❌</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">牛さんの部落格</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div id="huxblog_navbar">
+        <div class="navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/">主页</a>
+            </li>
+               
+            <li>
+              <a href="/about/"
+                >关于</a
+              >
+            </li>
+              
+            <li>
+              <a href="/archive"
+                >Archive</a
+              >
+            </li>
+                                                                   
+          </ul>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body = document.body;
+    var $toggle = document.querySelector(".navbar-toggle");
+    var $navbar = document.querySelector("#huxblog_navbar");
+    var $collapse = document.querySelector(".navbar-collapse");
+
+    var __HuxNav__ = {
+      close: function () {
+        $navbar.className = " ";
+        // wait until animation end.
+        setTimeout(function () {
+          // prevent frequently toggle
+          if ($navbar.className.indexOf("in") < 0) {
+            $collapse.style.height = "0px";
+          }
+        }, 400);
+      },
+      open: function () {
+        $collapse.style.height = "auto";
+        $navbar.className += " in";
+      },
+    };
+
+    // Bind Event
+    $toggle.addEventListener("click", function (e) {
+      if ($navbar.className.indexOf("in") > 0) {
+        __HuxNav__.close();
+      } else {
+        __HuxNav__.open();
+      }
+    });
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener("click", function (e) {
+      if (e.target == $toggle) return;
+      if (e.target.className == "icon-bar") return;
+      __HuxNav__.close();
+    });
+  </script>
+</nav>
+ <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                    </div>
+                    <h1>React 代码复用的问题 - Higher-Order Components</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">June 12, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="react-代码复用的问题---higher-order-components">React 代码复用的问题 - Higher-Order Components</h1>
+
+<p>代码复用，我们很容易想到组件。组件确实也是 React 中最主要的复用单元。大部分情况下是满足需求的，但有一些例外的情况。</p>
+
+<h3 id="问题the-problem">问题/The problem</h3>
+<p>假如我们有个展示图表数据的 <code class="language-plaintext highlighter-rouge">Dashboard</code> 组件。它会做权限检查，只有登录后才能看到；它还会在组件初始化之后发请求获取数据。</p>
+
+<p><em>Dashboard.jsx</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">isAuthenticated</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./auth</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Login</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./Login</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nx">Dashboard</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">props</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">data</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+  <span class="nx">componentDidMount</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fetch</span><span class="p">(</span><span class="dl">"</span><span class="s2">api/to/fetch/dashbaord/data</span><span class="dl">"</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span> <span class="nx">data</span> <span class="p">}));</span>
+  <span class="p">}</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">isAuthenticated</span> <span class="p">?</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">dashboard</span><span class="dl">"</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">dashbaord</span><span class="o">&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">table</span><span class="o">&gt;</span>
+          <span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">row</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="p">(</span>
+              <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">row</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/td</span><span class="err">&gt;
+</span>              <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>            <span class="p">);</span>
+          <span class="p">})}</span>
+        <span class="o">&lt;</span><span class="sr">/table</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">)</span> <span class="p">:</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">Login</span> <span class="o">/&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Dashboard</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>然后有个展示用户列表的 <code class="language-plaintext highlighter-rouge">UserList</code> 组件，逻辑差不多，也需要验证是否登录，同时请求用户列表数据。</p>
+
+<p><em>UserList.jsx</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">isAuthenticated</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./auth</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Login</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./Login</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nx">UserList</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">props</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">data</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+  <span class="nx">componentDidMount</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fetch</span><span class="p">(</span><span class="dl">"</span><span class="s2">api/to/fetch/userlist/data</span><span class="dl">"</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span> <span class="nx">data</span> <span class="p">}));</span>
+  <span class="p">}</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">isAuthenticated</span> <span class="p">?</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="err">“</span><span class="nx">user</span><span class="o">-</span><span class="nx">list</span><span class="err">”</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">user</span> <span class="nx">list</span><span class="o">&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>	<span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">user</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/p&gt;</span><span class="se">)</span><span class="err">}
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">)</span> <span class="p">:</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">Login</span> <span class="o">/&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">UserList</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这两个页面，除了数据来源和对数据的展示方式不同外，在代码上有很大冗余。意味着可以进一步优化，将公共部分抽取出来。</p>
+
+<p>但这里的情形不同于抽取公共组件。抽取成组件的部分一定是独立可拆分的，比如一个列表，其中的每个列表项和列表项中的头像，都可以抽取专门的组件而独立出去，外部只需要传递数据。这里的情形是需要把一些逻辑抽离出来，比如数据请求，比如登录的判断，而这些还没有具备一个完整组件形态，功能上有点像服务（services）。</p>
+
+<p>这个时候，<a href="https://reactjs.org/docs/higher-order-components.html">高阶组件 Higher-Order Components</a> 就派得上用场了。</p>
+
+<h3 id="高阶组件higher-order-components">高阶组件/Higher-Order Components</h3>
+
+<p>先看其官方的精简定义：</p>
+
+<blockquote>
+  <p>a higher-order component is a function that takes a component and returns a new component.</p>
+</blockquote>
+
+<p>名称上叫 <code class="language-plaintext highlighter-rouge">component</code>，实质上是一个方法。本质上 react 组件就是一个个创建 dom 的方法，如果这样想的话，也解释得通。后面将 Higher-Order Components 简称为 HOC。HOC 将一个组件进行包装后返回一个新的组件。在这包装的过程中，可以加入任意的新功能。</p>
+
+<p>不同于 Mixin 的覆盖做法，好多时候并不清楚哪些方法可以安全无副作用地被覆盖；也不像面向对象中单一的继承方式，在需要组合多个基类时显得捉襟见肘。</p>
+
+<p>HOC 并不改变原组件，而是在组件之上包装一层组件，所有可公用的逻辑都放在这里，只通过属性与原来的组件通信。同时，包装后的组件会将原组件需要的属性透传，就像是在使用未包装过的原组件一样丝般顺滑。</p>
+
+<p>以上述页面为例，我们可以定义一个 <code class="language-plaintext highlighter-rouge">loadDataAndCheckAuth</code> 方法来完成公共逻辑的抽象。</p>
+
+<p><em>loadDataAndCheckAuth.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">isAuthenticated</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./auth</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Login</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./Login</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="c1">// 它是一个方法，入参为一个 组件</span>
+<span class="kd">const</span> <span class="nx">loadDataAndCheckAuth</span> <span class="o">=</span> <span class="nx">WrappedComponent</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// 它返回的也是组件</span>
+  <span class="k">return</span> <span class="kd">class</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">super</span><span class="p">(</span><span class="nx">props</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">data</span><span class="p">:</span> <span class="p">[]</span>
+      <span class="p">};</span>
+    <span class="p">}</span>
+    <span class="nx">componentDidMount</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">fetch</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">api</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span> <span class="nx">data</span> <span class="p">}));</span>
+    <span class="p">}</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">isAuthenticated</span> <span class="p">?</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">WrappedComponent</span> <span class="p">{...</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">}</span> <span class="nx">data</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">data</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="p">)</span> <span class="p">:</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">Login</span> <span class="o">/&gt;</span>
+      <span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">loadDataAndCheckAuth</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>然后修改原来的组件，将抽取出去的这些逻辑从原组件中去掉。数据获取的部分移除，增加 <code class="language-plaintext highlighter-rouge">data</code> 属性以接收外部传递的数据源；去掉登录的判断逻辑。</p>
+
+<p><em>Dashboard.jsx</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nx">Dashboard</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">dashboard</span><span class="dl">"</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">dashbaord</span><span class="o">&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">table</span><span class="o">&gt;</span>
+          <span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">row</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="p">(</span>
+              <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="nx">td</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">row</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/td</span><span class="err">&gt;
+</span>              <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>            <span class="p">);</span>
+          <span class="p">})}</span>
+        <span class="o">&lt;</span><span class="sr">/table</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Dashboard</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><em>UserList.jsx</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nx">UserList</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">user-list</span><span class="dl">"</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">user</span> <span class="nx">list</span><span class="o">&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>        <span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">user</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/p&gt;</span><span class="se">)</span><span class="err">}
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">UserList</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>精简之后的组件回到了它本该有的样子，只负责展示而不关心数据来源及是否该展示，做到了职责单一，易于维护。</p>
+
+<p>最后是 HOC 的使用。</p>
+
+<p><em>App.jsx</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Dashboard</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./Dashboard</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">loadDataAndCheckAuth</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./loadDataAndCheckAuth</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">WrappedDashBoard</span> <span class="o">=</span> <span class="nx">loadDataAndCheckAuth</span><span class="p">(</span><span class="nx">Dashboard</span><span class="p">);</span>
+
+<span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">app</span><span class="dl">"</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">WrappedDashBoard</span>
+          <span class="nx">api</span><span class="o">=</span><span class="p">{</span><span class="err">“</span><span class="nx">api</span><span class="o">/</span><span class="nx">to</span><span class="o">/</span><span class="nx">fetch</span><span class="o">/</span><span class="nx">dashboard</span><span class="o">/</span><span class="nx">data</span><span class="err">”</span><span class="p">}</span>
+        <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">UserList</code> 组件的使用雷同。</p>
+
+<h3 id="hoc-的组合hoc-composition">HOC 的组合/HOC Composition</h3>
+
+<p>从名字上来看， <code class="language-plaintext highlighter-rouge">loadDataAndCheckAuth</code> 很明显地体现出他干了两件事情，加载数据和判断权限。从职责单一的层面来说，完全可以抽成两个 HOC：<code class="language-plaintext highlighter-rouge">withData</code> 和 <code class="language-plaintext highlighter-rouge">withAuth</code>。这样拆分后，灵活性变大了，即有些组件可能并不需要加载数据，只需要检查权限，这样就可以只运用 <code class="language-plaintext highlighter-rouge">withAuth</code> 。</p>
+
+<p><em>withData.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">withData</span> <span class="o">=</span> <span class="nx">WrappedComponent</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">class</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">super</span><span class="p">(</span><span class="nx">props</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">data</span><span class="p">:</span> <span class="p">[]</span>
+      <span class="p">};</span>
+    <span class="p">}</span>
+    <span class="nx">componentDidMount</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">fetch</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">api</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span> <span class="nx">data</span> <span class="p">}));</span>
+    <span class="p">}</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="o">&lt;</span><span class="nx">WrappedComponent</span> <span class="p">{...</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">}</span> <span class="nx">data</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">data</span><span class="p">}</span> <span class="sr">/&gt;</span><span class="err">;
+</span>    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">withData</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><em>withAuth.js</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">isAuthenticated</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./auth</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Login</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./Login</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">withAuth</span> <span class="o">=</span> <span class="nx">WrappedComponent</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">class</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">isAuthenticated</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">&lt;</span><span class="nx">WrappedComponent</span> <span class="p">{...</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">}</span> <span class="sr">/&gt;</span><span class="err">;
+</span>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">&lt;</span><span class="nx">Login</span> <span class="o">/&gt;</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">withAuth</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>回过头来看，因为 HOC 是这样的方法，它接收一个组件，返回的还是组件，所以完美地符合链式调用的条件。</p>
+
+<p>于是，我们通过组合调用上面两个 HOC 便可得到既能加载数据，又能验证权限的新组件。</p>
+
+<p><em>App.jsx</em></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Dashboard</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./Dashboard</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">withAuth</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./withAuth</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">withData</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./withData</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">WrappedDashboard</span> <span class="o">=</span> <span class="nx">withData</span><span class="p">(</span><span class="nx">withAuth</span><span class="p">(</span><span class="nx">Dashboard</span><span class="p">));</span>
+
+<span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="dl">"</span><span class="s2">app</span><span class="dl">"</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">WrappedDashboard</span>
+          <span class="nx">api</span><span class="o">=</span><span class="p">{</span><span class="dl">"</span><span class="s2">api/to/fetch/dashboard/data</span><span class="dl">"</span><span class="p">}</span>
+        <span class="sr">/</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>于是，如果还有一些打日志的需求，AB test 的需求…都可以通过 HOC 在组件外部进行扩展，而我们原来的组件无需任何变更。并且如果需求有变，哪天不需要 AB test 了，只需要将该 HOC 去掉即可，也不用去原组件删代码，非常地灵活与健壮。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">WrappedDashboard</span> <span class="o">=</span> <span class="nx">abTest</span><span class="p">(</span><span class="nx">withLog</span><span class="p">(</span><span class="nx">withData</span><span class="p">(</span><span class="nx">withAuth</span><span class="p">(</span><span class="nx">Dashboard</span><span class="p">))));</span>
+</code></pre></div></div>
+
+<p>看着上面的嵌套形式，是不是和另一个东西很像？</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">middlewareA</span><span class="p">(</span><span class="nx">middlewareB</span><span class="p">(</span><span class="nx">middlewareC</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">)))(</span><span class="nx">action</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>对，Redux，它便是最经典的 HOC。</p>
+
+<h3 id="示例代码">示例代码</h3>
+
+<p>示例代码可前往<a href="https://github.com/wayou/wayou.github.io/blob/master/posts/react-hoc/src/README.md">这里</a>查看。</p>
+
+<h3 id="相关资源references">相关资源/References</h3>
+
+<ul>
+  <li><a href="https://reactjs.org/docs/higher-order-components.html">Higher-Order Components</a></li>
+  <li><a href="https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#35-intersection-types">TypeScript spec 3.5 Intersection Types</a></li>
+  <li><a href="https://reactjs.org/blog/2016/07/13/mixins-considered-harmful.html">Mixins Considered Harmful</a></li>
+  <li><a href="https://www.sitepen.com/blog/2017/08/15/higher-order-components-in-react/">Higher Order Components in React</a></li>
+</ul>
+
+
+
+        <hr style="visibility: hidden" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2018/06/04/%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%81%AE%E7%BD%A9%E7%9A%84%E9%97%AE%E9%A2%98/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="字符串遮罩的问题"
+            >
+              Previous<br />
+              <span>字符串遮罩的问题</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2018/08/05/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%97%AE%E9%A2%98%E9%9B%86%E9%94%A6/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="微信小程序问题集锦"
+            >
+              Next<br />
+              <span>微信小程序问题集锦</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden" />
+
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+   
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+ <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a href="https://twitter.com/liuwayong">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wayou">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                   已经到底了😝
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+  
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+  </body>
+</html>
