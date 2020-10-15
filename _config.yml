@@ -27,9 +27,7 @@ timezone: CN
 # from PR#40, to support local preview for Jekyll 3.0
 # make sure you have this gem installed
 # `$ gem install jekyll-paginate`
-plugins: [jekyll-paginate, octopress-escape-code]
-
-escape_code: true
+plugins: [jekyll-paginate]
 
 # Markdown settings
 # replace redcarpet to kramdown,
@@ -41,22 +39,9 @@ kramdown:
   input: GFM
   auto_ids: true
   syntax_highlighter: rouge
-  # syntax_highlighter_opts:
-  #   span:
-  #     line_numbers: false
-  #   block:
-  #     line_numbers: false
-  #     start_line: 1
-
-# Disqus settings
-# disqus_username: hux
 
 # Netease settings
 netease_comment: false
-
-# Analytics settings
-# Baidu Analytics
-# ba_track_id: [your track id]
 
 # Google Analytics
 # ga_track_id: "UA-49627206-1" # Format: UA-xxxxxx-xx
