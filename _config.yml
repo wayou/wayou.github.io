@@ -26,6 +26,8 @@ keyword: "牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计"
 url: "" # your host, for absolute URL
 baseurl: "" # for example, '/blog' if your blog hosted on 'host/blog'
 
+markdown: GFM
+
 # Build settings
 theme: jekyll-whiteglass
 plugins:
@@ -35,7 +37,7 @@ plugins:
 
 permalink: /:year/:month/:day/:title/
 paginate_path: /posts/:num/
-paginate: 5
+paginate: 10
 
 jekyll-archives:
   enabled:
