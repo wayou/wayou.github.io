@@ -48,8 +48,6 @@
   }
 }
 
-
-
 /**
  * Site footer
  */
@@ -59,8 +57,6 @@
   color: $grey-color;
   text-align: center;
 }
-
-
 
 /**
  * Page content
@@ -85,8 +81,8 @@
     margin-bottom: $spacing-unit * 2;
 
     &:not(:first-child) {
-      border-top: 4px solid $grey-color-light;
-      padding-top: $spacing-unit * 2;
+      // border-top: 4px solid $grey-color-light;
+      // padding-top: $spacing-unit * 2;
     }
   }
 }
@@ -137,8 +133,6 @@
     }
   }
 }
-
-
 
 /**
  * Posts
@@ -192,8 +186,6 @@
     }
   }
 }
-
-
 
 /**
  * Pagination
