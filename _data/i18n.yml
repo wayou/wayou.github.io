@@ -1,0 +1,54 @@
+en:
+  date:
+    format: "%b %-d, %Y" # See http://ruby-doc.org/core/Time.html#method-i-strftime for possible date formatting strings
+    abbr_day_names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    abbr_month_names: ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dez"]
+    day_names: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    month_names: ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"]
+  morelink: "Read on"
+  page-older: "Older"
+  page-newer: "Newer"
+  archive: "Blog Archive"
+  archive-category: "Archive of category '%1'"
+  archive-tag: "Archive of tag '%1'"
+  comments: "Comments"
+de:
+  date:
+    format: "%e. %B %Y"
+    abbr_day_names: ["So", "Mo", "Di", "Mi", "Do", "Fr" , "Sa"]
+    abbr_month_names: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
+      "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
+    day_names: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
+    month_names: ["Januar", "Februar", "März", "April", "Mai", "Juni",
+      "Juli", "August", "September", "Oktober", "November", "Dezember"]
+  morelink: "Weiterlesen"
+  page-older: "Ältere Beiträge"
+  page-newer: "Neuere Beiträge"
+  archive: "Blog Archiv"
+  archive-category: "Archiv der Kategorie '%1'"
+  archive-tag: "Archiv des Tags '%1'"
+  comments: "Kommentare"
+de-AT:
+  date:
+    month_names: ["Jänner", "Februar", "März", "April", "Mai", "Juni",
+      "Juli", "August", "September", "Oktober", "November", "Dezember"]
+    abbr_month_names: ["Jän", "Feb", "Mär", "Apr", "Mai", "Jun",
+      "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
+ko:
+  date:
+    format: "%Y년 %-m월 %-d일"
+    abbr_day_names: ["일", "월", "화", "수", "목", "금", "토"]
+    abbr_month_names: ["1월", "2월", "3월", "4월", "5월", "6월",
+      "7월", "8월", "9월", "10월", "11월", "12월"]
+    day_names: ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    month_names: ["1월", "2월", "3월", "4월", "5월", "6월",
+      "7월", "8월", "9월", "10월", "11월", "12월"]
+  morelink: "계속 읽기"
+  page-older: "이전"
+  page-newer: "다음"
+  archive: "블로그 아카이브"
+  archive-category: "'%1' 카테고리 아카이브"
+  archive-tag: "'%1' 태그 아카이브"
+  comments: "댓글"
