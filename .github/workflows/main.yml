@@ -23,7 +23,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Turn comment into file
         run: |
-          cat <<'EOF' > _posts/"${{ github.event.issue.title }}".md
+          DATE="${{ github.event.issue.created_at }}"
+          cat <<'EOF' > _posts/"${DATE:0:10}-${{ github.event.issue.title }}".md
           ---
           layout: post
           title: ${{ github.event.issue.title }}
