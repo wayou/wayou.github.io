@@ -1,0 +1,51 @@
+---
+layout: default
+---
+
+<div class="home">
+
+  {{ content }}
+
+  {% capture site_lang %}{{ site.lang | default: "en" }}{% endcapture %}
+
+  <ul class="post-list">
+    {% for post in paginator.posts %}
+      {% capture post_lang %}{{ post.lang | default: site_lang }}{% endcapture %}
+      {% capture lang %}{% if post_lang != site_lang %}{{ post_lang }}{% endif %}{% endcapture %}
+
+      <li{% if lang != empty %} lang="{{ lang }}"{% endif %}>
+        <header class="post-header">
+          <h1 class="post-title">
+            {% if post.external-url %}
+              <a class="post-link" href="{{ post.external-url }}">{{ post.title | escape }} &rarr;</a>
+            {% else %}
+              <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+            {% endif %}
+          </h1>
+
+          <p class="post-meta">
+            {% include date.html date=post.date lang=lang %}
+            {% if post.categories != empty or post.tags != empty %}
+              {% include category_links.html categories=post.categories tags=post.tags %}
+            {% endif %}
+            {% if post.external-url %}
+              • <a href="{{ post.url | relative_url }}">Permalink</a>
+            {% endif %}
+          </p>
+        </header>
+
+        <!-- <div class="post-content">
+          {{ post.excerpt }}
+        </div> -->
+        <!-- {% if post.content contains site.excerpt_separator %}
+          <p class="post-continue">
+            <a href="{{ post.url | relative_url }}">{% include i18n.html lang=lang value="morelink" default="Read on" %} &rarr;</a>
+          </p>
+        {% endif %} -->
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% include pagination.html %}
+
+</div>

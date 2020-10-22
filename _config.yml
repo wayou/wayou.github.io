@@ -1,4 +1,23 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+#
+# If you need help with YAML syntax, here are some quick references for you:
+# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
+# https://learnxinyminutes.com/docs/yaml/
+#
 # Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+
 title: 牛さんの部落格
 email: liuwayong@gmail.com
 description: notes about the coding life
@@ -7,49 +26,43 @@ keyword: "牛哇勇, 博客, 互联网, Web, JavaScript, 前端, 设计"
 url: "" # your host, for absolute URL
 baseurl: "" # for example, '/blog' if your blog hosted on 'host/blog'
 
-# Publish posts or collection documents with a future date.
-future: true
-
-# SNS settings
-RSS: true
-github_username: wayou
-twitter_username: liuwayong
+markdown: GFM
 
 # Build settings
-permalink: pretty
+theme: jekyll-whiteglass
+plugins:
+  - jekyll-archives
+  - jekyll-paginate
+  - jekyll-sitemap
+
+permalink: /:year/:month/:day/:title/
+paginate_path: /posts/:num/
 paginate: 10
-exclude: ["less", "node_modules", "Gruntfile.js", "package.json", "README.md"]
-anchorjs: true # if you want to customize anchor. check out line:181 of `post.html`
-# If you have timezone issue (e.g. #68) in China, uncomment to use this:
-timezone: CN
 
-# Gems
-# from PR#40, to support local preview for Jekyll 3.0
-# make sure you have this gem installed
-# `$ gem install jekyll-paginate`
-plugins: [jekyll-paginate]
-
-# Markdown settings
-# replace redcarpet to kramdown,
-# although redcarpet can auto highlight code, the lack of header-id make the catalog impossible, so I switch to kramdown
-# document: http://jekyllrb.com/docs/configuration/#kramdown
-highlighter: rouge
-markdown: GFM
-kramdown:
-  input: GFM
-  auto_ids: true
-  syntax_highlighter: rouge
-
-# Netease settings
-netease_comment: false
-
-# Google Analytics
-# ga_track_id: "UA-49627206-1" # Format: UA-xxxxxx-xx
-# ga_domain: huangxuan.me
-
-# Sidebar settings
-sidebar: false # whether or not using Sidebar.
-
-# Featured Tags
-featured-tags: false # whether or not using Feature-Tags
-featured-condition-size: 1 # A tag will be featured if the size of it is more than this condition value
+jekyll-archives:
+  enabled:
+    - categories
+    - tags
+  layout: category_archives
+  permalinks:
+    category: /categories/:name/
+    tag: /tags/:name/
+# Exclude from processing.
+# The following items will not be processed, by default.
+# Any item listed under the `exclude:` key here will be automatically added to
+# the internal "default list".
+#
+# Excluded items can be processed by explicitly listing the directories or
+# their entries' file path in the `include:` list.
+#
+# exclude:
+#   - .sass-cache/
+#   - .jekyll-cache/
+#   - gemfiles/
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules/
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
