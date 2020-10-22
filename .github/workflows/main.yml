@@ -38,8 +38,8 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git config user.name "${{ github.actor }}"
           git pull ${REMOTE}
-          git checkout main
+          git checkout master
           git add .
           git status
           git commit -am "Add new comment"
-          git push ${REMOTE} main
+          git push ${REMOTE} master
