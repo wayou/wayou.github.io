@@ -16,7 +16,7 @@ date: 2020-11-05T15:15:28Z
 <img width="780" alt="Screen Shot 2020-11-05 at 23 13 31" src="https://user-images.githubusercontent.com/3783096/98259021-89bb5380-1fbc-11eb-8de0-5338c6ecb0c2.png">
 
 
-再根据[这个回答](https://apple.stackexchange.com/a/161682/123408)，重启时按住 <kdb>⌘</kdb> + <kdb>⌥</kdb> + <kdb>P</kdb> + <kdb>R</kdb>，会闪烁几次，之后就正常进入系统。后续开机也正常了。
+再根据[这个回答](https://apple.stackexchange.com/a/161682/123408)，重启时按住 <kbd>⌘</kbd> + <kbd>⌥</kbd> + <kbd>P</kbd> + <kbd>R</kbd>，会闪烁几次，之后就正常进入系统。后续开机也正常了。
 
 
 ## 相关资源
