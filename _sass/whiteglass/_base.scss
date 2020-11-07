@@ -146,27 +146,6 @@ a {
 }
 
 /**
- * Blockquotes
- */
-blockquote {
-  color: $grey-color;
-  border-left: 4px solid $grey-color-light;
-  padding-left: $spacing-unit / 2;
-  font-size: 18px;
-  letter-spacing: -1px;
-  font-style: italic;
-
-  > :last-child {
-    margin-bottom: 0;
-  }
-
-  pre,
-  code {
-    color: $text-color;
-  }
-}
-
-/**
  * Rules
  */
 hr {
