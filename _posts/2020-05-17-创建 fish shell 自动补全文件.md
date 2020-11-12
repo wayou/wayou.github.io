@@ -1,10 +1,8 @@
 ---
 layout: post
-title: "创建 fish shell 自动补全文件"
-date: 2020-05-17 23:05:00 +0800
-tags: 
+title: 创建 fish shell 自动补全文件
+date: 2020-05-17T15:29:01Z
 ---
-    
 # 创建 fish shell 自动补全文件
 
 关于自动补全的文档参见 [Tab Completion](http://fishshell.com/docs/current/index.html#tab-completion)。
@@ -45,7 +43,7 @@ complete -c myprog -a "yes no"
 创建补全文件到 `~/.config/fish/completions` 目录下：
 
 ```sh
-$ touch ~/.config/fish/completions/test.fish
+$ touch ~/.config/fish/completions/node.fish
 ```
 
 输入以下内容：
@@ -54,12 +52,23 @@ $ touch ~/.config/fish/completions/test.fish
 complete -c node -a "yes no"
 ```
 
-## 加载补全脚本
+## 测试补全脚本
+
+fish 会自动加载 `$fish_complete_path` 这个变量的值包包含的目录下的补全文件。
+
+打印该变更可查看具体有哪些目录：
+
+```sh
+echo $fish_complete_path
+/Users/liuwayong/.config/fish/completions /Users/liuwayong/.local/share/omf/pkg/nvm/completions /Users/liuwayong/.local/share/omf/pkg/omf/completions /usr/local/Cellar/fish/3.1.2/etc/fish/completions /usr/local/Cellar/fish/3.1.2/share/fish/vendor_completions.d /usr/local/share/fish/vendor_completions.d /usr/local/Cellar/fish/3.1.2/share/fish/completions /Users/liuwayong/.local/share/fish/generated_completions
+```
+
+自己编写的补全文件，一般放到 `~/.config/fish/completions/<command_name>.fish` 即可，注意其中文件名需要是被补全命令的名称，比如 `git.fish`。
 
 讲道理，放到对应目录后，fish 会自动加载，但是在下次打开命令行的时候。如果要立即生效，需要重新 source 一下该文件：
 
 ```sh
-$ source ~/.config/fish/completions/test.fish 
+$ source ~/.config/fish/completions/git.fish 
 ```
 
 测试自动补全：
@@ -334,4 +343,3 @@ description = YOUR-PACKAGE-DESCRIPTION
 ## 相关资源
 
 - [Writing your own completions¶](http://fishshell.com/docs/current/index.html#writing-your-own-completions)
-    
