@@ -136,9 +136,19 @@ $ pbcopy < ~/.ssh/id_rsa.pub
 git remote set-url origin git@github.com:USERNAME/REPOSITORY.git
 ```
 
+## hub
+
+另，还可配置 [hub](https://hub.github.com/) 使用 SSH 进行克隆。
+
+```sh
+$ git config --global hub.protocol ssh
+```
+
 ## 相关资源
 
 - [Connecting to GitHub with SSH - GitHub Docs](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh)
 - [ssh_agent_start.fish](https://gist.github.com/gerbsen/5fd8aa0fde87ac7a2cae)
 - [Changing a remote's URL](https://docs.github.com/en/free-pro-team@latest/github/using-git/changing-a-remotes-url)
+- [hub](https://hub.github.com/)
+- [man hub](https://hub.github.com/hub.1.html)
 
