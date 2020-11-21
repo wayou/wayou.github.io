@@ -21,6 +21,8 @@ date: 2020-11-21T12:08:36Z
 $ sudo -b /Applications/Parallels\ Desktop.app/Contents/MacOS/prl_client_app
 ```
 
+不过每次启动都要以上面的命令来启动。
+
 ## 相关资源
 
 - [Parallels Desktop for Mac 与 macOS 11 Big Sur 的兼容性 – 已知和已解决的问题](https://kb.parallels.com/en/125039)
