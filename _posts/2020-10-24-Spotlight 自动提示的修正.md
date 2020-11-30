@@ -11,7 +11,7 @@ date: 2020-10-24T03:05:10Z
 $ sudo mdutil -E /
 ```
 
-期中 `mdutil` 是管理 Spotlight 元数据的命令行工具，
+其中 `mdutil` 是管理 Spotlight 元数据的命令行工具，
 
 >      mdutil -- manage the metadata stores used by Spotlight
 
