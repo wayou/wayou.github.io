@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: wayou/turn-issues-to-posts-action@v1.2.1
+      - uses: wayou/turn-issues-to-posts-action@v1.2.2
         with:
           branch: "master"
           dir: "_posts"
