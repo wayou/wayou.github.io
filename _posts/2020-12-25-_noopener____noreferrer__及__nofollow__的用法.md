@@ -7,12 +7,11 @@ date: 2020-12-25T13:23:31Z
 
 `<a>` 标签通常会配合着使用 `noopener`, `noreferrer` 及 `nofollow` 这些属性, 它们的作用及用法如下。
 
-
 ## `noopener`
 
 当给链接加上 `target="_blank"` 后， 目标网页会在新的标签页中打开， 此时在新打开的页面中可通过 `window.opener` 获取到源页面的 `window` 对象， 这就埋下了安全隐患。
 
-具体来说， 
+具体来说,
 
 - 你自己的网页 A 有个链接是打开另外一个三方地址 B
 - B 网页通过 `window.opener` 获取到 A 网页的 `window` 对象， 进而可以使得 A 页面跳转到一个钓鱼页面 `window.opener.location.href ="abc.com"`， 用户没注意地址发生了跳转， 在该页面输入了用户名密码后则发生信息泄露
