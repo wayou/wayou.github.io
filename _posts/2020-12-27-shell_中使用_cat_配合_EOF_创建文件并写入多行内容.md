@@ -9,8 +9,8 @@ date: 2020-12-27T03:55:44Z
 
 过程中发现因为 issue 的标题和正文是任意的，也就是以下两部分：
 
-- `${{ github.event.issue.title }}`
-- `${{ github.event.issue.body }}`
+- `github.event.issue.title`
+- `github.event.issue.body`
 
 分别通过环境变量 `github.event.issue` 获取。
 
