@@ -126,9 +126,9 @@ jekyll 报错信息：
 Error: YAML Exception reading xxx/_posts/2020-12-25-xxx.md: (<unknown>): found character that cannot start any token while scanning for the next token at line 3 column 8
 ```
 
-
 ## 相关资源
 
 - [wayou/turn-issues-to-posts-action](https://github.com/wayou/turn-issues-to-posts-action)
 - [GitHub Actions](https://docs.github.com/en/free-pro-team@latest/actions)
 - [How does “cat << EOF” work in bash?](https://stackoverflow.com/questions/2500436/how-does-cat-eof-work-in-bash)
+
