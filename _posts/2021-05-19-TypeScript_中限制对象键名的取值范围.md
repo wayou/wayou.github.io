@@ -161,7 +161,6 @@ const students: Students = {
 
 # 相关资源
 
-- [](https://devimalplanet.com/typescript-how-to-extend-one-enum-from-another)
 - [const assertions](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions)
 - [`keyof` and Lookup Types](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-1.html#keyof-and-lookup-types)
 
