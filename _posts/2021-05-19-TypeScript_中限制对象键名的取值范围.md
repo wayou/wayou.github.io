@@ -78,6 +78,13 @@ export enum Grade {
 }
 ```
 
+或者，原来的枚举不用动，修正使用枚举的姿势：
+
+```diff
+- type Students = Record<Grade, string[]>;
++ type Students = Record<keyof typeof Grades, string[]>;
+```
+
 此时再使用该枚举时，得到的就不是无意义的数字了。
 
 <img width="899" alt="2" src="https://user-images.githubusercontent.com/3783096/118772877-d1e5f780-b8b6-11eb-9745-b6a46cffed72.png">
