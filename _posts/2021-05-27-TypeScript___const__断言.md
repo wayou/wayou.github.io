@@ -68,6 +68,10 @@ for (const shape of getShapes()) {
 }
 ```
 
+![image](https://user-images.githubusercontent.com/3783096/119802532-32a5ad80-bf11-11eb-91b4-ea1f46b42223.png)
+
+
+
 如果改成 `const` 断言，返回的则是字面量原有未经过转换过的类型：
 
 ```diff
