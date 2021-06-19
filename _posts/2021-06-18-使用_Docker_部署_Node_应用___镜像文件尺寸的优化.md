@@ -3,9 +3,9 @@ layout: post
 title: "使用 Docker 部署 Node 应用 - 镜像文件尺寸的优化"
 date: 2021-06-18T13:15:21Z
 ---
-# 使用容器部署 Node 应用 - 镜像文件尺寸的优化
+# 使用 Docker 部署 Node 应用 - 镜像文件尺寸的优化
 
-前面 [使用容器部署 Node 应用](https://github.com/wayou/wayou.github.io/issues/281) 一文中完成了镜像的创建和运行，不过生成的镜像还有些粗糙，需要进一步优化。
+前面 [使用 Docker 部署 Node 应用](https://github.com/wayou/wayou.github.io/issues/281) 一文中完成了镜像的创建和运行，不过生成的镜像还有些粗糙，需要进一步优化。
 
 ## 镜像的优化
 
@@ -67,11 +67,14 @@ wayou/my-app   latest    f8b6ba45c68f   21 seconds ago   603MB
 
 ### 多次编译
 
-详情及原理参见 [Use multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/)。
+详情及原理参见 [Use multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/)。简单来说，构建镜像文件包含很多步骤，中间步骤依赖使用的东西其实在最后成品中并不需要。
+
+因此，我们可以将整个构建过程分成多步，得到一些中间结果。而这些中间结果是下一步所需要的，但生成这些中间结果的依赖却是下一步不需要的，就可以舍弃。
 
 优化后的 Dockerfile:
 
 ```
+######## step 1 ########
 FROM node:14-alpine AS BUILD_IMAGE
 
 # Create app directory
@@ -101,7 +104,7 @@ COPY . .
 
 RUN yarn build
 
-#===========
+######## step 2 ########
 
 FROM node:14-alpine
 
