@@ -9,7 +9,7 @@ date: 2021-06-18T13:32:47Z
 
 ## 发布与部署
 
-通过将镜像发布到 Docker Hub，在服务器再安装下来进行部署。
+通过将镜像发布到 [Docker Hub](https://hub.docker.com/)， 在服务器再安装下来进行部署。
 
 ```sh
 # 本机
@@ -24,16 +24,15 @@ $ docker pull wayou/myapp
 
 当时，此种方式也需要你先去 Docker Hub 创建帐号。
 
-
 如果项目私有，没有分享的需求，完全可以将本地镜像打成 zip 包上传到服务器进行部署：
 
 ```sh
 # 本机
 $ docker save wayou/my-app:latest | gzip > my-app.tar.gz
-$ scp image.tar.gz <user>@<server-addres>:<target-location>
+$ scp my-app.tar.gz <user>@<server-addres>:<target-location>
 
 # 远端服务器
-$ docker load -i <path-to-image.zip>
+$ docker load -i path/to/image.tar.gz
 ```
 
 其中 `docker load` 从压缩包加载镜像到 Docker。
