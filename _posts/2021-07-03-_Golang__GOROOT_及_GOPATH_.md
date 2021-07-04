@@ -5,6 +5,8 @@ date: 2021-07-03T09:39:34Z
 ---
 # [Golang] GOROOT 及 GOPATH﻿
 
+Golang 中会涉及两个常用环境变量：
+
 - GOROOT: 标识 Go SDK 的位置，一般情况下不用改，除非要切换到其他 Go 版本
 - GOPATH: 定义工作区（workspace）的位置。 默认情况下为 `~/go` 目录。其中包含
     - bin： go 编译后的可执行文件
@@ -47,6 +49,7 @@ GOOS="darwin"
 …
 ```
 
+以上。
 
 ## 相关资源
 
