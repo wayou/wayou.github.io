@@ -3,6 +3,8 @@ layout: post
 title: "High fan-in low fan-out"
 date: 2021-07-20T00:22:04Z
 ---
+# High fan-in low fan-out
+
 读 《Code Complete》 学到个新术语， "fan-in","fan-out"。可能是电子术语， 根据 [Intel 上面的解释]([an-in and fan-out]（https://book.douban.com/subject/35470123/）)，
 
 - fan-in 表示逻辑单元最大输入信号量
