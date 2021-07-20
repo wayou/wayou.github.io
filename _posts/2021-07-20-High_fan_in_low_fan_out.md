@@ -15,17 +15,10 @@ date: 2021-07-20T00:22:04Z
 
 以下是来自 Code Complete 的原文：
 
-> High fan-in High fan-in refers to having a high number of classes that use a given
-> class. High fan-in implies that a system has been designed to make good use of utility
-> classes at the lower levels in the system.
-> 5.2 Key Design Concepts 81
->
-> Low-to-medium fan-out Low-to-medium fan-out means having a given class use a
-> low-to-medium number of other classes. High fan-out (more than about seven) indicates that a class uses a large number of other classes and may therefore be overly
-> complex. Researchers have found that the principle of low fan-out is beneficial
-> whether you’re considering the number of routines called from within a routine or the
-> number of classes used within a class (Card and Glass 1990; Basili, Briand, and Melo
-> 1996). 
+> High fan-in High fan-in refers to having a high number of classes that use a given class. High fan-in implies that a system has been designed to make > good use of utility classes at the lower levels in the system. 5.2 Key Design Concepts 81
+> 
+> Low-to-medium fan-out Low-to-medium fan-out means having a given class use a low-to-medium number of other classes. High fan-out (more than about seven) > indicates that a class uses a large number of other classes and may therefore be overly complex. Researchers have found that the principle of low fan-out > is beneficial whether you’re considering the number of routines called from within a routine or the number of classes used within a class (Card and Glass > 1990; Basili, Briand, and Melo 1996). 
+> -- _Code Complete_
 
 
 低级类或工具方法代表职责单一的功能模块， 尽可能多地将功能重复的部分抽取到其中，然后在其他地方进行复用，一是避免冗余代码，二是方便后期维护升级。
@@ -36,5 +29,5 @@ date: 2021-07-20T00:22:04Z
 
 ## 相关资源
 
-- [an-in and fan-out]（https://book.douban.com/subject/35470123/）
-- [Design Principle High Fan in vs High Fan out]（https://stackoverflow.com/questions/4092228/design-principle-high-fan-in-vs-high-fan-out）
+- [an-in and fan-out](https://book.douban.com/subject/35470123/)
+- [Design Principle High Fan in vs High Fan out](https://stackoverflow.com/questions/4092228/design-principle-high-fan-in-vs-high-fan-out)
