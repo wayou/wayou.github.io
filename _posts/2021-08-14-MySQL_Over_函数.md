@@ -59,8 +59,8 @@ challenge_id | h_id | h_name | score | rank
 
 ## 相关资源
 
-- [What Is the MySQL OVER Clause?]([https://learnsql.com/blog/over-clause-mysql/](https://learnsql.com/blog/over-clause-mysql/))
-- [MySQL Doc  - 12.21 Window Functions]([https://dev.mysql.com/doc/refman/8.0/en/window-functions.html](https://dev.mysql.com/doc/refman/8.0/en/window-functions.html))
-- [MySQL Sample Database]([https://dev.mysql.com/doc/employee/en/](https://dev.mysql.com/doc/employee/en/))
+- [What Is the MySQL OVER Clause?](https://learnsql.com/blog/over-clause-mysql/)
+- [MySQL Doc  - 12.21 Window Functions](https://dev.mysql.com/doc/refman/8.0/en/window-functions.html)
+- [MySQL Sample Database](https://dev.mysql.com/doc/employee/en/)
 - [MySQL Doc - Window functions](https://dev.mysql.com/doc/refman/8.0/en/window-function-descriptions.html)
 - [MySQL | PARTITION BY Clause](https://www.geeksforgeeks.org/mysql-partition-by-clause/#:~:text=over()%20clause%20defines%20how,will%20be%20assigned%20same%20rank.)
