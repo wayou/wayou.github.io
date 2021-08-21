@@ -25,7 +25,7 @@ const util = require('util')
 console.log(util.inspect(array, { maxArrayLength: null }))
 ```
 
-我为什么会发现这么个问题呢，因为老早之前写了个 [Webpack 插件]([https://github.com/wayou/print-chunks-plugin](https://github.com/wayou/print-chunks-plugin))打印些调试信息，有人提 issues 报了这个问题。
+我为什么会发现这么个问题呢，因为老早之前写了个 [Webpack 插件](https://github.com/wayou/print-chunks-plugin)打印些调试信息，有人提 issues 报了这个问题。
 
 ## 相关资源
 
