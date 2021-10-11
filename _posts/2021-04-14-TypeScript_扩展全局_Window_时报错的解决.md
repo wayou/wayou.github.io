@@ -6,7 +6,7 @@ date: 2021-04-14T04:06:21Z
 # TypeScript 扩展全局 Window 时报错的解决
 
 
-使用全局 `window` 上自定义的变更进，TypeScript 会报属性不存在，
+使用全局 `window` 上自定义的属性，TypeScript 会报属性不存在，
 
 ```ts
 console.log(window.foo) // ❌ Property ‘foo’ does not exist on type 'Window & typeof globalThis'.ts(2339)
