@@ -65,7 +65,7 @@ func (s *MySQLStore) Insert(item interface{}) error {
 }
 ```
 
-因为 user service 依赖的是 interface，当后面我们切换数据库到其他数据库时，只需要新建一个 store 提供对应方法即可，而不用更新我们的 user service 去接收一个叫作 `PGStore` 的依赖。
+因为 user service 依赖的是 interface，当后面我们切换数据库到其他数据库比如 PostgreSQL 时，只需要新建一个 store 提供对应方法即可，而不用更新我们的 user service 去接收一个叫作 `PGStore` 的依赖。
 
 同理，编写单元测试也会方便许多，我们只需要 mock 一个实现了该接口的对象即可，因为 interface 的依赖已经通过抽象剥离了出来，使得测试变得方便和纯粹。
 
