@@ -3,7 +3,7 @@ layout: post
 title: "[Golang] 接收 interface 返回 struct"
 date: 2021-09-11T08:18:54Z
 ---
-# [Golang] 接收 interface 返回 struct
+# [golang] 接收 interface 返回 struct
 
 Golang 编程中有个最佳实践是将依赖定义为 interface 而返回定义为 struct。
 
