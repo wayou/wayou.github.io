@@ -466,6 +466,9 @@ docker run -d --name clickhouse-server -p 8123:8123 -p 9000:9000 --ulimit nofile
 
 导入成功后已经能查看到数据：
 
+![image](https://user-images.githubusercontent.com/3783096/147022323-2b18abf2-cb38-4c44-83ad-770bd7013969.png)
+
+
 以上。
 
 ## 相关资源
