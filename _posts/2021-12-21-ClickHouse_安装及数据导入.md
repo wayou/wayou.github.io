@@ -469,6 +469,44 @@ docker run -d --name clickhouse-server -p 8123:8123 -p 9000:9000 --ulimit nofile
 ![image](https://user-images.githubusercontent.com/3783096/147022323-2b18abf2-cb38-4c44-83ad-770bd7013969.png)
 
 
+## 查询数据
+
+完成上述步骤后，我们有了数据库及数据，就可以尝试查询来体验 ClickHouse 了。
+
+示例查询一：
+
+```sql
+SELECT
+    StartURL AS URL,
+    AVG(Duration) AS AvgDuration
+FROM tutorial.visits_v1
+WHERE StartDate BETWEEN '2014-03-23' AND '2014-03-30'
+GROUP BY URL
+ORDER BY AvgDuration DESC
+LIMIT 10
+```
+
+查询结果：
+
+![image](https://user-images.githubusercontent.com/3783096/147022799-e05c57ae-8abd-4f3e-9545-4361ef522cd4.png)
+
+
+示例查询二：
+
+```sql
+SELECT
+    sum(Sign) AS visits,
+    sumIf(Sign, has(Goals.ID, 1105530)) AS goal_visits,
+    (100. * goal_visits) / visits AS goal_percent
+FROM tutorial.visits_v1
+WHERE (CounterID = 912887) AND (toYYYYMM(StartDate) = 201403) AND (domain(StartURL) = 'yandex.ru')
+```
+
+查询结果：
+
+![image](https://user-images.githubusercontent.com/3783096/147022810-772a29a6-df6a-4b21-b616-c220aec43678.png)
+
+以上。
 以上。
 
 ## 相关资源
