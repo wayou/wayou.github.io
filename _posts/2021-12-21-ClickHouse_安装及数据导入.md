@@ -429,7 +429,7 @@ docker cp hits_v1.tsv container_id:tmp_data/
 docker cp visits_v1.tsv container_id:tmp_data/
 ```
 
-注意：bye the way, 通过 `docker container ls` 查看容器对应的 id。
+注意：by the way, 通过 `docker container ls` 查看容器对应的 id。
 
 此时就可以进行导入操作了。因为文件比较大，如果报如下错误，一定会报的：
 
