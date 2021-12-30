@@ -135,7 +135,7 @@ const grades = ["Freshman", "sophomore", "Junior", "Senior"];
 
 这意味着我们需要提取数组中的值形成一个联合类型。
 
-首先利用[const assertions](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions) 把数组转元组（Tuple）类型，
+首先利用 [const assertions](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions) 把数组转元组（Tuple）类型，
 
 ```ts
 const grades = <const>["Freshman", "sophomore", "Junior", "Senior"];
