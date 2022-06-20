@@ -86,7 +86,7 @@ python3 -m http.server
 `source map` 在浏览器中默认是关闭的，这样就不会影响正常用户。当我们开启后，浏览器就根据压缩代码中指定的 source map 地址去请求 map 资源。
 
 <img width="815" alt="enable-source-map-in-chrome-devtool" src="https://user-images.githubusercontent.com/3783096/174594959-6de00116-b56a-4f1f-8f80-ac6f35c78cda.png">
-_在浏览器中开启 source map_
+*在浏览器中开启 source map*
 
 
 最后，就可以访问 `http://localhost:8000/` 来测试我们的代码了。
