@@ -86,13 +86,13 @@ python3 -m http.server
 `source map` 在浏览器中默认是关闭的，这样就不会影响正常用户。当我们开启后，浏览器就根据压缩代码中指定的 source map 地址去请求 map 资源。
 
 <img width="815" alt="enable-source-map-in-chrome-devtool" src="https://user-images.githubusercontent.com/3783096/174594959-6de00116-b56a-4f1f-8f80-ac6f35c78cda.png">
-_在浏览器中开启 source map_
+__在浏览器中开启 source map__
 
 
 最后，就可以访问 `http://localhost:8000/` 来测试我们的代码了。
 
 <img width="815" alt="debugger-in-output" src="https://user-images.githubusercontent.com/3783096/174595033-77d462cf-fb4f-4061-9843-a3a6fd45ee2d.png">
-_在压缩过的代码中打断点_
+__在压缩过的代码中打断点__
 
 从截图中可以看到，开启 source map 后，除了页面中引用的 `output.js` 文件，浏览器还加载了生成它的两个源文件，以方便我们在调试浏览器会自动映射回未压缩合并的源文件。
 
@@ -101,7 +101,7 @@ _在压缩过的代码中打断点_
 刷新页面后，我们发现，断点正确定位到了 `log.js` 中正确的位置。
 
 <img width="815" alt="source-retrive" src="https://user-images.githubusercontent.com/3783096/174595074-4debb844-86f1-4671-8d29-542f86bdb9b1.png">
-_代码的还原_
+__代码的还原__
 
 会否觉得很赞啊！
 
@@ -299,7 +299,7 @@ mappings (31 字符): 0|0|1|5|0, 4|0|1|4|1, 6|0|1|-9|1;
     </tr>
 </table>
 
-_第一个字节组(四位作为值)_
+__第一个字节组(四位作为值)__
 
 
 这样一个字节组可以表示的数字范围为：
@@ -342,7 +342,7 @@ _第一个字节组(四位作为值)_
     </tr>
 </table>
 
-_未结束的字节组(五位作为值)_
+__未结束的字节组(五位作为值)__
 
 现在我们使用上面的二进制规则来重新编码之前的这个数字序列 `1|23|456|7`。
 
@@ -397,7 +397,7 @@ _未结束的字节组(五位作为值)_
 ```
 
 <img width="424" alt="base64-map" src="https://user-images.githubusercontent.com/3783096/174595115-c85a2b02-51d9-41a6-aa9f-f8832980daf6.png">
-_base64 编码表_
+__base64 编码表__
 
 结合上面的 Base64 编码表，上面的结果转成对应的 base64 字符为：
 
