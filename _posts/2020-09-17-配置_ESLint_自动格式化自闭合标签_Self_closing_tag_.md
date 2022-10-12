@@ -25,7 +25,7 @@ date: 2020-09-17T15:04:14Z
 +     "react/self-closing-comp": [
 +       "error"
 +     ]
-    }
++   }
 ```
 
 ## 安装依赖
