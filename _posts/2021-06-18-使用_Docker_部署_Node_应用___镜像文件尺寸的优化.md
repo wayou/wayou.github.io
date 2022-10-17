@@ -272,4 +272,5 @@ wayou/my-app   latest    2c54b4ee27cd   4 seconds ago       123MB
 ## 相关资源
 
 - [Use multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/)
+- [How We Reduce Node Docker Image Size In 3 Steps](https://medium.com/trendyol-tech/how-we-reduce-node-docker-image-size-in-3-steps-ff2762b51d5a)
 
