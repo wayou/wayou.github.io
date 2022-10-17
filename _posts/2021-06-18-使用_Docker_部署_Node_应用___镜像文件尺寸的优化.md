@@ -172,7 +172,7 @@ wayou/my-app   latest    9aba2a428703   5 seconds ago    129MB
 FROM node:14-alpine AS BUILD_IMAGE
 
 # install node-prune (https://github.com/tj/node-prune)
-RUN curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | bash -s -- -b /usr/local/bin
+RUN curl -sf https://gobinaries.com/tj/node-prune | sh
 
 # Create app directory
 WORKDIR /usr/src/app
