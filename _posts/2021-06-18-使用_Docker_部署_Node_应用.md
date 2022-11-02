@@ -316,6 +316,19 @@ $  docker rm [OPTIONS] CONTAINER [CONTAINER...]
 $ docker exec -it <container id> /bin/bash
 ```
 
+如果出现如下错误：
+
+```sh
+OCI runtime exec failed: exec failed: container_linux.go:380: starting container process caused: exec: "/bin/bash": stat /bin/bash: no such file or directory: unknown
+```
+
+可将命令换成：
+
+```sh
+docker exec -it price-service sh
+```
+
+以上。
 
 
 ## 相关资源
