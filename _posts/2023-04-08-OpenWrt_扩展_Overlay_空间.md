@@ -94,7 +94,9 @@ $ cfdisk /dev/nvme0n1
 最后光标移动到 `Quit` 退出分区工具。
 
 完成后的样子：
-<img width="822" alt="Screenshot 2023-04-07 at 21 05 05" src="https://user-images.githubusercontent.com/3783096/230615265-75ee0b74-e4fa-4f59-85ed-de5694b93753.png">
+
+![230615265-75ee0b74-e4fa-4f59-85ed-de5694b93753](https://user-images.githubusercontent.com/3783096/230841157-5369bfec-0f6b-484a-b791-27b2a86352dd.png)
+
 
 ## 格式化分区
 
