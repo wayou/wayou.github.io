@@ -507,7 +507,6 @@ WHERE (CounterID = 912887) AND (toYYYYMM(StartDate) = 201403) AND (domain(StartU
 ![image](https://user-images.githubusercontent.com/3783096/147022810-772a29a6-df6a-4b21-b616-c220aec43678.png)
 
 以上。
-以上。
 
 ## 相关资源
 
